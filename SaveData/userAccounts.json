@@ -1,0 +1,22 @@
+{
+  "savedAt": "2026-08-09T11:48:40+07:00",
+  "users": [
+    {
+      "username": "detektif_tamu",
+      "fullname": "Detektif Tamu",
+      "registeredAt": "2026-08-09T00:00:00.000Z",
+      "lastLoginAt": "2026-08-09T11:48:40.000Z",
+      "totalScore": 0,
+      "unlockedBadges": ["badge1"],
+      "progress": {
+        "subbab1": { "unlocked": true, "currentStage": 1, "stars": {} },
+        "subbab2": { "unlocked": false, "currentStage": 1, "stars": {} },
+        "subbab3": { "unlocked": false, "currentStage": 1, "stars": {} },
+        "subbab4": { "unlocked": false, "currentStage": 1, "stars": {} },
+        "subbab5": { "unlocked": false, "currentStage": 1, "stars": {} },
+        "subbab6": { "unlocked": false, "currentStage": 1, "stars": {} },
+        "subbab7": { "unlocked": false, "currentStage": 1, "stars": {} }
+      }
+    }
+  ]
+}
