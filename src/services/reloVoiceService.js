@@ -9,25 +9,25 @@ const RELO_SCENES = {
   '1A_pagi': [
     {
       file: 'Menu Selamat Datang – Login Pertama/pagi/Selamat pagi! Perkenalkan, aku Detektif Relo. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif.wav',
-      text: 'Selamat pagi! Perkenalkan, aku Detektif Relo. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif?'
+      text: 'Selamat pagi! ☀️ Perkenalkan, aku Detektif Relo 🦉. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif? 🕵️‍♂️'
     }
   ],
   '1A_siang': [
     {
       file: 'Menu Selamat Datang – Login Pertama/siang/Halo, detektif! Selamat siang Aku Relo, Detektif Relo. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama!”.wav',
-      text: 'Halo, detektif! Selamat siang! Aku Relo, Detektif Relo. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama!'
+      text: 'Halo, detektif! 👋 Selamat siang! 🌤️ Aku Relo, Detektif Relo 🦉. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama! 🔍'
     }
   ],
   '1A_sore': [
     {
       file: 'Menu Selamat Datang – Login Pertama/sore/Selamat sore! Aku Detektif Relo. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan!.wav',
-      text: 'Selamat sore! Aku Detektif Relo. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan!'
+      text: 'Selamat sore! 🌅 Aku Detektif Relo 🦉. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan! 🚀'
     }
   ],
   '1A_malam': [
     {
       file: 'Menu Selamat Datang – Login Pertama/malam/Hai, selamat malam! Aku Detektif Relo. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi..wav',
-      text: 'Hai, selamat malam! Aku Detektif Relo. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi.'
+      text: 'Hai, selamat malam! 🌙 Aku Detektif Relo 🦉. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi. 🔎'
     }
   ],
 
@@ -35,25 +35,25 @@ const RELO_SCENES = {
   '1B_pagi': [
     {
       file: 'Menu Selamat Datang – Login Berikutnya/pagi/selamat pagi! Akhirnya kamu kembali juga, Detektif! Relo sudah menunggumu..wav',
-      text: 'Selamat pagi! Akhirnya kamu kembali juga, Detektif! Relo sudah menunggumu.'
+      text: 'Selamat pagi! ☀️ Akhirnya kamu kembali juga, Detektif! 🕵️‍♂️ Relo sudah menunggumu 🦉.'
     }
   ],
   '1B_siang': [
     {
       file: 'Menu Selamat Datang – Login Berikutnya/siang/Hai! Selamat siang! Wah, partner-ku kembali lagi. Sudah siap melanjutkan penyelidikan.wav',
-      text: 'Hai! Selamat siang! Wah, partner-ku kembali lagi. Sudah siap melanjutkan penyelidikan?'
+      text: 'Hai! Selamat siang! 🌤️ Wah, partner-ku kembali lagi 🦉. Sudah siap melanjutkan penyelidikan? 🔍'
     }
   ],
   '1B_sore': [
     {
       file: 'Menu Selamat Datang – Login Berikutnya/sore/selamat sore dan Selamat datang kembali! Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi.wav',
-      text: 'Selamat sore dan selamat datang kembali! Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi.'
+      text: 'Selamat sore dan selamat datang kembali! 🌅 Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi 🦉✨.'
     }
   ],
   '1B_malam': [
     {
       file: 'Menu Selamat Datang – Login Berikutnya/malam/Hei, kamu datang lagi! Selamat malam! Sepertinya masih ada banyak misteri yang belum kita pecahkan..wav',
-      text: 'Hei, kamu datang lagi! Selamat malam! Sepertinya masih ada banyak misteri yang belum kita pecahkan.'
+      text: 'Hei, kamu datang lagi! Selamat malam! 🌙 Sepertinya masih ada banyak misteri yang belum kita pecahkan 🔍.'
     }
   ],
 
@@ -61,19 +61,19 @@ const RELO_SCENES = {
   '2A': [
     {
       file: 'Menu Subbab – Baru Masuk/Detektif, waktunya memilih kasus! Tentukan salah satu dari tujuh dunia untuk memulai penyelidikanmu..wav',
-      text: 'Detektif, waktunya memilih kasus! Tentukan salah satu dari tujuh dunia untuk memulai penyelidikanmu.'
+      text: 'Detektif, waktunya memilih kasus! 🕵️‍♂️ Tentukan salah satu dari tujuh dunia untuk memulai penyelidikanmu! 🗺️'
     },
     {
       file: 'Menu Subbab – Baru Masuk/di depanmu ada tujuh dunia penyelidikan. Pilih salah satunya untuk memulai petualangan!.wav',
-      text: 'Di depanmu ada tujuh dunia penyelidikan. Pilih salah satunya untuk memulai petualangan!'
+      text: 'Di depanmu ada tujuh dunia penyelidikan 🗺️. Pilih salah satunya untuk memulai petualangan! 🚀'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Hmm… aku melihat tujuh lokasi penuh misteri. Yuk, pilih satu dan cari tahu rahasia yang tersembunyi di dalamnya!.wav',
-      text: 'Hmm… aku melihat tujuh lokasi penuh misteri. Yuk, pilih satu dan cari tahu rahasia yang tersembunyi di dalamnya!'
+      text: 'Hmm… aku melihat tujuh lokasi penuh misteri 🔍. Yuk, pilih satu dan cari tahu rahasia yang tersembunyi di dalamnya! 🏛️'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Semua kasus sudah menunggumu. Pilih satu dunia di bawah ini dan mari kita mulai penyelidikan!.wav',
-      text: 'Semua kasus sudah menunggumu. Pilih satu dunia di bawah ini dan mari kita mulai penyelidikan!'
+      text: 'Semua kasus sudah menunggumu! 📂 Pilih satu dunia di bawah ini dan mari kita mulai penyelidikan! 🔎'
     }
   ],
 
@@ -81,23 +81,23 @@ const RELO_SCENES = {
   '2B': [
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 30 Detik/Ayo mulai! Pilih satu dunia di depanmu. Aku penasaran misteri apa yang akan kita temukan..wav',
-      text: 'Ayo mulai! Pilih satu dunia di depanmu. Aku penasaran misteri apa yang akan kita temukan.'
+      text: 'Ayo mulai! 🚀 Pilih satu dunia di depanmu. Aku penasaran misteri apa yang akan kita temukan 🦉🔍.'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 30 Detik/Hei, Detektif! Kok masih diam saja Yuk, pilih satu dunia untuk mulai menyelidiki!.wav',
-      text: 'Hei, Detektif! Kok masih diam saja? Yuk, pilih satu dunia untuk mulai menyelidiki!'
+      text: 'Hei, Detektif! Kok masih diam saja? 🕵️‍♂️ Yuk, pilih satu dunia untuk mulai menyelidiki! 🗺️'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 30 Detik/Hmm… kamu sedang mencari petunjuk atau malah bingung memilih Ayo, salah satu dunia pasti menarik!.wav',
-      text: 'Hmm… kamu sedang mencari petunjuk atau malah bingung memilih? Ayo, salah satu dunia pasti menarik!'
+      text: 'Hmm… kamu sedang mencari petunjuk atau malah bingung memilih? ❓ Ayo, salah satu dunia pasti menarik! ✨'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 30 Detik/jangan cuma dilihat-lihat, Detektif. Kasusnya tidak akan terpecahkan sendiri, lho!.wav',
-      text: 'Jangan cuma dilihat-lihat, Detektif. Kasusnya tidak akan terpecahkan sendiri, lho!'
+      text: 'Jangan cuma dilihat-lihat, Detektif! 🕵️‍♂️ Kasusnya tidak akan terpecahkan sendiri, lho! 🔍'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 30 Detik/Waktunya jalan-jalan ke dunia penyelidikan! Pilih satu, lalu kita mulai!.wav',
-      text: 'Waktunya jalan-jalan ke dunia penyelidikan! Pilih satu, lalu kita mulai!'
+      text: 'Waktunya jalan-jalan ke dunia penyelidikan! 🗺️ Pilih satu, lalu kita mulai! 🚀'
     }
   ],
 
@@ -105,23 +105,23 @@ const RELO_SCENES = {
   '2C': [
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 1 Menit/Aku mulai curiga… jangan-jangan kamu sedang menunggu aku yang memilihkan.wav',
-      text: 'Aku mulai curiga… jangan-jangan kamu sedang menunggu aku yang memilihkan?'
+      text: 'Aku mulai curiga… 🧐 jangan-jangan kamu sedang menunggu aku yang memilihkan? 🦉'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 1 Menit/Detektif… kamu masih di sana, kan Jangan bilang kamu ketiduran!.wav',
-      text: 'Detektif… kamu masih di sana, kan? Jangan bilang kamu ketiduran!'
+      text: 'Detektif… kamu masih di sana, kan? 🕵️‍♂️ Jangan bilang kamu ketiduran! 😴'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 1 Menit/Halo Detektif Kalau kamu masih di depan layar, ayo pilih dunianya!.wav',
-      text: 'Halo Detektif! Kalau kamu masih di depan layar, ayo pilih dunianya!'
+      text: 'Halo Detektif! 👋 Kalau kamu masih di depan layar, ayo pilih dunianya! 🗺️'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 1 Menit/Hei! Kok layarnya belum berubah juga Kamu lagi mikir keras atau malah ngantuk.wav',
-      text: 'Hei! Kok layarnya belum berubah juga? Kamu lagi mikir keras atau malah ngantuk?'
+      text: 'Hei! Kok layarnya belum berubah juga? ❓ Kamu lagi mikir keras atau malah ngantuk? 😴'
     },
     {
       file: 'Menu Subbab – Baru Masuk/Menu Subbab – Tidak Memilih 1 Menit/Satu menit berlalu… kasusnya masih belum dimulai. Jangan-jangan Detektif-nya sedang tidur jangan sampai relo keluar untuk membangunkanmu ya!.wav',
-      text: 'Satu menit berlalu… kasusnya masih belum dimulai. Jangan-jangan Detektif-nya sedang tidur, jangan sampai Relo keluar untuk membangunkanmu ya!'
+      text: 'Satu menit berlalu… kasusnya masih belum dimulai ⏳. Jangan-jangan Detektif-nya sedang tidur, jangan sampai Relo keluar untuk membangunkanmu ya! 🦉⚡'
     }
   ],
 
@@ -129,23 +129,23 @@ const RELO_SCENES = {
   '3A': [
     {
       file: 'Memilih Stage – Stage Baru/Hmm… aku belum tahu apa yang menunggu di depan. Ayo kita cari tahu bersama!.wav',
-      text: 'Hmm… aku belum tahu apa yang menunggu di depan. Ayo kita cari tahu bersama!'
+      text: 'Hmm… aku belum tahu apa yang menunggu di depan 🔍. Ayo kita cari tahu bersama! 🚀'
     },
     {
       file: 'Memilih Stage – Stage Baru/ini adalah penyelidikan baru. Siapkan kemampuanmu dan mari kita mulai!.wav',
-      text: 'Ini adalah penyelidikan baru. Siapkan kemampuanmu dan mari kita mulai!'
+      text: 'Ini adalah penyelidikan baru! 🗺️ Siapkan kemampuanmu dan mari kita mulai! 🕵️‍♂️'
     },
     {
       file: 'Memilih Stage – Stage Baru/Kasus baru telah ditemukan! Yuk, mulai petualangan dan pecahkan misterinya!.wav',
-      text: 'Kasus baru telah ditemukan! Yuk, mulai petualangan dan pecahkan misterinya!'
+      text: 'Kasus baru telah ditemukan! 🔎 Yuk, mulai petualangan dan pecahkan misterinya! ✨'
     },
     {
       file: 'Memilih Stage – Stage Baru/Kasus baru, petunjuk baru, tantangan baru! Detektif, waktunya beraksi!.wav',
-      text: 'Kasus baru, petunjuk baru, tantangan baru! Detektif, waktunya beraksi!'
+      text: 'Kasus baru, petunjuk baru, tantangan baru! 💡 Detektif, waktunya beraksi! 🕵️‍♂️'
     },
     {
       file: 'Memilih Stage – Stage Baru/Petualangan baru menanti! Ikuti setiap petunjuk dan jangan lewatkan satu pun detail..wav',
-      text: 'Petualangan baru menanti! Ikuti setiap petunjuk dan jangan lewatkan satu pun detail.'
+      text: 'Petualangan baru menanti! 🧭 Ikuti setiap petunjuk dan jangan lewatkan satu pun detail 🔍.'
     }
   ],
 
@@ -153,23 +153,23 @@ const RELO_SCENES = {
   '3B': [
     {
       file: 'Memilih Stage – Melanjutkan Stage/Ah, kasus ini belum selesai! Ayo kita kembali dan tuntaskan sampai akhir..wav',
-      text: 'Ah, kasus ini belum selesai! Ayo kita kembali dan tuntaskan sampai akhir.'
+      text: 'Ah, kasus ini belum selesai! 📂 Ayo kita kembali dan tuntaskan sampai akhir! 🚀'
     },
     {
       file: 'Memilih Stage – Melanjutkan Stage/Kita sudah memulai kasus ini sebelumnya. Jangan biarkan misterinya menggantung, Detektif!.wav',
-      text: 'Kita sudah memulai kasus ini sebelumnya. Jangan biarkan misterinya menggantung, Detektif!'
+      text: 'Kita sudah memulai kasus ini sebelumnya 🔍. Jangan biarkan misterinya menggantung, Detektif! 🕵️‍♂️'
     },
     {
       file: 'Memilih Stage – Melanjutkan Stage/Lanjutkan penyelidikan! Kita tinggal menyelesaikan bagian yang masih belum terpecahkan..wav',
-      text: 'Lanjutkan penyelidikan! Kita tinggal menyelesaikan bagian yang masih belum terpecahkan.'
+      text: 'Lanjutkan penyelidikan! 🗺️ Kita tinggal menyelesaikan bagian yang masih belum terpecahkan 🔎.'
     },
     {
       file: 'Memilih Stage – Melanjutkan Stage/Petunjuk sebelumnya masih tersimpan. Mari kita lanjutkan dari tempat terakhir kita berhenti..wav',
-      text: 'Petunjuk sebelumnya masih tersimpan. Mari kita lanjutkan dari tempat terakhir kita berhenti.'
+      text: 'Petunjuk sebelumnya masih tersimpan 📂. Mari kita lanjutkan dari tempat terakhir kita berhenti! 🚀'
     },
     {
       file: 'Memilih Stage – Melanjutkan Stage/Yuk, lanjutkan penyelidikan yang sebelumnya.wav',
-      text: 'Yuk, lanjutkan penyelidikan yang sebelumnya!'
+      text: 'Yuk, lanjutkan penyelidikan yang sebelumnya! 🔍✨'
     }
   ],
 
@@ -177,23 +177,23 @@ const RELO_SCENES = {
   '4': [
     {
       file: 'Quest Mode/Detektif, misi khusus menunggumu! Selesaikan tantangan dalam 30 menit dan kumpulkan skor setinggi mungkin..wav',
-      text: 'Detektif, misi khusus menunggumu! Selesaikan tantangan dalam 30 menit dan kumpulkan skor setinggi mungkin.'
+      text: 'Detektif, misi khusus menunggumu! 🚨 Selesaikan tantangan dalam 30 menit dan kumpulkan skor setinggi mungkin! ⏱️🏆'
     },
     {
       file: 'Quest Mode/Di mode ini, kecepatan dan ketelitian akan diuji. Kamu punya 30 menit. Siap membuktikan kemampuanmu.wav',
-      text: 'Di mode ini, kecepatan dan ketelitian akan diuji. Kamu punya 30 menit. Siap membuktikan kemampuanmu?'
+      text: 'Di mode ini, kecepatan dan ketelitian akan diuji ⏳. Kamu punya 30 menit. Siap membuktikan kemampuanmu? 🎯'
     },
     {
       file: 'Quest Mode/Quest Mode dimulai! Waktu adalah tantanganmu. Kerjakan soal dengan cepat, tetapi jangan sampai terburu-buru dan ceroboh..wav',
-      text: 'Quest Mode dimulai! Waktu adalah tantanganmu. Kerjakan soal dengan cepat, tetapi jangan sampai terburu-buru dan ceroboh.'
+      text: 'Quest Mode dimulai! ⚡ Waktu adalah tantanganmu. Kerjakan soal dengan cepat, tetapi jangan sampai terburu-buru dan ceroboh! 🧠'
     },
     {
       file: 'Quest Mode/Selamat datang di Quest Mode! Kamu punya waktu 30 menit untuk menyelesaikan misi. Ingat, cepat saja tidak cukup—jawabanmu juga harus tepat!.wav',
-      text: 'Selamat datang di Quest Mode! Kamu punya waktu 30 menit untuk menyelesaikan misi. Ingat, cepat saja tidak cukup—jawabanmu juga harus tepat!'
+      text: 'Selamat datang di Quest Mode! 🎓 Kamu punya waktu 30 menit untuk menyelesaikan misi. Ingat, cepat saja tidak cukup—jawabanmu juga harus tepat! 🎯'
     },
     {
       file: 'Quest Mode/Waktumu terbatas, tapi tenang! Baca setiap soal dengan teliti, gunakan strategimu, dan jangan biarkan waktu mengalahkanmu!.wav',
-      text: 'Waktumu terbatas, tapi tenang! Baca setiap soal dengan teliti, gunakan strategimu, dan jangan biarkan waktu mengalahkanmu!'
+      text: 'Waktumu terbatas, tapi tenang! ⏱️ Baca setiap soal dengan teliti, gunakan strategimu, dan jangan biarkan waktu mengalahkanmu! 💡'
     }
   ],
 
@@ -201,23 +201,23 @@ const RELO_SCENES = {
   '5': [
     {
       file: 'Menu Lencana/Jangan berhenti di satu lencana! Terus pecahkan kasus, raih skor tinggi, dan lengkapi koleksimu..wav',
-      text: 'Jangan berhenti di satu lencana! Terus pecahkan kasus, raih skor tinggi, dan lengkapi koleksimu.'
+      text: 'Jangan berhenti di satu lencana! 🎖️ Terus pecahkan kasus, raih skor tinggi, dan lengkapi koleksimu! 🏆'
     },
     {
       file: 'Menu Lencana/Koleksi lencanamu adalah bukti perjalananmu sebagai detektif. Mampukah kamu mendapatkan semuanya.wav',
-      text: 'Koleksi lencanamu adalah bukti perjalananmu sebagai detektif. Mampukah kamu mendapatkan semuanya?'
+      text: 'Koleksi lencanamu adalah bukti perjalananmu sebagai detektif 🕵️‍♂️. Mampukah kamu mendapatkan semuanya? 🎖️'
     },
     {
       file: 'Menu Lencana/Lihat lencana-lencana ini! Tingkatkan skor dan prestasimu untuk membuka lencana yang lebih istimewa..wav',
-      text: 'Lihat lencana-lencana ini! Tingkatkan skor dan prestasimu untuk membuka lencana yang lebih istimewa.'
+      text: 'Lihat lencana-lencana ini! ✨ Tingkatkan skor dan prestasimu untuk membuka lencana yang lebih istimewa! 🏆'
     },
     {
       file: 'Menu Lencana/Nah, ini dia koleksi lencana! Semakin hebat pencapaianmu, semakin keren lencana yang bisa kamu dapatkan.wav',
-      text: 'Nah, ini dia koleksi lencana! Semakin hebat pencapaianmu, semakin keren lencana yang bisa kamu dapatkan.'
+      text: 'Nah, ini dia koleksi lencana! 🎖️ Semakin hebat pencapaianmu, semakin keren lencana yang bisa kamu dapatkan! 👑'
     },
     {
       file: 'Menu Lencana/Setiap lencana punya cerita tentang pencapaianmu. Yuk, kumpulkan semuanya dan buktikan kemampuanmu!.wav',
-      text: 'Setiap lencana punya cerita tentang pencapaianmu. Yuk, kumpulkan semuanya dan buktikan kemampuanmu!'
+      text: 'Setiap lencana punya cerita tentang pencapaianmu 📜. Yuk, kumpulkan semuanya dan buktikan kemampuanmu! 🌟'
     }
   ],
 
@@ -225,23 +225,23 @@ const RELO_SCENES = {
   '6': [
     {
       file: 'Global High Score/Hmm… sepertinya ada beberapa detektif yang skornya tinggi sekali. Berani menantang mereka.wav',
-      text: 'Hmm… sepertinya ada beberapa detektif yang skornya tinggi sekali. Berani menantang mereka?'
+      text: 'Hmm… sepertinya ada beberapa detektif yang skornya tinggi sekali 🏆. Berani menantang mereka? 🕵️‍♂️'
     },
     {
       file: 'Global High Score/Ini adalah skor para detektif lainnya. Jangan mau kalah! Buktikan kemampuanmu dan naikkan peringkatmu..wav',
-      text: 'Ini adalah skor para detektif lainnya. Jangan mau kalah! Buktikan kemampuanmu dan naikkan peringkatmu.'
+      text: 'Ini adalah skor para detektif lainnya 🥇. Jangan mau kalah! Buktikan kemampuanmu dan naikkan peringkatmu! 🚀'
     },
     {
       file: 'Global High Score/Ini dia papan peringkat global! Coba lihat posisimu. Bisa naik lebih tinggi lagi, kan.wav',
-      text: 'Ini dia papan peringkat global! Coba lihat posisimu. Bisa naik lebih tinggi lagi, kan?'
+      text: 'Ini dia papan peringkat global! 🏆 Coba lihat posisimu. Bisa naik lebih tinggi lagi, kan? 🥇'
     },
     {
       file: 'Global High Score/Papan peringkat sudah menunggu. Terus berlatih, kumpulkan skor, dan jadilah Detektif terbaik!.wav',
-      text: 'Papan peringkat sudah menunggu. Terus berlatih, kumpulkan skor, dan jadilah Detektif terbaik!'
+      text: 'Papan peringkat sudah menunggu! 🏅 Terus berlatih, kumpulkan skor, dan jadilah Detektif terbaik! 🦉👑'
     },
     {
       file: 'Global High Score/Wah, banyak detektif hebat di sini! Yuk, tingkatkan skormu dan kejar posisi teratas!.wav',
-      text: 'Wah, banyak detektif hebat di sini! Yuk, tingkatkan skormu dan kejar posisi teratas!'
+      text: 'Wah, banyak detektif hebat di sini! 🎖️ Yuk, tingkatkan skormu dan kejar posisi teratas! 🚀'
     }
   ],
 
@@ -249,23 +249,23 @@ const RELO_SCENES = {
   '7A': [
     {
       file: 'Settings – Masuk Menu/Di menu ini kamu bisa mengatur berbagai suara dalam game. Silakan sesuaikan dengan kebutuhanmu..wav',
-      text: 'Di menu ini kamu bisa mengatur berbagai suara dalam game. Silakan sesuaikan dengan kebutuhanmu.'
+      text: 'Di menu ini kamu bisa mengatur berbagai suara dalam game ⚙️. Silakan sesuaikan dengan kebutuhanmu! 🔊'
     },
     {
       file: 'Settings – Masuk Menu/Ini ruang pengaturanmu. Mau suara game lebih keras atau lebih pelan Atur saja sesuai keinginanmu..wav',
-      text: 'Ini ruang pengaturanmu. Mau suara game lebih keras atau lebih pelan? Atur saja sesuai keinginanmu.'
+      text: 'Ini ruang pengaturanmu 🛠️. Mau suara game lebih keras atau lebih pelan? Atur saja sesuai keinginanmu! 🎧'
     },
     {
       file: 'Settings – Masuk Menu/Kalau suara game terasa terlalu keras atau terlalu kecil, kamu bisa mengaturnya di sini..wav',
-      text: 'Kalau suara game terasa terlalu keras atau terlalu kecil, kamu bisa mengaturnya di sini.'
+      text: 'Kalau suara game terasa terlalu keras atau terlalu kecil, kamu bisa mengaturnya di sini 🎚️.'
     },
     {
       file: 'Settings – Masuk Menu/Nah, di sini kamu bisa mengatur suara game sesuai kenyamananmu..wav',
-      text: 'Nah, di sini kamu bisa mengatur suara game sesuai kenyamananmu.'
+      text: 'Nah, di sini kamu bisa mengatur suara game sesuai kenyamananmu ⚙️🔊.'
     },
     {
       file: 'Settings – Masuk Menu/Sebelum lanjut menyelidiki, pastikan pengaturan suaramu sudah nyaman, ya!.wav',
-      text: 'Sebelum lanjut menyelidiki, pastikan pengaturan suaramu sudah nyaman, ya!'
+      text: 'Sebelum lanjut menyelidiki, pastikan pengaturan suaramu sudah nyaman, ya! 🎧✨'
     }
   ],
 
@@ -273,47 +273,47 @@ const RELO_SCENES = {
   '7B': [
     {
       file: 'Settings – Menggeser Sound Effect/Halo, Detektif! Bisa dengar aku Atur sampai suaranya terasa pas, ya!.wav',
-      text: 'Halo, Detektif! Bisa dengar aku? Atur sampai suaranya terasa pas, ya!'
+      text: 'Halo, Detektif! 👋 Bisa dengar aku? Atur sampai suaranya terasa pas, ya! 🔊'
     },
     {
       file: 'Settings – Menggeser Sound Effect/Haloooo! Kedengeran jelas, kan Atau suaraku masih terlalu kecil.wav',
-      text: 'Haloooo! Kedengeran jelas, kan? Atau suaraku masih terlalu kecil?'
+      text: 'Haloooo! 📣 Kedengeran jelas, kan? Atau suaraku masih terlalu kecil? 🔉'
     },
     {
       file: 'Settings – Menggeser Sound Effect/Nah, coba dengarkan… sudah pas belum suaranya Jangan terlalu besar, nanti aku malah teriak!.wav',
-      text: 'Nah, coba dengarkan… sudah pas belum suaranya? Jangan terlalu besar, nanti aku malah teriak!'
+      text: 'Nah, coba dengarkan… 👂 sudah pas belum suaranya? Jangan terlalu besar, nanti aku malah teriak! 📢'
     },
     {
       file: 'Settings – Menggeser Sound Effect/Tes, tes… satu, dua! Nah, gimana Volume suaranya sudah pas.wav',
-      text: 'Tes, tes… satu, dua! Nah, gimana? Volume suaranya sudah pas?'
+      text: 'Tes, tes… satu, dua! 🎙️ Nah, gimana? Volume suaranya sudah pas? 🔊'
     },
     {
       file: 'Settings – Menggeser Sound Effect/Wah, suaraku berubah! Menurutmu sekarang sudah nyaman didengar.wav',
-      text: 'Wah, suaraku berubah! Menurutmu sekarang sudah nyaman didengar?'
+      text: 'Wah, suaraku berubah! 🦉 Menurutmu sekarang sudah nyaman didengar? 🎧'
     }
   ],
 
   // 8: Exit Game Confirmation Modal
   '8': [
     {
-      file: 'ah… kamu mau meninggalkan Relo ya Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya!.wav',
-      text: 'Ah… kamu mau meninggalkan Relo ya? Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya!'
+      file: 'Exit – Pemain Menekan Keluar/ah… kamu mau meninggalkan Relo ya Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya!.wav',
+      text: 'Ah… kamu mau meninggalkan Relo ya? 🥺 Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya! 👋'
     },
     {
-      file: 'Eh, tunggu! Kamu benar-benar mau pergi Kita masih punya banyak misteri untuk dipecahkan!.wav',
-      text: 'Eh, tunggu! Kamu benar-benar mau pergi? Kita masih punya banyak misteri untuk dipecahkan!'
+      file: 'Exit – Pemain Menekan Keluar/Eh, tunggu! Kamu benar-benar mau pergi Kita masih punya banyak misteri untuk dipecahkan!.wav',
+      text: 'Eh, tunggu! 🖐️ Kamu benar-benar mau pergi? Kita masih punya banyak misteri untuk dipecahkan! 🔍'
     },
     {
-      file: 'Jangan pergi dulu! Petunjuk berikutnya mungkin sudah menunggu kita..wav',
-      text: 'Jangan pergi dulu! Petunjuk berikutnya mungkin sudah menunggu kita.'
+      file: 'Exit – Pemain Menekan Keluar/Jangan pergi dulu! Petunjuk berikutnya mungkin sudah menunggu kita..wav',
+      text: 'Jangan pergi dulu! 🛑 Petunjuk berikutnya mungkin sudah menunggu kita 💡.'
     },
     {
-      file: 'Lho… kamu mau ninggalin aku Kasus kita belum selesai, Detektif!.wav',
-      text: 'Lho… kamu mau ninggalin aku? Kasus kita belum selesai, Detektif!'
+      file: 'Exit – Pemain Menekan Keluar/Lho… kamu mau ninggalin aku Kasus kita belum selesai, Detektif!.wav',
+      text: 'Lho… kamu mau ninggalin aku? 🥺 Kasus kita belum selesai, Detektif! 🕵️‍♂️'
     },
     {
-      file: 'Mau berhenti sekarang Padahal aku masih penasaran dengan akhir penyelidikan kita….wav',
-      text: 'Mau berhenti sekarang? Padahal aku masih penasaran dengan akhir penyelidikan kita…'
+      file: 'Exit – Pemain Menekan Keluar/Mau berhenti sekarang Padahal aku masih penasaran dengan akhir penyelidikan kita….wav',
+      text: 'Mau berhenti sekarang? 🤔 Padahal aku masih penasaran dengan akhir penyelidikan kita… 🦉'
     }
   ],
 
@@ -321,23 +321,23 @@ const RELO_SCENES = {
   '9': [
     {
       file: 'Meninggalkan Stage – Kasus Belum Selesai/Ada apa, Detektif Kenapa kamu meninggalkan kasus ini begitu saja Padahal penyelidikannya belum selesai..wav',
-      text: 'Ada apa, Detektif? Kenapa kamu meninggalkan kasus ini begitu saja? Padahal penyelidikannya belum selesai.'
+      text: 'Ada apa, Detektif? ❓ Kenapa kamu meninggalkan kasus ini begitu saja? Padahal penyelidikannya belum selesai 📂.'
     },
     {
       file: 'Meninggalkan Stage – Kasus Belum Selesai/Hmm… sepertinya kamu berhenti di tengah penyelidikan. Jangan khawatir, kasusnya masih menunggumu!.wav',
-      text: 'Hmm… sepertinya kamu berhenti di tengah penyelidikan. Jangan khawatir, kasusnya masih menunggumu!'
+      text: 'Hmm… sepertinya kamu berhenti di tengah penyelidikan 🕵️‍♂️. Jangan khawatir, kasusnya masih menunggumu! 💡'
     },
     {
       file: 'Meninggalkan Stage – Kasus Belum Selesai/Lho, kok kembali Kasus ini masih belum terpecahkan, Detektif. Kamu yakin mau meninggalkannya.wav',
-      text: 'Lho, kok kembali? Kasus ini masih belum terpecahkan, Detektif. Kamu yakin mau meninggalkannya?'
+      text: 'Lho, kok kembali? 🛑 Kasus ini masih belum terpecahkan, Detektif. Kamu yakin mau meninggalkannya? 🔍'
     },
     {
       file: 'Meninggalkan Stage – Kasus Belum Selesai/Tunggu dulu! Kita belum menyelesaikan penyelidikan ini. Ada alasan kamu ingin meninggalkan kasusnya.wav',
-      text: 'Tunggu dulu! Kita belum menyelesaikan penyelidikan ini. Ada alasan kamu ingin meninggalkan kasusnya?'
+      text: 'Tunggu dulu! 🖐️ Kita belum menyelesaikan penyelidikan ini. Ada alasan kamu ingin meninggalkan kasusnya? ❓'
     },
     {
       file: 'Meninggalkan Stage – Kasus Belum Selesai/Yah, padahal kita sudah sejauh ini… Jangan biarkan misterinya menggantung, Detektif..wav',
-      text: 'Yah, padahal kita sudah sejauh ini… Jangan biarkan misterinya menggantung, Detektif.'
+      text: 'Yah, padahal kita sudah sejauh ini… 🥺 Jangan biarkan misterinya menggantung, Detektif! 📂'
     }
   ],
 
@@ -345,7 +345,7 @@ const RELO_SCENES = {
   'relo_terbang': [
     {
       file: 'relo terbang/woooosh, detektif reloo meluncuuuur!!!!.wav',
-      text: 'Woooosh, Detektif Relo meluncur!!!!'
+      text: 'Woooosh, Detektif Relo meluncur!!!! 🚀🦉✨'
     }
   ]
 };
@@ -358,6 +358,7 @@ class ReloVoiceService {
     this.currentScene = null;
     this.lastPlayTime = 0;
     this.lastText = '';
+    this.audioCache = new Map();
 
     // Load initial settings from storageService
     const settings = storageService.getAudioSettings();
@@ -367,16 +368,142 @@ class ReloVoiceService {
     this.reloAudioEl.volume = this.reloVol;
 
     // Event listeners to drive mouth movement & speaking state
-    this.reloAudioEl.addEventListener('play', () => this.setSpeaking(true));
-    this.reloAudioEl.addEventListener('ended', () => {
+    this.setupAudioListeners(this.reloAudioEl);
+
+    // Preload voice files asynchronously in background for 0ms latency
+    setTimeout(() => this.preloadVoiceFiles(), 150);
+
+    // Auto-unlock AudioContext & retry playback on first user gesture anywhere
+    if (typeof window !== 'undefined') {
+      const unlock = () => {
+        this.unlockAudioContext();
+        if (this.pendingAudio && this.pendingAudio.paused) {
+          this.pendingAudio.play().then(() => this.setSpeaking(true)).catch(() => {});
+          this.pendingAudio = null;
+        }
+      };
+      window.addEventListener('click', unlock, { passive: true });
+      window.addEventListener('touchstart', unlock, { passive: true });
+      window.addEventListener('keydown', unlock, { passive: true });
+      window.addEventListener('pointerdown', unlock, { passive: true });
+    }
+  }
+
+  unlockAudioContext() {
+    try {
+      if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+    } catch {}
+  }
+
+  setupAudioListeners(audioEl) {
+    audioEl.addEventListener('play', () => {
+      this.startAudioVolumeMonitor(audioEl);
+    });
+    audioEl.addEventListener('ended', () => {
+      this.stopAudioVolumeMonitor();
       this.currentScene = null;
       this.setSpeaking(false);
     });
-    this.reloAudioEl.addEventListener('pause', () => this.setSpeaking(false));
-    this.reloAudioEl.addEventListener('error', () => {
+    audioEl.addEventListener('pause', () => {
+      this.stopAudioVolumeMonitor();
+      this.setSpeaking(false);
+    });
+    audioEl.addEventListener('error', () => {
+      this.stopAudioVolumeMonitor();
       this.currentScene = null;
       this.setSpeaking(false);
     });
+  }
+
+  setupAudioAnalyser(audioEl) {
+    if (!this.analyserMap) this.analyserMap = new Map();
+    if (this.analyserMap.has(audioEl)) return;
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!this.audioCtx) {
+        this.audioCtx = new AudioCtx();
+      }
+
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+
+      const source = this.audioCtx.createMediaElementSource(audioEl);
+      const analyser = this.audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      analyser.connect(this.audioCtx.destination);
+
+      this.analyserMap.set(audioEl, analyser);
+    } catch (err) {
+      // Audio element might already be connected or CORS restricted
+    }
+  }
+
+  startAudioVolumeMonitor(audioEl) {
+    this.stopAudioVolumeMonitor();
+    this.setupAudioAnalyser(audioEl);
+
+    const analyser = this.analyserMap?.get(audioEl);
+    const dataArray = new Uint8Array(analyser ? analyser.frequencyBinCount : 0);
+
+    const checkVolume = () => {
+      if (!this.reloAudioEl || this.reloAudioEl.paused || this.reloAudioEl.ended) {
+        this.setSpeaking(false);
+        this.stopAudioVolumeMonitor();
+        return;
+      }
+
+      if (analyser) {
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const average = sum / dataArray.length;
+        
+        // Threshold > 10 means actual voice sound is coming out of the speaker
+        const isAudible = average > 10;
+        this.setSpeaking(isAudible);
+      } else {
+        this.setSpeaking(!audioEl.paused && !audioEl.ended);
+      }
+
+      this.animFrameId = requestAnimationFrame(checkVolume);
+    };
+
+    this.animFrameId = requestAnimationFrame(checkVolume);
+  }
+
+  stopAudioVolumeMonitor() {
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+  }
+
+  preloadVoiceFiles() {
+    try {
+      Object.values(RELO_SCENES).forEach(sceneList => {
+        if (Array.isArray(sceneList)) {
+          sceneList.forEach(item => {
+            if (item && item.file) {
+              const url = `/relo/${item.file}`;
+              if (!this.audioCache.has(url)) {
+                const audio = new Audio(url);
+                audio.preload = 'auto';
+                this.setupAudioListeners(audio);
+                audio.load();
+                this.audioCache.set(url, audio);
+              }
+            }
+          });
+        }
+      });
+    } catch {}
   }
 
   // Subscribe to speaking state changes (for mouth movement & audio ducking)
@@ -387,6 +514,7 @@ class ReloVoiceService {
   }
 
   setSpeaking(state) {
+    if (this.isSpeaking === state) return;
     this.isSpeaking = state;
     this.subscribers.forEach(cb => {
       try { cb(state); } catch {}
@@ -404,7 +532,11 @@ class ReloVoiceService {
 
   setReloVolume(percent) {
     this.reloVol = Math.max(0, Math.min(1, percent / 100));
-    this.reloAudioEl.volume = this.reloVol;
+    if (this.reloAudioEl) this.reloAudioEl.volume = this.reloVol;
+    this.audioCache.forEach(audio => {
+      if (audio) audio.volume = this.reloVol;
+    });
+
     const settings = storageService.getAudioSettings();
     settings.reloVol = percent;
     storageService.saveAudioSettings(settings);
@@ -428,9 +560,18 @@ class ReloVoiceService {
 
   // Stop any currently playing voice audio (ENFORCES SINGLE AUDIO CHANNEL)
   stopVoice() {
+    this.stopAudioVolumeMonitor();
     try {
-      this.reloAudioEl.pause();
-      this.reloAudioEl.currentTime = 0;
+      if (this.reloAudioEl) {
+        this.reloAudioEl.pause();
+        this.reloAudioEl.currentTime = 0;
+      }
+      this.audioCache.forEach(audio => {
+        if (audio && !audio.paused) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      });
     } catch {}
     this.currentScene = null;
     this.setSpeaking(false);
@@ -442,13 +583,8 @@ class ReloVoiceService {
    * @param {boolean} isStageContext - if true, readable text is preserved even when muted
    * @param {boolean} forceRestart - force restart voice track
    */
-  playScene(sceneBase, isStageContext = false, forceRestart = false) {
-    // Complete Relo's current sentence before changing to another line, unless forceRestart is true!
-    if (this.isSpeaking && !forceRestart) {
-      return { audioPath: this.reloAudioEl.src, text: this.lastText || '...' };
-    }
-
-    // ENFORCE SINGLE AUDIO CHANNEL: Stop previous voice audio
+  playScene(sceneBase, isStageContext = false, forceRestart = true) {
+    // ENFORCE SINGLE AUDIO CHANNEL & INSTANT SECTION SWITCHING: Always stop previous voice line
     this.stopVoice();
 
     let key = sceneBase;
@@ -462,31 +598,54 @@ class ReloVoiceService {
     const randomIndex = Math.floor(Math.random() * sceneList.length);
     const selected = sceneList[randomIndex];
 
-    // Check mute / volume state
-    const isMuted = !this.isReloOn || this.reloVol <= 0;
+    // Special actions like relo_terbang play audio even if isReloOn setting was toggled
+    const isSpecialAction = sceneBase === 'relo_terbang';
+    const isMuted = !isSpecialAction && (!this.isReloOn || this.reloVol <= 0);
 
-    const returnText = isMuted
-      ? (isStageContext ? selected.text : '..............')
-      : selected.text;
+    const returnText = isMuted ? '(. . . . . . . . . . . . . . . )' : selected.text;
 
     this.lastText = returnText;
     this.lastPlayTime = Date.now();
     this.currentScene = sceneBase;
 
     if (isMuted) {
-      return { audioPath: null, text: returnText };
+      this.setSpeaking(false);
+      return { audioPath: null, text: '(. . . . . . . . . . . . . . . )' };
     }
 
-    // Play WAV audio file
-    const audioUrl = `/relo/${encodeURI(selected.file)}`;
-    this.reloAudioEl.src = audioUrl;
-    this.reloAudioEl.volume = this.reloVol;
-    this.reloAudioEl.play().catch(() => {
-      this.setSpeaking(false);
-    });
+    // Play WAV audio file directly from clean path
+    const audioUrl = `/relo/${selected.file}`;
+    let targetAudio = this.audioCache.get(audioUrl);
+
+    if (!targetAudio) {
+      targetAudio = new Audio(audioUrl);
+      targetAudio.preload = 'auto';
+      this.setupAudioListeners(targetAudio);
+      this.audioCache.set(audioUrl, targetAudio);
+    }
+
+    const effectiveVol = isSpecialAction ? (this.reloVol > 0 ? this.reloVol : 0.8) : this.reloVol;
+
+    this.unlockAudioContext();
+    this.reloAudioEl = targetAudio;
+    this.reloAudioEl.currentTime = 0;
+    this.reloAudioEl.volume = effectiveVol;
+
+    const playPromise = this.reloAudioEl.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        this.pendingAudio = null;
+        this.setSpeaking(true);
+      }).catch((err) => {
+        console.warn('Relo Audio Playback deferred/error:', err);
+        this.pendingAudio = targetAudio;
+        this.setSpeaking(false);
+      });
+    }
 
     return { audioPath: audioUrl, text: returnText };
   }
 }
 
 export const reloVoiceService = new ReloVoiceService();
+

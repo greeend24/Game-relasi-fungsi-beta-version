@@ -24,11 +24,12 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
 
   if (!isOpen) return null;
 
-  const unlockedBadges = new Set(currentUser?.unlockedBadges || ['badge1']);
+  const userToEvaluate = currentUser ? storageService.evaluateNewBadges(JSON.parse(JSON.stringify(currentUser))).user : null;
+  const unlockedBadges = new Set(userToEvaluate?.unlockedBadges || ['badge1']);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
-      <div className="relative w-full max-w-2xl p-6 sm:p-8 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] text-[#2D241E] space-y-6 max-h-[88vh] overflow-y-auto drag-scroller">
+      <div className="relative w-full max-w-4xl p-6 sm:p-8 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] text-[#2D241E] space-y-6 max-h-[88vh] overflow-y-auto drag-scroller">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b-2 border-[#EFECE6]">
@@ -49,15 +50,17 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
           </button>
         </div>
 
-        {/* Mascot */}
+        {/* DETEKTIF RELO MASCOT & SPEECH BUBBLE CHAT */}
         <div className="flex justify-center sm:justify-start">
           <ProfessorOwlMascot
             pose="hero"
             emotion="happy"
-            message={reloText || "Koleksi lencanamu adalah bukti perjalananmu sebagai detektif. Mampukah kamu mendapatkan semuanya?"}
+            message={reloText || "Tingkatkan stage dan skormu untuk membuka 10 Lencana Detektif!"}
             size="sm"
           />
         </div>
+
+
 
         {/* 10 Badge Cards Grid - GRADIENT BOXES BY CATEGORY & LIGHT DUST FOR CAT 10 ONLY */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -68,12 +71,12 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
             return (
               <div
                 key={badge.id}
-                className={`relative p-4 rounded-2xl border-2 flex items-center space-x-3.5 shadow-[3px_4px_0px_#2D241E] overflow-hidden transition-transform duration-200 ${
+                className={`relative p-4 rounded-2xl border-2 flex items-center space-x-3.5 shadow-[3px_4px_0px_#2D241E] overflow-hidden transition-transform duration-200 backdrop-blur-md opacity-90 ${
                   isUnlocked
                     ? `bg-gradient-to-br ${badge.cardGradient} border-[#2D241E] ${
                         isCategory10 ? 'ring-4 ring-yellow-300/90 animate-legendary-glow shadow-[0_0_30px_rgba(245,158,11,0.9)]' : ''
                       }`
-                    : 'bg-[#FDFBF7] border-[#78350F] text-[#2D241E]'
+                    : 'bg-[#FDFBF7]/90 border-[#78350F] text-[#2D241E]'
                 }`}
               >
                 {/* FLOATING LIGHT DUST PARTICLES EFFECT - STRICTLY ONLY FOR CATEGORY 10 */}

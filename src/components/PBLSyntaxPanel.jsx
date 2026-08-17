@@ -19,60 +19,33 @@ export default function PBLSyntaxPanel({
   children
 }) {
   return (
-    <div className="w-full space-y-2 font-hand relative z-20">
+    <div className="w-full flex-1 flex flex-col justify-between min-h-0 font-hand relative z-20 space-y-1.5 overflow-hidden">
       
-      {/* Orientasi Masalah + Organisasi Belajar & Aturan Kasus */}
-      {(relationRule || story || conceptDef) && (
-        <div className="p-2.5 rounded-2xl bg-[#FEF08A] border-2 border-[#D97706] shadow-[2px_2px_0px_#D97706] space-y-1 relative z-20 text-xs sm:text-sm">
-          {/* Header Badge */}
-          <div className="flex items-center justify-between text-[10px] sm:text-xs font-black text-[#92400E] uppercase tracking-wider pb-1 border-b border-[#FDE68A]">
-            <span className="flex items-center space-x-1">
-              <BookOpen className="w-3.5 h-3.5 text-[#D97706] flex-shrink-0" />
-              <span>ORIENTASI MASALAH & ATURAN KASUS</span>
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-[#D97706] text-white text-[9px] sm:text-[10px] font-black">
-              STAGE {stageNum}
-            </span>
-          </div>
-
-          {/* Relation Rule & Concept */}
-          <div className="text-[#78350F] font-black leading-snug">
-            {relationRule && <div>📌 ATURAN KASUS AKTIF: "{relationRule.toUpperCase()}"</div>}
-            {story && <div className="text-[#2D241E] font-bold text-xs mt-0.5">🔍 {story}</div>}
-          </div>
-        </div>
-      )}
-
-      {/* Mengembangkan dan Menyajikan Hasil Karya (Interactive Workspace) */}
-      <div className="relative z-20 space-y-1">
-        <div className="flex items-center space-x-1.5 text-[#059669] font-extrabold text-[11px] sm:text-xs uppercase tracking-wider px-1">
-          <Layers className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>MENGEMBANGKAN & MENYAJIKAN HASIL KARYA</span>
-        </div>
+      {/* Interactive Workspace Children */}
+      <div className="flex-1 flex flex-col justify-between min-h-0 relative z-20 space-y-1.5 overflow-hidden">
         {children}
       </div>
 
-      {/* Menganalisis dan Mengevaluasi Proses Pemecahan Masalah */}
+      {/* Menganalisis dan Mengevaluasi Proses Pemecahan Masalah (Error Evaluation) */}
       {errorDetails && (
-        <div className="p-2.5 sm:p-3.5 rounded-2xl bg-[#FFE4E6] border-2 border-[#BE123C] shadow-[2px_3px_0px_#BE123C] space-y-1.5 animate-fade-in relative z-20 text-xs sm:text-sm">
-          <div className="flex items-center space-x-1.5 text-[#BE123C] font-black uppercase tracking-wider text-[11px] sm:text-xs border-b border-[#FECDD3] pb-1">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-            <span>ANALISIS & EVALUASI KESALAHAN PEMECAHAN</span>
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FFE4E6] border-2 border-[#BE123C] shadow-[2px_2px_0px_#BE123C] space-y-1 animate-fade-in relative z-30 text-xs flex-shrink-0">
+          <div className="flex items-center space-x-1.5 text-[#BE123C] font-black uppercase tracking-wider text-[10px] sm:text-xs border-b border-[#FECDD3] pb-0.5">
+            <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>EVALUASI KESALAHAN PEMECAHAN</span>
           </div>
           
-          <div className="space-y-1">
-            <p className="text-[#9F1239] font-extrabold text-xs sm:text-sm">
-              ⚠️ {errorDetails.title}
-            </p>
+          <div className="space-y-0.5">
             {errorDetails.reasons.map((r, idx) => (
-              <p key={idx} className="p-2 rounded-xl bg-white border border-[#BE123C]/40 text-[#BE123C] font-bold text-xs leading-relaxed shadow-[1px_1px_0px_#BE123C]/30">
+              <p key={idx} className="p-1.5 rounded-lg bg-white border border-[#BE123C]/40 text-[#BE123C] font-bold text-[11px] leading-snug">
                 {r}
               </p>
             ))}
-            <div className="flex items-center space-x-1.5 text-[#B45309] font-extrabold text-xs italic pt-1">
-              <Lightbulb className="w-3.5 h-3.5 text-[#D97706] flex-shrink-0" />
-              <span>{errorDetails.hint}</span>
-            </div>
+            {errorDetails.hint && (
+              <div className="flex items-center space-x-1 text-[#B45309] font-extrabold text-[10px] sm:text-[11px] italic pt-0.5">
+                <Lightbulb className="w-3 h-3 text-[#D97706] flex-shrink-0" />
+                <span className="truncate">{errorDetails.hint}</span>
+              </div>
+            )}
           </div>
         </div>
       )}

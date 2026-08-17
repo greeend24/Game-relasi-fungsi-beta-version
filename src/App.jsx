@@ -9,6 +9,8 @@ import SettingsModal from './components/SettingsModal';
 import LeaderboardModal from './components/LeaderboardModal';
 import SubbabInfoModal from './components/SubbabInfoModal';
 import BadgesModal from './components/BadgesModal';
+import AvatarModal from './components/AvatarModal';
+import RankModal from './components/RankModal';
 import AchievementUnlockedModal from './components/AchievementUnlockedModal';
 import LoadingScreen from './components/LoadingScreen';
 import YouTubeAudioPlayer from './components/YouTubeAudioPlayer';
@@ -38,17 +40,23 @@ export default function App() {
   // Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [isRankOpen, setIsRankOpen] = useState(false);
   const [isSubbabInfoOpen, setIsSubbabInfoOpen] = useState(false);
   const [isBadgesOpen, setIsBadgesOpen] = useState(false);
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [newBadgeUnlocked, setNewBadgeUnlocked] = useState(null);
 
   useEffect(() => {
-    const user = storageService.getCurrentUser();
-    if (user) {
-      setCurrentUser(user);
-      setViewState('MAIN_MENU');
-      try { audioEngine.toggleBgm(true); } catch {}
-    }
+    // Async session sync on app startup
+    const initSession = async () => {
+      const user = await storageService.syncSession();
+      if (user) {
+        setCurrentUser(user);
+        setViewState('MAIN_MENU');
+        try { audioEngine.toggleBgm(true); } catch {}
+      }
+    };
+    initSession();
   }, []);
 
   // Global listener to ensure Menu BGM auto-plays on user interaction without opening settings
@@ -76,8 +84,8 @@ export default function App() {
     try { audioEngine.toggleBgm(true); } catch {}
   };
 
-  const handleLogout = () => {
-    storageService.logout();
+  const handleLogout = async () => {
+    await storageService.logout();
     setCurrentUser(null);
     setViewState('AUTH');
     try { audioEngine.stopBgm(); } catch {}
@@ -98,8 +106,8 @@ export default function App() {
     setViewState('GAME');
   };
 
-  const handleStageComplete = (subbabKey, stageNum, scoreEarned, starsEarned) => {
-    const res = storageService.updateProgress(subbabKey, stageNum, scoreEarned, starsEarned);
+  const handleStageComplete = async (subbabKey, stageNum, scoreEarned, starsEarned) => {
+    const res = await storageService.updateProgress(subbabKey, stageNum, scoreEarned, starsEarned);
     if (res && res.user) {
       setCurrentUser(res.user);
       if (res.newBadges && res.newBadges.length > 0) {
@@ -172,18 +180,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans transition-all duration-300 relative z-10">
-      <AnimatedBackground />
-
-      <Navbar
-        currentUser={currentUser}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
-        onLogout={handleLogout}
-        onHomeClick={() => currentUser && setViewState('MAIN_MENU')}
+    <div className="h-[100dvh] w-full flex flex-col font-sans relative z-10 overflow-hidden select-none bg-[#FAF7F2]">
+      {/* PERSISTENT CONTINUOUS BACKGROUND: SKY, CLOUDS & LEAVES NEVER RESET OR UNMOUNT ACROSS SECTIONS */}
+      <AnimatedBackground 
+        hideBottomLandscape={viewState === 'STAGE_SELECT' || viewState === 'MAIN_MENU' || viewState === 'AUTH'} 
+        hideBirds={true} 
+        hideClouds={false} 
       />
 
-      <main className="flex-1 pb-10">
+      <main className="flex-1 w-full h-full flex flex-col min-h-0 overflow-hidden relative">
         {viewState === 'AUTH' && (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
         )}
@@ -197,7 +202,9 @@ export default function App() {
             onStartEndless={() => setViewState('ENDLESS')}
             onOpenSettings={() => setIsSettingsOpen(true)}
             onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+            onOpenRank={() => setIsRankOpen(true)}
             onOpenBadges={() => setIsBadgesOpen(true)}
+            onOpenAvatar={() => setIsAvatarOpen(true)}
             onLogout={handleLogout}
           />
         )}
@@ -215,6 +222,7 @@ export default function App() {
 
         {viewState === 'QUEST_SELECT' && (
           <QuestModeSelector
+            userProgress={currentUser?.progress}
             onBackToMenu={() => setViewState('MAIN_MENU')}
             onStartQuestSubbab={(subId) => {
               setQuestSubbabId(subId);
@@ -257,10 +265,23 @@ export default function App() {
         onClose={() => setIsLeaderboardOpen(false)}
       />
 
+      <RankModal
+        isOpen={isRankOpen}
+        onClose={() => setIsRankOpen(false)}
+        currentUser={currentUser}
+      />
+
       <BadgesModal
         isOpen={isBadgesOpen}
         onClose={() => setIsBadgesOpen(false)}
         currentUser={currentUser}
+      />
+
+      <AvatarModal
+        isOpen={isAvatarOpen}
+        onClose={() => setIsAvatarOpen(false)}
+        currentUser={currentUser}
+        onAvatarSelected={(updatedUser) => setCurrentUser(updatedUser)}
       />
 
       <SubbabInfoModal

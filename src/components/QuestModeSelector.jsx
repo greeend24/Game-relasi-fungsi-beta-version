@@ -1,87 +1,115 @@
-import React from 'react';
-import { ArrowLeft, Play, ShieldAlert, Award, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Play, ShieldAlert, Award, Clock, Lock } from 'lucide-react';
 import { SUBBABS_DATA } from '../data/casesData';
 import ProfessorOwlMascot from './ProfessorOwlMascot';
 import { audioEngine } from '../services/audioEngine';
+import { reloVoiceService } from '../services/reloVoiceService';
 
 /**
  * QuestModeSelector
- * Displays Subbabs in a vertical downward stacked menu bar ("susun kebawah")
- * with a "Start Quest" button for each subbab.
+ * Displays Subbabs in a grid menu.
+ * Unlocks Quest Mode for a subbab if and only if stage 21 of that subbab is completed.
+ * Plays Scene 4 Quest Mode audio and displays matching Relo bubblechat.
  */
-export default function QuestModeSelector({ onBackToMenu, onStartQuestSubbab }) {
+export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQuestSubbab }) {
+  const [reloText, setReloText] = useState('');
+
+  useEffect(() => {
+    const res = reloVoiceService.playScene('4');
+    if (res && res.text) {
+      setReloText(res.text);
+    }
+    return () => reloVoiceService.stopVoice();
+  }, []);
+
   return (
-    <div className="max-w-3xl mx-auto my-4 p-4 font-hand space-y-6 animate-fade-in">
+    <div className="h-full w-full flex flex-col justify-between p-2.5 sm:p-3 font-hand space-y-2 animate-fade-in overflow-hidden">
       
       {/* Top Header */}
-      <div className="flex items-center justify-between p-4 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[4px_5px_0px_#2D241E]">
+      <div className="flex items-center justify-between p-3 rounded-2xl bg-white/70 backdrop-blur-md border-2 border-[#2D241E] shadow-[3px_3px_0px_#2D241E]">
         <button
-          onClick={() => { audioEngine.playClick(); onBackToMenu(); }}
+          onClick={() => { audioEngine.playClick(); reloVoiceService.stopVoice(); onBackToMenu(); }}
           onMouseEnter={() => audioEngine.playHover()}
-          className="pencil-btn px-4 py-2 bg-[#FFFDF9] text-[#2D241E] font-extrabold text-xs flex items-center space-x-1.5"
+          className="pencil-btn px-3 py-1.5 bg-[#FFFDF9] text-[#2D241E] font-extrabold text-xs flex items-center space-x-1"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Menu Utama</span>
+          <ArrowLeft className="w-4 h-4 text-[#2563EB]" />
+          <span>Menu Utama</span>
         </button>
 
-        <h2 className="text-2xl sm:text-3xl font-bold font-pencil text-[#2D241E]">
+        <h2 className="text-lg sm:text-xl font-bold font-pencil text-[#2D241E] truncate">
           QUEST MODE: UJIAN 30 SOAL
         </h2>
       </div>
 
-      {/* Mascot Assistant */}
+      {/* DETEKTIF RELO MASCOT & SPEECH BUBBLE CHAT */}
       <div className="flex justify-center sm:justify-start">
         <ProfessorOwlMascot
           pose="exploring"
           emotion="idle"
-          message="Pilih Subbab Ujian Quest Mode di bawah. Kamu memiliki waktu 30 menit untuk menjawab 30 soal tanpa bantuan petunjuk!"
-          size="md"
+          message={reloText || "Selamat datang di Quest Mode! Kamu punya waktu 30 menit untuk menyelesaikan misi Ujian Kasus!"}
+          size="sm"
         />
-      </div>
-
-      {/* Info Card */}
-      <div className="p-4 rounded-3xl bg-[#FEF3C7] border-2 border-[#2D241E] shadow-[3px_4px_0px_#2D241E] space-y-1 text-xs sm:text-sm font-bold text-[#78350F]">
-        <div className="flex items-center space-x-2 text-[#D97706] uppercase">
-          <Clock className="w-5 h-5" />
+      </div>      {/* Info Card */}
+      <div className="p-2.5 rounded-2xl bg-[#FEF3C7] border-2 border-[#2D241E] shadow-[2px_3px_0px_#2D241E] space-y-0.5 text-xs font-bold text-[#78350F]">
+        <div className="flex items-center space-x-1.5 text-[#D97706] uppercase">
+          <Clock className="w-4 h-4" />
           <span>KETENTUAN QUEST MODE:</span>
         </div>
-        <ul className="list-disc list-inside space-y-0.5 text-[#4A3E3D] font-medium">
-          <li>Durasi Waktu Total: 30 Menit (1800 Detik)</li>
-          <li>Jumlah Soal: 30 Soal Ujian per Subbab</li>
-          <li>Bebas berpindah nomor soal (misal #1 ke #5) setelah menekan tombol Start</li>
-          <li>Skala Nilai Akhir: 0 – 100 (Hitungan Benar & Salah)</li>
-          <li>Tidak ada tombol petunjuk / hint di dalam ujian</li>
-        </ul>
+        <p className="text-[11px] text-[#4A3E3D] font-medium leading-tight">
+          • Terbuka setelah menyelesaikan Stage 21 Subbab • Durasi 30 Menit • 30 Soal Ujian • Skala Nilai 0-100
+        </p>
       </div>
 
-      {/* VERTICAL DOWNWARD STACKED SUBBAB MENU BAR ("SUSUN KEBAWAH") */}
-      <div className="flex flex-col space-y-3 font-hand">
-        {Object.values(SUBBABS_DATA).map((sub) => (
-          <div
-            key={sub.id}
-            className="pencil-btn p-4 bg-white border-2.5 border-[#2D241E] shadow-[4px_4px_0px_#2D241E] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-          >
-            <div className="space-y-0.5">
-              <span className="text-xs font-bold text-[#D97706]">SUBBAB UJIAN {sub.id}</span>
-              <h3 className="text-xl font-bold font-pencil text-[#2D241E]">{sub.title}</h3>
-              <p className="text-xs text-[#4A3E3D] font-medium">"{sub.caseTitle}" — 30 Soal Evaluasi</p>
-            </div>
+      {/* SUBBAB GRID FOR DESKTOP */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 font-hand flex-1 overflow-y-auto drag-scroller py-1">
+        {Object.values(SUBBABS_DATA).map((sub) => {
+          const subProg = userProgress?.[sub.key];
+          const isUnlocked = Boolean(subProg?.stars?.[21]) || ((subProg?.currentStage || 1) > 21);
 
+          return (
             <button
+              key={sub.id}
               onClick={() => {
-                audioEngine.playClick();
-                onStartQuestSubbab(sub.id);
+                if (isUnlocked) {
+                  audioEngine.playClick();
+                  onStartQuestSubbab(sub.id);
+                } else {
+                  audioEngine.playError();
+                }
               }}
-              onMouseEnter={() => audioEngine.playHover()}
-              className="pencil-btn px-5 py-3 bg-[#FDE68A] text-[#78350F] font-extrabold text-sm flex items-center space-x-2 w-full sm:w-auto justify-center"
+              onMouseEnter={() => { if (isUnlocked) audioEngine.playHover(); }}
+              className={`pencil-btn p-2 border-2 shadow-[2px_2px_0px_#2D241E] flex items-center justify-between transition-all text-left ${
+                isUnlocked
+                  ? 'bg-white/80 border-[#2D241E] group hover:scale-[1.01]'
+                  : 'bg-white/40 border-[#A8A29E] text-[#78716C] cursor-not-allowed opacity-80'
+              }`}
             >
-              <Play className="w-4 h-4 fill-[#D97706] text-[#D97706]" />
-              <span>Start Quest Subbab {sub.id}</span>
+              <div className="truncate pr-2">
+                <span className={`text-[10px] font-black uppercase block ${isUnlocked ? 'text-[#D97706]' : 'text-[#78716C]'}`}>
+                  SUBBAB UJIAN {sub.id}
+                </span>
+                <h3 className={`text-xs sm:text-sm font-bold font-pencil truncate leading-tight ${isUnlocked ? 'text-[#2D241E]' : 'text-[#78716C]'}`}>
+                  {sub.title}
+                </h3>
+              </div>
+
+              {isUnlocked ? (
+                <div className="px-2 py-1 rounded-xl bg-[#FDE68A] text-[#78350F] font-extrabold text-xs flex items-center space-x-1 border border-[#2D241E] flex-shrink-0 group-hover:bg-[#F59E0B] group-hover:text-white transition-colors">
+                  <Play className="w-3 h-3 fill-current" />
+                  <span>Start</span>
+                </div>
+              ) : (
+                <div className="px-2 py-1 rounded-xl bg-[#E5E7EB] text-[#6B7280] font-bold text-[10px] sm:text-xs flex items-center space-x-1 border border-[#A8A29E] flex-shrink-0">
+                  <Lock className="w-3 h-3 text-[#6B7280]" />
+                  <span>Terkunci (ST 21)</span>
+                </div>
+              )}
             </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
     </div>
   );
 }
+

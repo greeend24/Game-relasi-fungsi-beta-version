@@ -58,7 +58,7 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6 animate-fade-in">
+    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand">
       <StageHeader
         subbabTitle={`${subbabData.title} (Kesimpulan PBL)`}
         stageNum={21}
@@ -81,7 +81,7 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
       <div className="flex justify-center">
         <ProfessorOwlMascot
           emotion={stageCleared ? 'happy' : errorDetails ? 'error' : 'thinking'}
-          message={`Selamat datang di Stage 21 (Puncak Penyelidikan)! Setelah menyelesaikan 20 stage, saatnya merumuskan KESIMPULAN UTAMA materi ${subbabData.title}.`}
+          message={`Stage 21 — Puncak Penyelidikan! Saatnya merumuskan KESIMPULAN materi ${subbabData.title}.`}
           size="lg"
           isFlapping={stageCleared}
         />
@@ -93,10 +93,10 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
         <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/60 via-blue-950/40 to-cyan-950/60 border border-cyan-500/40 text-center space-y-1">
           <div className="flex items-center justify-center space-x-2 text-yellow-400 font-bold">
             <Award className="w-6 h-6 animate-bounce" />
-            <span>STAGE 21: TANTANGAN RUMUSAN KESALAHAN & KESIMPULAN KASUS</span>
+            <span>STAGE 21: RUMUSAN KESIMPULAN KASUS</span>
           </div>
           <p className="text-xs text-slate-300 font-sans">
-            Gunakan seluruh pemahaman matematika yang telah kamu pelajari untuk memilih kesimpulan yang paling tepat!
+            Pilih kesimpulan yang paling tepat berdasarkan pemahamanmu!
           </p>
         </div>
 
@@ -160,7 +160,7 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
             className="w-full py-4 mt-4 rounded-2xl font-bold font-mono text-sm tracking-wider bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-500 text-black hover:brightness-110 transition shadow-xl shadow-cyan-500/25 flex items-center justify-center space-x-2"
           >
             <CheckCircle2 className="w-5 h-5" />
-            <span>KIRIM KESIMPULAN RESMI PENYELIDIKAN</span>
+            <span>KIRIM KESIMPULAN</span>
           </button>
         </form>
 

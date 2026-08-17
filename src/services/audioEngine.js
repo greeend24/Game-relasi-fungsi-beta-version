@@ -19,15 +19,21 @@ class AudioEngine {
     this.isPlayingBgm = false;
     this.isQuestBattleActive = false;
 
-    // HTML5 Audio Elements for Music Tracks
+    // HTML5 Audio Elements for Music Tracks with Pre-buffering
     this.menuAudioEl = new Audio('/music/menu.mp3');
     this.menuAudioEl.loop = true;
+    this.menuAudioEl.preload = 'auto';
+    this.menuAudioEl.load();
 
     this.battleAudioEl = new Audio('/music/battle.mp3');
     this.battleAudioEl.loop = true;
+    this.battleAudioEl.preload = 'auto';
+    this.battleAudioEl.load();
 
     this.victoryAudioEl = new Audio('/music/victory.mp3');
     this.victoryAudioEl.loop = false;
+    this.victoryAudioEl.preload = 'auto';
+    this.victoryAudioEl.load();
 
     this.customAudioEl = new Audio();
     this.customAudioEl.loop = true;
@@ -35,6 +41,7 @@ class AudioEngine {
 
     if (this.customAudioSrc) {
       this.customAudioEl.src = this.customAudioSrc;
+      this.customAudioEl.preload = 'auto';
     }
 
     this.updateVolumes();
@@ -59,12 +66,14 @@ class AudioEngine {
         }).catch(() => {});
       }
       window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('mousedown', handleFirstInteraction);
       window.removeEventListener('click', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
     };
 
     window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+    window.addEventListener('mousedown', handleFirstInteraction, { once: true });
     window.addEventListener('click', handleFirstInteraction, { once: true });
     window.addEventListener('keydown', handleFirstInteraction, { once: true });
     window.addEventListener('touchstart', handleFirstInteraction, { once: true, passive: true });
@@ -74,11 +83,11 @@ class AudioEngine {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
-        this.ctx = new AudioCtx();
+        this.ctx = new AudioCtx({ latencyHint: 'interactive' });
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 
@@ -186,6 +195,16 @@ class AudioEngine {
     this.playNote(523.25, 'triangle', 0.08, 0.1);
   }
 
+  playMenuOpen() {
+    this.playClick();
+    this.playWoosh();
+  }
+
+  playMenuClose() {
+    this.playClick();
+    this.playSnap();
+  }
+
   playNav() {
     this.playNote(600, 'sine', 0.06, 0.08);
   }
@@ -229,20 +248,75 @@ class AudioEngine {
     this.playNote(950, 'triangle', 0.05, 0.15);
   }
 
+  playWoosh() {
+    if (!this.isSfxOn || this.sfxVol <= 0) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    try {
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.35);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = this.ctx.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.Q.setValueAtTime(2.5, this.ctx.currentTime);
+      filter.frequency.setValueAtTime(200, this.ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(1400, this.ctx.currentTime + 0.15);
+      filter.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.35);
+
+      const gain = this.ctx.createGain();
+      const effectiveVol = Math.max(0, Math.min(1, 0.4 * this.sfxVol));
+      gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(effectiveVol, this.ctx.currentTime + 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.35);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      whiteNoise.start();
+      whiteNoise.stop(this.ctx.currentTime + 0.35);
+    } catch {}
+  }
+
   playStamp() {
     this.playNote(120, 'sawtooth', 0.25, 0.25);
     setTimeout(() => this.playNote(80, 'square', 0.15, 0.2), 40);
   }
 
+  stopAllBgmTracks() {
+    this.isPlayingBgm = false;
+    this.isQuestBattleActive = false;
+    if (this.menuAudioEl) {
+      try {
+        this.menuAudioEl.pause();
+        this.menuAudioEl.currentTime = 0;
+      } catch {}
+    }
+    if (this.battleAudioEl) {
+      try {
+        this.battleAudioEl.pause();
+        this.battleAudioEl.currentTime = 0;
+      } catch {}
+    }
+    if (this.customAudioEl) {
+      try {
+        this.customAudioEl.pause();
+        this.customAudioEl.currentTime = 0;
+      } catch {}
+    }
+  }
+
   // Play Victory Music Track (/music/victory.mp3) & Automatically Stop Battle Music!
   playVictoryMusic() {
-    // Automatically kill battle music & normal BGM when victory sound starts
-    this.isQuestBattleActive = false;
-    if (this.battleAudioEl) {
-      this.battleAudioEl.pause();
-      this.battleAudioEl.currentTime = 0;
-    }
-    this.stopBgm();
+    this.stopAllBgmTracks();
 
     if (!this.isSfxOn || this.sfxVol <= 0) return;
     this.victoryAudioEl.currentTime = 0;
@@ -253,13 +327,7 @@ class AudioEngine {
   }
 
   playStageComplete() {
-    // Automatically kill battle music & normal BGM when stage complete sound starts
-    this.isQuestBattleActive = false;
-    if (this.battleAudioEl) {
-      this.battleAudioEl.pause();
-      this.battleAudioEl.currentTime = 0;
-    }
-    this.stopBgm();
+    this.stopAllBgmTracks();
 
     const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((n, i) => {
@@ -269,22 +337,18 @@ class AudioEngine {
 
   // STRICTLY PLAY BATTLE MUSIC ONLY WHEN PLAYING QUEST MODE AT 0.5X VOLUME
   playQuestBattleMusic() {
-    this.stopBgm(); // Stop normal BGM completely
+    this.stopAllBgmTracks();
     this.isQuestBattleActive = true;
     if (!this.isMusicOn || this.musicVol <= 0) return;
 
     this.battleAudioEl.currentTime = 0;
-    this.battleAudioEl.volume = Math.max(0, Math.min(1, 0.5 * this.musicVol)); // Exactly 0.5x volume!
+    this.battleAudioEl.volume = Math.max(0, Math.min(1, 0.5 * this.musicVol));
     this.battleAudioEl.play().catch(() => {});
   }
 
   // STOP BATTLE MUSIC AND RESUME PREVIOUS NORMAL BGM
   stopQuestBattleMusic() {
-    this.isQuestBattleActive = false;
-    if (this.battleAudioEl) {
-      this.battleAudioEl.pause();
-      this.battleAudioEl.currentTime = 0;
-    }
+    this.stopAllBgmTracks();
     this.toggleBgm(true);
   }
 
@@ -294,16 +358,14 @@ class AudioEngine {
       localStorage.setItem('detektif_custom_bgm', srcOrDataUrl);
       this.customAudioEl.src = srcOrDataUrl;
       this.updateVolumes();
-      if (this.isPlayingBgm && this.isMusicOn && !this.isQuestBattleActive) {
-        this.customAudioEl.play().catch(() => {});
+      if (this.isMusicOn && !this.isQuestBattleActive) {
+        this.toggleBgm(true);
       }
     } else {
       localStorage.removeItem('detektif_custom_bgm');
       this.customAudioEl.pause();
       this.customAudioEl.src = '';
-      if (this.isPlayingBgm && !this.isQuestBattleActive) {
-        this.toggleBgm(true);
-      }
+      this.toggleBgm(true);
     }
   }
 
@@ -318,7 +380,14 @@ class AudioEngine {
 
     if (this.isQuestBattleActive) return true;
 
-    if (this.isPlayingBgm) return true;
+    // Ensure all other BGM tracks are paused before starting menu BGM
+    if (this.battleAudioEl) {
+      try {
+        this.battleAudioEl.pause();
+        this.battleAudioEl.currentTime = 0;
+      } catch {}
+    }
+
     this.isPlayingBgm = true;
 
     if (this.customAudioSrc) {
@@ -339,9 +408,7 @@ class AudioEngine {
   }
 
   stopBgm() {
-    this.isPlayingBgm = false;
-    if (this.customAudioEl) this.customAudioEl.pause();
-    if (this.menuAudioEl) this.menuAudioEl.pause();
+    this.stopAllBgmTracks();
   }
 }
 

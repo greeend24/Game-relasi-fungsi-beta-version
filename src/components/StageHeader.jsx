@@ -32,7 +32,7 @@ export default function StageHeader({
   }, [stageCleared]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-2 font-hand relative z-10">
+    <div className="w-full max-w-[1400px] mx-auto space-y-2 font-hand relative z-10">
       
       {/* COMPACT TOP CONTROLS BAR */}
       <div className="flex flex-wrap items-center justify-between p-2 sm:p-2.5 rounded-2xl bg-white border-2.5 border-[#2D241E] shadow-[3px_3px_0px_#2D241E] text-xs gap-1.5">
@@ -90,7 +90,7 @@ export default function StageHeader({
           {hintText && (
             <div className="flex items-start space-x-2">
               <Lightbulb className="w-4 h-4 text-[#D97706] flex-shrink-0 mt-0.5" />
-              <span>💡 PETUNJUK PENJELASAN HINT: {hintText}</span>
+              <span>💡 PETUNJUK: {hintText}</span>
             </div>
           )}
           {SUBBAB_SYMBOL_EXPLANATIONS[subbabId] && (
@@ -183,7 +183,7 @@ export default function StageHeader({
             <div className="p-4 rounded-2xl bg-[#ECFDF5] border-2 border-[#059669] text-left space-y-1.5 text-sm text-[#065F46] font-bold shadow-[2px_2px_0px_#2D241E]">
               <div className="flex items-center space-x-2 text-[#047857] font-extrabold text-xs uppercase tracking-wider">
                 <HelpCircle className="w-4 h-4 flex-shrink-0" />
-                <span>PENJELASAN KONSEP MATEMATIKA:</span>
+                <span>PENJELASAN KONSEP MATEMATIKA</span>
               </div>
               <p className="font-bold text-xs sm:text-sm leading-relaxed text-[#065F46]">
                 {explanationText || 'Setiap elemen pada domain telah dipetakan secara akurat sesuai dengan definisi dan sifat formal matematika.'}

@@ -10,15 +10,17 @@ export default function YouTubeAudioPlayer({ videoId = '6jSLH9CDPPQ' }) {
   const iframeRef = useRef(null);
 
   useEffect(() => {
-    // If user has custom uploaded audio, do not use YouTube iframe
-    if (audioEngine.customAudioSrc) return;
+    // If local BGM (menu.mp3 / battle.mp3) is active, do not play YouTube player to prevent double BGM overlay
+    if (audioEngine.isPlayingBgm || audioEngine.isQuestBattleActive || !audioEngine.isMusicOn) {
+      return;
+    }
 
     // Load YouTube IFrame API if not already present
     if (!window.YT) {
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
       const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
     }
 
     let player = null;
@@ -30,7 +32,7 @@ export default function YouTubeAudioPlayer({ videoId = '6jSLH9CDPPQ' }) {
         width: '0',
         videoId: videoId,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 0,
           loop: 1,
           playlist: videoId,
@@ -40,12 +42,13 @@ export default function YouTubeAudioPlayer({ videoId = '6jSLH9CDPPQ' }) {
         },
         events: {
           onReady: (event) => {
-            const vol = Math.round(audioEngine.masterVol * audioEngine.musicVol * 100);
-            event.target.setVolume(vol);
-            if (!audioEngine.isMuted && audioEngine.isMusicOn) {
+            // Only play if local BGM is not playing
+            if (!audioEngine.isPlayingBgm && !audioEngine.isQuestBattleActive && audioEngine.isMusicOn) {
+              const vol = Math.round(audioEngine.masterVol * audioEngine.musicVol * 100);
+              event.target.setVolume(vol);
               event.target.playVideo();
             } else {
-              event.target.mute();
+              event.target.pauseVideo();
             }
           }
         }
@@ -60,7 +63,7 @@ export default function YouTubeAudioPlayer({ videoId = '6jSLH9CDPPQ' }) {
 
     return () => {
       if (player && player.destroy) {
-        player.destroy();
+        try { player.destroy(); } catch {}
       }
     };
   }, [videoId]);

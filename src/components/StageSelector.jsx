@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Lock, Star, Play, ArrowLeft, CheckCircle, GitFork, Kanban, CheckCheck, Layers, Binary, Repeat, ShieldAlert, Award, Info, ChevronRight } from 'lucide-react';
+import { Lock, ArrowLeft, GitFork, Kanban, CheckCheck, Layers, Binary, Repeat, ShieldAlert, Info, ChevronRight, Check } from 'lucide-react';
 import { SUBBABS_DATA } from '../data/casesData';
 import ProfessorOwlMascot from './ProfessorOwlMascot';
 import { audioEngine } from '../services/audioEngine';
@@ -67,6 +67,19 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
       startIdleTimers();
     } else {
       clearIdleTimers();
+      // If Relo is currently speaking scene '9' (Meninggalkan Stage), preserve its audio & text transcript!
+      if (reloVoiceService.currentScene === '9' && (reloVoiceService.isSpeaking || (Date.now() - reloVoiceService.lastPlayTime < 6000))) {
+        if (reloVoiceService.lastText) {
+          setReloText(reloVoiceService.lastText);
+        }
+      } else {
+        const subKey = SUBBABS_DATA[currentSubbabId]?.key;
+        const sProg = userProgress?.[subKey];
+        const isPlayed = (sProg?.currentStage > 1) || (sProg?.stars && Object.keys(sProg.stars).length > 0);
+        const sceneId = isPlayed ? '3B' : '3A';
+        const res = reloVoiceService.playScene(sceneId);
+        if (res.text) setReloText(res.text);
+      }
     }
     return () => clearIdleTimers();
   }, [selectorStep]);
@@ -76,13 +89,19 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
     clearIdleTimers();
     setCurrentSubbabId(subId);
     setSelectorStep('STAGE_GRID');
-  };
 
-  const handleStageCardHover = (isPlayed) => {
-    audioEngine.playHover();
+    // Relo speaks when subbab menu is clicked to open stage grid!
+    const subKey = SUBBABS_DATA[subId]?.key;
+    const sProg = userProgress?.[subKey];
+    const isPlayed = (sProg?.currentStage > 1) || (sProg?.stars && Object.keys(sProg.stars).length > 0);
     const sceneId = isPlayed ? '3B' : '3A';
     const res = reloVoiceService.playScene(sceneId);
     if (res.text) setReloText(res.text);
+  };
+
+  const handleStageCardHover = () => {
+    audioEngine.playHover();
+    // Voice playback on hover removed as requested: Relo speaks when subbab is clicked, not on mouse hover near stage.
   };
 
   const handleStageCardClick = (stageNum) => {
@@ -93,7 +112,7 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-3 sm:p-5 my-2 space-y-4 animate-fade-in font-hand relative z-10">
+    <div className="h-full w-full overflow-y-auto drag-scroller p-3 sm:p-4 space-y-3 animate-fade-in font-hand relative z-10">
       
       {/* Top Header Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -113,16 +132,16 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
             className="pencil-btn flex items-center space-x-2 px-3.5 py-2 bg-[#FEF3C7] backdrop-blur-md text-[#78350F] font-extrabold text-xs sm:text-sm w-fit shadow-[3px_3px_0px_#2D241E] hover:-translate-y-0.5 transition-all"
           >
             <ArrowLeft className="w-4 h-4 text-[#D97706]" />
-            <span>← Pilih Subbab Lain (Dunia 1 - 7)</span>
+            <span>Pilih Chapter Lainnya</span>
           </button>
         )}
 
         <h2 className="text-xl sm:text-2xl font-bold font-pencil text-[#2D241E] tracking-wide">
-          {selectorStep === 'SUBBAB_SELECT' ? '📍 PILIH DUNIA SUBBAB PENYELIDIKAN' : STAGE_WORLD_NAMES[currentSubbabId] || currentSubData.title}
+          {selectorStep === 'SUBBAB_SELECT' ? '📍 Pilih Chapter' : STAGE_WORLD_NAMES[currentSubbabId] || currentSubData.title}
         </h2>
       </div>
 
-      {/* Professor Owl Guidance */}
+      {/* DETEKTIF RELO MASCOT & SPEECH BUBBLE CHAT */}
       <div className="flex justify-center sm:justify-start">
         <ProfessorOwlMascot
           pose="exploring"
@@ -130,24 +149,22 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
           message={
             reloText || (
               selectorStep === 'SUBBAB_SELECT'
-                ? 'Pilih salah satu dari 7 Dunia Subbab di bawah untuk memulai penyelidikan!'
-                : `Kamu berada di Subbab ${currentSubbabId}. Pilih Stage 1 hingga 21 di bawah!`
+                ? 'Pilih salah satu Chapter di bawah!'
+                : `Chapter ${currentSubbabId} — Pilih Stage di bawah!`
             )
           }
           size="sm"
         />
-      </div>
-
-      {/* =========================================================
+      </div>      {/* =========================================================
           STEP 1: SUBBAB SELECTION CARDS ONLY
          ========================================================= */}
       {selectorStep === 'SUBBAB_SELECT' && (
         <div className="space-y-3 animate-fade-in">
           <div className="flex items-center justify-between text-xs font-bold text-[#78350F] px-1">
-            <span>KLIK TAMPILAN SUBBAB DI BAWAH INI UNTUK MEMBUKA 21 STAGE-NYA:</span>
+            <span>Pilih Chapter Untuk Membuka Stage:</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {Object.values(SUBBABS_DATA).map((sub) => {
               const isUnlocked = userProgress?.[sub.key]?.unlocked || sub.id === 1;
               const isSelected = sub.id === currentSubbabId;
@@ -167,7 +184,7 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
                       : 'bg-[#EFECE6]/60 border-[#A8A29E] text-[#78716C] cursor-not-allowed'
                   }`}
                 >
-                  {/* Robust Mobile-Compatible Background Image with Fallback */}
+                  {/* Background Image */}
                   {subDataHasImage(sub.image) && (
                     <div className="absolute inset-0 pointer-events-none overflow-hidden">
                       <img 
@@ -187,7 +204,7 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
                       <div className="p-2 rounded-xl bg-[#D97706] text-white border border-[#2D241E] shadow-[2px_2px_0px_#2D241E]">
                         <IconComp className="w-4 h-4" />
                       </div>
-                      <span className="text-xs font-black text-[#D97706] uppercase tracking-wider">SUBBAB {sub.id}</span>
+                      <span className="text-xs font-black text-[#D97706] tracking-wider">Chapter {sub.id}</span>
                     </div>
 
                     {!isUnlocked ? (
@@ -238,7 +255,7 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-[#FEF3C7] border border-[#2D241E] text-[10px] sm:text-xs font-bold text-[#78350F]">
                   <span>DUNIA AKTIF:</span>
-                  <span className="text-[#D97706] font-extrabold">SUBBAB {currentSubbabId}</span>
+                  <span className="text-[#D97706] font-extrabold">Chapter {currentSubbabId}</span>
                 </div>
 
                 <button
@@ -262,17 +279,18 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
             </div>
           </div>
 
-          {/* HORIZONTAL MEMANJANG STAGE BUTTONS (3 COLUMNS GRID OF WIDE HORIZONTAL PILLS) */}
+          {/* 21 STAGE BUTTONS GRID */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-[#78350F] px-1">
-              <span>📍 21 STAGE PENYELIDIKAN BERJENJANG (C3 - C5):</span>
+              <span>📍 PILIH STAGE (1 - 21):</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 font-hand">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5 font-hand">
               {currentSubData.stages.map((stageItem) => {
                 const stageNum = stageItem.stage;
                 const isStageUnlocked = stageNum <= (subProgress.currentStage || 1);
                 const starsEarned = subProgress.stars?.[stageNum] || 0;
+                const isCompleted = starsEarned > 0;
                 const isConclusion = stageItem.isConclusionStage;
 
                 return (
@@ -286,57 +304,40 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
                     }}
                     onMouseEnter={() => {
                       if (isStageUnlocked) {
-                        handleStageCardHover(starsEarned > 0);
+                        handleStageCardHover();
                       }
                     }}
-                    className={`relative p-3 rounded-2xl border-2 flex items-center justify-between space-x-3 transition-all duration-200 group cursor-pointer overflow-hidden backdrop-blur-md shadow-[2px_3px_0px_#2D241E] ${
+                    className={`relative p-3 rounded-2xl border-2 flex items-center justify-between space-x-2 transition-all duration-200 group cursor-pointer overflow-hidden backdrop-blur-md shadow-[2px_3px_0px_#2D241E] ${
                       isConclusion
                         ? isStageUnlocked
                           ? 'bg-[#FEF3C7]/90 border-[#2D241E] text-[#2D241E] hover:bg-[#FEF3C7] hover:-translate-y-0.5 ring-2 ring-[#F59E0B]'
                           : 'bg-[#FEF3C7]/20 border-[#A8A29E] text-[#78716C] cursor-not-allowed'
                         : isStageUnlocked
-                        ? starsEarned > 0
+                        ? isCompleted
                           ? 'bg-[#ECFDF5]/90 border-[#2D241E] text-[#2D241E] hover:bg-[#D1FAE5] hover:-translate-y-0.5'
                           : 'bg-white/90 border-[#2D241E] text-[#2D241E] hover:bg-white hover:-translate-y-0.5'
                         : 'bg-white/20 border-[#A8A29E]/60 text-[#78716C] cursor-not-allowed'
                     }`}
                   >
-                    {/* Left Stage Badge */}
-                    <div className="flex items-center space-x-2 truncate">
-                      <div className={`px-2.5 py-1 rounded-xl border border-[#2D241E] font-black text-xs flex-shrink-0 ${
+                    {/* Stage Number Badge */}
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                      <div className={`min-w-[32px] h-8 px-2 rounded-xl border border-[#2D241E] font-black text-xs sm:text-sm flex items-center justify-center flex-shrink-0 shadow-[1px_1px_0px_#2D241E] ${
                         isConclusion ? 'bg-[#F59E0B] text-white' : isStageUnlocked ? 'bg-[#2563EB] text-white' : 'bg-[#E5E7EB] text-[#6B7280]'
                       }`}>
-                        {isConclusion ? 'ST 21' : `ST ${stageNum}`}
-                      </div>
-                      
-                      {/* Bloom Level & Title */}
-                      <div className="text-left truncate">
-                        <span className="text-[10px] font-extrabold block text-[#78350F] uppercase">
-                          {stageItem.bloomLevel || 'C3'}
-                        </span>
-                        <span className="text-xs font-bold font-pencil block truncate leading-tight text-[#2D241E]">
-                          {stageItem.title || (isConclusion ? 'Tantangan Kesimpulan' : `Kasus Stage ${stageNum}`)}
-                        </span>
+                        {stageNum}
                       </div>
                     </div>
 
-                    {/* Right Icon & Stars */}
-                    <div className="flex items-center space-x-1.5 flex-shrink-0">
-                      {isStageUnlocked ? (
-                        <div className="flex items-center space-x-0.5">
-                          {[1, 2, 3].map((starIdx) => (
-                            <Star
-                              key={starIdx}
-                              className={`w-3.5 h-3.5 ${
-                                starIdx <= starsEarned
-                                  ? 'text-[#F59E0B] fill-[#F59E0B]'
-                                  : 'text-[#D1D5DB]'
-                              }`}
-                            />
-                          ))}
+                    {/* Right Side: Blue Checked Box when completed, Empty Box when uncompleted */}
+                    <div className="flex items-center flex-shrink-0">
+                      {!isStageUnlocked ? (
+                        <Lock className="w-4 h-4 text-[#A8A29E]" />
+                      ) : isCompleted ? (
+                        <div className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-lg bg-[#2563EB] border-2 border-[#2D241E] flex items-center justify-center text-white shadow-[1px_1px_0px_#2D241E]">
+                          <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
                         </div>
                       ) : (
-                        <Lock className="w-3.5 h-3.5 text-[#A8A29E]" />
+                        <div className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-lg bg-white border-2 border-[#2D241E] shadow-[1px_1px_0px_#2D241E]" />
                       )}
                     </div>
                   </button>
@@ -351,3 +352,4 @@ export default function StageSelector({ userProgress, onSelectStage, onBackToMen
     </div>
   );
 }
+

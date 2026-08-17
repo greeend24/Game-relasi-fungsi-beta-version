@@ -28,7 +28,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
       <div className="flex justify-center sm:justify-start">
         <DetectiveMascot
           emotion="idle"
-          message={`Halo Rekan Detektif! Selamat datang di kasus "${subbabData.caseTitle}". Pelajari aturan main di bawah ini dan selesaikan 10 stage penyelidikan!` }
+          message={`Halo Detektif! Pelajari aturan main kasus "${subbabData.caseTitle}" dan selesaikan stage-nya!` }
           size="md"
         />
       </div>
@@ -43,7 +43,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
         {/* Title */}
         <div className="space-y-1">
           <h3 className="text-xs font-mono text-yellow-400 font-bold uppercase tracking-wider">
-            BERKAS MATERI PRA-GAME & BRIEFING KASUS
+            BRIEFING KASUS
           </h3>
           <h1 className="text-2xl sm:text-3xl font-extrabold font-mono text-slate-100">
             {subbabData.title}
@@ -93,7 +93,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
               {subbabData.goal}
             </p>
             <div className="pt-2 border-t border-slate-800 text-[11px] font-mono text-slate-400 italic">
-              💡 Pemahaman konsep terbentuk lewat 10 stage yang kamu mainkan setelah ini!
+               💡 Pemahaman terbentuk lewat stage yang kamu mainkan!
             </div>
           </div>
 
@@ -103,7 +103,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800/80">
           <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
             <ShieldCheck className="w-4 h-4 text-cyan-400" />
-            <span>Tingkat Kesulitan Meningkat Bertahap (Stage 1 - 10)</span>
+            <span>Kesulitan meningkat bertahap</span>
           </div>
 
           <button
@@ -111,7 +111,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
             className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold font-mono text-sm tracking-wider bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-500 text-black hover:brightness-110 transition shadow-xl shadow-cyan-500/20 flex items-center justify-center space-x-2"
           >
             <Play className="w-5 h-5 fill-black" />
-            <span>MULAI PENYELIDIKAN STAGE</span>
+            <span>MULAI STAGE</span>
           </button>
         </div>
 

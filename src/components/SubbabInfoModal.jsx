@@ -9,7 +9,7 @@ export default function SubbabInfoModal({ isOpen, onClose, subbabData }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
-      <div className="relative w-full max-w-xl p-4 sm:p-5 overflow-hidden rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] text-[#2D241E] space-y-3.5 max-h-[92vh] overflow-y-auto drag-scroller">
+      <div className="relative w-full max-w-3xl p-4 sm:p-6 overflow-hidden rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] text-[#2D241E] space-y-4 max-h-[92vh] overflow-y-auto drag-scroller">
         
         {/* Top Header */}
         <div className="flex items-center justify-between pb-2 border-b-2 border-[#EFECE6]">
@@ -19,7 +19,7 @@ export default function SubbabInfoModal({ isOpen, onClose, subbabData }) {
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-bold font-pencil text-[#2D241E] leading-tight">
-                INFO MATERI SUBBAB {subbabData.id}
+                Info Materi Chapter {subbabData.id}
               </h2>
               <p className="text-[11px] text-[#78350F] font-bold">{subbabData.title} - "{subbabData.caseTitle}"</p>
             </div>
@@ -32,15 +32,7 @@ export default function SubbabInfoModal({ isOpen, onClose, subbabData }) {
           </button>
         </div>
 
-        {/* Compact Mascot Guidance */}
-        <div className="flex justify-center sm:justify-start">
-          <ProfessorOwlMascot
-            pose="reading"
-            emotion="happy"
-            message={`Petunjuk penyelidikan "${subbabData.caseTitle}". Selesaikan 21 stage!`}
-            size="sm"
-          />
-        </div>
+
 
         {/* Compact Background Topic Illustration */}
         {subbabData.image && (

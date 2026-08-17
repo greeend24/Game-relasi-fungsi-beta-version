@@ -81,7 +81,7 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
       );
       
       if (invalidMade.length > 0) {
-        reasons.push(`⚠️ Terdapat ${invalidMade.length} sambungan benang yang belum sesuai dengan aturan "${stageConfig.relationRule}".`);
+        reasons.push(`⚠️ Terdapat ${invalidMade.length} sambungan benang yang belum sesuai dengan aturan: ${stageConfig.relationRule}.`);
       }
 
       if (userConnections.length < validPairs.length) {
@@ -91,13 +91,13 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
       setErrorDetails({
         title: 'EVALUASI KONSEPTUAL KESALAHAN RELASI',
         reasons,
-        hint: stageConfig.conceptDef || `Konsep: Uji setiap elemen A satu per satu. Apakah benar-benar memenuhi aturan "${stageConfig.relationRule}" terhadap elemen B?`
+        hint: stageConfig.conceptDef || `Konsep: Uji setiap elemen A satu per satu. Apakah benar-benar memenuhi aturan ${stageConfig.relationRule} terhadap elemen B?`
       });
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-2 sm:p-4 space-y-2.5">
+    <div className="h-full w-full flex flex-col justify-between p-1.5 sm:p-2.5 space-y-1.5 overflow-hidden font-hand min-h-0">
       <StageHeader
         subbabId={1}
         subbabTitle="Pengertian Relasi"
@@ -105,7 +105,7 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || `Aturan: "${stageConfig.relationRule}". Hubungkan elemen A ke B jika memenuhi aturan.`}
+        hintText={stageConfig.conceptDef || `Aturan: ${stageConfig.relationRule}. Hubungkan elemen A ke B jika memenuhi aturan.`}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -121,10 +121,10 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
       />
 
       {/* Professor Owl Mascot: Compact & Helpful */}
-      <div className="flex justify-center sm:justify-start animate-fade-in">
+      <div className="flex justify-center sm:justify-start animate-fade-in flex-shrink-0">
         <ProfessorOwlMascot
           pose="thinking"
-          message={errorDetails ? errorDetails.hint : (stageConfig.conceptDef || stageConfig.story || `Aturan: "${stageConfig.relationRule}". Hubungkan elemen A ke B jika memenuhi aturan.`)}
+          message={errorDetails ? errorDetails.hint : (stageConfig.conceptDef || stageConfig.story || `Aturan: ${stageConfig.relationRule}. Hubungkan elemen A ke B jika memenuhi aturan.`)}
           size="sm"
         />
       </div>
@@ -136,47 +136,51 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
         relationRule={stageConfig.relationRule}
         errorDetails={errorDetails}
       >
-        <div className="space-y-3 font-hand">
+        <div className="flex-1 flex flex-col justify-between min-h-0 space-y-1.5 font-hand">
           
           {/* Compact Case Story Banner */}
-          <div className="rounded-2xl overflow-hidden border-2 border-[#2D241E] relative group min-h-[60px] flex flex-col justify-end p-2.5 sm:p-3 bg-[#FEF3C7]">
+          <div className="rounded-xl overflow-hidden border-2 border-[#2D241E] relative group min-h-[44px] flex flex-col justify-end p-2 bg-[#FEF3C7] flex-shrink-0">
             <img src="/images/1.png" alt="Subbab 1 Anime" className="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-40 group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#FEF3C7] via-[#FEF3C7]/90 to-transparent/30 pointer-events-none" />
             <div className="relative z-10 flex flex-col justify-end">
-              <div className="flex items-center justify-between gap-2 text-[#78350F] font-black text-xs sm:text-base mb-0.5">
-                <div className="flex items-center space-x-1.5 truncate">
-                  <GitFork className="w-4 h-4 text-[#D97706] flex-shrink-0" />
-                  <span className="truncate">ATURAN KASUS: "{stageConfig?.relationRule ? stageConfig.relationRule.toUpperCase() : ''}"</span>
+              <div className="flex items-center justify-between gap-1 text-[#78350F] font-black text-xs mb-0.5">
+                <div className="flex items-center space-x-1">
+                  <GitFork className="w-3.5 h-3.5 text-[#D97706] flex-shrink-0" />
+                  <span className="font-extrabold">ATURAN: {stageConfig?.relationRule ? stageConfig.relationRule.toUpperCase() : ''}</span>
                 </div>
                 {stageConfig?.bloomLevel && (
-                  <span className="px-2 py-0.5 rounded-full bg-[#D97706] text-white text-[10px] sm:text-xs font-black shadow-sm flex-shrink-0">
+                  <span className="px-1.5 py-0.5 rounded-full bg-[#D97706] text-white text-[9px] sm:text-[10px] font-black flex-shrink-0">
                     {stageConfig.bloomLevel}
                   </span>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-[#2D241E] font-bold">
+              <p className="text-[11px] sm:text-xs text-[#2D241E] font-bold leading-normal break-words">
                 {stageConfig?.story || ''}
               </p>
             </div>
           </div>
 
-          <RelationDiagramCanvas
-            setA={setA}
-            setB={setB}
-            connections={userConnections}
-            selectedA={selectedIdxA}
-            onSelectA={handleSelectA}
-            onSelectB={handleSelectB}
-            labelA="HIMPUNAN A (Domain)"
-            labelB="HIMPUNAN B (Kodomain)"
-          />
+          <div className="flex-1 min-h-0 flex flex-col justify-start mt-2 space-y-3">
+            <RelationDiagramCanvas
+              setA={setA}
+              setB={setB}
+              connections={userConnections}
+              selectedA={selectedIdxA}
+              onSelectA={handleSelectA}
+              onSelectB={handleSelectB}
+              labelA="HIMPUNAN A (Domain)"
+              labelB="HIMPUNAN B (Kodomain)"
+            />
 
-          <button
-            onClick={handleVerify}
-            className="pencil-btn w-full py-3 bg-[#F59E0B] hover:bg-[#D97706] text-[#2D241E] font-extrabold text-xs sm:text-sm shadow-[3px_3px_0px_#2D241E]"
-          >
-            VERIFIKASI SAMBUNGAN BENANG RELASI
-          </button>
+            <div className="flex justify-center pt-1">
+              <button
+                onClick={handleVerify}
+                className="pencil-btn px-10 py-3 bg-[#FDE68A] hover:bg-[#F59E0B] text-[#2D241E] font-extrabold text-lg sm:text-xl shadow-[4px_5px_0px_#2D241E] rounded-2xl border-3 border-[#2D241E] flex items-center space-x-2 cursor-pointer transition hover:scale-105 active:scale-95"
+              >
+                <span>Yakin!?</span>
+              </button>
+            </div>
+          </div>
 
         </div>
       </PBLSyntaxPanel>

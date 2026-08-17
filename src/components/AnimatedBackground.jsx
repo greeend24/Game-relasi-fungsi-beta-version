@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
  * Leaf Image Renderer by Type Index (10 USER-PROVIDED HD LEAF IMAGES: LEAF 1.png - LEAF 10.png)
  */
 const LeafSVG = ({ type, size = 42 }) => {
-  const leafNum = (type >= 0 && type <= 9) ? type + 1 : 1;
+  const leafNum = ((type >= 0 ? type : 0) % 10) + 1;
   return (
     <img
       src={`/images/LEAF ${leafNum}.png`}
@@ -126,12 +126,12 @@ const InteractiveBlowingLeaves2D = () => {
   const [, setRenderTrigger] = useState(0);
 
   useEffect(() => {
-    const numLeaves = 10;
+    const numLeaves = 6; // Reduced by half (12 -> 6)
     const initialLeaves = [];
     const width = window.innerWidth || 1200;
     const height = window.innerHeight || 800;
 
-    const distinctSizes = [32, 36, 40, 44, 48, 52, 56, 60, 64, 68].sort(() => Math.random() - 0.5);
+    const distinctSizes = [32, 38, 44, 50, 56, 64].sort(() => Math.random() - 0.5);
 
     for (let i = 0; i < numLeaves; i++) {
       initialLeaves.push({
@@ -148,7 +148,7 @@ const InteractiveBlowingLeaves2D = () => {
         rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.1 + Math.random() * 0.25), // Very gentle tumbling rotation
         rotation: Math.random() * 360,
         vRot: 0,
-        type: i,
+        type: i % 10,
         size: distinctSizes[i]
       });
     }
@@ -290,7 +290,7 @@ const InteractiveBlowingLeaves2D = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+    <div ref={containerRef} className="fixed inset-0 pointer-events-none overflow-hidden z-[100]">
       {leavesRef.current.map((leaf) => (
         <div
           key={leaf.id}
@@ -484,18 +484,34 @@ const FlyingBirds2D = ({ timeMode }) => {
   );
 };
 
+const generateInitial5Clouds = () => {
+  const width = typeof window !== 'undefined' ? window.innerWidth || 1200 : 1200;
+  const height = typeof window !== 'undefined' ? window.innerHeight || 800 : 800;
+  const skyHeightMax = height * 0.60; // Top 60% region of the screen height
+
+  return Array.from({ length: 5 }, (_, i) => ({
+    id: i + 1,
+    x: -400 + Math.random() * (width + 800),
+    y: 10 + Math.random() * Math.max(100, skyHeightMax - 70),
+    speed: 0.20 + Math.random() * 0.35,
+    type: i % 3,
+    blur: i % 3 === 0 ? 'blur-[3px]' : i % 3 === 1 ? 'blur-[2px]' : 'blur-[4px]',
+    scale: 0.85 + Math.random() * 0.5,
+    opacity: 0.75 + Math.random() * 0.20
+  }));
+};
+
 /**
- * WIDELY SPACED SOFT BORDERLESS DRIFTING CLOUDS COMPONENT (NOT CROWDED/DEMPET)
- * - Y Position: randomized 20px - 380px across sky (NEVER AT EQUAL HEIGHTS)
+ * WIDELY SPACED SOFT BORDERLESS DRIFTING CLOUDS COMPONENT
+ * - Exactly 5 widely spaced clouds placed dynamically in top 60% sky height region
  */
 const DynamicClouds = ({ timeMode }) => {
-  const cloudsRef = useRef([
-    { id: 1, x: -150, y: 25, speed: 0.28, type: 1, blur: 'blur-[3px]', scale: 1.15, opacity: 0.88 },
-    { id: 2, x: 280, y: 95, speed: 0.42, type: 2, blur: 'blur-[4px]', scale: 1.35, opacity: 0.82 },
-    { id: 3, x: 680, y: 175, speed: 0.35, type: 3, blur: 'blur-[2px]', scale: 1.0, opacity: 0.90 },
-    { id: 4, x: 1080, y: 260, speed: 0.48, type: 4, blur: 'blur-[3px]', scale: 1.25, opacity: 0.85 },
-    { id: 5, x: -550, y: 345, speed: 0.38, type: 5, blur: 'blur-[4px]', scale: 0.95, opacity: 0.86 }
-  ]);
+  const cloudsRef = useRef([]);
+
+  if (cloudsRef.current.length === 0) {
+    cloudsRef.current = generateInitial5Clouds();
+  }
+
   const [, setRenderTrigger] = useState(0);
 
   useEffect(() => {
@@ -503,12 +519,14 @@ const DynamicClouds = ({ timeMode }) => {
 
     const animateClouds = () => {
       const width = window.innerWidth || 1200;
+      const height = window.innerHeight || 800;
+      const skyHeightMax = height * 0.60;
 
       cloudsRef.current.forEach((cloud) => {
         cloud.x += cloud.speed;
         if (cloud.x > width + 400) {
           cloud.x = -400 - Math.random() * 300;
-          cloud.y = 20 + Math.floor(Math.random() * 380); // Random Y (20px to 400px)
+          cloud.y = 10 + Math.random() * Math.max(100, skyHeightMax - 70);
         }
       });
 
@@ -565,20 +583,20 @@ const DynamicClouds = ({ timeMode }) => {
   );
 };
 
-export default function AnimatedBackground() {
-  const [timeMode, setTimeMode] = useState('day');
+export default function AnimatedBackground({ hideBottomLandscape = false, hideBirds = true, hideClouds = false }) {
+  const [timeMode, setTimeMode] = useState('siang');
 
   useEffect(() => {
     const updateTimeMode = () => {
       const hour = new Date().getHours();
-      if (hour >= 6 && hour < 9) {
-        setTimeMode('morning');
-      } else if (hour >= 9 && hour < 16) {
-        setTimeMode('day');
-      } else if (hour >= 16 && hour < 19) {
-        setTimeMode('sunset');
+      if (hour >= 4 && hour < 11) {
+        setTimeMode('pagi');
+      } else if (hour >= 11 && hour < 15) {
+        setTimeMode('siang');
+      } else if (hour >= 15 && hour < 18.5) {
+        setTimeMode('sore');
       } else {
-        setTimeMode('night');
+        setTimeMode('malam');
       }
     };
 
@@ -593,59 +611,55 @@ export default function AnimatedBackground() {
       {/* DYNAMIC SKY GRADIENT */}
       <div 
         className={`absolute inset-0 transition-all duration-1000 ${
-          timeMode === 'morning'
+          timeMode === 'pagi'
             ? 'bg-gradient-to-b from-[#FEF08A] via-[#7DD3FC] to-[#FAF7F2]'
-            : timeMode === 'day'
+            : timeMode === 'siang'
             ? 'bg-gradient-to-b from-[#38BDF8] via-[#BAE6FD] to-[#FAF7F2]'
-            : timeMode === 'sunset'
+            : timeMode === 'sore'
             ? 'bg-gradient-to-b from-[#F472B6] via-[#FB923C] to-[#FDE68A]'
             : 'bg-gradient-to-b from-[#0B0F19] via-[#1E1B4B] to-[#1E293B]'
         }`}
       />
 
-      {/* PERFECT ROUND GLOWING SUN WITH MULTI-TIER STEADY STAR-LIKE LIGHT HALO (NO SPIKED RAYS) */}
-      {(timeMode === 'morning' || timeMode === 'day') && (
-        <div className="absolute top-8 right-16 filter drop-shadow-[0_0_40px_rgba(255,235,59,0.9)] drop-shadow-[0_0_75px_rgba(245,158,11,0.65)] pointer-events-none">
-          <svg width="150" height="150" viewBox="0 0 150 150">
+      {/* PERFECT ROUND GLOWING SUN WITH MULTI-TIER STEADY STAR-LIKE LIGHT HALO (PAGI & SIANG - MOVED TO LEFT SIDE) */}
+      {/* CLEAN SINGLE GLOWING SUN (PAGI & SIANG) */}
+      {(timeMode === 'pagi' || timeMode === 'siang') && (
+        <div className="absolute top-6 left-10 sm:left-16 pointer-events-none rounded-full animate-sun-radiant z-0">
+          <svg width="120" height="120" viewBox="0 0 120 120" className="rounded-full overflow-visible">
             <defs>
-              <radialGradient id="roundSunStarGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-                <stop offset="25%" stopColor="#FFF59D" stopOpacity="0.95" />
-                <stop offset="55%" stopColor="#FACC15" stopOpacity="0.80" />
-                <stop offset="80%" stopColor="#F59E0B" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
+              <radialGradient id="singleBrightSun" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="35%" stopColor="#FEF08A" />
+                <stop offset="75%" stopColor="#FACC15" />
+                <stop offset="100%" stopColor="#F59E0B" />
               </radialGradient>
             </defs>
-
-            {/* Concentric Layered Glowing Circles (Steady Round Sun + Aura) */}
-            <circle cx="75" cy="75" r="70" fill="url(#roundSunStarGlow)" />
-            <circle cx="75" cy="75" r="42" fill="#FFF59D" opacity="0.9" />
-            <circle cx="75" cy="75" r="30" fill="#FACC15" />
-            <circle cx="75" cy="75" r="20" fill="#FFFFFF" opacity="0.95" />
+            {/* Single Solid Smooth Glowing Sun Disc */}
+            <circle cx="60" cy="60" r="48" fill="url(#singleBrightSun)" />
           </svg>
         </div>
       )}
 
-      {timeMode === 'sunset' && (
-        <div className="absolute top-24 right-20 filter drop-shadow-[0_0_45px_rgba(249,115,22,0.9)] drop-shadow-[0_0_80px_rgba(234,88,12,0.65)] pointer-events-none">
-          <svg width="150" height="150" viewBox="0 0 150 150">
+      {/* CLEAN SINGLE GLOWING SUNSET SUN (SORE) */}
+      {timeMode === 'sore' && (
+        <div className="absolute top-12 left-10 sm:left-16 pointer-events-none rounded-full animate-sun-radiant z-0">
+          <svg width="120" height="120" viewBox="0 0 120 120" className="rounded-full overflow-visible">
             <defs>
-              <radialGradient id="roundSunsetStarGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#FEF08A" stopOpacity="1" />
-                <stop offset="35%" stopColor="#FB923C" stopOpacity="0.9" />
-                <stop offset="70%" stopColor="#EA580C" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#C2410C" stopOpacity="0" />
+              <radialGradient id="singleSunsetSun" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFF7ED" />
+                <stop offset="35%" stopColor="#FDBA74" />
+                <stop offset="75%" stopColor="#FB923C" />
+                <stop offset="100%" stopColor="#EA580C" />
               </radialGradient>
             </defs>
-            <circle cx="75" cy="75" r="70" fill="url(#roundSunsetStarGlow)" />
-            <circle cx="75" cy="75" r="40" fill="#FF8C00" />
-            <circle cx="75" cy="75" r="26" fill="#FFE082" opacity="0.9" />
-            <circle cx="75" cy="75" r="16" fill="#FFFFFF" opacity="0.95" />
+            {/* Single Solid Smooth Sunset Sun Disc */}
+            <circle cx="60" cy="60" r="48" fill="url(#singleSunsetSun)" />
           </svg>
         </div>
       )}
 
-      {timeMode === 'night' && (
+      {/* NIGHT MOON & STARS (MALAM) */}
+      {timeMode === 'malam' && (
         <>
           <div className="absolute top-10 right-20 animate-bounce-slow filter drop-shadow-[0_0_25px_rgba(253,230,138,0.5)]">
             <svg width="75" height="75" viewBox="0 0 100 100">
@@ -697,11 +711,10 @@ export default function AnimatedBackground() {
         </>
       )}
 
-      {/* 5 DISTINCT BIRD SPECIES FLYING LEFT-TO-RIGHT & RIGHT-TO-LEFT WITH WING FLAPPING */}
-      <FlyingBirds2D timeMode={timeMode} />
+      {/* FLYING BIRDS REMOVED AS REQUESTED */}
 
       {/* WIDELY SPACED SOFT BORDERLESS DRIFTING CLOUDS (NOT DEMPET / CROWDED) */}
-      <DynamicClouds timeMode={timeMode} />
+      {!hideClouds && <DynamicClouds timeMode={timeMode} />}
 
       {/* SINGLE UNBROKEN FLEXIBLE WIND LINE STREAMERS (RANDOMIZED SPAWN TIMINGS) */}
       <WindBreeze2D />
@@ -709,6 +722,36 @@ export default function AnimatedBackground() {
       {/* 60FPS INTERACTIVE LEAF PHYSICS - EXACTLY 10 LEAVES OF 10 DISTINCT TYPES & COLORS */}
       <InteractiveBlowingLeaves2D />
 
+      {/* ROLLING GREEN HILLS, FLOWERS, ROCKS, AND WINDING DIRT PATH AT BOTTOM (HIDDEN IN CHAPTER MODE) */}
+      {!hideBottomLandscape && (
+        <div className="absolute bottom-0 inset-x-0 h-44 sm:h-60 pointer-events-none select-none overflow-hidden z-0">
+          <svg viewBox="0 0 1440 320" className="w-full h-full" preserveAspectRatio="none">
+            {/* Far background turquoise/blue-green hills */}
+            <path fill="#38BDF8" opacity="0.35" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L0,320Z"></path>
+            {/* Midground green hills */}
+            <path fill="#4ADE80" opacity="0.8" d="M0,224L60,208C120,192,240,160,360,170.7C480,181,600,235,720,234.7C840,235,960,181,1080,165.3C1200,149,1320,171,1380,181.3L1440,192L1440,320L0,320Z"></path>
+            {/* Foreground vibrant green hills */}
+            <path fill="#22C55E" d="M0,256L80,240C160,224,320,192,480,213.3C640,235,800,309,960,298.7C1120,288,1280,192,1360,144L1440,96L1440,320L0,320Z"></path>
+            {/* Winding beige dirt path */}
+            <path fill="#FEF08A" opacity="0.75" d="M340,320 C420,260 520,290 600,320 Z"></path>
+          </svg>
+
+          {/* Decorative Flowers and Rocks on bottom left & right */}
+          <div className="absolute bottom-2 left-6 flex items-center space-x-2 text-base sm:text-xl">
+            <span>🌼</span>
+            <span className="text-xs">🪨</span>
+            <span>🌸</span>
+          </div>
+          <div className="absolute bottom-2 right-6 flex items-center space-x-2 text-base sm:text-xl">
+            <span>🌸</span>
+            <span className="text-xs">🪨</span>
+            <span>🌼</span>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
+export { InteractiveBlowingLeaves2D };

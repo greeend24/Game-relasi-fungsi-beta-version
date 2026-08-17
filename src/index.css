@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -16,19 +16,43 @@ html, body {
   background-color: transparent !important;
   color: #2D241E;
   font-family: 'Patrick Hand', 'Kalam', 'Plus Jakarta Sans', cursive, sans-serif;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  overflow-x: hidden;
+  font-size: 12pt;
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
   touch-action: manipulation;
 }
 
+/* STRICT MINIMUM FONT SIZE RULE: TULISAN PALING KECIL DI GAME ADALAH 12pt (16px) */
+*, *::before, *::after, p, span, div, label, input, button, select, textarea, li, a {
+  min-font-size: 12pt;
+}
+
+/* OVERRIDE TAILWIND SMALL FONT UTILITIES TO BE AT LEAST 12pt (16px) */
+.text-\[8px\],
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-xs {
+  font-size: 12pt !important; /* 12pt = 16px minimum */
+  line-height: 1.4 !important;
+}
+
+.text-sm {
+  font-size: max(13.5pt, 18px) !important;
+  line-height: 1.4 !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Kalam', 'Caveat', cursive, sans-serif;
-  letter-spacing: -0.01em;
+  font-family: 'Caveat Brush', 'Kalam', 'Caveat', cursive, sans-serif;
+  letter-spacing: 0.02em;
+  text-shadow: 2px 2px 0px rgba(45, 36, 30, 0.35), 0px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .font-pencil {
-  font-family: 'Caveat', 'Kalam', cursive !important;
+  font-family: 'Caveat Brush', 'Kalam', 'Caveat', cursive !important;
+  text-shadow: 2px 2px 0px rgba(45, 36, 30, 0.35);
 }
 
 .font-hand {
@@ -39,15 +63,37 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
 }
 
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.6deg);
+  }
+}
+
+.animate-logo-float {
+  animation: logoFloat 4.2s ease-in-out infinite;
+}
+
 #root {
-  min-height: 100vh;
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
   background-color: transparent;
 }
 
-/* ALL CLICKABLE BUTTONS & CARDS: CRYSTAL CLEAR FROSTED GLASS (35% OPACITY / 65% TRANSLUCENT + 16px BLUR) */
-button, .pencil-btn, [role="button"], a.btn {
+/* ALL CLICKABLE BUTTONS & CARDS (EXCEPT MODE & ICON BUTTONS): CRYSTAL CLEAR FROSTED GLASS */
+button:not(.mode-btn):not(.clean-icon-btn):not(.avatar-btn):not(.rank-btn), 
+.pencil-btn, [role="button"], a.btn {
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
+}
+
+.mode-btn, .clean-icon-btn, .avatar-btn, .rank-btn, .mode-btn-img {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* Pencil Cartoon Card & Panel Styles (35% Translucent White + 16px Blur) */
@@ -77,12 +123,258 @@ button, .pencil-btn, [role="button"], a.btn {
   border: 2.5px solid #2D241E;
   border-radius: 16px;
   box-shadow: 3px 3px 0px #2D241E;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .pencil-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0px #2D241E;
+}
+
+/* UNIVERSAL DAZZLING GLARE & BRIGHTENING HOVER EFFECT (EFEK TERANG & SILAU-SILAU SAAT CURSOR MENDEKATI MENU) */
+button, .pencil-btn, [role="button"], a.btn, .pencil-card {
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* UNIVERSAL BRIGHTENING & GLOW EFFECT ON MOUSE HOVER FOR ALL CLICKABLE BUTTONS */
+button:hover, .pencil-btn:hover, [role="button"]:hover, a.btn:hover, .pencil-card:hover {
+  filter: brightness(1.18) contrast(1.05) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) !important;
+}
+
+/* Light Beam Glint Overlay Sweep (SOLID CARDS ONLY - EXCLUDE IMAGE / ICON / CLEAN BUTTONS) */
+button:not(.clean-icon-btn):not(.mode-btn):not(.icon-btn):not(.rank-btn):not(.avatar-btn):not(.image-btn)::after, 
+.pencil-btn::after, [role="button"]::after, a.btn::after, .pencil-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -120%;
+  width: 70%;
+  height: 200%;
+  background: linear-gradient(
+    115deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.25) 30%, 
+    rgba(255, 255, 255, 0.95) 50%, 
+    rgba(255, 255, 255, 0.25) 70%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 30;
+}
+
+/* BUTTON PRESS ANIMATION (ACTIVE TRANSFORMATION WITHOUT BOX OVERLAY) */
+button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn), 
+.pencil-btn:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn), 
+[role="button"]:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn) {
+  transform: scale(0.94) translateY(2px) !important;
+  transition: transform 0.08s ease !important;
+}
+
+/* MODE BUTTON & ICON BUTTON CONTAINERS: 100% TRANSPARENT, NO BORDER, NO BOX SHADOW */
+.mode-btn, .icon-btn, .rank-btn, .avatar-btn, .clean-icon-btn, .image-btn {
+  filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 0 !important;
+}
+
+.mode-btn::after, .icon-btn::after, .rank-btn::after, .clean-icon-btn::after, .avatar-btn::after, .image-btn::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* MODE BUTTON PNG IMAGE: 70% GRAYSCALE DEFAULT -> 100% VIBRANT COLOR & GLOW ON HOVER */
+.mode-btn-img {
+  filter: grayscale(70%) brightness(0.85);
+  transition: filter 0.25s ease, transform 0.15s ease !important;
+}
+
+.mode-btn:hover .mode-btn-img,
+.mode-btn.is-hovered .mode-btn-img,
+.mode-btn-img.is-hovered {
+  filter: grayscale(0%) brightness(1.25) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) !important;
+}
+
+/* ALL IMAGE-BASED & ICON BUTTONS: 100% FULL COLOR ALWAYS, GLOW & BRIGHTNESS ON HOVER */
+.icon-btn img, .rank-btn img, .avatar-btn img, .image-btn img, .clean-icon-btn img {
+  transition: filter 0.2s ease, transform 0.15s ease !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.icon-btn:hover img, .rank-btn:hover img, .avatar-btn:hover img, .image-btn:hover img, .clean-icon-btn:hover img {
+  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) !important;
+}
+
+/* NATURAL PNG IMAGE BUTTONS (BUAT AKUN, PILIH AKUN, ETC): NO FORCED CIRCLE, NO FORCED BOX, 100% PNG ARTWORK SHAPE */
+.image-btn {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  display: inline-block !important;
+}
+
+.image-btn::after, .image-btn::before {
+  display: none !important;
+  content: none !important;
+}
+
+.image-btn img {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: filter 0.2s ease, transform 0.15s ease !important;
+}
+
+.image-btn:hover img {
+  filter: brightness(1.25) contrast(1.05) drop-shadow(0 0 16px rgba(255, 255, 255, 0.9)) !important;
+  transform: scale(1.05) !important;
+}
+
+.image-btn:active img {
+  transform: scale(0.95) !important;
+}
+
+/* CLEAN ICON BUTTONS & MODAL EXIT BUTTONS (CIRCULAR HITBOX MATCHING ROUND BUTTON SHAPE) */
+.clean-icon-btn, .round-btn {
+  border-radius: 9999px !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.clean-icon-btn::after, .round-btn::after {
+  display: none !important;
+  content: none !important;
+}
+
+.clean-icon-btn img, .round-btn img {
+  transition: filter 0.2s ease, transform 0.15s ease !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 9999px !important;
+}
+
+.clean-icon-btn:hover img, .round-btn:hover img {
+  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) !important;
+  transform: scale(1.08) !important;
+}
+
+.clean-icon-btn:active img, .round-btn:active img {
+  transform: scale(0.92) !important;
+}
+
+/* CUSTOM AUDIO SETTINGS & RANK RANGE SCROLLER & PIN ASSETS */
+.custom-scroller {
+  -webkit-appearance: none;
+  appearance: none;
+  background: url('/assets/tampilan di setting/Asset/place_of_scroller_audio_sound@4x.png') center/cover no-repeat !important;
+  height: 18px;
+  border-radius: 9999px;
+  border: 1.5px solid #2D241E;
+}
+
+.custom-scroller::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  background: url('/assets/tampilan di setting/Asset/pin_of_scroller@4x.png') center/contain no-repeat !important;
+  cursor: pointer;
+  border: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  transition: transform 0.1s ease;
+}
+
+.custom-scroller::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+}
+
+.custom-scroller::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  background: url('/assets/tampilan di setting/Asset/pin_of_scroller@4x.png') center/contain no-repeat !important;
+  cursor: pointer;
+  border: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+@keyframes dazzlingGlintSweep {
+  0% {
+    left: -120%;
+    opacity: 0.2;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    left: 170%;
+    opacity: 0;
+  }
+}
+
+/* SMOOTH CLOUD DRIFT ANIMATION (AWAN JALAN) */
+@keyframes cloudDrift {
+  0% {
+    transform: translateX(-180px);
+  }
+  100% {
+    transform: translateX(calc(100vw + 180px));
+  }
+}
+
+.animate-cloud-drift-1 {
+  animation: cloudDrift 45s linear infinite;
+}
+
+.animate-cloud-drift-2 {
+  animation: cloudDrift 65s linear infinite;
+  animation-delay: -22s;
+}
+
+.animate-cloud-drift-3 {
+  animation: cloudDrift 85s linear infinite;
+  animation-delay: -45s;
+}
+
+/* RADIANT SUN GLOW & RAYS ANIMATION (MATAHARI BERSINAR - CIRCULAR DROP SHADOW) */
+@keyframes sunGlowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 25px rgba(250, 204, 21, 0.95)) drop-shadow(0 0 50px rgba(245, 158, 11, 0.65));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 35px rgba(250, 204, 21, 1)) drop-shadow(0 0 70px rgba(245, 158, 11, 0.85));
+    transform: scale(1.05);
+  }
+}
+
+.animate-sun-radiant {
+  animation: sunGlowPulse 4s ease-in-out infinite;
 }
 
 /* RETAIN ORIGINAL BUTTON COLORS AT 35-40% OPACITY (SEE-THROUGH GLASS) & 16px BACKDROP BLUR */
@@ -161,28 +453,50 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 }
 .anim-icon-popout { animation: iconPopOutBack 0.55s ease-in-out infinite; }
 
-/* Drag-to-Scroll Horizontal Bar */
-.drag-scroller {
-  user-select: none;
-  -webkit-user-select: none;
-  overflow-x: auto;
+/* HIDE BROWSER DEFAULT SCROLLBAR FOR CUSTOM WOODEN SCROLLER */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* GLOBAL CUSTOM WOODEN SCROLLER PIN & TRACK ASSETS FROM ASSETS/TAMPILAN DI RANK/ASSET */
+.drag-scroller,
+.highscore-scroller {
   scrollbar-width: thin;
-  scrollbar-color: #2D241E #FAF7F2;
+  scrollbar-color: #8A6746 transparent;
 }
 
-.drag-scroller::-webkit-scrollbar {
-  height: 7px;
+.drag-scroller::-webkit-scrollbar,
+.highscore-scroller::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
 }
 
-.drag-scroller::-webkit-scrollbar-track {
-  background: #EFECE6;
+.drag-scroller::-webkit-scrollbar-track,
+.highscore-scroller::-webkit-scrollbar-track {
+  background-image: url('/assets/tampilan di rank/asset/scroller.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
   border-radius: 9999px;
-  border: 1px solid #2D241E;
+  background-color: transparent;
 }
 
-.drag-scroller::-webkit-scrollbar-thumb {
-  background: #2D241E;
+.drag-scroller::-webkit-scrollbar-thumb,
+.highscore-scroller::-webkit-scrollbar-thumb {
+  background-image: url('/assets/tampilan di rank/asset/button_of_scroller@4x.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
   border-radius: 9999px;
+  min-height: 36px;
+  cursor: pointer;
 }
 
 /* Sun Light Rays Shimmering/Pulsing Animation */
@@ -323,13 +637,13 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   animation: stampDrop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-/* Alive Owl Mascot Animations */
+/* Alive Owl Mascot Breathing (Pure Gentle Vertical Micro-Pulse Without Body Rotation) */
 @keyframes owlBreath {
   0%, 100% {
-    transform: scale(1) translateY(0px);
+    transform: translate3d(0, 0px, 0);
   }
   50% {
-    transform: scale(1.025) translateY(-2px);
+    transform: translate3d(0, -2px, 0);
   }
 }
 
@@ -352,7 +666,7 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 }
 
 .animate-owl-breath {
-  animation: owlBreath 3.8s ease-in-out infinite;
+  animation: owlBreath 4.2s ease-in-out infinite;
 }
 
 .animate-tassel-sway {
@@ -367,122 +681,122 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 /* Owl Mascot Hopping & Wing Flapping Keyframe Animations */
 @keyframes owlJump {
   0% {
-    transform: translateY(0) scale(1, 1);
+    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
   }
-  12% {
-    /* Fast initial launch up into the air */
-    transform: translateY(-30px) scale(0.92, 1.08);
+  15% {
+    /* Pre-jump crouch & squash */
+    transform: translate3d(0, 6px, 0) scale(1.12, 0.88) rotate(-2deg);
+  }
+  40% {
+    /* Vertical stretch launch apex */
+    transform: translate3d(0, -36px, 0) scale(0.9, 1.12) rotate(3deg);
+  }
+  65% {
+    /* Soft apex float */
+    transform: translate3d(0, -24px, 0) scale(0.96, 1.04) rotate(-1deg);
   }
   85% {
-    /* Slow, floating descent from top to bottom (badan turun melayang lambat) */
-    transform: translateY(-4px) scale(0.98, 1.02);
+    /* Soft landing squash rebound */
+    transform: translate3d(0, 3px, 0) scale(1.08, 0.94) rotate(0deg);
   }
   100% {
-    transform: translateY(0) scale(1, 1);
+    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
   }
 }
 
 @keyframes wingFlapLeft {
   0%, 100% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) translateY(0);
   }
-  38% {
-    transform: rotate(-40deg) translateY(-4px);
+  30% {
+    transform: rotate(-34deg) translateY(-4px) scaleX(1.05);
   }
-  72% {
-    transform: rotate(14deg);
+  65% {
+    transform: rotate(12deg) translateY(1px);
   }
 }
 
 @keyframes wingFlapRight {
   0%, 100% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) translateY(0);
   }
-  38% {
-    transform: rotate(40deg) translateY(-4px);
+  30% {
+    transform: rotate(34deg) translateY(-4px) scaleX(1.05);
   }
-  72% {
-    transform: rotate(-14deg);
+  65% {
+    transform: rotate(-12deg) translateY(1px);
   }
 }
 
 .animate-owl-jump {
   will-change: transform;
-  animation: owlJump 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+  animation: owlJump 1.4s cubic-bezier(0.34, 1.25, 0.64, 1);
 }
 
 .animate-wing-flap-left {
   will-change: transform;
-  animation: wingFlapLeft 0.42s ease-in-out 4;
+  animation: wingFlapLeft 0.38s cubic-bezier(0.4, 0, 0.2, 1) 4;
 }
 
 .animate-wing-flap-right {
   will-change: transform;
-  animation: wingFlapRight 0.42s ease-in-out 4;
+  animation: wingFlapRight 0.38s cubic-bezier(0.4, 0, 0.2, 1) 4;
 }
 
 /* Ultra-Smooth Fly-In & Perch Flight Transition Animation (Terbang Mutar Layar & Hinggap 60FPS) */
 @keyframes owlFlyPerch {
   0% {
     opacity: 0;
-    transform: translate3d(150px, -110px, 0) scale(0.62) rotate(-14deg);
+    transform: translate3d(140px, -100px, 0) scale(0.65) rotate(-16deg);
   }
-  25% {
+  35% {
     opacity: 1;
-    transform: translate3d(65px, -50px, 0) scale(0.82) rotate(-7deg);
+    transform: translate3d(-25px, -18px, 0) scale(1.06) rotate(6deg);
   }
-  50% {
-    opacity: 1;
-    transform: translate3d(-30px, -18px, 0) scale(1.08) rotate(5deg);
+  60% {
+    transform: translate3d(12px, -4px, 0) scale(0.98) rotate(-3deg);
   }
-  75% {
-    opacity: 1;
-    transform: translate3d(10px, -6px, 0) scale(1.03) rotate(-2deg);
-  }
-  90% {
-    opacity: 1;
-    transform: translate3d(0px, 3px, 0) scale(1.04, 0.96) rotate(1deg);
+  82% {
+    transform: translate3d(-3px, 2px, 0) scale(1.02, 0.98) rotate(1deg);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0px, 0px, 0) scale(1, 1) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
   }
 }
 
 .animate-owl-fly-perch {
   will-change: transform, opacity;
-  animation: owlFlyPerch 1.68s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation: owlFlyPerch 1.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
 }
 
-/* 7-Click Zoom Loop Easter Egg Animation (Terbang Cepat ke Kanan -> Datang dari Kiri) */
+/* 3-Second Hold Launch Upward into Sky Animation */
 @keyframes owlZoomLoop {
   0% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   }
   15% {
-    /* Wind-up pull back to the left */
-    transform: translate3d(-35px, 12px, 0) scale(0.88) rotate(-18deg);
-  }
-  44% {
-    /* Hyper Rocket Zoom Off-Screen Right */
-    opacity: 1;
-    transform: translate3d(120vw, -100px, 0) scale(1.4) rotate(30deg);
+    /* Wind-up crouch down before launch */
+    transform: translate3d(0, 18px, 0) scale(1.15, 0.85) rotate(0deg);
   }
   45% {
-    /* Instant Teleport Off-Screen Left */
-    opacity: 0;
-    transform: translate3d(-120vw, -80px, 0) scale(0.5) rotate(-25deg);
-  }
-  48% {
+    /* Rocket Launch High Upward into the Sky! */
     opacity: 1;
+    transform: translate3d(0, -140vh, 0) scale(1.3) rotate(-15deg);
   }
-  80% {
-    /* Fast Arrival Swoop From Left */
-    transform: translate3d(25px, -15px, 0) scale(1.12) rotate(12deg);
+  46% {
+    /* Teleport High Sky Top */
+    opacity: 0;
+    transform: translate3d(0, -120vh, 0) scale(0.6) rotate(15deg);
   }
-  92% {
-    /* Braking Touchdown Squash */
-    transform: translate3d(0px, 4px, 0) scale(1.06, 0.94) rotate(-2deg);
+  75% {
+    /* Floating Descent Landing from Sky */
+    opacity: 1;
+    transform: translate3d(0, -10px, 0) scale(1.08) rotate(-4deg);
+  }
+  90% {
+    /* Touchdown Soft Landing */
+    transform: translate3d(0, 4px, 0) scale(1.04, 0.96) rotate(2deg);
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
@@ -491,7 +805,22 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 
 .animate-owl-zoom-loop {
   will-change: transform, opacity;
-  animation: owlZoomLoop 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: owlZoomLoop 2.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Mid-Air Flight Hovering & Floating Animation for Flying Relo */
+@keyframes owlFloatFlight {
+  0%, 100% {
+    transform: translate3d(0, -14px, 0) scale(1.03) rotate(-3deg);
+  }
+  50% {
+    transform: translate3d(0, -28px, 0) scale(1.08) rotate(4deg);
+  }
+}
+
+.animate-owl-float-flight {
+  will-change: transform;
+  animation: owlFloatFlight 1.1s ease-in-out infinite !important;
 }
 
 /* Dazzling Legendary Badge Golden Shimmer & Glint Animation */
@@ -526,60 +855,63 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 @keyframes owlDropSmash {
   0% {
     opacity: 0;
-    transform: translate3d(0, -180px, 0) scale(0.4) rotate(0deg);
+    transform: translate3d(0, -180px, 0) scale(0.5, 1.4) rotate(0deg);
   }
-  60% {
+  55% {
     opacity: 1;
-    transform: translate3d(0, 15px, 0) scale(1.2, 0.8) rotate(0deg);
+    transform: translate3d(0, 12px, 0) scale(1.18, 0.82) rotate(0deg);
   }
-  80% {
-    transform: translate3d(0, -8px, 0) scale(0.95, 1.05) rotate(0deg);
+  75% {
+    transform: translate3d(0, -6px, 0) scale(0.95, 1.05) rotate(0deg);
+  }
+  90% {
+    transform: translate3d(0, 2px, 0) scale(1.02, 0.98) rotate(0deg);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
   }
 }
 
 .animate-owl-drop-smash {
   will-change: transform, opacity;
-  animation: owlDropSmash 1.68s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: owlDropSmash 1.6s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
 }
 
 @keyframes owlDashDrift {
   0% {
     opacity: 0;
-    transform: translate3d(-200px, 0, 0) scale(0.7) rotate(20deg);
+    transform: translate3d(-180px, 0, 0) scale(0.7, 1.1) rotate(16deg);
   }
-  65% {
+  60% {
     opacity: 1;
-    transform: translate3d(20px, 0, 0) scale(1.1, 0.9) rotate(-12deg);
+    transform: translate3d(18px, 0, 0) scale(1.08, 0.92) rotate(-8deg);
   }
-  85% {
-    transform: translate3d(-5px, 0, 0) scale(0.98, 1.02) rotate(3deg);
+  80% {
+    transform: translate3d(-4px, 0, 0) scale(0.98, 1.02) rotate(2deg);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
   }
 }
 
 .animate-owl-dash-drift {
   will-change: transform, opacity;
-  animation: owlDashDrift 1.68s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: owlDashDrift 1.6s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
 }
 
 @keyframes owlPopElastic {
   0% {
     opacity: 0;
-    transform: scale(0) rotate(-180deg);
+    transform: scale(0.1) rotate(-120deg);
   }
-  65% {
+  60% {
     opacity: 1;
-    transform: scale(1.25) rotate(15deg);
+    transform: scale(1.18) rotate(10deg);
   }
-  85% {
-    transform: scale(0.92) rotate(-5deg);
+  80% {
+    transform: scale(0.94) rotate(-4deg);
   }
   100% {
     opacity: 1;
@@ -589,20 +921,20 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 
 .animate-owl-pop-elastic {
   will-change: transform, opacity;
-  animation: owlPopElastic 1.68s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: owlPopElastic 1.6s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
 }
 
 @keyframes owlFloatParachute {
   0% {
     opacity: 0;
-    transform: translate3d(-120px, -150px, 0) scale(0.5) rotate(-15deg);
+    transform: translate3d(-110px, -130px, 0) scale(0.55) rotate(-12deg);
   }
-  35% {
+  40% {
     opacity: 1;
-    transform: translate3d(60px, -90px, 0) scale(0.75) rotate(12deg);
+    transform: translate3d(45px, -60px, 0) scale(0.85) rotate(8deg);
   }
-  70% {
-    transform: translate3d(-20px, -30px, 0) scale(0.92) rotate(-6deg);
+  75% {
+    transform: translate3d(-12px, -15px, 0) scale(0.96) rotate(-4deg);
   }
   100% {
     opacity: 1;
@@ -612,7 +944,7 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 
 .animate-owl-float-parachute {
   will-change: transform, opacity;
-  animation: owlFloatParachute 1.68s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: owlFloatParachute 1.68s cubic-bezier(0.33, 1, 0.68, 1) forwards;
 }
 
 /* ANIMATED LIGHT DUST PARTICLES EFFECT FOR CATEGORY 10 BADGE BOX */
@@ -653,16 +985,53 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 
 /* ANIMATED TALKING MOUTH FLAP FOR DETEKTIF RELO VOICE SYNC */
 @keyframes owlMouthTalk {
-  0% {
-    transform: scaleY(0.2) translateY(-1px);
+  0%, 100% {
+    transform: scaleY(0.35) translateY(0px);
   }
-  100% {
-    transform: scaleY(1.3) translateY(2.5px);
+  30% {
+    transform: scaleY(1.0) translateY(1.2px);
+  }
+  60% {
+    transform: scaleY(0.65) translateY(0.5px);
+  }
+  85% {
+    transform: scaleY(1.15) translateY(1.8px);
   }
 }
 
 .animate-owl-mouth-talk {
   will-change: transform;
   transform-origin: 70px 74px;
-  animation: owlMouthTalk 0.16s ease-in-out infinite alternate;
+  animation: owlMouthTalk 0.45s ease-in-out infinite;
 }
+
+/* WING FLAP ANIMATIONS FOR DETEKTIF RELO */
+@keyframes wingFlapLeft {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-35deg) translateY(-4px);
+  }
+}
+
+@keyframes wingFlapRight {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(35deg) translateY(-4px);
+  }
+}
+
+.animate-wing-flap-left {
+  will-change: transform;
+  animation: wingFlapLeft 0.3s ease-in-out infinite !important;
+}
+
+.animate-wing-flap-right {
+  will-change: transform;
+  animation: wingFlapRight 0.3s ease-in-out infinite !important;
+}
+
+

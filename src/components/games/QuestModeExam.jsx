@@ -232,7 +232,7 @@ export default function QuestModeExam({ subbabId = 1, onBackToQuestSelect, curre
   const totalQuestScore = basePointsEarned + timeRemaining;
 
   return (
-    <div className="max-w-4xl mx-auto my-4 p-4 font-hand space-y-6 animate-fade-in relative z-10">
+    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand relative z-10">
       
       {/* Top Header */}
       <div className="flex items-center justify-between p-4 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[4px_5px_0px_#2D241E]">
@@ -470,7 +470,7 @@ export default function QuestModeExam({ subbabId = 1, onBackToQuestSelect, curre
                   onClick={() => { audioEngine.playClick(); setCurrentQIndex(currentQIndex - 1); }}
                   className="pencil-btn px-4 py-2.5 bg-[#F3F4F6] text-[#2D241E] font-bold text-xs disabled:opacity-40"
                 >
-                  ← Soal Sebelumnya
+                  Sebelumnya
                 </button>
 
                 <button
@@ -485,7 +485,7 @@ export default function QuestModeExam({ subbabId = 1, onBackToQuestSelect, curre
                     onClick={() => { audioEngine.playClick(); setCurrentQIndex(currentQIndex + 1); }}
                     className="pencil-btn px-5 py-2.5 bg-[#DBEAFE] text-[#1E40AF] font-extrabold text-xs"
                   >
-                    Soal Selanjutnya →
+                    Selanjutnya →
                   </button>
                 )}
               </div>
@@ -505,7 +505,7 @@ export default function QuestModeExam({ subbabId = 1, onBackToQuestSelect, curre
           </div>
 
           <div className="space-y-1">
-            <span className="text-xs font-bold text-[#D97706] uppercase">HASIL EVALUASI UJIAN QUEST MODE</span>
+            <span className="text-xs font-bold text-[#D97706] uppercase">HASIL EVALUASI QUEST MODE</span>
             <h2 className="text-3xl font-bold font-pencil text-[#2D241E]">
               NILAI SKALA 100: {score100} / 100
             </h2>

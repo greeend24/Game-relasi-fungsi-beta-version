@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
+import { Lottie } from 'lottie-react';
+import loadingAnimation from '../../public/assets/loading/loading_animation.json';
 
 export default function LoadingScreen({ onFinish }) {
   const [progress, setProgress] = useState(15);
@@ -12,7 +13,13 @@ export default function LoadingScreen({ onFinish }) {
           setTimeout(() => onFinish(), 200);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 20) + 10;
+        const next = prev + Math.floor(Math.random() * 15) + 8;
+        if (next >= 100) {
+          clearInterval(timer);
+          setTimeout(() => onFinish(), 200);
+          return 100;
+        }
+        return Math.min(100, next);
       });
     }, 180);
 
@@ -36,15 +43,15 @@ export default function LoadingScreen({ onFinish }) {
         √x
       </div>
 
-      <div className="w-full max-w-sm text-center space-y-6">
+      <div className="w-full max-w-sm text-center space-y-4">
         
-        {/* Mascot */}
-        <div className="flex justify-center">
-          <ProfessorOwlMascot
-            pose="exploring"
-            emotion="happy"
-            size="lg"
-            isFlapping={true}
+        {/* LOTTIE LOADING ANIMATION (ASSET REQUESTED BY USER) */}
+        <div className="flex justify-center items-center w-36 h-36 mx-auto">
+          <Lottie 
+            animationData={loadingAnimation} 
+            loop={true} 
+            autoplay={true} 
+            className="w-full h-full object-contain filter drop-shadow-md"
           />
         </div>
 

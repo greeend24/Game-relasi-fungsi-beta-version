@@ -85,7 +85,7 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-2 sm:p-4 space-y-2.5">
+    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand">
       <StageHeader
         subbabId={6}
         subbabTitle="Korespondensi Satu-Satu"
@@ -93,7 +93,7 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || "SYARAT 1:1: n(A) = n(B). Setiap elemen A harus dipasangkan ke tepat satu elemen B yang berbeda."}
+        hintText={stageConfig.conceptDef || "Syarat korespondensi satu-satu: n(A) = n(B). Setiap elemen A harus dipasangkan ke tepat satu elemen B yang berbeda."}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -132,7 +132,7 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
             <div className="relative z-10 flex flex-col justify-end">
               <div className="flex items-center space-x-1.5 text-[#78350F] font-black text-xs sm:text-base">
                 <Repeat className="w-4 h-4 text-[#D97706] flex-shrink-0" />
-                <span className="truncate">PENATAAN KURSI SIDANG SAKSI: KORESPONDENSI SATU-SATU</span>
+                <span>PENATAAN KURSI SIDANG SAKSI: KORESPONDENSI SATU-SATU</span>
               </div>
               <p className="text-xs sm:text-sm text-[#2D241E] font-bold mt-0.5">
                 Hubungkan setiap saksi di Kolom A ke tepat satu kursi di Kolom B tanpa ada yang tersisa atau ganda!
@@ -175,12 +175,14 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
             labelB="KURSI (Himpunan B)"
           />
 
-          <button
-            onClick={handleVerify}
-            className="pencil-btn w-full py-3.5 bg-[#F59E0B] text-[#2D241E] font-extrabold text-sm shadow-[3px_4px_0px_#2D241E]"
-          >
-            VERIFIKASI KORESPONDENSI SATU-SATU
-          </button>
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={handleVerify}
+              className="pencil-btn px-10 py-3 bg-[#FDE68A] hover:bg-[#F59E0B] text-[#2D241E] font-extrabold text-lg sm:text-xl shadow-[4px_5px_0px_#2D241E] rounded-2xl border-3 border-[#2D241E] flex items-center space-x-2 cursor-pointer transition hover:scale-105 active:scale-95"
+            >
+              <span>Yakin!?</span>
+            </button>
+          </div>
 
         </div>
       </PBLSyntaxPanel>
