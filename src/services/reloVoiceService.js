@@ -445,31 +445,20 @@ class ReloVoiceService {
 
   startAudioVolumeMonitor(audioEl) {
     this.stopAudioVolumeMonitor();
-    this.setupAudioAnalyser(audioEl);
+    this.setSpeaking(true);
 
-    const analyser = this.analyserMap?.get(audioEl);
-    const dataArray = new Uint8Array(analyser ? analyser.frequencyBinCount : 0);
-
-    const checkVolume = () => {
+    let lastCheck = 0;
+    const checkVolume = (timestamp) => {
       if (!this.reloAudioEl || this.reloAudioEl.paused || this.reloAudioEl.ended) {
         this.setSpeaking(false);
         this.stopAudioVolumeMonitor();
         return;
       }
 
-      if (analyser) {
-        analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
-        }
-        const average = sum / dataArray.length;
-        
-        // Threshold > 10 means actual voice sound is coming out of the speaker
-        const isAudible = average > 10;
-        this.setSpeaking(isAudible);
-      } else {
-        this.setSpeaking(!audioEl.paused && !audioEl.ended);
+      // Throttle speaking state updates to at most once per 150ms to prevent rapid React re-render thrashing
+      if (timestamp - lastCheck >= 150) {
+        lastCheck = timestamp;
+        this.setSpeaking(!this.reloAudioEl.paused && !this.reloAudioEl.ended);
       }
 
       this.animFrameId = requestAnimationFrame(checkVolume);

@@ -19,6 +19,10 @@ const LeafSVG = ({ type, size = 42 }) => {
  * SINGLE UNBROKEN FLEXIBLE WIND LINE STREAMERS COMPONENT
  * - RANDOMIZED STAGGERED SPAWN & RESPAWN TIMINGS (WAKTU MUNCUL RANDOM)
  */
+/**
+ * SINGLE UNBROKEN FLEXIBLE WIND LINE STREAMERS COMPONENT
+ * - DIRECT DOM REFS FOR 0% REACT STATE RE-RENDER LAG
+ */
 const WindBreeze2D = () => {
   const gustsRef = useRef([
     { id: 1, x: -400, y: 110, speed: 2.1, width: 320, opacity: 0.32, phase: 0, amp: 14, waitFrames: 0 },
@@ -29,8 +33,8 @@ const WindBreeze2D = () => {
     { id: 6, x: -650, y: 740, speed: 2.0, width: 360, opacity: 0.28, phase: 2.4, amp: -12, waitFrames: 180 }
   ]);
 
+  const domRefs = useRef({});
   const timeRef = useRef(0);
-  const [, setRenderTrigger] = useState(0);
 
   useEffect(() => {
     let animId;
@@ -60,9 +64,13 @@ const WindBreeze2D = () => {
           gust.amp = (Math.random() > 0.5 ? 1 : -1) * (12 + Math.random() * 10);
           gust.phase = Math.random() * Math.PI * 2;
         }
+
+        const el = domRefs.current[gust.id];
+        if (el) {
+          el.style.transform = `translate3d(${gust.x}px, ${gust.y}px, 0)`;
+        }
       });
 
-      setRenderTrigger((prev) => (prev + 1) % 1000);
       animId = requestAnimationFrame(animateWind);
     };
 
@@ -73,15 +81,13 @@ const WindBreeze2D = () => {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {gustsRef.current.map((gust) => {
-        if (gust.waitFrames > 0) return null;
-
         const w = gust.width;
-        const wave = 30 + (gust.waveOffset || 0);
 
         return (
           <div
             key={gust.id}
-            className="absolute pointer-events-none transition-transform duration-75"
+            ref={(el) => (domRefs.current[gust.id] = el)}
+            className="absolute pointer-events-none"
             style={{
               transform: `translate3d(${gust.x}px, ${gust.y}px, 0)`,
               willChange: 'transform',
@@ -99,7 +105,7 @@ const WindBreeze2D = () => {
               </defs>
 
               <path
-                d={`M 0 30 Q ${w * 0.5} ${wave} ${w} 30`}
+                d={`M 0 30 Q ${w * 0.5} 30 ${w} 30`}
                 fill="none"
                 stroke={`url(#singleWindGrad-${gust.id})`}
                 strokeWidth="1.3"
@@ -115,18 +121,18 @@ const WindBreeze2D = () => {
 
 /**
  * 60FPS Interactive Leaf Physics Component
- * - EXACTLY 10 LEAVES OF 10 DISTINCT TYPES & COLORS!
+ * - DIRECT DOM ELEMENT MUTATION (0% CPU LAG, SMOOTH GPU TRANSLATE3D)
  */
 const InteractiveBlowingLeaves2D = () => {
   const containerRef = useRef(null);
   const leavesRef = useRef([]);
+  const domRefs = useRef({});
   const mouseRef = useRef({ x: -1000, y: -1000, active: false });
   const clickBurstRef = useRef({ x: -1000, y: -1000, active: false, time: 0 });
   const frameCountRef = useRef(0);
-  const [, setRenderTrigger] = useState(0);
 
   useEffect(() => {
-    const numLeaves = 6; // Reduced by half (12 -> 6)
+    const numLeaves = 6;
     const initialLeaves = [];
     const width = window.innerWidth || 1200;
     const height = window.innerHeight || 800;
@@ -140,12 +146,12 @@ const InteractiveBlowingLeaves2D = () => {
         y: Math.random() * height,
         vx: 0,
         vy: 0,
-        baseSpeedX: 0.2 + Math.random() * 0.35, // Relaxed gentle wind drift X (0.2 - 0.55 px/frame)
-        baseSpeedY: 0.08 + Math.random() * 0.18,// Gentle slow float Y (0.08 - 0.26 px/frame)
-        swayAmp: 0.5 + Math.random() * 0.7,    // Soft subtle sway amplitude
-        swayFreq: 0.008 + Math.random() * 0.01, // Slow rhythmic breathing sway
-        phase: Math.random() * Math.PI * 2,    // Phase offset
-        rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.1 + Math.random() * 0.25), // Very gentle tumbling rotation
+        baseSpeedX: 0.2 + Math.random() * 0.35,
+        baseSpeedY: 0.08 + Math.random() * 0.18,
+        swayAmp: 0.5 + Math.random() * 0.7,
+        swayFreq: 0.008 + Math.random() * 0.01,
+        phase: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.1 + Math.random() * 0.25),
         rotation: Math.random() * 360,
         vRot: 0,
         type: i % 10,
@@ -275,13 +281,18 @@ const InteractiveBlowingLeaves2D = () => {
         }
         if (leaf.x < -85) leaf.x = width + 75;
         if (leaf.y < -85) leaf.y = height + 75;
+
+        // DIRECT DOM TRANSFORM MUTATION (0% REACT RE-RENDER LAG!)
+        const el = domRefs.current[leaf.id];
+        if (el) {
+          el.style.transform = `translate3d(${leaf.x}px, ${leaf.y}px, 0) rotate(${leaf.rotation}deg)`;
+        }
       });
 
       if (isBursting && Date.now() - burst.time >= 350) {
         burst.active = false;
       }
 
-      setRenderTrigger((prev) => (prev + 1) % 1000);
       animId = requestAnimationFrame(updatePhysics);
     };
 
@@ -294,7 +305,8 @@ const InteractiveBlowingLeaves2D = () => {
       {leavesRef.current.map((leaf) => (
         <div
           key={leaf.id}
-          className="absolute transition-transform duration-75 ease-out pointer-events-none"
+          ref={(el) => (domRefs.current[leaf.id] = el)}
+          className="absolute pointer-events-none"
           style={{
             transform: `translate3d(${leaf.x}px, ${leaf.y}px, 0) rotate(${leaf.rotation}deg)`,
             willChange: 'transform'
@@ -503,16 +515,15 @@ const generateInitial5Clouds = () => {
 
 /**
  * WIDELY SPACED SOFT BORDERLESS DRIFTING CLOUDS COMPONENT
- * - Exactly 5 widely spaced clouds placed dynamically in top 60% sky height region
+ * - DIRECT DOM TRANSFORM MUTATIONS (0% REACT RE-RENDER LAG)
  */
 const DynamicClouds = ({ timeMode }) => {
   const cloudsRef = useRef([]);
+  const domRefs = useRef({});
 
   if (cloudsRef.current.length === 0) {
     cloudsRef.current = generateInitial5Clouds();
   }
-
-  const [, setRenderTrigger] = useState(0);
 
   useEffect(() => {
     let animId;
@@ -528,9 +539,13 @@ const DynamicClouds = ({ timeMode }) => {
           cloud.x = -400 - Math.random() * 300;
           cloud.y = 10 + Math.random() * Math.max(100, skyHeightMax - 70);
         }
+
+        const el = domRefs.current[cloud.id];
+        if (el) {
+          el.style.transform = `translate3d(${cloud.x}px, ${cloud.y}px, 0) scale(${cloud.scale})`;
+        }
       });
 
-      setRenderTrigger((prev) => (prev + 1) % 1000);
       animId = requestAnimationFrame(animateClouds);
     };
 
@@ -543,7 +558,8 @@ const DynamicClouds = ({ timeMode }) => {
       {cloudsRef.current.map((cloud) => (
         <div
           key={cloud.id}
-          className={`absolute filter ${cloud.blur} pointer-events-none transition-transform duration-75`}
+          ref={(el) => (domRefs.current[cloud.id] = el)}
+          className={`absolute filter ${cloud.blur} pointer-events-none`}
           style={{
             transform: `translate3d(${cloud.x}px, ${cloud.y}px, 0) scale(${cloud.scale})`,
             opacity: cloud.opacity,

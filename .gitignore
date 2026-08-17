@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dist-electron/
+*.db
+*.sqlite
+.env
+.DS_Store

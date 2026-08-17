@@ -220,24 +220,7 @@ export default function ProfessorOwlMascot({
     }
   };
 
-  useEffect(() => {
-    if (animateOnHoverOnly || disableBodyAnimation) return;
-
-    const handleGlobalClick = (e) => {
-      const target = e.target;
-      if (target && (target.tagName === 'BUTTON' || target.closest('button') || target.tagName === 'INPUT')) {
-        triggerMascotAction();
-      }
-    };
-
-    window.addEventListener('click', handleGlobalClick);
-    window.addEventListener('touchstart', handleGlobalClick, { passive: true });
-
-    return () => {
-      window.removeEventListener('click', handleGlobalClick);
-      window.removeEventListener('touchstart', handleGlobalClick);
-    };
-  }, [animateOnHoverOnly, disableBodyAnimation]);
+  // Mascot interaction via direct clicks on mascot container only
 
   const prevSpeakingRef = useRef(false);
 
@@ -390,12 +373,12 @@ export default function ProfessorOwlMascot({
       return RELO_FRAMES.standing.idle;
     }
 
-    // 1. Wing Flapping Animation Frame (takes highest priority during flight/hop)
+    // 1. Wing Flapping Animation GIF (takes highest priority during flight/hop)
     if (isFlappingActive) {
-      return RELO_FRAMES.flapping[flapFrameIndex] || RELO_FRAMES.flapping[0];
+      return RELO_FRAMES.gifs.flapping;
     }
 
-    // 2. Pose: Chapter / Pointing Sequence (Right wing 1/2 -> 2/2 -> Left wing 1/2 -> 2/2)
+    // 2. Pose: Chapter / Pointing Sequence
     if (pose === 'chapter' || pose === 'pointing') {
       return RELO_FRAMES.pointingSequence[pointFrameIndex] || RELO_FRAMES.pointingSequence[0];
     }
@@ -403,7 +386,7 @@ export default function ProfessorOwlMascot({
     // 3. Pose: Thinking
     if (pose === 'thinking' || emotion === 'thinking') {
       if (isSpeakingState) {
-        return RELO_FRAMES.thinking.vowels[currentVowel] || RELO_FRAMES.thinking.vowels.a;
+        return RELO_FRAMES.gifs.thinkingTalking; // Pre-baked lightweight animated GIF (0% CPU lag)
       }
       if (isBlinking) {
         return RELO_FRAMES.thinking.blinks[blinkIndex] || RELO_FRAMES.thinking.blinks[0];
@@ -414,7 +397,7 @@ export default function ProfessorOwlMascot({
     // 4. Pose: Point Right (or Hero / Celebrating)
     if (pose === 'pointRight' || pose === 'hero' || pose === 'celebrating') {
       if (isSpeakingState) {
-        return RELO_FRAMES.pointRight.vowels[currentVowel] || RELO_FRAMES.pointRight.vowels.a;
+        return RELO_FRAMES.gifs.pointRightTalking; // Pre-baked lightweight animated GIF (0% CPU lag)
       }
       return RELO_FRAMES.pointRight.idle;
     }
@@ -422,14 +405,14 @@ export default function ProfessorOwlMascot({
     // 5. Pose: Point Left
     if (pose === 'pointLeft') {
       if (isSpeakingState) {
-        return RELO_FRAMES.pointLeft.vowels[currentVowel] || RELO_FRAMES.pointLeft.vowels.a;
+        return RELO_FRAMES.gifs.pointLeftTalking; // Pre-baked lightweight animated GIF (0% CPU lag)
       }
       return RELO_FRAMES.pointLeft.idle;
     }
 
     // 6. Default Standing Pose
     if (isSpeakingState) {
-      return RELO_FRAMES.standing.vowels[currentVowel] || RELO_FRAMES.standing.vowels.a;
+      return RELO_FRAMES.gifs.standingTalking; // Pre-baked lightweight animated GIF (0% CPU lag)
     }
 
     if (isBlinking) {
