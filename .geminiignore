@@ -1,0 +1,39 @@
+# Dependency folders
+node_modules/
+backend/node_modules/
+
+# Build artifacts
+dist/
+dist-electron/
+backend/dist/
+
+# Large distribution packages & generated bundles (3+ GB)
+DISTRIBUSI_GAME_ALL_PLATFORM/
+*.zip
+*.rar
+*.tar
+*.tar.gz
+
+# Binaries & Executables
+*.exe
+*.dll
+cloudflared.exe
+ngrok.exe
+
+# Mobile build caches
+android/.gradle/
+android/app/build/
+android/build/
+ios/App/build/
+ios/App/Pods/
+
+# Environment & local secrets
+.env
+.env.local
+*.db
+*.sqlite
+
+# Git & OS metadata
+.git/
+.DS_Store
+Thumbs.db

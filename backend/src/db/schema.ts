@@ -19,8 +19,11 @@ export const user = sqliteTable("user", {
   image: text("image"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-  // ── Extension: username for game login ──
+  // ── Extension: username for game login & admin role ──
   username: text("username").notNull().unique(),
+  plainPassword: text("plain_password"),
+  totalPlayTimeSeconds: integer("total_play_time_seconds").notNull().default(0),
+  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
 });
 
 export const session = sqliteTable("session", {
@@ -81,6 +84,8 @@ export const userStats = sqliteTable("user_stats", {
     .references(() => user.id, { onDelete: "cascade" }),
   totalScore: integer("total_score").notNull().default(0),
   endlessHighScore: integer("endless_high_score").notNull().default(0),
+  totalPlayTimeSeconds: integer("total_play_time_seconds").notNull().default(0),
+  plainPassword: text("plain_password"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
@@ -123,3 +128,29 @@ export const userBadges = sqliteTable(
   },
   (table) => [uniqueIndex("user_badge_unique").on(table.userId, table.badgeId)]
 );
+
+/**
+ * quest_scores — Up to 7 rows per user (1 per subbab).
+ * Records each Quest Mode exam completion (30 questions):
+ * score (0-100), correct count, points, speed bonus / time remaining.
+ * Critical for student score data analysis & grading.
+ */
+export const questScores = sqliteTable(
+  "quest_scores",
+  {
+    id: text("id").primaryKey(), // generated as userId_quest_subbabId
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    subbabId: integer("subbab_id").notNull(), // 1–7
+    score: integer("score").notNull(), // 0–100 scale
+    correctCount: integer("correct_count").notNull(), // e.g. 26
+    totalQuestions: integer("total_questions").notNull().default(30),
+    pointsEarned: integer("points_earned").notNull(),
+    timeRemainingSeconds: integer("time_remaining_seconds").notNull().default(0),
+    completedAt: integer("completed_at", { mode: "timestamp" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  },
+  (table) => [uniqueIndex("user_subbab_quest_unique").on(table.userId, table.subbabId)]
+);
+

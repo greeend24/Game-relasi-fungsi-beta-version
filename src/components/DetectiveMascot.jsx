@@ -1,14 +1,14 @@
 import React from 'react';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
+import DetektifRelo from './DetektifRelo';
 
 /**
  * DetectiveMascot ("Detektif Relo")
- * Wrapper around ProfessorOwlMascot ensuring all mascot instances in the game
+ * Wrapper around DetektifRelo ensuring all mascot instances in the game
  * render the unified high-resolution PNG frame animation system.
  */
 export default function DetectiveMascot({ emotion = 'idle', message = '', size = 'md', className = '' }) {
   return (
-    <ProfessorOwlMascot
+    <DetektifRelo
       emotion={emotion}
       message={message}
       size={size}

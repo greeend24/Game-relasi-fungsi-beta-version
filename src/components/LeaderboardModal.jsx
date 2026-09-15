@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
+import InstructorMascotGuide from './InstructorMascotGuide';
 
 export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -49,7 +48,7 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
       
       {/* WOODEN BOARD CONTAINER MATCHING EXACT PNG ASPECT RATIO 2843:2628 */}
       <div 
-        className="relative w-full max-w-[480px] sm:max-w-[540px] aspect-[2843/2628] bg-contain bg-no-repeat bg-center text-[#2D241E] flex flex-col items-center drop-shadow-2xl overflow-hidden"
+        className="relative w-full max-w-[480px] sm:max-w-[540px] max-h-[92dvh] aspect-[2843/2628] bg-contain bg-no-repeat bg-center text-[#2D241E] flex flex-col items-center drop-shadow-2xl overflow-hidden"
         style={{ backgroundImage: `url('/assets/tampilan di highscore/Asset/board_mark_high_score@4x.png')` }}
       >
         
@@ -93,7 +92,7 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
               return (
                 <div
                   key={idx}
-                  className={`grid grid-cols-12 gap-1 py-1 px-2 rounded-xl font-pencil text-base sm:text-lg font-bold drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.85)] items-center transition-all ${
+                  className={`grid grid-cols-12 gap-1 py-1 px-2 rounded-xl font-pencil text-base sm:text-lg font-bold  items-center transition-all ${
                     isCurrentUser
                       ? 'bg-gradient-to-r from-amber-400/50 via-yellow-300/55 to-amber-500/50 border-2 border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.75)] text-yellow-100 ring-2 ring-yellow-300/50'
                       : 'bg-white/10 backdrop-blur-xs text-white hover:bg-white/20'
@@ -121,29 +120,17 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
 
       </div>
 
-      {/* DETEKTIF RELO MASCOT (+50% LARGER) & ENLARGED COMIC SPEECH BUBBLE */}
-      <div className="fixed bottom-2 left-2 sm:bottom-4 sm:left-4 z-50 pointer-events-none flex flex-col items-start animate-fade-in max-w-[320px] sm:max-w-[420px]">
-        {reloText && (
-          <div className="relative mb-3 p-4 sm:p-5 rounded-3xl bg-white border-4 border-[#2D241E] shadow-[6px_8px_0px_rgba(45,36,30,0.9)] text-[#2D241E] font-hand pointer-events-auto">
-            <div className="absolute -bottom-4 left-10 w-0 h-0 border-t-[16px] border-t-[#2D241E] border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent" />
-            <div className="absolute -bottom-[11px] left-10 w-0 h-0 border-t-[12px] border-t-white border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent" />
-            <div className="flex items-center space-x-2 text-xs sm:text-sm font-black text-[#9A3412] uppercase tracking-wider mb-1.5 border-b-2 border-[#FED7AA] pb-1">
-              <span className="text-base sm:text-lg">🕵️‍♂️</span>
-              <span>PETUNJUK RELO</span>
-            </div>
-            <p className="text-base sm:text-lg font-black leading-snug text-[#2D241E]">
-              {reloText}
-            </p>
-          </div>
-        )}
-
-        <ProfessorOwlMascot
-          pose="thinking"
-          size="xxxl"
-          animateOnHoverOnly={false}
-          message=""
-        />
-      </div>
+      {/* DETEKTIF RYU MASCOT & SPEECH BUBBLE VIA UNIFIED INSTRUCTOR GUIDE */}
+      <InstructorMascotGuide
+        layout="floating"
+        character="ryu"
+        pose="thinking"
+        emotion="happy"
+        title="INSTRUKTUR RYU"
+        icon="🔥"
+        canSpeak={true}
+        message={reloText || 'Papan peringkat para detektif terhebat! 🏆🔥🐉'}
+      />
 
     </div>
   );

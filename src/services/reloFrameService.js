@@ -1,139 +1,123 @@
 /**
  * Relo Frame Animation Service
  * Manages frame preloading, caching, and state-to-frame path mapping
- * for Detektif Relo mascot animations.
+ * for Detektif Relo mascot animations with hardware acceleration.
  */
 
 const BASE_PATH = '/relo/relo animation';
 
-// Map of all frame relative paths and lightweight pre-baked animated GIFs
+// Map of all frame relative paths and lightweight animated GIFs
+// Map of lightweight animated GIFs for Detektif Relo
 export const RELO_FRAMES = {
-  // Pre-baked Animated GIFs for 0% CPU talking & flapping animations
   gifs: {
+    standingIdle: '/relo/gifs/relo_standing_blinking.gif',
+    standingBlinking: '/relo/gifs/relo_standing_blinking.gif',
+    standingBlinkingQuest: '/relo/gifs/relo_standing_blinking_quest.gif',
+    standingBlinkingChapter: '/relo/gifs/relo_standing_blinking_chapter.gif',
+    standingBlinkingEndless: '/relo/gifs/relo_standing_blinking_endless.gif',
+    standing: '/relo/gifs/relo_standing_blinking.gif',
     standingTalking: '/relo/gifs/relo_standing_talking.gif',
     thinkingTalking: '/relo/gifs/relo_thinking_talking.gif',
+    thinkingIdle: '/relo/gifs/relo_thinking_idle.gif',
+    thinking: '/relo/gifs/relo_thinking.gif',
+    chapterPointing: '/relo/gifs/relo_chapter_pointing.gif',
+    pointing: '/relo/gifs/relo_chapter_pointing.gif',
     pointRightTalking: '/relo/gifs/relo_point_right_talking.gif',
     pointLeftTalking: '/relo/gifs/relo_point_left_talking.gif',
     flapping: '/relo/gifs/relo_flapping.gif',
   },
-
-  // 1. Berdiri - Tanpa Aksi Sayap
-  standing: {
-    idle: `${BASE_PATH}/Berdiri/tanpa aksi sayap/tidak mengedip/DIAM.png`,
-    blinks: [
-      `${BASE_PATH}/Berdiri/tanpa aksi sayap/mengedip/mengedip 2 mata.png`,
-      `${BASE_PATH}/Berdiri/tanpa aksi sayap/mengedip/mengedip mata kanan.png`,
-      `${BASE_PATH}/Berdiri/tanpa aksi sayap/mengedip/mengedip mata kiri.png`,
-    ],
-    vowels: {
-      a: `${BASE_PATH}/Berdiri/tanpa aksi sayap/tidak mengedip/a.png`,
-      e: `${BASE_PATH}/Berdiri/tanpa aksi sayap/tidak mengedip/e.png`,
-      i: `${BASE_PATH}/Berdiri/tanpa aksi sayap/tidak mengedip/i.png`,
-      o: `${BASE_PATH}/Berdiri/tanpa aksi sayap/tidak mengedip/o.png`,
-      u: `${BASE_PATH}/Berdiri/tanpa aksi sayap/tidak mengedip/u.png`,
-    }
-  },
-
-  // 2. Berdiri - Menunjuk Sayap Kanan
-  pointRight: {
-    idle: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/2. DIAM 2 PER 2 SAYAP.png`,
-    idleHalf: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/1. DIAM 1 PER 2 SAYAP.png`,
-    vowels: {
-      a: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/a.png`,
-      e: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/e.png`,
-      i: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/i.png`,
-      o: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/o.png`,
-      u: `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/u.png`,
-    }
-  },
-
-  // 3. Berdiri - Menunjuk Sayap Kiri
-  pointLeft: {
-    idle: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/2. DIAM 2 PER 2 SAYAP.png`,
-    idle2: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/2. DIAM 2 PER 2 SAYAP.png`,
-    idleHalf: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/1. DIAM 1 PER 2 SAYAP.png`,
-    vowels: {
-      a: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/A.png`,
-      e: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/E.png`,
-      i: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/I.png`,
-      o: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/O.png`,
-      u: `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/U.png`,
-    }
-  },
-
-  // 4. Pose Mikir (Thinking)
-  thinking: {
-    idle: `${BASE_PATH}/mikir/diam.png`,
-    blinks: [
-      `${BASE_PATH}/mikir/TUTUP MATA DUA DUANYA.png`,
-      `${BASE_PATH}/mikir/TUTUP MATA KANAN.png`,
-      `${BASE_PATH}/mikir/TUTUP MATA KIRI.png`,
-    ],
-    vowels: {
-      a: `${BASE_PATH}/mikir/A.png`,
-      e: `${BASE_PATH}/mikir/E.png`,
-      i: `${BASE_PATH}/mikir/I.png`,
-      o: `${BASE_PATH}/mikir/O.png`,
-      u: `${BASE_PATH}/mikir/U.png`,
-    }
-  },
-
-  // 5. Mengepakkan Sayap (Smooth Ping-Pong 10-Frame Loop: 1/5 -> 5/5 -> 1/5)
-  flapping: [
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/1. sayap tertutup.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/2. 1 per 5 terbuka .png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/3. 2 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/4. 3 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/5. 4 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/6. 5 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/5. 4 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/4. 3 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/3. 2 per 5 terbuka.png`,
-    `${BASE_PATH}/Mengepakkan sayap/tanpa aksi mata/2. 1 per 5 terbuka .png`,
-  ],
-
-  // 6. Chapter Mode Pointing Sequence (Right Wing 1/2 -> 2/2 -> Left Wing 1/2 -> 2/2)
-  pointingSequence: [
-    `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/1. DIAM 1 PER 2 SAYAP.png`,
-    `${BASE_PATH}/Berdiri/menunjuuk dengan sayap kanan/2. DIAM 2 PER 2 SAYAP.png`,
-    `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/1. DIAM 1 PER 2 SAYAP.png`,
-    `${BASE_PATH}/Berdiri/menuunjuk dengan sayap kiri/2. DIAM 2 PER 2 SAYAP.png`,
-  ]
 };
 
-// Global image element cache to prevent reloading delay
+// Global in-memory image cache
 const imageCache = new Map();
 let isPreloaded = false;
 
 /**
- * Preload all Relo animation frames in background for smooth 60fps frame switches
+ * Preload all essential assets with progress callback (optimized lightweight initial bundle)
+ */
+export async function preloadAllGameAssets(onProgress) {
+  if (isPreloaded) {
+    onProgress?.(100);
+    return;
+  }
+
+  // Critical assets needed immediately for the initial auth / lobby view
+  const initialCriticalAssets = [
+    '/assets/Logo game/game_logo.png',
+    '/assets/tampilan di lobby/Asset/asset_background@4x.png',
+    '/assets/tampilan sebelum masuk lobby/tampilan_start menu@4x.png',
+    '/relo/gifs/relo_standing_blinking.gif',
+    '/game asset/board_kayu.png',
+  ];
+
+  // Secondary assets to be preloaded smoothly on-demand/in background
+  const secondaryAssets = [
+    '/relo/gifs/relo_standing_talking.gif',
+    '/relo/gifs/relo_chapter_pointing.gif',
+    '/relo/gifs/relo_thinking_talking.gif',
+    '/images/1.png',
+    '/images/2.png',
+    '/images/3.png',
+    '/images/4.png',
+    '/images/5.png',
+    '/images/6.png',
+    '/images/7.png',
+  ];
+
+  const uniqueUrls = [...new Set(initialCriticalAssets.filter(Boolean))];
+  const total = uniqueUrls.length;
+  let loaded = 0;
+
+  const loadItem = (url) => {
+    return new Promise((resolve) => {
+      if (imageCache.has(url)) {
+        loaded++;
+        onProgress?.(Math.round((loaded / total) * 100));
+        return resolve();
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        imageCache.set(url, img);
+        loaded++;
+        onProgress?.(Math.round((loaded / total) * 100));
+        resolve();
+      };
+      img.onerror = () => {
+        loaded++;
+        onProgress?.(Math.round((loaded / total) * 100));
+        resolve();
+      };
+      img.src = url;
+    });
+  };
+
+  // Preload initial critical assets in parallel with 350ms safety timeout
+  const preloadPromise = Promise.all(uniqueUrls.map(loadItem));
+  const timeoutPromise = new Promise(resolve => setTimeout(resolve, 350));
+  await Promise.race([preloadPromise, timeoutPromise]);
+  isPreloaded = true;
+
+  // Queue remaining secondary assets slowly in background to prevent CPU/RAM spikes
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    window.requestIdleCallback(() => {
+      secondaryAssets.forEach(url => {
+        if (!imageCache.has(url)) {
+          const img = new Image();
+          img.src = url;
+          imageCache.set(url, img);
+        }
+      });
+    }, { timeout: 3000 });
+  }
+}
+
+/**
+ * Preload Relo animation frames in background
  */
 export function preloadReloFrames() {
   if (isPreloaded) return;
-  isPreloaded = true;
-
-  const urlsToPreload = [];
-
-  // Helper to extract URLs recursively
-  const extractUrls = (obj) => {
-    if (typeof obj === 'string') {
-      urlsToPreload.push(obj);
-    } else if (Array.isArray(obj)) {
-      obj.forEach(extractUrls);
-    } else if (typeof obj === 'object' && obj !== null) {
-      Object.values(obj).forEach(extractUrls);
-    }
-  };
-
-  extractUrls(RELO_FRAMES);
-
-  urlsToPreload.forEach((url) => {
-    if (!imageCache.has(url)) {
-      const img = new Image();
-      img.src = url;
-      imageCache.set(url, img);
-    }
-  });
+  preloadAllGameAssets();
 }
 
 // Auto preload after window load or immediate

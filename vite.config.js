@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -24,6 +25,9 @@ export default defineConfig(({ mode }) => ({
     // Use relative paths so Electron can serve from local filesystem
     assetsDir: 'assets',
     rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
@@ -32,5 +36,5 @@ export default defineConfig(({ mode }) => ({
     },
   },
   // Base URL: relative for Electron production, absolute for web dev
-  base: './',
+  base: mode === 'production' ? './' : '/',
 }));

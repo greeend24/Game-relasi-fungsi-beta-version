@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import StageHeader from '../StageHeader';
-import ProfessorOwlMascot from '../ProfessorOwlMascot';
+import InstructorMascotGuide from '../InstructorMascotGuide';
 import PBLSyntaxPanel from '../PBLSyntaxPanel';
 import { SUBBABS_DATA } from '../../data/casesData';
 import { audioEngine } from '../../services/audioEngine';
-import { Binary, AlertTriangle, Lightbulb, KeyRound, Check } from 'lucide-react';
+import { Binary, KeyRound, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
@@ -66,7 +66,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
       audioEngine.playStageComplete();
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
 
-      const pts = 140 + (10 - stageNum) * 10;
+      const pts = 140 + (stageNum - 1) * 5;
       setScoreEarned(pts);
       setStageCleared(true);
       setErrorDetails(null);
@@ -91,7 +91,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
   };
 
   return (
-    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand">
+    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand min-h-0">
       <StageHeader
         subbabId={5}
         subbabTitle="Notasi, Rumus, & Nilai Fungsi"
@@ -114,120 +114,101 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
         explanationText={`Nilai fungsi f(${stageConfig.xVal}) diperoleh secara aljabar dengan menyubstitusikan variabel x = ${stageConfig.xVal} ke rumus fungsi f(x) = ${stageConfig.correctFormula}.`}
       />
 
-      {/* Professor Owl Mascot: Compact & Helpful */}
-      <div className="flex justify-center sm:justify-start animate-fade-in">
-        <ProfessorOwlMascot
-          pose="thinking"
-          message={errorDetails ? errorDetails.hint : (stageConfig.conceptDef || `Substitusikan nilai x = ${stageConfig.xVal} ke dalam rumus fungsi f(x) = ax + b.`)}
-          size="sm"
+      {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}
+      <div className="flex-1 w-full min-h-0 flex items-stretch gap-3 lg:gap-4 relative overflow-hidden">
+        <InstructorMascotGuide
+          layout="dock"
+          character="relo"
+          pose={stageCleared ? 'celebrating' : (errorDetails ? 'thinking' : 'default')}
+          emotion={stageCleared ? 'happy' : (errorDetails ? 'error' : 'idle')}
+          title={errorDetails ? "PETUNJUK DETEKTIF RELO" : "DETEKTIF RELO"}
+          icon="🕵️‍♂️"
+          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || `Substitusikan nilai x = ${stageConfig.xVal} ke dalam rumus fungsi f(x) = ax + b.`) : (stageCleared ? 'Luar biasa! Pemecahan rumus fungsi dan hasil substitusimu akurat! 🎉' : ''))}
         />
+
+        <PBLSyntaxPanel
+          stageNum={stageNum}
+          story={stageConfig.story}
+          conceptDef={stageConfig.conceptDef}
+          relationRule={`Notasi & Nilai f(${stageConfig.xVal})`}
+          errorDetails={errorDetails}
+        >
+          <div className="flex-1 flex flex-col justify-between min-h-0 space-y-1 sm:space-y-2 font-hand">
+            
+            {/* Topic Illustration */}
+            <div className="rounded-2xl overflow-hidden border-2.5 border-[#2D241E] relative group p-2.5 sm:p-3 bg-[#FEF3C7] flex-shrink-0 shadow-[2px_3px_0px_#2D241E]">
+              <img src="/images/5.png" alt="Subbab 5 Anime" className="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-35 group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FEF3C7] via-[#FEF3C7]/90 to-transparent/30 pointer-events-none" />
+              <div className="relative z-10 flex flex-col justify-end">
+                <div className="flex items-center space-x-2 text-[#78350F] font-black text-base sm:text-lg lg:text-[20px]">
+                  <Binary className="w-5 h-5 text-[#D97706] flex-shrink-0" />
+                  <span>MEMECAHKAN KODE FUNGSI TERSANGKA: NOTASI & SUBSTITUSI</span>
+                </div>
+                <p className="text-base sm:text-lg lg:text-[20px] text-[#2D241E] font-bold leading-snug">
+                  {stageConfig?.story || ''}
+                </p>
+              </div>
+            </div>
+
+            {/* Step 1: Select Formula */}
+            <div className="space-y-1.5 p-3 rounded-2xl glass-card border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.08)] flex-shrink-0">
+              <label className="text-sm sm:text-base lg:text-[18px] font-black text-[#78350F]">LANGKAH 1: PILIH NOTASI RUMUS FUNGSI f(x) YANG TEPAT</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {stageConfig.formulaOptions.map((f, idx) => {
+                  const isSelected = selectedFormula === f;
+                  return (
+                    <button
+                      type="button"
+                      key={idx}
+                      onClick={() => handleSelectFormula(f)}
+                      className={`pencil-btn p-2.5 sm:p-3 rounded-xl font-bold transition flex items-center justify-between ${
+                        isSelected
+                          ? 'bg-[#FDE68A] text-[#2D241E] border-2 border-[#2D241E] ring-3 ring-[#F59E0B] shadow-[2px_2px_0px_#2D241E] font-black scale-[1.01]'
+                          : 'glass-option text-[#2D241E] shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
+                      }`}
+                    >
+                      <span className="font-pencil text-base sm:text-lg lg:text-[20px]">{f}</span>
+                      {isSelected && <Check className="w-5 h-5 text-[#D97706]" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Step 2: Input Calculated Value */}
+            <form onSubmit={handleVerify} className="space-y-2 flex-1 min-h-0 flex flex-col justify-center">
+              <div className="space-y-1.5 p-3 rounded-2xl glass-card border border-white/60 shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+                <label className="text-sm sm:text-base lg:text-[18px] font-black text-[#78350F]">
+                  LANGKAH 2: HITUNG HASIL NILAI f({stageConfig.xVal}) = ...
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    placeholder={`Masukkan angka hasil f(${stageConfig.xVal})...`}
+                    value={calculatedAns}
+                    onChange={(e) => {
+                      setCalculatedAns(e.target.value);
+                      setErrorDetails(null);
+                    }}
+                    className="w-full px-4 py-2.5 rounded-xl glass-input text-[#2D241E] text-base sm:text-lg lg:text-[20px] font-black focus:outline-none shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
+                  />
+                  <KeyRound className="w-5 h-5 text-[#D97706] absolute right-3.5 top-3" />
+                </div>
+              </div>
+
+              <div className="flex justify-center pt-1 flex-shrink-0">
+                <button
+                  type="submit"
+                  className="pencil-btn px-10 sm:px-12 py-2.5 sm:py-3 bg-[#FDE68A] hover:bg-[#F59E0B] text-[#2D241E] font-black text-xl sm:text-2xl shadow-[3px_4px_0px_#2D241E] rounded-2xl border-2.5 border-[#2D241E] flex items-center space-x-2 cursor-pointer transition hover:scale-105 active:scale-95"
+                >
+                  <span>Yakin!?</span>
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </PBLSyntaxPanel>
       </div>
-
-      <PBLSyntaxPanel
-        stageNum={stageNum}
-        story={stageConfig.story}
-        conceptDef={stageConfig.conceptDef}
-        relationRule={`Notasi & Nilai f(${stageConfig.xVal})`}
-        errorDetails={errorDetails}
-      >
-        <div className="space-y-3 font-hand">
-          
-          {/* Topic Illustration */}
-          <div className="rounded-2xl overflow-hidden border-2 border-[#2D241E] relative group min-h-[60px] flex flex-col justify-end p-2.5 sm:p-3 bg-[#FEF3C7]">
-            <img src="/images/5.png" alt="Subbab 5 Anime" className="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-40 group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#FEF3C7] via-[#FEF3C7]/90 to-transparent/30 pointer-events-none" />
-            <div className="relative z-10 flex flex-col justify-end">
-              <div className="flex items-center space-x-1.5 text-[#78350F] font-black text-xs sm:text-base">
-                <Binary className="w-4 h-4 text-[#D97706] flex-shrink-0" />
-                <span>MEMECAHKAN KODE FUNGSI TERSANGKA: NOTASI & SUBSTITUSI</span>
-              </div>
-              <p className="text-xs sm:text-sm text-[#2D241E] font-bold mt-0.5">
-                {stageConfig?.story || ''}
-              </p>
-            </div>
-          </div>
-
-          {/* Conceptual Error Analysis Card */}
-          {errorDetails && (
-            <div className="p-4 rounded-2xl bg-[#FFE4E6] border-2 border-[#BE123C] text-[#2D241E] space-y-2.5 animate-fade-in shadow-[2px_3px_0px_#2D241E]">
-              <div className="flex items-center space-x-2 text-[#BE123C] font-extrabold text-xs">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 animate-bounce" />
-                <span>{errorDetails.title}</span>
-              </div>
-              
-              <div className="space-y-1.5 text-xs font-bold">
-                {errorDetails.reasons.map((reason, idx) => (
-                  <p key={idx} className="p-2 rounded-xl bg-white border border-[#BE123C]/40 text-[#BE123C]">
-                    {reason}
-                  </p>
-                ))}
-              </div>
-
-              <div className="pt-2 border-t border-[#BE123C]/30 flex items-center space-x-2 text-xs text-[#991B1B] font-bold">
-                <Lightbulb className="w-4 h-4 flex-shrink-0 text-[#D97706]" />
-                <span>{errorDetails.hint}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Step 1: Select Formula */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#78350F]">LANGKAH 1: PILIH NOTASI RUMUS FUNGSI f(x) YANG TEPAT</label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              {stageConfig.formulaOptions.map((f, idx) => {
-                const isSelected = selectedFormula === f;
-                return (
-                  <button
-                    type="button"
-                    key={idx}
-                    onClick={() => handleSelectFormula(f)}
-                    className={`pencil-btn p-3.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-between ${
-                      isSelected
-                        ? 'bg-[#FDE68A] text-[#2D241E] border-2.5 border-[#2D241E] ring-4 ring-[#F59E0B] shadow-[3px_3px_0px_#2D241E] font-extrabold scale-[1.02]'
-                        : 'bg-white border-2 border-[#2D241E] text-[#2D241E] hover:bg-[#FEF3C7]'
-                    }`}
-                  >
-                    <span>{f}</span>
-                    {isSelected && <Check className="w-4 h-4 text-[#D97706] animate-bounce" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Step 2: Input Calculated Value */}
-          <form onSubmit={handleVerify} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#78350F]">
-                LANGKAH 2: HITUNG HASIL NILAI f({stageConfig.xVal}) = ...
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  placeholder={`Masukkan hasil angka f(${stageConfig.xVal})...`}
-                  value={calculatedAns}
-                  onChange={(e) => {
-                    setCalculatedAns(e.target.value);
-                    setErrorDetails(null);
-                  }}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border-2 border-[#2D241E] text-[#2D241E] text-sm font-extrabold focus:outline-none shadow-[2px_2px_0px_#2D241E]"
-                />
-                <KeyRound className="w-5 h-5 text-[#D97706] absolute right-4 top-3.5" />
-              </div>
-            </div>
-
-            <div className="flex justify-center pt-2">
-              <button
-                type="submit"
-                className="pencil-btn px-10 py-3 bg-[#FDE68A] hover:bg-[#F59E0B] text-[#2D241E] font-extrabold text-lg sm:text-xl shadow-[4px_5px_0px_#2D241E] rounded-2xl border-3 border-[#2D241E] flex items-center space-x-2 cursor-pointer transition hover:scale-105 active:scale-95"
-              >
-                <span>Yakin!?</span>
-              </button>
-            </div>
-          </form>
-
-        </div>
-      </PBLSyntaxPanel>
 
     </div>
   );

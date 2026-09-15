@@ -1,72 +1,50 @@
 import React, { useState } from 'react';
-import { ShieldCheck, User, Lock, UserPlus, LogIn, X, CheckCircle, Trash2, UserCheck, KeyRound, ArrowLeft } from 'lucide-react';
+import { 
+  User, UserPlus, LogIn, CheckCircle, 
+  Eye, EyeOff 
+} from 'lucide-react';
 import { Lottie } from 'lottie-react';
+import NetworkStatusBadge from './NetworkStatusBadge';
 import { storageService } from '../services/storageService';
 import { audioEngine } from '../services/audioEngine';
-import LottieLoader from './LottieLoader';
 import successAnimation from '../../public/assets/loading/success_animation.json';
 
 export default function AuthScreen({ onLoginSuccess }) {
-  // activeModal: null (menu 2 tombol), 'REGISTER' (modal buat akun), 'LOGIN' (modal pilih akun)
+  // activeModal: null (menu 2 tombol), 'REGISTER' (modal buat akun), 'LOGIN' (modal pilih/masuk akun)
   const [activeModal, setActiveModal] = useState(null); 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullname, setFullname] = useState('');
+  const [absen, setAbsen] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [regSuccessUser, setRegSuccessUser] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Saved accounts state for Pilih Akun modal
-  const [savedAccounts, setSavedAccounts] = useState([]);
-  const [selectedAccount, setSelectedAccount] = useState(null);
-  const [isManualInput, setIsManualInput] = useState(false);
+  // Show/hide password toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const openCreateAccount = () => {
     try { audioEngine.playClick(); } catch {}
     setErrorMsg('');
     setUsername('');
     setPassword('');
+    setConfirmPassword('');
     setFullname('');
+    setAbsen('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     setActiveModal('REGISTER');
   };
 
-  const openSelectAccount = async () => {
+  const openSelectAccount = () => {
     try { audioEngine.playClick(); } catch {}
     setErrorMsg('');
-    const list = await storageService.getSavedAccounts();
-    setSavedAccounts(list);
+    setUsername('');
     setPassword('');
-
-    if (list.length > 0) {
-      setSelectedAccount(list[0]);
-      setUsername(list[0].username);
-      setIsManualInput(false);
-    } else {
-      setSelectedAccount(null);
-      setUsername('');
-      setIsManualInput(true);
-    }
-
+    setShowPassword(false);
     setActiveModal('LOGIN');
-  };
-
-  const handleDeleteAccount = async (e, accUsername) => {
-    e.stopPropagation();
-    try { audioEngine.playClick(); } catch {}
-    storageService.removeSavedAccount(accUsername);
-    const updated = await storageService.getSavedAccounts();
-    setSavedAccounts(updated);
-
-    if (selectedAccount?.username.toLowerCase() === accUsername.toLowerCase()) {
-      if (updated.length > 0) {
-        setSelectedAccount(updated[0]);
-        setUsername(updated[0].username);
-      } else {
-        setSelectedAccount(null);
-        setUsername('');
-        setIsManualInput(true);
-      }
-    }
   };
 
   const closeModal = () => {
@@ -75,39 +53,91 @@ export default function AuthScreen({ onLoginSuccess }) {
     setErrorMsg('');
   };
 
+  // Build username from fullname + 2-digit absen
+  const buildUsername = (name, absenNum) => {
+    const cleanName = name.trim().toLowerCase().split(' ')[0]; // ambil nama pertama
+    const absenPadded = String(absenNum).padStart(2, '0').slice(0, 2);
+    return `${cleanName}${absenPadded}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
-    if (!username.trim() || !password.trim()) {
-      try { audioEngine.playError(); } catch {}
-      setErrorMsg('Harap isi username dan password!');
-      return;
-    }
-
     if (activeModal === 'REGISTER') {
-      const res = await storageService.register(username.trim(), password, fullname.trim());
-      if (res.success && res.user) {
-        try { audioEngine.playStageClear(); } catch {}
-        try { audioEngine.toggleBgm(true); } catch {}
-        // Show success animation popup and automatically enter lobby
-        setRegSuccessUser(res.user);
-        setTimeout(() => {
-          onLoginSuccess(res.user);
-        }, 1200);
-      } else {
+      if (!fullname.trim()) {
         try { audioEngine.playError(); } catch {}
-        setErrorMsg(res.message || 'Gagal mendaftarkan akun!');
+        setErrorMsg('Harap isi nama lengkap!');
+        return;
       }
-    } else if (activeModal === 'LOGIN') {
-      const res = await storageService.login(username.trim(), password);
-      if (res.success && res.user) {
-        try { audioEngine.playCorrect(); } catch {}
-        try { audioEngine.toggleBgm(true); } catch {}
-        onLoginSuccess(res.user);
-      } else {
+      if (!absen.trim() || isNaN(Number(absen)) || Number(absen) < 1 || Number(absen) > 99) {
         try { audioEngine.playError(); } catch {}
-        setErrorMsg(res.message || 'Username atau password salah!');
+        setErrorMsg('Harap isi nomor absen (1–99)!');
+        return;
+      }
+      if (!password.trim()) {
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Harap isi kata sandi!');
+        return;
+      }
+      if (password.length < 4) {
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Kata sandi minimal 4 karakter!');
+        return;
+      }
+      if (password !== confirmPassword) {
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Kata sandi konfirmasi tidak cocok!');
+        return;
+      }
+
+      const generatedUsername = buildUsername(fullname, absen);
+
+      setIsSubmitting(true);
+      try {
+        const res = await storageService.register(generatedUsername, password, fullname.trim());
+        if (res.success && res.user) {
+          try { audioEngine.playStageClear(); } catch {}
+          try { audioEngine.toggleBgm(true); } catch {}
+          setRegSuccessUser(res.user);
+          setTimeout(() => {
+            onLoginSuccess(res.user);
+          }, 2200);
+        } else {
+          try { audioEngine.playError(); } catch {}
+          setErrorMsg(res.message || 'Gagal mendaftarkan akun!');
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+
+    } else if (activeModal === 'LOGIN') {
+      const loginUsername = username.trim();
+
+      if (!loginUsername) {
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Harap masukkan username kamu!');
+        return;
+      }
+      if (!password.trim()) {
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Harap isi kata sandi!');
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        const res = await storageService.login(loginUsername, password);
+        if (res.success && res.user) {
+          try { audioEngine.playCorrect(); } catch {}
+          try { audioEngine.toggleBgm(true); } catch {}
+          onLoginSuccess(res.user);
+        } else {
+          try { audioEngine.playError(); } catch {}
+          setErrorMsg(res.message || 'Username atau password salah!');
+        }
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -115,56 +145,59 @@ export default function AuthScreen({ onLoginSuccess }) {
   return (
     <div className="h-full w-full flex flex-col justify-between font-hand relative z-10 overflow-hidden bg-transparent select-none animate-fade-in">
       
-      {/* 1. BOTTOM LANDSCAPE BACKGROUND ASSET (PINE TREES, GRASS & FENCE FROM LOBBY / MAIN MENU) */}
+      {/* Network Status Badge (Online/Offline) */}
+      <div className="absolute top-2.5 right-3 sm:top-4 sm:right-6 z-40 pointer-events-auto">
+        <NetworkStatusBadge />
+      </div>
+
+      {/* 1. BOTTOM LANDSCAPE BACKGROUND ASSET */}
       <div 
-        className="absolute bottom-0 left-0 right-0 w-full h-[580px] sm:h-[750px] bg-bottom bg-contain sm:bg-cover bg-no-repeat z-0 pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 w-full h-[68%] max-h-full bg-bottom bg-cover bg-no-repeat z-0 pointer-events-none"
         style={{ backgroundImage: `url('/assets/tampilan di lobby/Asset/asset_background@4x.png')` }}
       />
 
       {/* 2. TOP LOGO & BRANDING HEADER */}
-      <div className="w-full flex flex-col items-center justify-center pt-6 sm:pt-10 z-20 pointer-events-none">
+      <div className="w-full flex flex-col items-center justify-center pt-2 sm:pt-4 relative z-30 pointer-events-none flex-shrink-0">
         <img 
           src="/assets/Logo game/game_logo.png" 
           alt="Logo Game Detektif Relasi & Fungsi" 
-          className="w-64 sm:w-84 md:w-[420px] lg:w-[480px] h-auto object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.45)] animate-logo-float"
+          className="h-auto max-h-[48cqh] sm:max-h-[50cqh] w-[clamp(300px,46cqw,680px)] max-w-[90%] object-contain filter animate-logo-float drop-shadow-2xl"
           onError={(e) => { e.target.style.display = 'none'; }}
         />
       </div>
 
-      {/* 3. CENTER SECTION: MENU AWAL WITH 2 WOODEN BUTTONS ("Buat Akun" & "Pilih Akun") */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20 -mt-16 sm:-mt-24">
-        
-        {/* 2 WOODEN PLANK BUTTONS CONTAINER (POSITIONED HIGHER WHERE RELO WAS) */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 w-full max-w-3xl px-4 pointer-events-auto">
+      {/* 3. CENTER SECTION: 2 WOODEN BUTTONS */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-20 my-auto pb-4">
+        <div className="flex flex-row items-center justify-center gap-4 sm:gap-8 md:gap-12 w-full max-w-3xl px-4 pointer-events-auto">
           
           {/* GREEN WOODEN BUTTON: BUAT AKUN */}
           <button
             onClick={openCreateAccount}
             onMouseEnter={() => audioEngine.playHover()}
-            className="image-btn focus:outline-none"
+            className="image-btn focus:outline-none cursor-pointer"
             title="Buat Akun Baru"
           >
             <img 
               src="/assets/tampilan sebelum masuk lobby/Asset/buat_akun_button.png" 
               alt="Buat Akun" 
-              className="w-64 sm:w-72 md:w-80 h-auto object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
+              className="w-[clamp(140px,18cqw,260px)] h-auto object-contain filter hover:scale-106 active:scale-95 transition-transform drop-shadow-xl"
               onError={(e) => {
                 e.target.src = '/assets/tampilan sebelum masuk lobby/Asset/buat akun_button _icon@4x.png';
               }}
             />
           </button>
 
-          {/* BROWN WOODEN BUTTON: PILIH AKUN */}
+          {/* BROWN WOODEN BUTTON: MASUK AKUN */}
           <button
             onClick={openSelectAccount}
             onMouseEnter={() => audioEngine.playHover()}
-            className="image-btn focus:outline-none"
-            title="Pilih / Masuk Akun"
+            className="image-btn focus:outline-none cursor-pointer"
+            title="Masuk ke Akun"
           >
             <img 
               src="/assets/tampilan sebelum masuk lobby/Asset/pilih_akun_button.png" 
-              alt="Pilih Akun" 
-              className="w-64 sm:w-72 md:w-80 h-auto object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
+              alt="Masuk" 
+              className="w-[clamp(140px,18cqw,260px)] h-auto object-contain filter hover:scale-106 active:scale-95 transition-transform drop-shadow-xl"
               onError={(e) => {
                 e.target.src = '/assets/tampilan sebelum masuk lobby/Asset/pilih akun_button_icon@4x.png';
               }}
@@ -175,255 +208,261 @@ export default function AuthScreen({ onLoginSuccess }) {
       </div>
 
       {/* FOOTER SPACER */}
-      <div className="h-8 sm:h-12 w-full pointer-events-none" />
+      <div className="h-2 sm:h-4 w-full pointer-events-none" />
 
-      {/* 4. MODAL POPUP FORM (BUAT AKUN / PILIH AKUN BOARD POPUP) */}
+      {/* 4. MODAL POPUP (FIXED BOARD, ZERO-SCROLL DESIGN) */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-sm animate-fade-in font-hand overflow-hidden">
           
-          {/* WOODEN BOARD WRAPPER WITH REAL PNG BOARD IMAGE */}
-          <div className="relative w-full max-w-[480px] sm:max-w-[540px] flex items-center justify-center p-6 sm:p-10">
-            
-            {/* REAL WOODEN BOARD IMAGE ASSET (board_buat_akun_pilih_akun@4x.png FOR BOTH MODALS) */}
-            <img 
-              src="/assets/tampilan sebelum masuk lobby/Asset/board_buat_akun_pilih_akun@4x.png" 
-              alt="Board Background"
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.7)]"
-              onError={(e) => {
-                e.target.src = '/assets/tampilan sebelum masuk lobby/Asset/board_buat_akun.png';
-              }}
-            />
-
-            {/* CLOSE BUTTON (X) AT TOP RIGHT CORNER OF BOARD (IDENTICAL FOR BOTH MODALS) */}
+          <div 
+            className="relative w-full max-w-[min(92vw,620px)] max-h-[92dvh] rounded-3xl bg-[length:100%_100%] bg-no-repeat border-4 border-[#2D241E] shadow-[10px_12px_0px_#2D241E] flex flex-col select-none overflow-y-auto my-auto p-4 sm:p-6 md:p-8"
+            style={{ backgroundImage: `url('/assets/tampilan sebelum masuk lobby/Asset/board_buat_akun_pilih_akun@4x.png')` }}
+          >
+            {/* CLOSE BUTTON - TOP RIGHT */}
             <button
               onClick={closeModal}
               onMouseEnter={() => audioEngine.playHover()}
-              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-40 cursor-pointer rounded-full overflow-hidden hover:scale-110 active:scale-95 transition-transform"
+              className="clean-icon-btn absolute top-3 right-3 sm:top-5 sm:right-5 z-40 cursor-pointer rounded-full overflow-hidden hover:scale-110 active:scale-95 transition-transform"
               title="Tutup Menu"
             >
               <img 
                 src="/assets/tampilan di logout/Asset/exit_button_of_menu@4x.png" 
                 alt="Close" 
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full drop-shadow-lg"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
+                className="w-9 h-9 sm:w-11 sm:h-11 object-contain rounded-full drop-shadow"
+                onError={(e) => { e.target.style.display = 'none'; }}
               />
             </button>
 
-            {/* INNER CONTENT OVERLAY CENTERED OVER BOARD */}
-            <div className={`relative z-30 w-full max-w-sm px-4 ${activeModal === 'REGISTER' ? 'pt-10 pb-5 sm:pt-12 sm:pb-7 space-y-2.5' : 'py-8 sm:py-10 space-y-4'} text-[#2D241E]`}>
-              
-              {/* MODAL HEADER */}
-              <div className="text-center space-y-1 pb-1">
-                <h2 className="text-2xl sm:text-3xl font-extrabold font-pencil text-[#FEF3C7] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] tracking-wide">
-                  {activeModal === 'REGISTER' ? '📝 BUAT AKUN BARU' : '🔑 PILIH / MASUK AKUN'}
-                </h2>
-                <p className="text-xs sm:text-sm text-[#FDE68A] font-bold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                  {activeModal === 'REGISTER' 
-                    ? 'Daftarkan ID Kelas & Absen (misal: VIIIA0005)' 
-                    : 'Masukkan ID (Kelas & Absen) dan password'}
-                </p>
+            {/* MODAL HEADER */}
+            <div className="text-center pb-3.5 space-y-1 relative z-30 pr-8 pl-4">
+              <h2 className="text-3xl sm:text-4xl font-black font-pencil text-[#FEF3C7] tracking-wide drop-shadow">
+                {activeModal === 'REGISTER' ? '📝 BUAT AKUN BARU' : '🔑 MASUK KE AKUN'}
+              </h2>
+              <p className="text-sm sm:text-base text-[#FDE68A] font-bold">
+                {activeModal === 'REGISTER' 
+                  ? 'Daftar sebagai detektif cilik matematika' 
+                  : 'Masukkan username & kata sandi kamu'}
+              </p>
+            </div>
+
+            {/* ERROR MESSAGE BANNER */}
+            {errorMsg && (
+              <div className="mb-2.5 p-2.5 rounded-xl bg-[#FFE4E6] border-2 border-[#BE123C] text-[#BE123C] text-sm sm:text-base font-bold text-center animate-shake shadow">
+                {errorMsg}
               </div>
+            )}
 
-              {/* ERROR MESSAGE DISPLAY */}
-              {errorMsg && (
-                <div className="p-2.5 rounded-xl bg-[#FFE4E6] border-2 border-[#BE123C] text-[#BE123C] text-xs sm:text-sm font-bold text-center animate-shake shadow-md">
-                  {errorMsg}
-                </div>
-              )}
-
-              {/* INPUT FORM */}
-              <form onSubmit={handleSubmit} className="space-y-3 font-bold text-sm sm:text-base">
+            {/* ══════════════════════════════════════ */}
+            {/* ── MODE 1: BUAT AKUN (REGISTER) ── */}
+            {/* ══════════════════════════════════════ */}
+            {activeModal === 'REGISTER' && (
+              <form onSubmit={handleSubmit} className="space-y-2.5 font-bold relative z-30">
                 
-                {/* ── PILIH AKUN TERSIMPAN MODE ── */}
-                {activeModal === 'LOGIN' && savedAccounts.length > 0 && !isManualInput ? (
-                  <div className="space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs text-[#FDE68A] font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] uppercase">
-                        📋 PILIH AKUN TERSIMPAN
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsManualInput(true);
-                          setUsername('');
-                        }}
-                        className="text-xs font-bold text-[#FDE68A] hover:underline cursor-pointer drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                      >
-                        + Input ID Lain
-                      </button>
-                    </div>
-
-                    {/* SCROLLABLE SAVED ACCOUNTS LIST */}
-                    <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
-                      {savedAccounts.map((acc) => {
-                        const isSelected = selectedAccount?.username.toLowerCase() === acc.username.toLowerCase();
-                        return (
-                          <div
-                            key={acc.username}
-                            onClick={() => {
-                              try { audioEngine.playClick(); } catch {}
-                              setSelectedAccount(acc);
-                              setUsername(acc.username);
-                            }}
-                            className={`p-2 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                              isSelected
-                                ? 'bg-[#FEF3C7] border-[#F59E0B] shadow-md'
-                                : 'bg-white/90 border-[#2D241E] hover:bg-white'
-                            }`}
-                          >
-                            <div className="flex items-center space-x-2 overflow-hidden pr-2">
-                              <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-extrabold ${
-                                isSelected ? 'bg-[#F59E0B] text-white' : 'bg-[#E5E7EB] text-[#78350F]'
-                              }`}>
-                                {isSelected ? <UserCheck className="w-4 h-4" /> : <User className="w-4 h-4" />}
-                              </div>
-                              <div className="truncate text-left">
-                                <p className="text-xs font-black text-[#2D241E] truncate uppercase">{acc.username}</p>
-                                {acc.fullname && acc.fullname !== acc.username && (
-                                  <p className="text-[11px] text-[#78350F] font-bold truncate leading-none">{acc.fullname}</p>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* DELETE BUTTON (TRASH ICON) */}
-                            <button
-                              type="button"
-                              onClick={(e) => handleDeleteAccount(e, acc.username)}
-                              title="Hapus Akun dari Daftar"
-                              className="p-1 rounded-lg text-[#BE123C] hover:bg-[#FFE4E6] hover:scale-110 active:scale-90 transition-transform cursor-pointer flex-shrink-0"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* PASSWORD INPUT FOR SELECTED ACCOUNT */}
-                    <div className="space-y-1 pt-1">
-                      <label className="text-xs text-[#FDE68A] font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
-                        🔒 KATA SANDI UNTUK <span className="text-white font-mono uppercase underline">{username}</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="password"
-                          placeholder="Masukkan kata sandi..."
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm"
-                          autoFocus
-                        />
-                        <Lock className="w-5 h-5 text-[#78350F] absolute right-3 top-3 opacity-70" />
-                      </div>
+                {/* ROW 1: NAMA LENGKAP & NO ABSEN (SIDE-BY-SIDE) */}
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div className="col-span-2 space-y-1">
+                    <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                      NAMA LENGKAP
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Masukkan nama lengkap..."
+                        value={fullname}
+                        onChange={(e) => setFullname(e.target.value)}
+                        className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold"
+                        autoFocus
+                      />
                     </div>
                   </div>
-                ) : (
-                  /* ── MANUAL INPUT MODE (OR REGISTER MODE) ── */
-                  <>
-                    {/* FULLNAME INPUT (REGISTER ONLY) */}
-                    {activeModal === 'REGISTER' && (
-                      <div className="space-y-1">
-                        <label className="text-xs text-[#FDE68A] font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">NAMA LENGKAP DETEKTIF</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="Contoh: GreeND24..."
-                            value={fullname}
-                            onChange={(e) => setFullname(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm"
-                            autoFocus
-                          />
-                          <User className="w-5 h-5 text-[#78350F] absolute right-3 top-3 opacity-70" />
-                        </div>
-                      </div>
-                    )}
 
-                    {/* USERNAME / ID DETEKTIF INPUT (FORMAT: KELAS + 4 DIGIT ABSEN, e.g. VIIIA0005) */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-center">
-                        <label className="text-xs text-[#FDE68A] font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">USERNAME DETEKTIF (KELAS & ABSEN)</label>
-                        {activeModal === 'LOGIN' && savedAccounts.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setIsManualInput(false)}
-                            className="text-xs font-bold text-[#FDE68A] hover:underline cursor-pointer"
-                          >
-                            ← Daftar Akun
-                          </button>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="Contoh: VIIIA0005..."
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value.toUpperCase())}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm font-bold uppercase tracking-wide"
-                          autoFocus={activeModal === 'LOGIN'}
-                        />
-                        <ShieldCheck className="w-5 h-5 text-[#78350F] absolute right-3 top-3 opacity-70" />
-                      </div>
-                      <p className="text-xs text-[#FEF3C7] font-bold opacity-90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                        💡 Format: Nama Kelas + 4 Digit Absen (contoh: <span className="underline font-black">VIIIA0005</span>)
-                      </p>
+                  <div className="col-span-1 space-y-1">
+                    <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                      NO. ABSEN
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        placeholder="1-99"
+                        value={absen}
+                        onChange={(e) => setAbsen(e.target.value)}
+                        className="w-full px-2.5 py-2 sm:py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold text-center font-mono"
+                      />
                     </div>
+                  </div>
+                </div>
 
-                    {/* PASSWORD INPUT */}
-                    <div className="space-y-1">
-                      <label className="text-xs text-[#FDE68A] font-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">KATA SANDI (PASSWORD)</label>
-                      <div className="relative">
-                        <input
-                          type="password"
-                          placeholder="Masukkan password..."
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm"
-                        />
-                        <Lock className="w-5 h-5 text-[#78350F] absolute right-3 top-3 opacity-70" />
-                      </div>
-                    </div>
-                  </>
+                {/* LIVE PREVIEW USERNAME */}
+                {fullname.trim() && absen.trim() && Number(absen) >= 1 && Number(absen) <= 99 && (
+                  <div className="py-1.5 px-3 rounded-lg bg-black/40 border border-[#FDE68A]/30 flex items-center justify-between text-xs sm:text-sm text-[#FEF3C7]">
+                    <span>Username kamu nanti:</span>
+                    <span className="font-mono font-black text-[#6EE7B7] text-sm sm:text-base underline">
+                      {buildUsername(fullname, absen)}
+                    </span>
+                  </div>
                 )}
 
-                {/* SUBMIT BUTTON */}
+                {/* ROW 2: KATA SANDI */}
+                <div className="space-y-1">
+                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                    KATA SANDI (MIN. 4 HURUF/ANGKA)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Masukkan kata sandi..."
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-3.5 py-2 sm:py-2.5 pr-10 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-2.5 sm:top-3 opacity-70 hover:opacity-100 cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5 text-[#78350F]" /> : <Eye className="w-5 h-5 text-[#78350F]" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* ROW 3: KONFIRMASI KATA SANDI */}
+                <div className="space-y-1">
+                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                    ULANGI KATA SANDI
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Ketik ulang kata sandi..."
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className={`w-full px-3.5 py-2 sm:py-2.5 pr-10 rounded-xl border-2 text-[#2D241E] focus:outline-none shadow-inner text-sm sm:text-base font-bold ${
+                        confirmPassword && confirmPassword !== password
+                          ? 'bg-[#FFE4E6] border-[#BE123C]'
+                          : confirmPassword && confirmPassword === password
+                          ? 'bg-[#ECFDF5] border-[#10B981]'
+                          : 'bg-[#FFFDF9] border-[#2D241E] focus:bg-[#FEF3C7]'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-2.5 sm:top-3 opacity-70 hover:opacity-100 cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5 text-[#78350F]" /> : <Eye className="w-5 h-5 text-[#78350F]" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* TOMBOL DAFTAR */}
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   onMouseEnter={() => audioEngine.playHover()}
-                  className={`w-full py-3 mt-2 font-extrabold text-base flex items-center justify-center space-x-2 shadow-[0_4px_8px_rgba(0,0,0,0.4)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#2D241E] transition-all ${
-                    activeModal === 'REGISTER'
-                      ? 'bg-[#10B981] hover:bg-[#059669] text-white'
-                      : 'bg-[#F59E0B] hover:bg-[#D97706] text-white'
-                  }`}
+                  className="w-full py-2.5 sm:py-3.5 mt-2.5 font-black text-sm sm:text-base flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#047857] bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white transition-all disabled:opacity-50"
                 >
-                  {activeModal === 'REGISTER' ? <UserPlus className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
-                  <span>{activeModal === 'REGISTER' ? 'BUAT AKUN DETEKTIF' : 'MASUK AKUN DETEKTIF'}</span>
+                  {isSubmitting ? (
+                    <span className="animate-pulse">Mendaftarkan Akun...</span>
+                  ) : (
+                    <>
+                      <UserPlus className="w-5 h-5" />
+                      <span>BUAT AKUN DETEKTIF</span>
+                    </>
+                  )}
                 </button>
-
               </form>
+            )}
 
-              {/* MODAL FOOTER SWITCH LINK */}
-              <div className="text-center pt-2 border-t border-white/20">
-                {activeModal === 'REGISTER' ? (
-                  <button
-                    type="button"
-                    onClick={openSelectAccount}
-                    className="text-xs font-bold text-[#FDE68A] hover:underline cursor-pointer drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                  >
-                    Sudah punya akun? <span className="underline text-white font-extrabold">Pilih Akun di sini</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={openCreateAccount}
-                    className="text-xs font-bold text-[#FDE68A] hover:underline cursor-pointer drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                  >
-                    Belum punya akun? <span className="underline text-white font-extrabold">Buat Akun Baru di sini</span>
-                  </button>
-                )}
-              </div>
+            {/* ══════════════════════════════════════ */}
+            {/* ── MODE 2: MASUK AKUN (LOGIN) ── */}
+            {/* ══════════════════════════════════════ */}
+            {activeModal === 'LOGIN' && (
+              <form onSubmit={handleSubmit} className="space-y-3 font-bold relative z-30">
+                
+                {/* 1. INPUT USERNAME */}
+                <div className="space-y-1">
+                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                    NAMA PENGGUNA (USERNAME)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Masukkan username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full px-3.5 py-2.5 sm:py-3 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold font-mono"
+                      autoFocus
+                    />
+                    <User className="w-5 h-5 text-[#78350F] absolute right-3.5 top-3 sm:top-3.5 opacity-60" />
+                  </div>
+                </div>
 
+                {/* 2. INPUT PASSWORD */}
+                <div className="space-y-1">
+                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                    KATA SANDI (PASSWORD)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Masukkan kata sandi akunmu..."
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-3.5 py-2.5 sm:py-3 pr-11 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-3 sm:top-3.5 opacity-70 hover:opacity-100 cursor-pointer"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5 text-[#78350F]" /> : <Eye className="w-5 h-5 text-[#78350F]" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. TOMBOL MASUK */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  onMouseEnter={() => audioEngine.playHover()}
+                  className="w-full py-3 sm:py-3.5 mt-2 font-black text-sm sm:text-base flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#B45309] bg-gradient-to-r from-[#F59E0B] to-[#D97706] hover:from-[#D97706] hover:to-[#B45309] text-[#2D241E] transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <span className="animate-pulse">Memverifikasi Akun...</span>
+                  ) : (
+                    <>
+                      <LogIn className="w-5 h-5" />
+                      <span>MASUK SEBAGAI DETEKTIF</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* SWITCH MODE LINK FOOTER */}
+            <div className="text-center pt-2.5 mt-2 border-t border-white/20 relative z-30">
+              {activeModal === 'REGISTER' ? (
+                <button
+                  type="button"
+                  onClick={openSelectAccount}
+                  className="text-xs sm:text-sm font-bold text-[#FDE68A] hover:underline cursor-pointer"
+                >
+                  Sudah punya akun? <span className="underline text-white font-black">Masuk di sini</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openCreateAccount}
+                  className="text-xs font-bold text-[#FDE68A] hover:underline cursor-pointer"
+                >
+                  Belum punya akun? <span className="underline text-white font-black">Buat Akun Baru</span>
+                </button>
+              )}
             </div>
 
           </div>
@@ -431,13 +470,18 @@ export default function AuthScreen({ onLoginSuccess }) {
         </div>
       )}
 
-      {/* 5. ACCOUNT CREATION SUCCESS POPUP WITH LOTTIE ANIMATION */}
+      {/* 5. SUCCESS POPUP SETELAH BUAT AKUN */}
       {regSuccessUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-sm p-6 rounded-3xl bg-[#FFFDF9] border-[4px] border-[#10B981] shadow-[0_20px_50px_rgba(0,0,0,0.8)] text-center space-y-4 animate-scale-up">
-            
-            {/* LOTTIE SUCCESS ANIMATION */}
-            <div className="w-32 h-32 mx-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in font-hand overflow-hidden">
+          <div 
+            className="relative w-full max-w-sm sm:max-w-md p-5 sm:p-7 rounded-3xl bg-[length:100%_100%] bg-no-repeat border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-center space-y-3 animate-scale-up select-none overflow-hidden my-auto"
+            style={{ backgroundImage: `url('/assets/tampilan sebelum masuk lobby/Asset/board_buat_akun_pilih_akun@4x.png')` }}
+          >
+            <h3 className="text-xl sm:text-2xl font-black font-pencil text-[#FEF3C7] tracking-wide">
+              🎉 AKUN BERHASIL DIBUAT!
+            </h3>
+
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto flex items-center justify-center -my-1">
               <Lottie 
                 animationData={successAnimation} 
                 loop={false} 
@@ -446,16 +490,14 @@ export default function AuthScreen({ onLoginSuccess }) {
               />
             </div>
 
-            <div className="space-y-1">
-              <h3 className="text-2xl font-extrabold font-pencil text-[#065F46] tracking-wide">
-                🎉 AKUN BERHASIL DIBUAT!
-              </h3>
-              <p className="text-sm font-bold text-[#4A3E3D]">
-                Selamat datang, <span className="text-[#10B981] font-black">{regSuccessUser.fullname || regSuccessUser.username}</span>!
+            <div className="space-y-1 px-2 text-[#FEF3C7]">
+              <p className="text-xs sm:text-sm font-bold text-[#FDE68A]">
+                Halo, <span className="text-white font-black underline">{regSuccessUser.fullname || regSuccessUser.username}</span>!
               </p>
-              <p className="text-xs text-[#78716C] font-semibold">
-                ID Detektif kamu: <span className="font-mono font-bold text-[#065F46]">{regSuccessUser.username}</span>
-              </p>
+              <div className="p-2 rounded-xl bg-black/35 border border-[#FED7AA]/40 text-xs font-semibold text-[#FEF3C7] shadow-inner space-y-0.5">
+                <p>Username kamu: <span className="font-mono font-black text-[#6EE7B7] text-sm">{regSuccessUser.username}</span></p>
+                <p className="text-[10.5px] opacity-80">Menghubungkan ke lobby...</p>
+              </div>
             </div>
 
             <button
@@ -464,12 +506,11 @@ export default function AuthScreen({ onLoginSuccess }) {
                 onLoginSuccess(regSuccessUser);
               }}
               onMouseEnter={() => audioEngine.playHover()}
-              className="w-full py-3.5 px-4 bg-[#10B981] hover:bg-[#059669] text-white font-extrabold text-base rounded-2xl border-2 border-[#047857] shadow-[0_4px_12px_rgba(16,185,129,0.4)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center justify-center space-x-2"
+              className="w-full py-2 sm:py-2.5 px-4 bg-[#10B981] hover:bg-[#059669] text-white font-black text-xs sm:text-sm rounded-xl border-2 border-[#047857] shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center justify-center space-x-1.5"
             >
-              <span>MASUK KE LOBBY GAME</span>
-              <CheckCircle className="w-5 h-5" />
+              <span>MASUK KE LOBBY</span>
+              <CheckCircle className="w-4 h-4" />
             </button>
-
           </div>
         </div>
       )}

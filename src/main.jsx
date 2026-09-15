@@ -54,6 +54,41 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Polyfill for non-Electron environments (WebView2, Web Browser)
+if (typeof window !== 'undefined') {
+  if (!window.electronAPI) {
+    window.electronAPI = {
+      exitApp: () => {
+        fetch('/api/shutdown').catch(() => {});
+        try { window.close(); } catch (e) {}
+      },
+      quitApp: () => {
+        fetch('/api/shutdown').catch(() => {});
+        try { window.close(); } catch (e) {}
+      }
+    };
+  }
+
+  // Universal AudioContext unlocker on first user interaction
+  const unlockAudioOnGesture = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const dummyCtx = new AudioCtx();
+        if (dummyCtx.state === 'suspended') {
+          dummyCtx.resume().catch(() => {});
+        }
+      }
+    } catch (e) {}
+    ['click', 'keydown', 'pointerdown', 'touchstart'].forEach(evt => {
+      window.removeEventListener(evt, unlockAudioOnGesture);
+    });
+  };
+  ['click', 'keydown', 'pointerdown', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, unlockAudioOnGesture, { once: true, passive: true });
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>

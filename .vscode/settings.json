@@ -1,0 +1,22 @@
+{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/dist-electron/**": true,
+    "**/DISTRIBUSI_GAME_ALL_PLATFORM/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/android/.gradle/**": true,
+    "**/android/app/build/**": true,
+    "**/ios/App/build/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/dist-electron": true,
+    "**/DISTRIBUSI_GAME_ALL_PLATFORM": true,
+    "**/*.zip": true,
+    "**/*.rar": true,
+    "**/*.exe": true
+  }
+}

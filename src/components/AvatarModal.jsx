@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { audioEngine } from '../services/audioEngine';
 import { storageService } from '../services/storageService';
 
@@ -50,9 +50,9 @@ export default function AvatarModal({ isOpen, onClose, currentUser, onAvatarSele
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
       
-      {/* WOODEN BOARD CONTAINER MATCHING REFERENCE SCREENSHOT */}
+      {/* WOODEN BOARD CONTAINER MATCHING REFERENCE SCREENSHOT (FIXED, ZERO SCROLL) */}
       <div 
-        className="relative w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-4 max-h-[90vh] overflow-y-auto drag-scroller"
+        className="relative w-full max-w-lg max-h-[92dvh] p-4 sm:p-6 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-2.5 overflow-y-auto select-none"
         style={{ backgroundImage: `url('/assets/tampilan di avatar menu board/Assets/board_of_avatar@4x.png')` }}
       >
         
@@ -70,29 +70,29 @@ export default function AvatarModal({ isOpen, onClose, currentUser, onAvatarSele
         </button>
 
         {/* TOP HEADER: WOODEN FRAME (avatar_border) DISPLAYING CURRENT SELECTED AVATAR & BROWN BACKGROUND */}
-        <div className="flex flex-col items-center relative -mt-3">
+        <div className="flex flex-col items-center relative -mt-2">
           <div 
-            className="w-24 h-24 sm:w-28 sm:h-28 bg-contain bg-no-repeat bg-center flex items-center justify-center relative p-2 sm:p-3 drop-shadow-lg flex-shrink-0"
+            className="w-20 h-20 sm:w-24 sm:h-24 bg-contain bg-no-repeat bg-center flex items-center justify-center relative p-1.5 sm:p-2 drop-shadow-lg flex-shrink-0"
             style={{ backgroundImage: `url('/assets/tampilan di avatar menu board/Assets/avatar_border@4x.png')` }}
           >
             <div 
-              className="w-15 h-15 sm:w-18 sm:h-18 rounded-xl bg-[#8A6746] bg-cover bg-center flex items-center justify-center overflow-hidden shadow-inner"
+              className="w-13 h-13 sm:w-15 sm:h-15 rounded-xl bg-[#8A6746] bg-cover bg-center flex items-center justify-center overflow-hidden shadow-inner"
               style={{ backgroundImage: `url('/assets/tampilan di avatar menu board/Assets/avatar_background@4x.png')` }}
             >
               <img 
                 src={currentAvatar.path} 
                 alt={currentAvatar.name}
-                className="w-12 h-12 sm:w-14 sm:h-14 object-contain filter drop-shadow-sm"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain filter drop-shadow-sm"
               />
             </div>
           </div>
-          <h2 className="font-pencil text-2xl sm:text-3xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1 uppercase tracking-wider">
+          <h2 className="font-pencil text-xl sm:text-2xl font-black text-white mt-0.5 uppercase tracking-wider">
             {currentAvatar.name}
           </h2>
         </div>
 
         {/* 15 AVATAR SELECTION GRID (3 ROWS OF 5 AVATARS) */}
-        <div className="grid grid-cols-5 gap-2.5 sm:gap-3.5 p-3 sm:p-4 rounded-2xl bg-white/20 backdrop-blur-sm border-2 border-[#2D241E]/30 w-full justify-items-center">
+        <div className="grid grid-cols-5 gap-2 sm:gap-2.5 p-2.5 sm:p-3 rounded-2xl bg-white/20 backdrop-blur-sm border-2 border-[#2D241E]/30 w-full justify-items-center">
           {AVATAR_LIST.slice(0, 15).map((avatar) => {
             const isSelected = selectedId === avatar.id;
 

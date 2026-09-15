@@ -1,5 +1,5 @@
 import { db } from "../db/index.js";
-import { userStats, userSubbabProgress, userBadges } from "../db/schema.js";
+import { user, userStats, userSubbabProgress, userBadges, questScores, account } from "../db/schema.js";
 import { eq, and, sql } from "drizzle-orm";
 
 // ─────────────────────────────────────────────
@@ -8,15 +8,15 @@ import { eq, and, sql } from "drizzle-orm";
 
 const BADGE_DEFINITIONS = [
   { id: "badge1", reqStages: 1, reqScore: 0 },
-  { id: "badge2", reqStages: 6, reqScore: 0 },
-  { id: "badge3", reqStages: 16, reqScore: 200 },
-  { id: "badge4", reqStages: 31, reqScore: 500 },
-  { id: "badge5", reqStages: 51, reqScore: 1000 },
-  { id: "badge6", reqStages: 71, reqScore: 1800 },
-  { id: "badge7", reqStages: 91, reqScore: 2600 },
-  { id: "badge8", reqStages: 111, reqScore: 3400 },
-  { id: "badge9", reqStages: 131, reqScore: 4000 },
-  { id: "badge10", reqStages: 147, reqScore: 4760 },
+  { id: "badge2", reqStages: 5, reqScore: 50 },
+  { id: "badge3", reqStages: 10, reqScore: 100 },
+  { id: "badge4", reqStages: 15, reqScore: 200 },
+  { id: "badge5", reqStages: 20, reqScore: 400 },
+  { id: "badge6", reqStages: 25, reqScore: 600 },
+  { id: "badge7", reqStages: 30, reqScore: 800 },
+  { id: "badge8", reqStages: 40, reqScore: 1000 },
+  { id: "badge9", reqStages: 48, reqScore: 1500 },
+  { id: "badge10", reqStages: 48, reqScore: 2500 },
 ];
 
 // ─────────────────────────────────────────────
@@ -163,16 +163,26 @@ export async function getUserFullProgress(userId: string) {
     .from(userSubbabProgress)
     .where(eq(userSubbabProgress.userId, userId));
 
+  // Fetch user info to check admin status
+  const [foundUser] = await db
+    .select({ username: user.username, name: user.name })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+  const isAdmin =
+    (foundUser?.username || "").toLowerCase() === "fikran02" ||
+    (foundUser?.name || "").toLowerCase() === "admin";
+
   // Build the progress map matching frontend shape
   const progress: Record<
     string,
     { unlocked: boolean; currentStage: number; stars: Record<string, number> }
   > = {};
 
-  // Initialize all 7 subbabs with defaults
-  for (let i = 1; i <= 7; i++) {
+  // Initialize all 5 subbabs with defaults
+  for (let i = 1; i <= 5; i++) {
     progress[`subbab${i}`] = {
-      unlocked: i === 1,
+      unlocked: isAdmin ? true : i === 1,
       currentStage: 1,
       stars: {},
     };
@@ -182,7 +192,7 @@ export async function getUserFullProgress(userId: string) {
   for (const row of progressRows) {
     const key = `subbab${row.subbabId}`;
     progress[key] = {
-      unlocked: row.unlocked,
+      unlocked: isAdmin ? true : row.unlocked,
       currentStage: row.currentStage,
       stars: parseStars(row.stars),
     };
@@ -259,9 +269,18 @@ export async function updateStageProgress(
     scoreToAdd = scoreEarned;
   }
 
+  const CHAPTER_TOTAL_SEGS: Record<number, number> = {
+    1: 12,
+    2: 10,
+    3: 10,
+    4: 10,
+    5: 8,
+  };
+  const maxStages = CHAPTER_TOTAL_SEGS[subbabId] || 10;
+
   // Advance currentStage
   let newCurrentStage = currentProgress.currentStage;
-  if (stageNum >= currentProgress.currentStage && stageNum < 21) {
+  if (stageNum >= currentProgress.currentStage && stageNum < maxStages) {
     newCurrentStage = stageNum + 1;
   }
 
@@ -281,8 +300,9 @@ export async function updateStageProgress(
       )
     );
 
-  // If stage 21 completed and subbabId < 7, unlock next subbab
-  if (stageNum === 21 && subbabId < 7) {
+  // If chapter completed and subbabId < 5, unlock next subbab
+  const isChapterDone = stageNum >= maxStages || Object.keys(currentStars).length >= maxStages || stageNum === 21;
+  if (isChapterDone && subbabId < 5) {
     const nextSubbabId = subbabId + 1;
     await db
       .insert(userSubbabProgress)
@@ -410,8 +430,8 @@ export async function resetProgress(userId: string): Promise<void> {
 export async function unlockAllWithCheat(userId: string): Promise<boolean> {
   const now = new Date();
 
-  // Unlock all 7 subbabs with all 21 stages completed
-  for (let i = 1; i <= 7; i++) {
+  // Unlock all 5 subbabs with all 21 stages completed
+  for (let i = 1; i <= 5; i++) {
     const allStars: Record<string, number> = {};
     for (let s = 1; s <= 21; s++) {
       allStars[String(s)] = 3;
@@ -463,4 +483,270 @@ export async function unlockAllWithCheat(userId: string): Promise<boolean> {
   }
 
   return true;
+}
+
+// ─────────────────────────────────────────────
+// Offline-First Sync Service
+// ─────────────────────────────────────────────
+
+export interface OfflineSyncUserData {
+  username: string;
+  fullname?: string;
+  password?: string;
+  totalScore?: number;
+  endlessHighScore?: number;
+  unlockedBadges?: string[];
+  progress?: Record<
+    string,
+    {
+      unlocked?: boolean;
+      completedSegments?: number;
+      completed?: boolean;
+      currentStage?: number;
+      stars?: Record<string, number>;
+      isStage21Completed?: boolean;
+    }
+  >;
+  questScores?: Record<
+    string | number,
+    {
+      score: number;
+      correctCount: number;
+      totalQuestions?: number;
+      pointsEarned?: number;
+      timeRemainingSeconds?: number;
+      completedAt?: string;
+    }
+  >;
+  playTimeSeconds?: number;
+}
+
+export async function syncOfflineUserData(data: OfflineSyncUserData) {
+  if (!data || !data.username) {
+    throw new Error("Username is required for offline sync");
+  }
+
+  const cleanUsername = data.username.trim();
+  const cleanKey = cleanUsername.toLowerCase();
+  const now = new Date();
+
+  // 1. Check if user already exists in database
+  const [existingUser] = await db
+    .select()
+    .from(user)
+    .where(eq(user.username, cleanUsername));
+
+  let userId: string;
+
+  if (!existingUser) {
+    // Generate new user ID
+    userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const email = `${cleanKey}@detektifdata.local`;
+
+    await db.insert(user).values({
+      id: userId,
+      name: data.fullname || cleanUsername,
+      email,
+      emailVerified: true,
+      username: cleanUsername,
+      plainPassword: data.password || null,
+      totalPlayTimeSeconds: data.playTimeSeconds || 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Create account record if password is provided
+    if (data.password) {
+      try {
+        const { hashPassword } = await import("@better-auth/utils/password");
+        const hashedPassword = await hashPassword(data.password);
+        await db.insert(account).values({
+          id: `acc_${userId}`,
+          accountId: userId,
+          providerId: "credential",
+          userId,
+          password: hashedPassword,
+          createdAt: now,
+          updatedAt: now,
+        });
+      } catch (err) {
+        console.warn("[syncOfflineUserData] Error creating account record:", err);
+      }
+    }
+
+    // Initialize user stats
+    await db.insert(userStats).values({
+      id: userId,
+      totalScore: data.totalScore || 0,
+      endlessHighScore: data.endlessHighScore || 0,
+      createdAt: now,
+      updatedAt: now,
+    });
+  } else {
+    userId = existingUser.id;
+
+    // Update play time if provided
+    if (data.playTimeSeconds && data.playTimeSeconds > 0) {
+      await db
+        .update(user)
+        .set({
+          totalPlayTimeSeconds: (existingUser.totalPlayTimeSeconds || 0) + data.playTimeSeconds,
+          updatedAt: now,
+        })
+        .where(eq(user.id, userId));
+    }
+
+    // Update stats: keep higher scores
+    const [currentStats] = await db
+      .select()
+      .from(userStats)
+      .where(eq(userStats.id, userId));
+
+    if (currentStats) {
+      await db
+        .update(userStats)
+        .set({
+          totalScore: Math.max(currentStats.totalScore, data.totalScore || 0),
+          endlessHighScore: Math.max(currentStats.endlessHighScore, data.endlessHighScore || 0),
+          updatedAt: now,
+        })
+        .where(eq(userStats.id, userId));
+    }
+  }
+
+  // 2. Merge chapter / subbab progress
+  if (data.progress) {
+    for (let subId = 1; subId <= 5; subId++) {
+      const chKey = `chapter${subId}`;
+      const subKey = `subbab${subId}`;
+      const progData = data.progress[chKey] || data.progress[subKey];
+
+      if (progData) {
+        const progId = subbabProgressId(userId, subId);
+        const [existingProg] = await db
+          .select()
+          .from(userSubbabProgress)
+          .where(eq(userSubbabProgress.id, progId));
+
+        const incomingStars = progData.stars || {};
+        let mergedStars: Record<string, number> = {};
+
+        if (existingProg) {
+          try {
+            mergedStars = JSON.parse(existingProg.stars || "{}");
+          } catch {}
+        }
+
+        // Merge stars: keep max star per stage
+        for (const [stg, star] of Object.entries(incomingStars)) {
+          mergedStars[stg] = Math.max(mergedStars[stg] || 0, Number(star) || 3);
+        }
+
+        const maxStage = Math.max(
+          existingProg?.currentStage || 1,
+          progData.currentStage || 1,
+          progData.completedSegments || 0,
+          Object.keys(mergedStars).length
+        );
+
+        const isUnlocked = Boolean(
+          subId === 1 ||
+          existingProg?.unlocked ||
+          progData.unlocked
+        );
+
+        if (!existingProg) {
+          await db.insert(userSubbabProgress).values({
+            id: progId,
+            userId,
+            subbabId: subId,
+            unlocked: isUnlocked,
+            currentStage: maxStage,
+            stars: JSON.stringify(mergedStars),
+            createdAt: now,
+            updatedAt: now,
+          });
+        } else {
+          await db
+            .update(userSubbabProgress)
+            .set({
+              unlocked: isUnlocked,
+              currentStage: maxStage,
+              stars: JSON.stringify(mergedStars),
+              updatedAt: now,
+            })
+            .where(eq(userSubbabProgress.id, progId));
+        }
+      }
+    }
+  }
+
+  // 3. Merge Quest Exam Scores
+  if (data.questScores) {
+    for (const [sIdStr, qData] of Object.entries(data.questScores)) {
+      const sId = parseInt(sIdStr.toString().replace(/\D/g, ""), 10);
+      if (sId >= 1 && sId <= 5 && qData && typeof qData.score === "number") {
+        const qId = `${userId}_quest_${sId}`;
+        const [existingQuest] = await db
+          .select()
+          .from(questScores)
+          .where(and(eq(questScores.userId, userId), eq(questScores.subbabId, sId)));
+
+        const score = Math.min(100, Math.max(0, Math.round(qData.score)));
+        const correctCount = qData.correctCount || 0;
+        const totalQuestions = qData.totalQuestions || 30;
+        const pointsEarned = qData.pointsEarned || 0;
+        const timeRemainingSeconds = qData.timeRemainingSeconds || 0;
+        const completedAt = qData.completedAt ? new Date(qData.completedAt) : now;
+
+        if (!existingQuest) {
+          await db.insert(questScores).values({
+            id: qId,
+            userId,
+            subbabId: sId,
+            score,
+            correctCount,
+            totalQuestions,
+            pointsEarned,
+            timeRemainingSeconds,
+            completedAt,
+            updatedAt: now,
+          });
+        } else if (score >= existingQuest.score) {
+          await db
+            .update(questScores)
+            .set({
+              score,
+              correctCount,
+              totalQuestions,
+              pointsEarned: Math.max(existingQuest.pointsEarned, pointsEarned),
+              timeRemainingSeconds: Math.max(existingQuest.timeRemainingSeconds, timeRemainingSeconds),
+              updatedAt: now,
+            })
+            .where(eq(questScores.id, existingQuest.id));
+        }
+      }
+    }
+  }
+
+  // 4. Re-evaluate badges
+  const completedCount = await getCompletedStagesCount(userId);
+  const [finalStats] = await db
+    .select()
+    .from(userStats)
+    .where(eq(userStats.id, userId));
+  const newBadges = await evaluateAndGrantBadges(
+    userId,
+    completedCount,
+    finalStats?.totalScore || 0
+  );
+
+  return {
+    success: true,
+    userId,
+    username: cleanUsername,
+    completedStagesCount: completedCount,
+    totalScore: finalStats?.totalScore || 0,
+    newBadges,
+  };
 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Lock, CheckCircle2, Sparkles, ShieldAlert } from 'lucide-react';
+import { Lock, CheckCircle2, Sparkles } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
+import InstructorMascotGuide from './InstructorMascotGuide';
 import CustomWoodenScroller from './CustomWoodenScroller';
 
 export const RANK_DEFINITIONS = [
@@ -81,7 +81,7 @@ export default function RankModal({ isOpen, onClose, currentUser }) {
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           </div>
-          <h2 className="font-pencil text-2xl sm:text-3xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] mt-0.5 uppercase tracking-wider">
+          <h2 className="font-pencil text-2xl sm:text-3xl font-black text-white mt-0.5 uppercase tracking-wider">
             Rank
           </h2>
         </div>
@@ -100,7 +100,7 @@ export default function RankModal({ isOpen, onClose, currentUser }) {
                   isUnlocked
                     ? isRank10
                       ? 'bg-gradient-to-r from-amber-300/90 via-yellow-400/90 to-amber-500/90 border-[#2D241E] text-[#2D241E] ring-4 ring-yellow-300/90 shadow-[0_0_25px_rgba(245,158,11,0.85)] animate-pulse'
-                      : 'bg-white/90 border-[#2D241E] text-[#2D241E]'
+                      : 'glass-card border-white/60 text-[#2D241E]'
                     : 'bg-black/40 border-white/20 text-white/70'
                 }`}
               >
@@ -123,14 +123,14 @@ export default function RankModal({ isOpen, onClose, currentUser }) {
                       className={`w-full h-full object-contain filter ${
                         isUnlocked 
                           ? isRank10 
-                            ? 'drop-shadow-[0_0_12px_rgba(245,158,11,0.9)] scale-105' 
+                            ? ' scale-105' 
                             : 'drop-shadow-md'
                           : 'grayscale contrast-75 opacity-60'
                       }`}
                     />
                     {!isUnlocked && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl">
-                        <Lock className="w-5 h-5 text-white/90 drop-shadow-md" />
+                        <Lock className="w-5 h-5 text-white/90" />
                       </div>
                     )}
                   </div>
@@ -173,30 +173,18 @@ export default function RankModal({ isOpen, onClose, currentUser }) {
         </CustomWoodenScroller>
 
       </div>
-
-      {/* DETEKTIF RELO MASCOT (+50% LARGER) & ENLARGED COMIC SPEECH BUBBLE */}
-      <div className="fixed bottom-2 left-2 sm:bottom-4 sm:left-4 z-50 pointer-events-none flex flex-col items-start animate-fade-in max-w-[320px] sm:max-w-[420px]">
-        {reloText && (
-          <div className="relative mb-3 p-4 sm:p-5 rounded-3xl bg-white border-4 border-[#2D241E] shadow-[6px_8px_0px_rgba(45,36,30,0.9)] text-[#2D241E] font-hand pointer-events-auto">
-            <div className="absolute -bottom-4 left-10 w-0 h-0 border-t-[16px] border-t-[#2D241E] border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent" />
-            <div className="absolute -bottom-[11px] left-10 w-0 h-0 border-t-[12px] border-t-white border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent" />
-            <div className="flex items-center space-x-2 text-xs sm:text-sm font-black text-[#9A3412] uppercase tracking-wider mb-1.5 border-b-2 border-[#FED7AA] pb-1">
-              <span className="text-base sm:text-lg">🕵️‍♂️</span>
-              <span>PETUNJUK RELO</span>
-            </div>
-            <p className="text-base sm:text-lg font-black leading-snug text-[#2D241E]">
-              {reloText}
-            </p>
-          </div>
-        )}
-
-        <ProfessorOwlMascot
-          pose="happy"
-          size="xxxl"
-          animateOnHoverOnly={false}
-          message=""
-        />
-      </div>
+ 
+      {/* DETEKTIF RYU MASCOT & SPEECH BUBBLE VIA UNIFIED INSTRUCTOR GUIDE */}
+      <InstructorMascotGuide
+        layout="floating"
+        character="ryu"
+        pose="happy"
+        emotion="happy"
+        title="INSTRUKTUR RYU"
+        icon="🔥"
+        canSpeak={true}
+        message={reloText || 'Tingkatkan prestasimu untuk meraih Rank tertinggi! 🎖️🔥🐉'}
+      />
 
     </div>
   );

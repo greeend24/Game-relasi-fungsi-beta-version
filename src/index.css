@@ -1,66 +1,188 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=DynaPuff:wght@400;500;600;700&family=Patrick+Hand&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-*, *::before, *::after, button, a, input, select, textarea {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-  cursor: default !important;
+:root {
+  --theme-bg-main: #07090e;
+  --theme-bg-card: #121824;
+  --theme-bg-card-opacity: 0.85;
+  --theme-accent: #00f0ff;
+  --theme-accent-secondary: #ffaa00;
+  --theme-crimson: #ff0055;
+  --theme-emerald: #00ff88;
+  --theme-border: #1e293b;
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #94a3b8;
+  --theme-glass-blur: 16px;
+  --theme-glow-strength: 10px;
+  --theme-card-radius: 16px;
+  --theme-btn-radius: 12px;
+  --theme-font-family: 'Patrick Hand', 'Balsamiq Sans', cursive, sans-serif;
+  --theme-font-scale: 1;
+  --theme-title-scale: 1;
+  --theme-mascot-scale: 1;
+  --theme-btn-gap: 16px;
+  --theme-navbar-height: 64px;
 }
 
-html, body {
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  text-shadow: none !important;
+}
+
+button, a, [role="button"], .cursor-pointer, input[type="button"], input[type="submit"] {
+  cursor: pointer !important;
+}
+
+img, button, .mode-btn, .image-btn, .clean-icon-btn, .round-btn, .island-group {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* SLEEK VISIBLE CUSTOM SCROLLBAR FOR ALL PANELS */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090e17;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 6px;
+  border: 1px solid #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+img, canvas, svg {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: auto;
+}
+
+html, body, #root {
   margin: 0;
   padding: 0;
-  background-color: transparent !important;
+  background-color: #0d0c0a !important;
   color: #2D241E;
-  font-family: 'Patrick Hand', 'Kalam', 'Plus Jakarta Sans', cursive, sans-serif;
+  font-family: 'Patrick Hand', 'Balsamiq Sans', cursive, sans-serif;
   font-size: 12pt;
   height: 100%;
   height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   width: 100%;
+  width: 100vw;
   overflow: hidden;
   touch-action: manipulation;
 }
 
-/* STRICT MINIMUM FONT SIZE RULE: TULISAN PALING KECIL DI GAME ADALAH 12pt (16px) */
-*, *::before, *::after, p, span, div, label, input, button, select, textarea, li, a {
-  min-font-size: 12pt;
+/* ───────────────────────────────────────────────────────────── */
+/* UNIFIED 16:9 RESPONSIVE VIEWPORT & FLUID LAYOUT SYSTEM        */
+/* Fits 100% perfectly on PC, Laptop 16:9 & 16:10, Tablet, and   */
+/* Mobile Landscape without dual designs or transform distortions*/
+/* ───────────────────────────────────────────────────────────── */
+
+.game-viewport-container {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  background-color: #0d0c0a;
+  background: radial-gradient(circle at center, #231c16 0%, #0d0c0a 100%);
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
-/* OVERRIDE TAILWIND SMALL FONT UTILITIES TO BE AT LEAST 12pt (16px) */
-.text-\[8px\],
-.text-\[9px\],
-.text-\[10px\],
-.text-\[11px\],
-.text-xs {
-  font-size: 12pt !important; /* 12pt = 16px minimum */
-  line-height: 1.4 !important;
+.game-stage-16-9 {
+  /* Fixed 1920x1080 Virtual Canvas:
+     Maintains pixel-perfect fidelity with the Electron desktop build.
+     Scales uniformly via CSS transform scale based on viewport dimensions. */
+  width: 1920px;
+  height: 1080px;
+  min-width: 1920px;
+  min-height: 1080px;
+  max-width: 1920px;
+  max-height: 1080px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--game-scale, 1));
+  transform-origin: center center;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #FAF7F2;
+  user-select: none;
+  box-shadow: 0 0 45px rgba(0, 0, 0, 0.7);
+  container-type: size;
+  container-name: game-stage;
+  flex-shrink: 0;
+  font-size: 18px;
 }
 
-.text-sm {
-  font-size: max(13.5pt, 18px) !important;
-  line-height: 1.4 !important;
+/* STABLE BASE TYPOGRAPHY (Standard 16px rem base, scales uniformly with canvas) */
+html, body, #root {
+  font-size: 16px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Caveat Brush', 'Kalam', 'Caveat', cursive, sans-serif;
+  font-family: 'Balsamiq Sans', cursive, sans-serif;
   letter-spacing: 0.02em;
-  text-shadow: 2px 2px 0px rgba(45, 36, 30, 0.35), 0px 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: none !important;
+}
+
+/* Custom Scrollbar for In-Game Modals and Account Boards */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(45, 36, 30, 0.15);
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #F59E0B;
+  border-radius: 8px;
+  border: 1px solid #2D241E;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #D97706;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #F59E0B rgba(45, 36, 30, 0.15);
 }
 
 .font-pencil {
-  font-family: 'Caveat Brush', 'Kalam', 'Caveat', cursive !important;
-  text-shadow: 2px 2px 0px rgba(45, 36, 30, 0.35);
+  font-family: 'Balsamiq Sans', cursive, sans-serif !important;
+  text-shadow: none !important;
 }
 
 .font-hand {
   font-family: 'Patrick Hand', cursive, sans-serif !important;
+  text-shadow: none !important;
 }
 
 .font-sans {
-  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  font-family: 'Balsamiq Sans', 'Patrick Hand', sans-serif !important;
+  text-shadow: none !important;
+}
+
+.font-display,
+.font-dynapuff {
+  font-family: 'DynaPuff', cursive, sans-serif !important;
+  text-shadow: none !important;
 }
 
 @keyframes logoFloat {
@@ -76,6 +198,19 @@ h1, h2, h3, h4, h5, h6 {
   animation: logoFloat 4.2s ease-in-out infinite;
 }
 
+@keyframes islandBobbing {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+.animate-island-bob {
+  animation: islandBobbing 5.5s ease-in-out infinite;
+}
+
 #root {
   height: 100%;
   height: 100dvh;
@@ -84,62 +219,86 @@ h1, h2, h3, h4, h5, h6 {
   background-color: transparent;
 }
 
-/* ALL CLICKABLE BUTTONS & CARDS (EXCEPT MODE & ICON BUTTONS): CRYSTAL CLEAR FROSTED GLASS */
-button:not(.mode-btn):not(.clean-icon-btn):not(.avatar-btn):not(.rank-btn), 
-.pencil-btn, [role="button"], a.btn {
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+/* ───────────────────────────────────────────────────────────── */
+/* ULTRA LIGHTWEIGHT GPU-ACCELERATED BACKGROUND KEYFRAMES        */
+/* ───────────────────────────────────────────────────────────── */
+
+@keyframes cssParticleFall {
+  0% {
+    transform: translate3d(0, -50px, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  90% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(60px, 115vh, 0);
+    opacity: 0;
+  }
 }
 
-.mode-btn, .clean-icon-btn, .avatar-btn, .rank-btn, .mode-btn-img {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+@keyframes cssParticleSway {
+  0% {
+    transform: translate3d(-15px, 0, 0) rotate(-12deg);
+  }
+  100% {
+    transform: translate3d(15px, 0, 0) rotate(12deg);
+  }
 }
 
-/* Pencil Cartoon Card & Panel Styles */
+@keyframes cssWindDrift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(100vw + 400px), 0, 0);
+  }
+}
+
+@keyframes cssCloudDrift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(100vw + 500px), 0, 0);
+  }
+}
+
+/* Pencil Cartoon Card & Panel Styles (Optimized for 60fps) */
 .glass-panel, .glass-panel-glow {
-  background: rgba(255, 255, 255, 0.45) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   border: 2.5px solid #2D241E;
   border-radius: 24px;
   box-shadow: 4px 5px 0px #2D241E, 0 10px 25px rgba(45, 36, 30, 0.08);
 }
 
 .pencil-card {
-  background: rgba(255, 255, 255, 0.45) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   border: 2px solid #2D241E;
   border-radius: 20px;
   box-shadow: 3px 4px 0px #2D241E;
 }
 
-/* Default pencil-btn (35% Translucent White + 16px Blur) */
+/* Default pencil-btn */
 .pencil-btn {
-  background: rgba(255, 255, 255, 0.35) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   border: 2.5px solid #2D241E;
   border-radius: 16px;
   box-shadow: 3px 3px 0px #2D241E;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.pencil-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 5px 0px #2D241E;
 }
 
 .pencil-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0px #2D241E;
-}
-
-/* UNIVERSAL DAZZLING GLARE & BRIGHTENING HOVER EFFECT (EFEK TERANG & SILAU-SILAU SAAT CURSOR MENDEKATI MENU) */
-button, .pencil-btn, [role="button"], a.btn, .pencil-card {
-  position: relative;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-/* UNIVERSAL BRIGHTENING & GLOW EFFECT ON MOUSE HOVER FOR ALL CLICKABLE BUTTONS */
-button:hover, .pencil-btn:hover, [role="button"]:hover, a.btn:hover, .pencil-card:hover {
-  filter: brightness(1.18) contrast(1.05) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) !important;
 }
 
 /* Light Beam Glint Overlay Sweep (SOLID CARDS ONLY - EXCLUDE IMAGE / ICON / CLEAN BUTTONS) */
@@ -191,30 +350,217 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   content: none !important;
 }
 
-/* MODE BUTTON PNG IMAGE: 70% GRAYSCALE DEFAULT -> 100% VIBRANT COLOR & GLOW ON HOVER */
+/* MODE BUTTON PNG IMAGE: 70% GRAYSCALE DEFAULT -> 100% VIBRANT COLOR & GLOW ON HOVER / TOUCH / HOLD */
 .mode-btn-img {
   filter: grayscale(70%) brightness(0.85);
-  transition: filter 0.25s ease, transform 0.15s ease !important;
+  transition: filter 0.2s ease, transform 0.15s ease !important;
+  will-change: filter, transform;
 }
 
-.mode-btn:hover .mode-btn-img,
-.mode-btn.is-hovered .mode-btn-img,
-.mode-btn-img.is-hovered {
-  filter: grayscale(0%) brightness(1.25) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) !important;
+/* 1. Quest Mode Island & Snowy Mascot Synchronized Hover & Touch/Hold Glow */
+.island-group:hover .quest-island-img,
+.island-group:active .quest-island-img,
+.island-group:focus-within .quest-island-img,
+.island-group.is-hovered .quest-island-img,
+.island-group.is-touched .quest-island-img,
+.mode-btn:hover .quest-island-img,
+.mode-btn:active .quest-island-img,
+.mode-btn:focus .quest-island-img,
+.mode-btn.is-hovered .quest-island-img,
+.mode-btn.is-touched .quest-island-img,
+.quest-island-img:hover,
+.quest-island-img:active,
+.quest-island-img:focus,
+.quest-island-img.is-hovered,
+.quest-island-img.is-touched,
+.island-group:hover .snowy-mascot,
+.island-group:active .snowy-mascot,
+.island-group:focus-within .snowy-mascot,
+.island-group.is-hovered .snowy-mascot,
+.island-group.is-touched .snowy-mascot,
+.snowy-mascot.is-hovered,
+.snowy-mascot.is-touched,
+.snowy-mascot:active {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 22px rgba(56, 189, 248, 0.98)) drop-shadow(0 0 38px rgba(56, 189, 248, 0.75)) !important;
 }
 
-/* ALL IMAGE-BASED & ICON BUTTONS: 100% FULL COLOR ALWAYS, GLOW & BRIGHTNESS ON HOVER */
-.icon-btn img, .rank-btn img, .avatar-btn img, .image-btn img, .clean-icon-btn img {
+/* 2. Chapter Mode Island & Relo Mascot Synchronized Hover & Touch/Hold Glow */
+.island-group:hover .chapter-island-img,
+.island-group:active .chapter-island-img,
+.island-group:focus-within .chapter-island-img,
+.island-group.is-hovered .chapter-island-img,
+.island-group.is-touched .chapter-island-img,
+.mode-btn:hover .chapter-island-img,
+.mode-btn:active .chapter-island-img,
+.mode-btn:focus .chapter-island-img,
+.mode-btn.is-hovered .chapter-island-img,
+.mode-btn.is-touched .chapter-island-img,
+.chapter-island-img:hover,
+.chapter-island-img:active,
+.chapter-island-img:focus,
+.chapter-island-img.is-hovered,
+.chapter-island-img.is-touched,
+.island-group:hover .relo-mascot,
+.island-group:active .relo-mascot,
+.island-group:focus-within .relo-mascot,
+.island-group.is-hovered .relo-mascot,
+.island-group.is-touched .relo-mascot,
+.relo-mascot.is-hovered,
+.relo-mascot.is-touched,
+.relo-mascot:active {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 22px rgba(253, 224, 71, 0.98)) drop-shadow(0 0 38px rgba(253, 224, 71, 0.75)) !important;
+}
+
+/* 3. Endless Mode Island & Ryu Mascot Synchronized Hover & Touch/Hold Glow */
+.island-group:hover .endless-island-img,
+.island-group:active .endless-island-img,
+.island-group:focus-within .endless-island-img,
+.island-group.is-hovered .endless-island-img,
+.island-group.is-touched .endless-island-img,
+.mode-btn:hover .endless-island-img,
+.mode-btn:active .endless-island-img,
+.mode-btn:focus .endless-island-img,
+.mode-btn.is-hovered .endless-island-img,
+.mode-btn.is-touched .endless-island-img,
+.endless-island-img:hover,
+.endless-island-img:active,
+.endless-island-img:focus,
+.endless-island-img.is-hovered,
+.endless-island-img.is-touched,
+.island-group:hover .ryu-mascot,
+.island-group:active .ryu-mascot,
+.island-group:focus-within .ryu-mascot,
+.island-group.is-hovered .ryu-mascot,
+.island-group.is-touched .ryu-mascot,
+.ryu-mascot.is-hovered,
+.ryu-mascot.is-touched,
+.ryu-mascot:active {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 22px rgba(249, 115, 22, 0.98)) drop-shadow(0 0 38px rgba(249, 115, 22, 0.75)) !important;
+}
+
+/* MODE MASCOT PNG/GIF: 70% GRAYSCALE DEFAULT -> 100% VIBRANT COLOR & GLOW ON HOVER / TOUCH / HOLD */
+.mode-mascot-img {
+  filter: grayscale(60%) brightness(0.88) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+  transition: filter 0.2s ease, transform 0.2s ease !important;
+  will-change: filter, transform;
+}
+
+.mode-btn:hover .mode-mascot-img,
+.mode-btn:active .mode-mascot-img,
+.mode-btn:focus .mode-mascot-img,
+.mode-btn.is-hovered .mode-mascot-img,
+.mode-btn.is-touched .mode-mascot-img,
+.mode-mascot-img.is-hovered,
+.mode-mascot-img.is-touched,
+.mode-mascot-img:active {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 16px rgba(255, 255, 255, 0.98)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) !important;
+}
+
+/* Character Specific Glowing Outlines on Hover & Touch/Hold (Mascot) */
+.mode-mascot-img.snowy-mascot.is-hovered,
+.mode-mascot-img.snowy-mascot.is-touched,
+.mode-mascot-img.snowy-mascot:active,
+.mode-btn:hover .mode-mascot-img.snowy-mascot,
+.mode-btn:active .mode-mascot-img.snowy-mascot,
+.mode-btn:focus .mode-mascot-img.snowy-mascot,
+.mode-btn.is-hovered .mode-mascot-img.snowy-mascot,
+.mode-btn.is-touched .mode-mascot-img.snowy-mascot {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 16px rgba(186, 230, 253, 1)) drop-shadow(0 0 30px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 45px rgba(14, 165, 233, 0.85)) !important;
+}
+
+.mode-mascot-img.relo-mascot.is-hovered,
+.mode-mascot-img.relo-mascot.is-touched,
+.mode-mascot-img.relo-mascot:active,
+.mode-btn:hover .mode-mascot-img.relo-mascot,
+.mode-btn:active .mode-mascot-img.relo-mascot,
+.mode-btn:focus .mode-mascot-img.relo-mascot,
+.mode-btn.is-hovered .mode-mascot-img.relo-mascot,
+.mode-btn.is-touched .mode-mascot-img.relo-mascot {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 16px rgba(253, 224, 71, 1)) drop-shadow(0 0 30px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 45px rgba(234, 88, 12, 0.85)) !important;
+}
+
+.mode-mascot-img.ryu-mascot.is-hovered,
+.mode-mascot-img.ryu-mascot.is-touched,
+.mode-mascot-img.ryu-mascot:active,
+.mode-btn:hover .mode-mascot-img.ryu-mascot,
+.mode-btn:active .mode-mascot-img.ryu-mascot,
+.mode-btn:focus .mode-mascot-img.ryu-mascot,
+.mode-btn.is-hovered .mode-mascot-img.ryu-mascot,
+.mode-btn.is-touched .mode-mascot-img.ryu-mascot {
+  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 16px rgba(251, 146, 60, 1)) drop-shadow(0 0 30px rgba(234, 88, 12, 0.95)) drop-shadow(0 0 45px rgba(194, 65, 12, 0.85)) !important;
+}
+
+/* ==========================================================================
+   INSTRUCTOR MASCOT HOVER & TOUCH/HOLD GLOW EFFECTS (BERCAHAYA KETIKA DIDEKATI MOUSE / DISENTUH / DITAHAN)
+   ========================================================================== */
+.instructor-glow-snowy {
+  filter: none;
+  transition: filter 0.25s ease-out;
+}
+.instructor-glow-snowy.is-hovered,
+.instructor-glow-snowy.is-touched,
+.instructor-glow-snowy:hover,
+.instructor-glow-snowy:active {
+  filter: brightness(1.15) contrast(1.05) drop-shadow(0 0 20px rgba(56, 189, 248, 1)) drop-shadow(0 0 38px rgba(186, 230, 253, 0.95)) drop-shadow(0 0 58px rgba(14, 165, 233, 0.85)) !important;
+}
+
+.instructor-glow-ryu {
+  filter: none;
+  transition: filter 0.25s ease-out;
+}
+.instructor-glow-ryu.is-hovered,
+.instructor-glow-ryu.is-touched,
+.instructor-glow-ryu:hover,
+.instructor-glow-ryu:active {
+  filter: brightness(1.15) contrast(1.05) drop-shadow(0 0 20px rgba(249, 115, 22, 1)) drop-shadow(0 0 38px rgba(234, 88, 12, 0.95)) drop-shadow(0 0 58px rgba(194, 65, 12, 0.85)) !important;
+}
+
+.instructor-glow-relo {
+  filter: none;
+  transition: filter 0.25s ease-out;
+}
+.instructor-glow-relo.is-hovered,
+.instructor-glow-relo.is-touched,
+.instructor-glow-relo:hover,
+.instructor-glow-relo:active {
+  filter: brightness(1.15) contrast(1.05) drop-shadow(0 0 20px rgba(253, 224, 71, 1)) drop-shadow(0 0 38px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 58px rgba(234, 88, 12, 0.85)) !important;
+}
+
+/* ALL IMAGE-BASED & ICON BUTTONS: GLOW & BRIGHTNESS ON HOVER, TOUCH, & HOLD */
+.icon-btn img, .rank-btn img, .avatar-btn img, .image-btn img, .clean-icon-btn img, .round-btn img {
   transition: filter 0.2s ease, transform 0.15s ease !important;
   background: transparent !important;
   border: none !important;
 }
 
-.icon-btn:hover img, .rank-btn:hover img, .avatar-btn:hover img, .image-btn:hover img, .clean-icon-btn:hover img {
-  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) !important;
+.icon-btn:hover img,
+.icon-btn:active img,
+.icon-btn:focus img,
+.icon-btn.is-touched img,
+.rank-btn:hover img,
+.rank-btn:active img,
+.rank-btn:focus img,
+.rank-btn.is-touched img,
+.avatar-btn:hover img,
+.avatar-btn:active img,
+.avatar-btn:focus img,
+.avatar-btn.is-touched img,
+.image-btn:hover img,
+.image-btn:active img,
+.image-btn:focus img,
+.image-btn.is-touched img,
+.clean-icon-btn:hover img,
+.clean-icon-btn:active img,
+.clean-icon-btn:focus img,
+.clean-icon-btn.is-touched img,
+.round-btn:hover img,
+.round-btn:active img,
+.round-btn:focus img,
+.round-btn.is-touched img {
+  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
 }
 
-/* NATURAL PNG IMAGE BUTTONS (BUAT AKUN, PILIH AKUN, ETC): NO FORCED CIRCLE, NO FORCED BOX, 100% PNG ARTWORK SHAPE */
+/* NATURAL PNG IMAGE BUTTONS (BUAT AKUN, PILIH AKUN, ETC) */
 .image-btn {
   background: transparent !important;
   border: none !important;
@@ -222,7 +568,7 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   box-shadow: none !important;
   border-radius: 0 !important;
   padding: 0 !important;
-  margin: 0 !important;
+  margin: 0;
   filter: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -243,16 +589,18 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   transition: filter 0.2s ease, transform 0.15s ease !important;
 }
 
-.image-btn:hover img {
-  filter: brightness(1.25) contrast(1.05) drop-shadow(0 0 16px rgba(255, 255, 255, 0.9)) !important;
+.image-btn:hover img,
+.image-btn.is-touched img {
+  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
   transform: scale(1.05) !important;
 }
 
 .image-btn:active img {
-  transform: scale(0.95) !important;
+  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
+  transform: scale(0.96) !important;
 }
 
-/* CLEAN ICON BUTTONS & MODAL EXIT BUTTONS (CIRCULAR HITBOX MATCHING ROUND BUTTON SHAPE) */
+/* CLEAN ICON BUTTONS & MODAL EXIT BUTTONS */
 .clean-icon-btn, .round-btn {
   border-radius: 9999px !important;
   background: transparent !important;
@@ -279,13 +627,18 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   border-radius: 9999px !important;
 }
 
-.clean-icon-btn:hover img, .round-btn:hover img {
-  filter: brightness(1.3) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) !important;
+.clean-icon-btn:hover img,
+.clean-icon-btn.is-touched img,
+.round-btn:hover img,
+.round-btn.is-touched img {
+  filter: brightness(1.35) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
   transform: scale(1.08) !important;
 }
 
-.clean-icon-btn:active img, .round-btn:active img {
-  transform: scale(0.92) !important;
+.clean-icon-btn:active img,
+.round-btn:active img {
+  filter: brightness(1.35) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
+  transform: scale(0.94) !important;
 }
 
 /* CUSTOM AUDIO SETTINGS & RANK RANGE SCROLLER & PIN ASSETS */
@@ -337,7 +690,16 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   }
 }
 
-/* SMOOTH CLOUD DRIFT ANIMATION (AWAN JALAN) */
+/* SMOOTH CLOUD DRIFT ANIMATION (AWAN JALAN - 100% GPU OFF-THREAD) */
+@keyframes cssCloudDrift {
+  0% {
+    transform: translate3d(-550px, 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(100vw + 550px), 0, 0);
+  }
+}
+
 @keyframes cloudDrift {
   0% {
     transform: translateX(-180px);
@@ -361,20 +723,22 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   animation-delay: -45s;
 }
 
-/* RADIANT SUN GLOW & RAYS ANIMATION (MATAHARI BERSINAR - CIRCULAR DROP SHADOW) */
+/* RADIANT SUN GLOW & RAYS ANIMATION (HARDWARE ACCELERATED VIA TRANSFORM & OPACITY) */
 @keyframes sunGlowPulse {
   0%, 100% {
-    filter: drop-shadow(0 0 25px rgba(250, 204, 21, 0.95)) drop-shadow(0 0 50px rgba(245, 158, 11, 0.65));
     transform: scale(1);
+    opacity: 0.94;
   }
   50% {
-    filter: drop-shadow(0 0 35px rgba(250, 204, 21, 1)) drop-shadow(0 0 70px rgba(245, 158, 11, 0.85));
-    transform: scale(1.05);
+    transform: scale(1.04);
+    opacity: 1;
   }
 }
 
 .animate-sun-radiant {
+  filter: drop-shadow(0 0 25px rgba(250, 204, 21, 0.85));
   animation: sunGlowPulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* RETAIN ORIGINAL BUTTON COLORS AT 35-40% OPACITY (SEE-THROUGH GLASS) & 16px BACKDROP BLUR */
@@ -502,18 +866,18 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
 /* Sun Light Rays Shimmering/Pulsing Animation */
 @keyframes sunRaysPulse {
   0%, 100% {
-    opacity: 0.75;
-    transform: scale(0.96);
+    opacity: 0.8;
+    transform: scale(0.96) rotate(0deg);
   }
   50% {
     opacity: 1;
-    transform: scale(1.08);
+    transform: scale(1.05) rotate(3deg);
   }
 }
 
 .animate-sun-rays {
-  transform-origin: 50px 50px;
-  animation: sunRaysPulse 2s ease-in-out infinite;
+  transform-origin: center center;
+  animation: sunRaysPulse 4s ease-in-out infinite;
 }
 
 /* Moving UI Gradient Shifting */
@@ -678,59 +1042,39 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   animation: monocleShimmer 2.5s ease-in-out infinite;
 }
 
-/* Owl Mascot Hopping & Wing Flapping Keyframe Animations */
+/* Owl Mascot Hopping & Wing Flapping Keyframe Animations (Jump 25% height, 1s duration) */
 @keyframes owlJump {
   0% {
-    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1, 1);
   }
-  15% {
-    /* Pre-jump crouch & squash */
-    transform: translate3d(0, 6px, 0) scale(1.12, 0.88) rotate(-2deg);
+  12% {
+    /* Pre-jump anticipation & crouch */
+    transform: translate3d(0, 4%, 0) scale(1.08, 0.92);
   }
-  40% {
-    /* Vertical stretch launch apex */
-    transform: translate3d(0, -36px, 0) scale(0.9, 1.12) rotate(3deg);
+  42% {
+    /* Apex jump: exactly 25% of mascot body height */
+    transform: translate3d(0, -25%, 0) scale(0.96, 1.04);
   }
-  65% {
-    /* Soft apex float */
-    transform: translate3d(0, -24px, 0) scale(0.96, 1.04) rotate(-1deg);
+  60% {
+    /* Gentle glide at apex while flapping */
+    transform: translate3d(0, -23%, 0) scale(0.98, 1.02);
   }
-  85% {
-    /* Soft landing squash rebound */
-    transform: translate3d(0, 3px, 0) scale(1.08, 0.94) rotate(0deg);
+  82% {
+    /* Descending */
+    transform: translate3d(0, -4%, 0) scale(1.02, 0.98);
+  }
+  90% {
+    /* Landing squash cushion */
+    transform: translate3d(0, 3%, 0) scale(1.06, 0.94);
   }
   100% {
-    transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg);
-  }
-}
-
-@keyframes wingFlapLeft {
-  0%, 100% {
-    transform: rotate(0deg) translateY(0);
-  }
-  30% {
-    transform: rotate(-34deg) translateY(-4px) scaleX(1.05);
-  }
-  65% {
-    transform: rotate(12deg) translateY(1px);
-  }
-}
-
-@keyframes wingFlapRight {
-  0%, 100% {
-    transform: rotate(0deg) translateY(0);
-  }
-  30% {
-    transform: rotate(34deg) translateY(-4px) scaleX(1.05);
-  }
-  65% {
-    transform: rotate(-12deg) translateY(1px);
+    transform: translate3d(0, 0, 0) scale(1, 1);
   }
 }
 
 .animate-owl-jump {
   will-change: transform;
-  animation: owlJump 1.4s cubic-bezier(0.34, 1.25, 0.64, 1);
+  animation: owlJump 1s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .animate-wing-flap-left {
@@ -1034,4 +1378,358 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   animation: wingFlapRight 0.3s ease-in-out infinite !important;
 }
 
+/* GPU HARDWARE ACCELERATION & ULTRA-SMOOTH PERFORMANCE OPTIMIZATION */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* OPTIMIZED RENDER CONTAINMENT FOR MODALS & OVERLAYS (LOW CPU/RAM USAGE) */
+.contain-paint {
+  contain: paint layout;
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  transform: translateZ(0);
+}
+
+/* MINIMUM 15-16px FONT SCALING FOR MOBILE / LANDSCAPE READABILITY */
+@media (max-width: 1024px) {
+  html, body {
+    font-size: 16px;
+  }
+}
+
+.text-xs {
+  font-size: 0.875rem !important; /* minimum 14px */
+}
+.text-sm {
+  font-size: 1rem !important; /* minimum 16px */
+}
+
+/* ───────────────────────────────────────────────────────────── */
+/* AUTHENTIC CRYSTAL FROSTED GLASSMORPHISM (TRUE GLASS EFFECT)   */
+/* ───────────────────────────────────────────────────────────── */
+
+.glass-panel {
+  /* High transparency + subtle gradient simulating light refraction */
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.28) 0%, 
+    rgba(255, 255, 255, 0.08) 55%,
+    rgba(255, 255, 255, 0.16) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(108%) contrast(102%) !important;
+  backdrop-filter: blur(20px) saturate(200%) brightness(108%) contrast(102%) !important;
+  
+  /* Luminous specular beveled glass border */
+  border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 2px solid rgba(255, 255, 255, 0.80) !important;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.30) !important;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.40) !important;
+  
+  /* Beveled inner reflections + soft diffuse realistic ambient shadow (NO SOLID COMIC BROWN SHADOW) */
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.15),
+    inset 2px 0 3px 0 rgba(255, 255, 255, 0.45),
+    0 24px 48px -12px rgba(0, 0, 0, 0.20),
+    0 4px 12px 0 rgba(0, 0, 0, 0.08) !important;
+  position: relative;
+  color: #1E293B;
+}
+
+.glass-panel-subtle {
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.22) 0%, 
+    rgba(255, 255, 255, 0.06) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(106%) !important;
+  backdrop-filter: blur(16px) saturate(180%) brightness(106%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.50) !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.70) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(0, 0, 0, 0.12),
+    0 2px 6px 0 rgba(0, 0, 0, 0.06) !important;
+  position: relative;
+  color: #1E293B;
+}
+
+.glass-btn {
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.32) 0%, 
+    rgba(255, 255, 255, 0.10) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(175%) brightness(106%) !important;
+  backdrop-filter: blur(14px) saturate(175%) brightness(106%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.80) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.90),
+    0 4px 14px 0 rgba(0, 0, 0, 0.10) !important;
+  color: #1E293B !important;
+  border-radius: 16px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-btn:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.52) 0%, 
+    rgba(255, 255, 255, 0.22) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
+    0 10px 28px 0 rgba(0, 0, 0, 0.16) !important;
+  transform: translateY(-2px) !important;
+}
+
+.glass-btn:active {
+  background: linear-gradient(
+    135deg, 
+    rgba(255, 255, 255, 0.20) 0%, 
+    rgba(255, 255, 255, 0.08) 100%
+  ) !important;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.70),
+    0 2px 6px 0 rgba(0, 0, 0, 0.10) !important;
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+.glass-btn-emerald {
+  background: linear-gradient(
+    135deg, 
+    rgba(16, 185, 129, 0.40) 0%, 
+    rgba(5, 150, 105, 0.22) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(190%) !important;
+  backdrop-filter: blur(18px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.85),
+    0 8px 28px -4px rgba(16, 185, 129, 0.35),
+    0 2px 8px 0 rgba(0, 0, 0, 0.08) !important;
+  color: #064E3B !important;
+}
+
+.glass-btn-emerald:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(16, 185, 129, 0.55) 0%, 
+    rgba(5, 150, 105, 0.32) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
+    0 12px 36px 0 rgba(16, 185, 129, 0.45) !important;
+  transform: translateY(-2px) scale(1.03) !important;
+}
+
+.glass-btn-amber {
+  background: linear-gradient(
+    135deg, 
+    rgba(245, 158, 11, 0.40) 0%, 
+    rgba(217, 119, 6, 0.22) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(190%) !important;
+  backdrop-filter: blur(18px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.85),
+    0 8px 28px -4px rgba(245, 158, 11, 0.35),
+    0 2px 8px 0 rgba(0, 0, 0, 0.08) !important;
+  color: #78350F !important;
+}
+
+.glass-btn-amber:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(245, 158, 11, 0.55) 0%, 
+    rgba(217, 119, 6, 0.32) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
+    0 12px 36px 0 rgba(245, 158, 11, 0.45) !important;
+  transform: translateY(-2px) scale(1.03) !important;
+}
+
+/* Diagonal glass light reflection sheen overlay */
+.glass-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.glass-sheen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.40) 0%,
+    rgba(255, 255, 255, 0.16) 18%,
+    rgba(255, 255, 255, 0.00) 40%,
+    rgba(255, 255, 255, 0.00) 65%,
+    rgba(255, 255, 255, 0.08) 85%,
+    rgba(255, 255, 255, 0.20) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+.glass-sheen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.95) 45%,
+    rgba(255, 255, 255, 0.95) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Crisp text legibility over transparent glass */
+.glass-panel h1, .glass-panel h2, .glass-panel h3, 
+.glass-panel-subtle h1, .glass-panel-subtle h2, .glass-panel-subtle h3,
+.glass-card h1, .glass-card h2, .glass-card h3 {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+}
+.glass-panel p, .glass-panel-subtle p,
+.glass-panel span, .glass-panel-subtle span,
+.glass-card p, .glass-card span {
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+/* Glass Card - for in-game panels and cards */
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.36) 0%,
+    rgba(255, 255, 255, 0.12) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(190%) brightness(107%) contrast(102%) !important;
+  backdrop-filter: blur(18px) saturate(190%) brightness(107%) contrast(102%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 2px solid rgba(255, 255, 255, 0.80) !important;
+  box-shadow:
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.90),
+    0 16px 36px -8px rgba(0, 0, 0, 0.14),
+    0 4px 10px 0 rgba(0, 0, 0, 0.06) !important;
+  position: relative;
+  color: #1E293B;
+}
+
+/* Glass Option - for interactive buttons and choices (unselected state) */
+.glass-option {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.16) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(175%) brightness(106%) !important;
+  backdrop-filter: blur(12px) saturate(175%) brightness(106%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.70) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 2px solid rgba(255, 255, 255, 0.80) !important;
+  box-shadow:
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.88),
+    0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: #1E293B !important;
+}
+
+.glass-option:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.28) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.98) !important;
+  transform: translateY(-2px) !important;
+  box-shadow:
+    inset 0 1px 2px 0 rgba(255, 255, 255, 1),
+    0 8px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.glass-option:active {
+  transform: translateY(1px) scale(0.98) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.10) 100%
+  ) !important;
+}
+
+/* Glass Input - for text/number fields */
+.glass-input {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.50) 0%,
+    rgba(255, 255, 255, 0.22) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
+  backdrop-filter: blur(14px) saturate(180%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 2px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow:
+    inset 0 1.5px 3px rgba(0, 0, 0, 0.08),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.8) !important;
+  color: #1E293B !important;
+  outline: none !important;
+}
+
+.glass-input:focus {
+  border-color: #2563EB !important;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.25),
+    inset 0 1.5px 3px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Glass Header - for top HUD bars */
+.glass-header {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(255, 255, 255, 0.12) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(108%) !important;
+  backdrop-filter: blur(20px) saturate(200%) brightness(108%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.90),
+    0 8px 24px -4px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* 16:9 UNIFORM SCALING ENGINE HANDLES ALL MOBILE & DESKTOP RESOLUTIONS       */
+/* Virtual resolution is locked to 1920x1080; all assets scale seamlessly.    */
+/* ═══════════════════════════════════════════════════════════════════════════ */
 

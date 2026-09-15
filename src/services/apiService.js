@@ -1,7 +1,32 @@
 // API Service — Frontend HTTP client for the backend
 // Handles all game API calls: progress, leaderboard, cheat
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const PERMANENT_REMOTE_URL = 'https://scooter-thickness-stony.ngrok-free.dev';
+
+function resolveApiBase() {
+  // 1. Local Vite dev server on port 5173 -> point to local backend 3001
+  if (typeof window !== 'undefined' && window.location && window.location.port === '5173') {
+    return `http://${window.location.hostname}:3001`;
+  }
+
+  // 2. Explicit environment variable if provided
+  if (import.meta.env?.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // 3. Web browser running on a remote domain (not file: or localhost)
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    const origin = window.location.origin;
+    if (!origin.startsWith('file:') && !origin.startsWith('app:') && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
+      return origin;
+    }
+  }
+
+  // 4. Default for Electron / Standalone apps -> permanent Ngrok domain
+  return PERMANENT_REMOTE_URL;
+}
+
+const API_BASE = resolveApiBase();
 
 /**
  * Generic fetch wrapper with JSON parsing and error handling.
@@ -13,6 +38,7 @@ async function apiFetch(path, options = {}) {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
         ...options.headers,
       },
       ...options,
@@ -32,12 +58,16 @@ async function apiFetch(path, options = {}) {
 }
 
 /**
- * Fetch all registered detective users for Pilih Akun board.
+ * Fetch all registered detective users for Pilih Akun board on ANY device.
  */
 export async function fetchAllUsers() {
-  const result = await apiFetch('/api/auth/all-users');
+  const result = await apiFetch('/api/users/list');
   if (result.success && Array.isArray(result.data?.users)) {
     return { success: true, users: result.data.users };
+  }
+  const fallback = await apiFetch('/api/auth/all-users');
+  if (fallback.success && Array.isArray(fallback.data?.users)) {
+    return { success: true, users: fallback.data.users };
   }
   return { success: false, users: [] };
 }
@@ -106,6 +136,36 @@ export async function applyCheatCode(cheatCode) {
 }
 
 // ─────────────────────────────────────────────
+// Quest Mode Exam API
+// ─────────────────────────────────────────────
+
+/**
+ * POST /api/quest/submit
+ * Submit Quest Mode exam result (0-100 score, correctCount, points, speed bonus).
+ */
+export async function submitQuestExamScore(subbabId, examData) {
+  return apiFetch('/api/quest/submit', {
+    method: 'POST',
+    body: JSON.stringify({
+      subbabId,
+      score: examData.score,
+      correctCount: examData.correctCount,
+      totalQuestions: examData.totalQuestions || 30,
+      pointsEarned: examData.pointsEarned || 0,
+      timeRemainingSeconds: examData.timeRemainingSeconds || 0,
+    }),
+  });
+}
+
+/**
+ * GET /api/quest
+ * Fetch all quest exam scores for current user.
+ */
+export async function fetchUserQuestScores() {
+  return apiFetch('/api/quest');
+}
+
+// ─────────────────────────────────────────────
 // Leaderboard API
 // ─────────────────────────────────────────────
 
@@ -130,9 +190,31 @@ export async function updateAvatar(avatarId) {
   });
 }
 
-// ─────────────────────────────────────────────
-// Health Check
-// ─────────────────────────────────────────────
+/**
+ * POST /api/progress/playtime
+ * Send played duration in seconds to backend for analytics tracking.
+ * @param {number} seconds
+ * @param {string} [username]
+ */
+export async function recordPlayTime(seconds, username = '') {
+  return apiFetch('/api/progress/playtime', {
+    method: 'POST',
+    body: JSON.stringify({ seconds, username }),
+  });
+}
+
+/**
+ * POST /api/progress/sync-offline
+ * Bulk upload offline student data (accounts, stages, quest exams, total score) to server.
+ */
+export async function syncOfflineData(payload) {
+  return apiFetch('/api/progress/sync-offline', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+
 
 /**
  * GET /api/health
@@ -146,3 +228,5 @@ export async function checkHealth() {
     return false;
   }
 }
+
+

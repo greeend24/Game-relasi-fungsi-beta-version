@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Award, Lock, CheckCircle2, Trophy } from 'lucide-react';
+import { Award, Lock, CheckCircle2, Trophy } from 'lucide-react';
 import { BADGE_DEFINITIONS, storageService } from '../services/storageService';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
 
 /**
  * BadgesModal
@@ -28,42 +27,36 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
   const unlockedBadges = new Set(userToEvaluate?.unlockedBadges || ['badge1']);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
-      <div className="relative w-full max-w-4xl p-6 sm:p-8 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] text-[#2D241E] space-y-6 max-h-[88vh] overflow-y-auto drag-scroller">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
+      <div className="relative w-full max-w-5xl max-h-[92dvh] p-4 sm:p-5 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col justify-between space-y-3 overflow-y-auto select-none"
+        style={{ backgroundImage: "url('/assets/tampilan di avatar menu board/Assets/board_of_avatar@4x.png')" }}>
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b-2 border-[#EFECE6]">
+        <div className="flex items-center justify-between pb-2 border-b-2 border-white/20">
           <div className="flex items-center space-x-2">
             <Award className="w-7 h-7 text-[#D97706]" />
             <div>
-              <h2 className="text-2xl font-bold font-pencil text-[#2D241E]">
+              <h2 className="text-2xl sm:text-3xl font-black font-pencil text-[#FEF3C7]">
                 10 KATEGORI LENCANA DETEKTIF
               </h2>
-              <p className="text-xs text-[#78350F] font-bold">Tingkatkan stage & skor untuk membuka semua lencana!</p>
+              <p className="text-xs sm:text-sm text-[#FDE68A] font-bold">Tingkatkan stage & skor untuk membuka semua lencana!</p>
             </div>
           </div>
           <button 
             onClick={() => { try { audioEngine.playClick(); } catch {} reloVoiceService.stopVoice(); onClose(); }}
-            className="pencil-btn p-1.5 bg-[#F3F4F6] text-[#374151]"
+            className="clean-icon-btn rounded-full overflow-hidden hover:scale-110 active:scale-95 transition-transform"
+            title="Tutup Menu"
           >
-            <X className="w-5 h-5" />
+            <img 
+              src="/assets/tampilan di rank/asset/exit_button_menu_rank@4x.png" 
+              alt="Close" 
+              className="w-10 h-10 object-contain rounded-full drop-shadow-md"
+            />
           </button>
         </div>
 
-        {/* DETEKTIF RELO MASCOT & SPEECH BUBBLE CHAT */}
-        <div className="flex justify-center sm:justify-start">
-          <ProfessorOwlMascot
-            pose="hero"
-            emotion="happy"
-            message={reloText || "Tingkatkan stage dan skormu untuk membuka 10 Lencana Detektif!"}
-            size="sm"
-          />
-        </div>
-
-
-
-        {/* 10 Badge Cards Grid - GRADIENT BOXES BY CATEGORY & LIGHT DUST FOR CAT 10 ONLY */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        {/* 10 Badge Cards Grid - 5 Columns x 2 Rows (FIXED ZERO SCROLL) */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5">
           {BADGE_DEFINITIONS.map((badge) => {
             const isUnlocked = unlockedBadges.has(badge.id);
             const isCategory10 = badge.category === 10;
@@ -71,10 +64,10 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
             return (
               <div
                 key={badge.id}
-                className={`relative p-4 rounded-2xl border-2 flex items-center space-x-3.5 shadow-[3px_4px_0px_#2D241E] overflow-hidden transition-transform duration-200 backdrop-blur-md opacity-90 ${
+                className={`relative p-2.5 rounded-2xl border-2 flex flex-col justify-between items-center text-center shadow-[2px_3px_0px_#2D241E] overflow-hidden transition-transform duration-200 backdrop-blur-md h-[135px] sm:h-[145px] ${
                   isUnlocked
                     ? `bg-gradient-to-br ${badge.cardGradient} border-[#2D241E] ${
-                        isCategory10 ? 'ring-4 ring-yellow-300/90 animate-legendary-glow shadow-[0_0_30px_rgba(245,158,11,0.9)]' : ''
+                        isCategory10 ? 'ring-3 ring-yellow-300 animate-legendary-glow shadow-[0_0_20px_rgba(245,158,11,0.8)]' : ''
                       }`
                     : 'bg-[#FDFBF7]/90 border-[#78350F] text-[#2D241E]'
                 }`}
@@ -85,17 +78,26 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
                     <div className="absolute top-2 left-4 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#FFF] animate-sparkle-dust-1" />
                     <div className="absolute top-5 right-8 w-2.5 h-2.5 rounded-full bg-yellow-100 shadow-[0_0_12px_#FFF] animate-sparkle-dust-2" />
                     <div className="absolute bottom-3 left-1/3 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#FFF] animate-sparkle-dust-3" />
-                    <div className="absolute bottom-2 right-6 w-2 h-2 rounded-full bg-amber-100 shadow-[0_0_10px_#FFF] animate-sparkle-dust-4" />
-                    <div className="absolute top-1/2 left-8 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_#FFF] animate-sparkle-dust-2" />
-                    <div className="absolute top-3 right-1/4 w-1.5 h-1.5 rounded-full bg-yellow-200 shadow-[0_0_8px_#FFF] animate-sparkle-dust-1" />
                   </div>
                 )}
 
+                {/* Status Indicator Badge */}
+                <div className="absolute right-2 top-2 z-20">
+                  {isUnlocked ? (
+                    isCategory10 ? (
+                      <Trophy className="w-4 h-4 text-amber-950 animate-bounce" />
+                    ) : (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    )
+                  ) : (
+                    <Lock className="w-4 h-4 text-[#78350F]" />
+                  )}
+                </div>
+
                 {/* Badge Icon Shield with HD PNG Asset */}
-                <div className={`relative overflow-hidden w-14 h-14 rounded-2xl border-2 border-[#2D241E] flex items-center justify-center p-1.5 flex-shrink-0 shadow-[2px_2px_0px_#2D241E] z-10 ${
+                <div className={`relative overflow-hidden w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 border-[#2D241E] flex items-center justify-center p-1 flex-shrink-0 shadow-[1px_1px_0px_#2D241E] z-10 ${
                   isUnlocked ? `bg-gradient-to-br ${badge.iconBg}` : 'bg-[#EFECE6] opacity-75'
                 }`}>
-                  {/* Dazzling Golden Glint Sheen Overlay - STRICTLY ONLY FOR CATEGORY 10 */}
                   {isCategory10 && isUnlocked && (
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/80 to-transparent animate-badge-shimmer pointer-events-none z-10" />
                   )}
@@ -107,37 +109,17 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
                   />
                 </div>
 
-                <div className="flex-1 space-y-1 pr-4 z-10">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#FEF3C7] text-[#78350F] border border-[#2D241E]">
-                      KATEGORI {badge.category}
-                    </span>
-                    <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded border border-[#2D241E] ${
-                      badge.rarity === 'LEGENDARY' ? 'bg-[#FDE68A] text-[#78350F]' : badge.rarity === 'EPIC' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {badge.rarity}
-                    </span>
-                  </div>
+                <div className="w-full space-y-0.5 z-10 flex-1 flex flex-col justify-center">
+                  <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#78350F] border border-[#2D241E] inline-block mx-auto">
+                    KATEGORI {badge.category}
+                  </span>
 
-                  <h4 className={`font-bold text-sm sm:text-base font-pencil leading-tight ${isUnlocked ? badge.textColor : 'text-[#2D241E]'}`}>
+                  <h4 className={`font-bold text-xs sm:text-sm font-pencil leading-tight line-clamp-1 ${isUnlocked ? badge.textColor : 'text-[#2D241E]'}`}>
                     {badge.name}
                   </h4>
-                  <p className={`text-[11px] font-bold leading-tight ${isUnlocked ? badge.subTextColor : 'text-[#4A3E3D]'}`}>
+                  <p className={`text-[10px] font-bold leading-tight line-clamp-1 ${isUnlocked ? badge.subTextColor : 'text-[#4A3E3D]'}`}>
                     {badge.desc}
                   </p>
-                </div>
-
-                {/* Status Indicator */}
-                <div className="absolute right-3 top-3 z-10">
-                  {isUnlocked ? (
-                    isCategory10 ? (
-                      <Trophy className="w-5 h-5 text-amber-950 animate-bounce" />
-                    ) : (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-200 drop-shadow-md" />
-                    )
-                  ) : (
-                    <Lock className="w-5 h-5 text-[#78350F]" />
-                  )}
                 </div>
               </div>
             );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
 import AuthScreen from './components/AuthScreen';
 import MainMenu from './components/MainMenu';
 import StageSelector from './components/StageSelector';
@@ -13,30 +12,28 @@ import AvatarModal from './components/AvatarModal';
 import RankModal from './components/RankModal';
 import AchievementUnlockedModal from './components/AchievementUnlockedModal';
 import LoadingScreen from './components/LoadingScreen';
-import YouTubeAudioPlayer from './components/YouTubeAudioPlayer';
 import AnimatedBackground from './components/AnimatedBackground';
 
-import Subbab1Relasi from './components/games/Subbab1Relasi';
-import Subbab2FormatRelasi from './components/games/Subbab2FormatRelasi';
-import Subbab3PengertianFungsi from './components/games/Subbab3PengertianFungsi';
-import Subbab4UnsurFungsi from './components/games/Subbab4UnsurFungsi';
-import Subbab5RumusFungsi from './components/games/Subbab5RumusFungsi';
-import Subbab6Korespondensi from './components/games/Subbab6Korespondensi';
-import Subbab7JenisFungsi from './components/games/Subbab7JenisFungsi';
-import Stage21Conclusion from './components/Stage21Conclusion';
+import ChapterLearning from './components/ChapterLearning';
 import EndlessMode from './components/games/EndlessMode';
 
+import { audioEngine } from './services/audioEngine';
 import { storageService } from './services/storageService';
-import { SUBBABS_DATA } from './data/casesData';
+import { securityLockoutService } from './services/securityLockoutService';
+import SecurityLockoutModal from './components/SecurityLockoutModal';
+import StrikeWarningModal from './components/StrikeWarningModal';
+import { CHAPTERS_DATA } from './data/chapterLearningData';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
+import RotatePhoneOverlay from './components/RotatePhoneOverlay';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [viewState, setViewState] = useState('AUTH'); // AUTH, MAIN_MENU, STAGE_SELECT, GAME, ENDLESS, QUEST_SELECT, QUEST_EXAM
+  const [viewState, setViewState] = useState('AUTH'); // AUTH, MAIN_MENU, STAGE_SELECT, LEARNING, ENDLESS, QUEST_SELECT, QUEST_EXAM
   const [currentSubbabId, setCurrentSubbabId] = useState(1);
   const [currentStageNum, setCurrentStageNum] = useState(1);
   const [questSubbabId, setQuestSubbabId] = useState(1);
-  
+
   // Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
@@ -46,129 +43,393 @@ export default function App() {
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [newBadgeUnlocked, setNewBadgeUnlocked] = useState(null);
 
+  // Anti-Cheat / Tab-Switch Lockout State
+  const [lockoutState, setLockoutState] = useState(() => securityLockoutService.checkStatus());
+  const [warningStrikes, setWarningStrikes] = useState(0);
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
+
+  // Subscribe to Security Lockout Service
   useEffect(() => {
-    // Async session sync on app startup
-    const initSession = async () => {
-      const user = await storageService.syncSession();
-      if (user) {
-        setCurrentUser(user);
-        setViewState('MAIN_MENU');
-        try { audioEngine.toggleBgm(true); } catch {}
+    const unsubscribe = securityLockoutService.subscribe((status) => {
+      setLockoutState(status);
+      if (status.isLocked) {
+        setIsWarningOpen(false);
       }
-    };
-    initSession();
+    });
+    return unsubscribe;
   }, []);
 
-  // Global listener to ensure Menu BGM auto-plays on user interaction without opening settings
+  // Check if current user is admin / whitelisted from strike warnings
+  const isUserAdminExempt = (user) => {
+    if (!user) return false;
+    if (user.isAdmin) return true;
+    const u = (user.username || user.name || user.fullname || '').toLowerCase().trim();
+    return u === 'fikran02' || u === 'fikran' || u === 'admin';
+  };
+
+  // Automatically clear any legacy strikes / lockout if logged in as admin
   useEffect(() => {
-    const handleAutoPlayInteraction = () => {
-      if (currentUser && viewState !== 'AUTH' && viewState !== 'QUEST_EXAM') {
-        if (!audioEngine.isPlayingBgm && !audioEngine.isQuestBattleActive) {
-          try { audioEngine.toggleBgm(true); } catch {}
+    if (isUserAdminExempt(currentUser)) {
+      securityLockoutService.clearLockout();
+      setLockoutState({ isLocked: false, remainingSeconds: 0, strikes: 0, justLocked: false });
+      setWarningStrikes(0);
+      setIsWarningOpen(false);
+    }
+  }, [currentUser]);
+
+  // Monitor Tab Switch (visibilitychange) and Window Blur
+  useEffect(() => {
+    const handleVisibilityOrBlur = (e) => {
+      // Only monitor when user is logged in & not on initial loading
+      if (!currentUser || viewState === 'AUTH' || isLoading) return;
+
+      // Whitelist admin account fikran02 so they never get strike warnings or lockouts
+      if (isUserAdminExempt(currentUser)) return;
+
+      const isHidden = document.hidden || (e && e.type === 'blur');
+      if (isHidden) {
+        const result = securityLockoutService.recordViolation(currentUser);
+        if (result.justLocked) {
+          setLockoutState(result);
+          setIsWarningOpen(false);
+          try { audioEngine.playPenalty(); } catch {}
+        } else if (result.strikes === 1 || result.strikes === 2) {
+          setWarningStrikes(result.strikes);
+          setIsWarningOpen(true);
+          try { audioEngine.playWarning(); } catch {}
         }
       }
     };
 
-    window.addEventListener('click', handleAutoPlayInteraction);
-    window.addEventListener('touchstart', handleAutoPlayInteraction, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityOrBlur);
+    window.addEventListener('blur', handleVisibilityOrBlur);
 
     return () => {
-      window.removeEventListener('click', handleAutoPlayInteraction);
-      window.removeEventListener('touchstart', handleAutoPlayInteraction);
+      document.removeEventListener('visibilitychange', handleVisibilityOrBlur);
+      window.removeEventListener('blur', handleVisibilityOrBlur);
     };
-  }, [currentUser, viewState]);
+  }, [currentUser, viewState, isLoading]);
 
+  // Global Mobile Touch & Hold Glow Listener
+  // Ensures all interactive elements (buttons, islands, mascots, avatars, rank badges, image buttons)
+  // glow brightly when touched or held down on touchscreens!
+  useEffect(() => {
+    let activeElements = [];
+    let clearTimer = null;
+
+    const clearGlow = () => {
+      activeElements.forEach((el) => {
+        try {
+          el.classList.remove('is-touched', 'is-active');
+        } catch {}
+      });
+      activeElements = [];
+    };
+
+    const handleTouchStart = (e) => {
+      if (clearTimer) {
+        clearTimeout(clearTimer);
+        clearTimer = null;
+      }
+      clearGlow();
+
+      const target = e.target;
+      if (!target || !(target instanceof Element)) return;
+
+      const interactive = target.closest(
+        '.mode-btn, .island-group, .image-btn, .clean-icon-btn, .round-btn, .avatar-btn, .rank-btn, .icon-btn, .pencil-btn, [role="button"], button'
+      );
+
+      if (interactive) {
+        interactive.classList.add('is-touched', 'is-active');
+        activeElements.push(interactive);
+
+        // Also add to any child img, island or mascot elements
+        const childImages = interactive.querySelectorAll('img, .mode-btn-img, .mode-mascot-img, .quest-island-img, .chapter-island-img, .endless-island-img, .snowy-mascot, .relo-mascot, .ryu-mascot');
+        childImages.forEach((img) => {
+          img.classList.add('is-touched', 'is-active');
+          activeElements.push(img);
+        });
+      } else {
+        if (
+          target.classList.contains('mode-btn-img') ||
+          target.classList.contains('mode-mascot-img') ||
+          target.classList.contains('quest-island-img') ||
+          target.classList.contains('chapter-island-img') ||
+          target.classList.contains('endless-island-img') ||
+          target.classList.contains('snowy-mascot') ||
+          target.classList.contains('relo-mascot') ||
+          target.classList.contains('ryu-mascot') ||
+          target.classList.contains('instructor-glow-snowy') ||
+          target.classList.contains('instructor-glow-relo') ||
+          target.classList.contains('instructor-glow-ryu')
+        ) {
+          target.classList.add('is-touched', 'is-active');
+          activeElements.push(target);
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      // Keep glow on for 150ms after touch release for tactile feedback
+      if (clearTimer) clearTimeout(clearTimer);
+      clearTimer = setTimeout(() => {
+        clearGlow();
+      }, 150);
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
+      if (clearTimer) clearTimeout(clearTimer);
+    };
+  }, []);
+
+  // Portrait Orientation State for Mobile Device Warning Overlay
+  const [isPortrait, setIsPortrait] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerHeight > window.innerWidth && window.innerWidth < 1024;
+    }
+    return false;
+  });
+  const [dismissPortraitWarning, setDismissPortraitWarning] = useState(false);
+
+  // Monitor Window Resize & Device Orientation for Portrait Detection
+  useEffect(() => {
+    const checkOrientation = () => {
+      if (typeof window === 'undefined') return;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const portrait = vh > vw && vw < 1024;
+      setIsPortrait(portrait);
+      if (!portrait) {
+        setDismissPortraitWarning(false);
+      }
+    };
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
+
+  // 16:9 Virtual Canvas (1920x1080) Uniform Scale Factor
+  // Guarantees pixel-perfect identical layout on mobile landscape & non-fullscreen window sizes
+  const [gameScale, setGameScale] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      return Math.min(vw / 1920, vh / 1080);
+    }
+    return 1;
+  });
+
+  useEffect(() => {
+    const updateGameScale = () => {
+      if (typeof window === 'undefined') return;
+      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const scale = Math.min(vw / 1920, vh / 1080);
+      setGameScale(scale);
+      document.documentElement.style.setProperty('--game-scale', String(scale));
+    };
+
+    updateGameScale();
+    window.addEventListener('resize', updateGameScale);
+    window.addEventListener('orientationchange', updateGameScale);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateGameScale);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateGameScale);
+      window.removeEventListener('orientationchange', updateGameScale);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateGameScale);
+      }
+    };
+  }, []);
+
+  // Lock Screen Orientation to Landscape on Mobile (Capacitor & Web)
+  useEffect(() => {
+    const lockLandscape = async () => {
+      try {
+        if (typeof ScreenOrientation !== 'undefined' && ScreenOrientation.lock) {
+          await ScreenOrientation.lock({ orientation: 'landscape' });
+        } else if (typeof window !== 'undefined' && window.screen?.orientation?.lock) {
+          await window.screen.orientation.lock('landscape').catch(() => {});
+        }
+      } catch (err) {
+        // Graceful fallback
+      }
+    };
+    lockLandscape();
+  }, []);
+
+  // Initial user session load
+  useEffect(() => {
+    const lastUser = storageService.getCurrentUser();
+    if (lastUser) {
+      setCurrentUser(lastUser);
+      setViewState('MAIN_MENU');
+    }
+  }, []);
+
+  // Play BGM when view state changes
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (viewState === 'AUTH') {
+      audioEngine.toggleBgm(true);
+    } else if (viewState === 'MAIN_MENU' || viewState === 'STAGE_SELECT' || viewState === 'QUEST_SELECT') {
+      audioEngine.toggleBgm(true);
+    } else if (viewState === 'LEARNING' || viewState === 'QUEST_EXAM' || viewState === 'ENDLESS') {
+      // In-game components manage their own BGM or keep main BGM playing
+    }
+  }, [viewState, isLoading]);
+
+  // Authentication Handlers
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
     setViewState('MAIN_MENU');
-    try { audioEngine.toggleBgm(true); } catch {}
   };
 
-  const handleLogout = async () => {
-    await storageService.logout();
+  // Active Play Time Tracker (Heartbeat to backend for analytics tracking)
+  useEffect(() => {
+    if (!currentUser || currentUser._isGuest || viewState === 'AUTH') return;
+
+    const interval = setInterval(() => {
+      if (!document.hidden) {
+        import('./services/apiService.js').then(({ recordPlayTime }) => {
+          recordPlayTime(30, currentUser.username).catch(() => {});
+        });
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [currentUser, viewState]);
+
+  const handleLogout = () => {
+    storageService.logout();
     setCurrentUser(null);
     setViewState('AUTH');
-    try { audioEngine.stopBgm(); } catch {}
   };
 
-  const handleNewGame = () => {
-    setCurrentSubbabId(null);
+  // Main Menu Handlers
+  const handleEnterChapterSelect = () => {
     setViewState('STAGE_SELECT');
   };
+  const handleNewGame = handleEnterChapterSelect;
+  const handleLoadGame = handleEnterChapterSelect;
 
-  const handleLoadGame = () => {
-    setViewState('STAGE_SELECT');
+  // Chapter Selector Handlers
+  const handleSelectChapter = (chapterId) => {
+    setCurrentSubbabId(chapterId);
+    setViewState('LEARNING');
   };
 
-  const handleSelectStage = (subbabId, stageNum) => {
-    setCurrentSubbabId(subbabId);
-    setCurrentStageNum(stageNum);
-    setViewState('GAME');
-  };
+  // Segment Completion Handler (Persists each completed slide/segment immediately)
+  const handleSegmentComplete = (chapterId, segmentNum, scoreEarned = 10) => {
+    const baseUser = storageService.getCurrentUser() || currentUser;
+    if (!baseUser) return;
 
-  const handleStageComplete = async (subbabKey, stageNum, scoreEarned, starsEarned) => {
-    const res = await storageService.updateProgress(subbabKey, stageNum, scoreEarned, starsEarned);
-    if (res && res.user) {
-      setCurrentUser(res.user);
-      if (res.newBadges && res.newBadges.length > 0) {
-        setNewBadgeUnlocked(res.newBadges[0]);
+    const chapterKey = `chapter${chapterId}`;
+    const chapter = CHAPTERS_DATA[chapterId];
+    const totalSegs = chapter?.totalSegments || 10;
+    const isChComplete = segmentNum >= totalSegs;
+
+    const existingCh = baseUser.progress?.[chapterKey] || {};
+    const prevSegs = existingCh.completedSegments || 0;
+    const newSegs = Math.max(prevSegs, segmentNum);
+
+    const updatedStars = { ...(existingCh.stars || {}) };
+    for (let s = 1; s <= newSegs; s++) {
+      if (!updatedStars[String(s)]) {
+        updatedStars[String(s)] = 3;
       }
     }
-  };
 
-  const handleNextStage = () => {
-    if (currentStageNum < 21) {
-      setCurrentStageNum(currentStageNum + 1);
-    } else {
-      if (currentSubbabId < 7) {
-        setCurrentSubbabId(currentSubbabId + 1);
-        setCurrentStageNum(1);
-        setViewState('STAGE_SELECT');
-      } else {
-        setViewState('STAGE_SELECT');
+    const updatedProgress = {
+      ...(baseUser.progress || {}),
+      [chapterKey]: {
+        ...existingCh,
+        unlocked: true,
+        completedSegments: newSegs,
+        completed: isChComplete || Boolean(existingCh.completed),
+        currentStage: Math.min(newSegs + 1, totalSegs),
+        stars: updatedStars,
+      },
+      [`subbab${chapterId}`]: {
+        unlocked: true,
+        currentStage: Math.min(newSegs + 1, totalSegs),
+        stars: updatedStars,
+        isStage21Completed: isChComplete || Boolean(existingCh.completed),
       }
-    }
-  };
-
-  const renderActiveGameComponent = () => {
-    if (currentStageNum === 21) {
-      return (
-        <Stage21Conclusion
-          subbabId={currentSubbabId}
-          onStageComplete={handleStageComplete}
-          onBackToStages={() => setViewState('STAGE_SELECT')}
-          onNextSubbab={() => {
-            if (currentSubbabId < 7) {
-              setCurrentSubbabId(currentSubbabId + 1);
-              setCurrentStageNum(1);
-              setViewState('STAGE_SELECT');
-            } else {
-              setViewState('STAGE_SELECT');
-            }
-          }}
-        />
-      );
-    }
-
-    const commonProps = {
-      stageNum: currentStageNum,
-      onStageComplete: handleStageComplete,
-      onBackToStages: () => setViewState('STAGE_SELECT'),
-      onNextStage: handleNextStage,
-      onOpenSubbabInfo: () => setIsSubbabInfoOpen(true)
     };
 
-    switch (currentSubbabId) {
-      case 1: return <Subbab1Relasi {...commonProps} />;
-      case 2: return <Subbab2FormatRelasi {...commonProps} />;
-      case 3: return <Subbab3PengertianFungsi {...commonProps} />;
-      case 4: return <Subbab4UnsurFungsi {...commonProps} />;
-      case 5: return <Subbab5RumusFungsi {...commonProps} />;
-      case 6: return <Subbab6Korespondensi {...commonProps} />;
-      case 7: return <Subbab7JenisFungsi {...commonProps} />;
-      default: return null;
+    // If chapter completed, unlock next chapter
+    if (isChComplete && chapterId < Object.keys(CHAPTERS_DATA).length) {
+      const nextKey = `chapter${chapterId + 1}`;
+      updatedProgress[nextKey] = {
+        ...(baseUser.progress?.[nextKey] || { completedSegments: 0 }),
+        unlocked: true,
+      };
+      updatedProgress[`subbab${chapterId + 1}`] = {
+        ...(baseUser.progress?.[`subbab${chapterId + 1}`] || {}),
+        unlocked: true,
+      };
+    }
+
+    const currentTotalScore = Number(baseUser.totalScore) || 0;
+    const scoreToAdd = segmentNum > prevSegs ? scoreEarned : 0;
+    const updatedUser = {
+      ...baseUser,
+      totalScore: currentTotalScore + scoreToAdd,
+      progress: updatedProgress,
+    };
+
+    setCurrentUser(updatedUser);
+    storageService.saveUser(updatedUser);
+
+    // Call storageService.updateProgress to sync with SQLite backend in background
+    if (!baseUser._isGuest) {
+      storageService.updateProgress(chapterKey, segmentNum, scoreToAdd, 3).catch(err => {
+        console.warn('Backend segment update failed:', err);
+      });
+    }
+
+    return updatedUser;
+  };
+
+  // Chapter Learning Complete Handler
+  const handleChapterComplete = (chapterId, advanceToNext = false) => {
+    const baseUser = storageService.getCurrentUser() || currentUser;
+    if (!baseUser) return;
+
+    const chapterKey = `chapter${chapterId}`;
+    const chapter = CHAPTERS_DATA[chapterId];
+    if (!chapter) return;
+
+    const totalSegs = chapter.totalSegments;
+    handleSegmentComplete(chapterId, totalSegs, advanceToNext ? 0 : 100);
+
+    // Advance to next chapter if requested
+    if (advanceToNext && chapterId < Object.keys(CHAPTERS_DATA).length) {
+      const nextChapterId = chapterId + 1;
+      setCurrentSubbabId(nextChapterId);
+      setViewState('LEARNING');
     }
   };
+
+  // No longer needed — ChapterLearning is rendered directly
 
   const handleCheatApplied = (updatedUser) => {
     setCurrentUser(updatedUser);
@@ -176,19 +437,71 @@ export default function App() {
   };
 
   if (isLoading) {
-    return <LoadingScreen onFinish={() => setIsLoading(false)} />;
+    return (
+      <>
+        {isPortrait && !dismissPortraitWarning && (
+          <RotatePhoneOverlay 
+            onEnterFullscreen={() => setDismissPortraitWarning(true)} 
+            onDismiss={() => setDismissPortraitWarning(true)}
+          />
+        )}
+        <div className="game-viewport-container">
+          <div 
+            className="game-stage-16-9"
+            style={{
+              transform: `translate(-50%, -50%) scale(${gameScale})`,
+              '--game-scale': gameScale,
+            }}
+          >
+            <LoadingScreen onFinish={() => setIsLoading(false)} />
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (
-    <div className="h-[100dvh] w-full flex flex-col font-sans relative z-10 overflow-hidden select-none bg-[#FAF7F2]">
-      {/* PERSISTENT CONTINUOUS BACKGROUND: SKY, CLOUDS & LEAVES NEVER RESET OR UNMOUNT ACROSS SECTIONS */}
-      <AnimatedBackground 
-        hideBottomLandscape={viewState === 'STAGE_SELECT' || viewState === 'MAIN_MENU' || viewState === 'AUTH'} 
-        hideBirds={true} 
-        hideClouds={false} 
-      />
+    <>
+      {isPortrait && !dismissPortraitWarning && (
+        <RotatePhoneOverlay 
+          onEnterFullscreen={() => setDismissPortraitWarning(true)} 
+          onDismiss={() => setDismissPortraitWarning(true)}
+        />
+      )}
+      <div className="game-viewport-container">
+        <div 
+          className="game-stage-16-9 font-sans select-none bg-[#FAF7F2]"
+          style={{
+            transform: `translate(-50%, -50%) scale(${gameScale})`,
+            '--game-scale': gameScale,
+          }}
+        >
+        {/* PERSISTENT CONTINUOUS BACKGROUND: SKY, CLOUDS & LEAVES NEVER RESET OR UNMOUNT ACROSS SECTIONS */}
+        <AnimatedBackground 
+          hideBottomLandscape={viewState === 'STAGE_SELECT' || viewState === 'GAME' || viewState === 'MAIN_MENU' || viewState === 'AUTH' || viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM' || viewState === 'ENDLESS'} 
+          hideBirds={true} 
+          hideClouds={false} 
+          isQuestMode={viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM'}
+          isEndlessMode={viewState === 'ENDLESS'}
+          particleType={
+            viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM'
+              ? 'snowflake'
+              : viewState === 'ENDLESS'
+              ? 'ember'
+              : 'leaf'
+          }
+        />
 
-      <main className="flex-1 w-full h-full flex flex-col min-h-0 overflow-hidden relative">
+        {/* RELO'S ISLAND BACKGROUND FOR CHAPTER MODE (STAGE SELECTION & ACTIVE STAGE GAMEPLAY) */}
+        {(viewState === 'STAGE_SELECT' || viewState === 'LEARNING') && (
+          <img 
+            src="/game asset/relo_island.png" 
+            alt="Relo Island Background" 
+            className="absolute inset-0 w-full h-full object-cover object-bottom pointer-events-none select-none z-0"
+          />
+        )}
+
+        <main className="flex-1 w-full h-full flex flex-col min-h-0 overflow-hidden relative z-10">
         {viewState === 'AUTH' && (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
         )}
@@ -196,6 +509,7 @@ export default function App() {
         {viewState === 'MAIN_MENU' && (
           <MainMenu
             currentUser={currentUser}
+            isAnyModalOpen={isSettingsOpen || isLeaderboardOpen || isRankOpen || isBadgesOpen || isAvatarOpen || isSubbabInfoOpen || Boolean(newBadgeUnlocked) || isWarningOpen || lockoutState.isLocked}
             onNewGame={handleNewGame}
             onLoadGame={handleLoadGame}
             onStartQuest={() => setViewState('QUEST_SELECT')}
@@ -214,7 +528,7 @@ export default function App() {
             userProgress={currentUser?.progress}
             currentSubbabId={currentSubbabId}
             setCurrentSubbabId={setCurrentSubbabId}
-            onSelectStage={handleSelectStage}
+            onSelectChapter={handleSelectChapter}
             onBackToMenu={() => setViewState('MAIN_MENU')}
             onOpenSubbabInfo={() => setIsSubbabInfoOpen(true)}
           />
@@ -223,6 +537,7 @@ export default function App() {
         {viewState === 'QUEST_SELECT' && (
           <QuestModeSelector
             userProgress={currentUser?.progress}
+            currentUser={currentUser}
             onBackToMenu={() => setViewState('MAIN_MENU')}
             onStartQuestSubbab={(subId) => {
               setQuestSubbabId(subId);
@@ -239,7 +554,17 @@ export default function App() {
           />
         )}
 
-        {viewState === 'GAME' && renderActiveGameComponent()}
+        {viewState === 'LEARNING' && (
+          <ChapterLearning
+            key={currentSubbabId}
+            chapterId={currentSubbabId}
+            currentUser={currentUser}
+            onBack={() => setViewState('STAGE_SELECT')}
+            onBackToMenu={() => setViewState('MAIN_MENU')}
+            onChapterComplete={handleChapterComplete}
+            onSegmentComplete={handleSegmentComplete}
+          />
+        )}
 
         {viewState === 'ENDLESS' && (
           <EndlessMode
@@ -249,9 +574,6 @@ export default function App() {
           />
         )}
       </main>
-
-      {/* Background YouTube Audio Player (ID 6jSLH9CDPPQ) */}
-      <YouTubeAudioPlayer videoId="6jSLH9CDPPQ" />
 
       {/* Global Modals */}
       <SettingsModal
@@ -287,13 +609,36 @@ export default function App() {
       <SubbabInfoModal
         isOpen={isSubbabInfoOpen}
         onClose={() => setIsSubbabInfoOpen(false)}
-        subbabData={SUBBABS_DATA[currentSubbabId]}
+        subbabData={CHAPTERS_DATA[currentSubbabId]}
       />
 
       <AchievementUnlockedModal
         badge={newBadgeUnlocked}
         onClose={() => setNewBadgeUnlocked(null)}
       />
+
+      {/* 5-Minute Anti-Cheat Cooldown Lockout Modal */}
+      {!isUserAdminExempt(currentUser) && (
+        <SecurityLockoutModal
+          isLocked={lockoutState.isLocked}
+          remainingSeconds={lockoutState.remainingSeconds}
+          onUnlocked={() => {
+            setLockoutState({ isLocked: false, remainingSeconds: 0, strikes: 0 });
+            setIsWarningOpen(false);
+          }}
+        />
+      )}
+
+      {/* Strike 1 & 2 Warning Modal */}
+      {!isUserAdminExempt(currentUser) && (
+        <StrikeWarningModal
+          isOpen={isWarningOpen && !lockoutState.isLocked}
+          strikes={warningStrikes}
+          onClose={() => setIsWarningOpen(false)}
+        />
+      )}
+      </div>
     </div>
+  </>
   );
 }

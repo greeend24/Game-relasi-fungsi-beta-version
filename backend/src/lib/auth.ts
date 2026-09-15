@@ -16,18 +16,51 @@ export const auth = betterAuth({
   }),
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
-  trustedOrigins: [
-    env.FRONTEND_URL,
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-    "app://.",
-  ],
+  trustedOrigins: async (request) => {
+    const list = [
+      env.FRONTEND_URL,
+      "http://localhost:*",
+      "http://127.0.0.1:*",
+      "http://localhost",
+      "http://127.0.0.1",
+      "capacitor://*",
+      "app://*",
+      "https://*.hf.space",
+      "https://*.vercel.app",
+      "https://*.github.io",
+      "https://*.netlify.app",
+      "https://*.ngrok-free.dev",
+      "https://*.ngrok-free.app",
+      "https://*.ngrok.app",
+      "https://*.ngrok.io",
+      "http://192.168.*:*",
+      "http://10.*:*",
+      "http://172.*:*",
+    ].filter(Boolean);
+
+    if (request) {
+      try {
+        const origin = request.headers.get("origin");
+        if (origin) {
+          list.push(origin);
+        }
+      } catch {}
+    }
+    return list;
+  },
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+    },
+  },
+  rateLimit: {
+    enabled: false,
+  },
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 4,
+    maxPasswordLength: 128,
   },
   user: {
     additionalFields: {

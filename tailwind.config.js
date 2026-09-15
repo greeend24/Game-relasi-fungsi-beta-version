@@ -19,11 +19,14 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'Outfit', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'Consolas', 'monospace'],
-        display: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
+        sans: ['Balsamiq Sans', 'Patrick Hand', 'sans-serif'],
+        hand: ['Patrick Hand', 'cursive', 'sans-serif'],
+        pencil: ['Balsamiq Sans', 'cursive', 'sans-serif'],
+        display: ['DynaPuff', 'cursive', 'sans-serif'],
+        dynapuff: ['DynaPuff', 'cursive', 'sans-serif'],
+        mono: ['Balsamiq Sans', 'Consolas', 'monospace'],
       }
-    },
+    }
   },
   plugins: [],
-}
+};

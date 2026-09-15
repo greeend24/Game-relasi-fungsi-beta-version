@@ -1,5 +1,4 @@
 import React from 'react';
-import { ShieldCheck } from 'lucide-react';
 import { audioEngine } from '../services/audioEngine';
 import { getAvatarPath } from './AvatarModal';
 

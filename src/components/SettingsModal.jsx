@@ -3,7 +3,7 @@ import { X, AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { audioEngine } from '../services/audioEngine';
 import { storageService } from '../services/storageService';
 import { reloVoiceService } from '../services/reloVoiceService';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
+import InstructorMascotGuide from './InstructorMascotGuide';
 
 export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
   const [sfxVol, setSfxVol] = useState(Math.round(audioEngine.sfxVol * 100));
@@ -103,9 +103,9 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
       
-      {/* WOODEN BOARD CONTAINER MATCHING REFERENCE SCREENSHOT */}
+      {/* WOODEN BOARD CONTAINER MATCHING REFERENCE SCREENSHOT (FIXED, ZERO SCROLL) */}
       <div 
-        className="relative w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-5 max-h-[85vh] overflow-y-auto drag-scroller"
+        className="relative w-full max-w-lg max-h-[92dvh] p-4 sm:p-6 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-2.5 sm:space-y-4 overflow-y-auto select-none"
         style={{ backgroundImage: `url('/assets/tampilan di setting/Asset/board_of_settings@4x.png')` }}
       >
         
@@ -123,8 +123,8 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
         </button>
 
         {/* TOP HEADER: CIRCLE WOODEN GEAR ICON BADGE (option_icon@4x.png) */}
-        <div className="flex flex-col items-center relative -mt-4 sm:-mt-5">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center relative drop-shadow-md">
+        <div className="flex flex-col items-center relative -mt-3 sm:-mt-4">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center relative drop-shadow-md">
             <img 
               src="/assets/tampilan di setting/Asset/option_icon@4x.png" 
               alt="Settings Gear Icon" 
@@ -132,17 +132,17 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           </div>
-          <h2 className="font-pencil text-2xl sm:text-3xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] mt-0.5 uppercase tracking-wider">
+          <h2 className="font-pencil text-2xl sm:text-3xl font-black text-white mt-0.5 uppercase tracking-wider">
             Pengaturan
           </h2>
         </div>
 
         {/* 3 AUDIO CONTROL SECTIONS MATCHING SCREENSHOT */}
-        <div className="w-full space-y-4 px-2 sm:px-4 py-2">
+        <div className="w-full space-y-3 px-2 sm:px-4 py-1">
           
           {/* 1. AUDIO (SFX) */}
           <div className="space-y-1.5">
-            <h3 className="font-pencil text-xl sm:text-2xl font-black text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)] text-left">
+            <h3 className="font-pencil text-xl sm:text-2xl font-black text-white text-left">
               Audio
             </h3>
             <div className="flex items-center space-x-3">
@@ -150,7 +150,7 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
               <button
                 onClick={handleToggleSfx}
                 onMouseEnter={() => { try { audioEngine.playHover(); } catch {} }}
-                className="pencil-btn p-0 bg-transparent border-none shadow-none hover:scale-108 active:scale-95 transition-transform cursor-pointer flex-shrink-0"
+                className="image-btn focus:outline-none cursor-pointer flex-shrink-0"
                 title="Toggle Audio SFX"
               >
                 <img 
@@ -177,7 +177,7 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
 
           {/* 2. SOUND (BGM MUSIC) */}
           <div className="space-y-1.5">
-            <h3 className="font-pencil text-xl sm:text-2xl font-black text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)] text-left">
+            <h3 className="font-pencil text-xl sm:text-2xl font-black text-white text-left">
               Sound
             </h3>
             <div className="flex items-center space-x-3">
@@ -185,7 +185,7 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
               <button
                 onClick={handleToggleMusic}
                 onMouseEnter={() => { try { audioEngine.playHover(); } catch {} }}
-                className="pencil-btn p-0 bg-transparent border-none shadow-none hover:scale-108 active:scale-95 transition-transform cursor-pointer flex-shrink-0"
+                className="image-btn focus:outline-none cursor-pointer flex-shrink-0"
                 title="Toggle Sound BGM"
               >
                 <img 
@@ -210,22 +210,22 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
             </div>
           </div>
 
-          {/* 3. RELO'S AUDIO (VOICE) */}
+          {/* 3. MASKOT AUDIO (VOICE) */}
           <div className="space-y-1.5">
-            <h3 className="font-pencil text-xl sm:text-2xl font-black text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)] text-left">
-              Relo's Audio
+            <h3 className="font-pencil text-xl sm:text-2xl font-black text-white text-left">
+              Maskot Audio
             </h3>
             <div className="flex items-center space-x-3">
               {/* Speaker Toggle Button */}
               <button
                 onClick={handleToggleRelo}
                 onMouseEnter={() => { try { audioEngine.playHover(); } catch {} }}
-                className="pencil-btn p-0 bg-transparent border-none shadow-none hover:scale-108 active:scale-95 transition-transform cursor-pointer flex-shrink-0"
-                title="Toggle Relo Voice"
+                className="image-btn focus:outline-none cursor-pointer flex-shrink-0"
+                title="Toggle Maskot Audio"
               >
                 <img 
                   src={isReloActive ? "/assets/tampilan di setting/Asset/button_on_audio@4x.png" : "/assets/tampilan di setting/Asset/buutton_off_audio@4x.png"} 
-                  alt={isReloActive ? "Relo Audio On" : "Relo Audio Off"} 
+                  alt={isReloActive ? "Maskot Audio On" : "Maskot Audio Off"} 
                   className="w-10 h-10 sm:w-11 sm:h-11 object-contain drop-shadow-md"
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
@@ -286,7 +286,7 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
                 placeholder="...."
                 value={cheatInput}
                 onChange={(e) => setCheatInput(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-[#2D241E] text-xs font-bold text-[#2D241E] focus:outline-none text-center"
+                className="w-full px-3 py-2.5 rounded-xl glass-input text-xs font-bold text-[#2D241E] focus:outline-none text-center"
               />
               <button
                 type="submit"
@@ -308,29 +308,17 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
         </div>
       )}
 
-      {/* DETEKTIF RELO MASCOT (+50% LARGER) & ENLARGED COMIC SPEECH BUBBLE */}
-      <div className="fixed bottom-2 left-2 sm:bottom-4 sm:left-4 z-50 pointer-events-none flex flex-col items-start animate-fade-in max-w-[320px] sm:max-w-[420px]">
-        {reloText && (
-          <div className="relative mb-3 p-4 sm:p-5 rounded-3xl bg-white border-4 border-[#2D241E] shadow-[6px_8px_0px_rgba(45,36,30,0.9)] text-[#2D241E] font-hand pointer-events-auto">
-            <div className="absolute -bottom-4 left-10 w-0 h-0 border-t-[16px] border-t-[#2D241E] border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent" />
-            <div className="absolute -bottom-[11px] left-10 w-0 h-0 border-t-[12px] border-t-white border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent" />
-            <div className="flex items-center space-x-2 text-xs sm:text-sm font-black text-[#9A3412] uppercase tracking-wider mb-1.5 border-b-2 border-[#FED7AA] pb-1">
-              <span className="text-base sm:text-lg">🕵️‍♂️</span>
-              <span>PETUNJUK RELO</span>
-            </div>
-            <p className="text-base sm:text-lg font-black leading-snug text-[#2D241E]">
-              {reloText}
-            </p>
-          </div>
-        )}
-
-        <ProfessorOwlMascot
-          pose="thinking"
-          size="xxxl"
-          animateOnHoverOnly={false}
-          message=""
-        />
-      </div>
+      {/* DETEKTIF SNOWY MASCOT & SPEECH BUBBLE VIA UNIFIED INSTRUCTOR GUIDE */}
+      <InstructorMascotGuide
+        layout="floating"
+        character="snowy"
+        pose="thinking"
+        emotion="happy"
+        title="INSTRUKTUR SNOWY"
+        icon="❄️"
+        canSpeak={true}
+        message={reloText || 'Sesuaikan pengaturan suaramu agar nyaman bermain! 🎧❄️🐻'}
+      />
 
     </div>
   );

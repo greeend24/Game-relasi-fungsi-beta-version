@@ -102,5 +102,41 @@ export async function runMigrations(): Promise<void> {
     )
   `);
 
+  await client.execute(`
+    CREATE TABLE IF NOT EXISTS quest_scores (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+      subbab_id INTEGER NOT NULL,
+      score INTEGER NOT NULL,
+      correct_count INTEGER NOT NULL,
+      total_questions INTEGER NOT NULL DEFAULT 30,
+      points_earned INTEGER NOT NULL,
+      time_remaining_seconds INTEGER NOT NULL DEFAULT 0,
+      completed_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      UNIQUE(user_id, subbab_id)
+    )
+  `);
+
+  // Safe migrations for plain_password, total_play_time_seconds, and is_admin
+  try {
+    await client.execute(`ALTER TABLE "user" ADD COLUMN plain_password TEXT`);
+  } catch {}
+  try {
+    await client.execute(`ALTER TABLE "user" ADD COLUMN total_play_time_seconds INTEGER NOT NULL DEFAULT 0`);
+  } catch {}
+  try {
+    await client.execute(`ALTER TABLE user_stats ADD COLUMN total_play_time_seconds INTEGER NOT NULL DEFAULT 0`);
+  } catch {}
+  try {
+    await client.execute(`ALTER TABLE user_stats ADD COLUMN plain_password TEXT`);
+  } catch {}
+  try {
+    await client.execute(`ALTER TABLE "user" ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0`);
+  } catch {}
+  try {
+    await client.execute(`UPDATE "user" SET is_admin = 1 WHERE LOWER(username) = 'fikran02' OR LOWER(name) = 'admin'`);
+  } catch {}
+
   console.log("[migrate] ✅ All SQLite tables ready.");
 }

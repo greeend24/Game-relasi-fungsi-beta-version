@@ -1,112 +1,210 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Play, ShieldAlert, Award, Clock, Lock } from 'lucide-react';
-import { SUBBABS_DATA } from '../data/casesData';
-import ProfessorOwlMascot from './ProfessorOwlMascot';
+import { ArrowLeft, Play, Clock, Lock, Trophy } from 'lucide-react';
+import { CHAPTERS_DATA } from '../data/chapterLearningData';
+import InstructorMascotGuide from './InstructorMascotGuide';
+import NetworkStatusBadge from './NetworkStatusBadge';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
+import { fetchUserQuestScores } from '../services/apiService';
 
 /**
  * QuestModeSelector
- * Displays Subbabs in a grid menu.
- * Unlocks Quest Mode for a subbab if and only if stage 21 of that subbab is completed.
- * Plays Scene 4 Quest Mode audio and displays matching Relo bubblechat.
+ * Displays 4 chapters in a grid menu.
+ * Unlocks Quest Mode for a chapter if all segments of that chapter are completed.
+ * Shows last exam score badge per chapter (color-coded by grade).
  */
-export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQuestSubbab }) {
+export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQuestSubbab, currentUser }) {
   const [reloText, setReloText] = useState('');
+  const [questScores, setQuestScores] = useState({}); // { subbabId: { score, correctCount, ... } }
 
   useEffect(() => {
     const res = reloVoiceService.playScene('4');
     if (res && res.text) {
       setReloText(res.text);
     }
+
+    // Fetch quest scores from backend (non-blocking)
+    if (currentUser && !currentUser._isGuest) {
+      fetchUserQuestScores().then(result => {
+        if (result.success && result.data) {
+          const scores = {};
+          const list = Array.isArray(result.data) ? result.data : (result.data.scores || []);
+          list.forEach(s => {
+            scores[s.subbabId || s.subbab_id] = {
+              score: s.score,
+              correctCount: s.correctCount || s.correct_count,
+              totalQuestions: s.totalQuestions || s.total_questions || 30,
+            };
+          });
+          setQuestScores(scores);
+        }
+      }).catch(() => {});
+    }
+
     return () => reloVoiceService.stopVoice();
-  }, []);
+  }, [currentUser]);
+
+  /**
+   * Returns badge color classes based on score (0-100):
+   * - Red: < 60
+   * - Yellow: 60–79
+   * - Green: 80+
+   */
+  const getScoreBadgeStyle = (score) => {
+    if (score >= 80) return 'bg-emerald-100/90 text-emerald-800 border-emerald-500';
+    if (score >= 60) return 'bg-amber-100/90 text-amber-800 border-amber-500';
+    return 'bg-rose-100/90 text-rose-800 border-rose-500';
+  };
+
+  const getScoreEmoji = (score) => {
+    if (score >= 80) return '⭐';
+    if (score >= 60) return '📝';
+    return '📕';
+  };
 
   return (
-    <div className="h-full w-full flex flex-col justify-between p-2.5 sm:p-3 font-hand space-y-2 animate-fade-in overflow-hidden">
+    <div className="h-full w-full flex flex-col justify-start p-2.5 sm:p-3.5 font-hand gap-2 sm:gap-3 animate-fade-in overflow-hidden relative">
       
+      {/* Snowy's Ice Kingdom Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none -z-10">
+        <img 
+          src="/game asset/new_snowy_island.png" 
+          alt="Snowy Island"
+          className="w-full h-full object-cover object-bottom scale-[1.35] sm:scale-[1.42] -translate-x-[6%] sm:-translate-x-[8%] origin-bottom pointer-events-none select-none"
+        />
+      </div>
+
       {/* Top Header */}
-      <div className="flex items-center justify-between p-3 rounded-2xl bg-white/70 backdrop-blur-md border-2 border-[#2D241E] shadow-[3px_3px_0px_#2D241E]">
+      <div className="flex items-center justify-between p-3 rounded-2xl sm:rounded-3xl glass-header border border-white/60 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)] relative z-10 flex-shrink-0">
         <button
           onClick={() => { audioEngine.playClick(); reloVoiceService.stopVoice(); onBackToMenu(); }}
           onMouseEnter={() => audioEngine.playHover()}
-          className="pencil-btn px-3 py-1.5 bg-[#FFFDF9] text-[#2D241E] font-extrabold text-xs flex items-center space-x-1"
+          className="pencil-btn px-4 py-2 glass-btn text-[#2D241E] font-black text-sm sm:text-base lg:text-[20px] flex items-center space-x-2"
         >
-          <ArrowLeft className="w-4 h-4 text-[#2563EB]" />
+          <ArrowLeft className="w-5 h-5 text-[#2563EB]" />
           <span>Menu Utama</span>
         </button>
 
-        <h2 className="text-lg sm:text-xl font-bold font-pencil text-[#2D241E] truncate">
+        <h2 className="text-base sm:text-lg lg:text-[20px] font-black font-pencil text-[#2D241E] truncate">
           QUEST MODE: UJIAN 30 SOAL
         </h2>
+
+        <div className="flex items-center">
+          <NetworkStatusBadge compact={true} />
+        </div>
       </div>
 
-      {/* DETEKTIF RELO MASCOT & SPEECH BUBBLE CHAT */}
-      <div className="flex justify-center sm:justify-start">
-        <ProfessorOwlMascot
-          pose="exploring"
-          emotion="idle"
-          message={reloText || "Selamat datang di Quest Mode! Kamu punya waktu 30 menit untuk menyelesaikan misi Ujian Kasus!"}
-          size="sm"
-        />
-      </div>      {/* Info Card */}
-      <div className="p-2.5 rounded-2xl bg-[#FEF3C7] border-2 border-[#2D241E] shadow-[2px_3px_0px_#2D241E] space-y-0.5 text-xs font-bold text-[#78350F]">
-        <div className="flex items-center space-x-1.5 text-[#D97706] uppercase">
-          <Clock className="w-4 h-4" />
+      {/* FRONT STANDING SNOWY MASCOT */}
+      <InstructorMascotGuide
+        layout="floating"
+        character="snowy"
+        pose="standing"
+        emotion="idle"
+        title="INSTRUKTUR SNOWY"
+        icon="❄️"
+        message={reloText || "Selamat datang di Quest Mode! Kamu punya waktu 30 menit untuk menyelesaikan misi Ujian Kasus! ⏱️❄️🐻"}
+      />
+
+      {/* Info Card */}
+      <div className="p-2 sm:p-2.5 px-3 sm:px-4 rounded-2xl glass-card border border-amber-300/40 text-xs sm:text-sm font-bold text-[#78350F] relative z-10 flex-shrink-0 max-w-6xl mx-auto w-full">
+        <div className="flex items-center space-x-2 text-[#D97706] uppercase font-black text-xs sm:text-sm lg:text-base mb-0.5">
+          <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
           <span>KETENTUAN QUEST MODE:</span>
         </div>
-        <p className="text-[11px] text-[#4A3E3D] font-medium leading-tight">
-          • Terbuka setelah menyelesaikan Stage 21 Subbab • Durasi 30 Menit • 30 Soal Ujian • Skala Nilai 0-100
+        <p className="text-[11px] sm:text-xs md:text-sm text-[#4A3E3D] font-bold leading-snug">
+          • Terbuka setelah menyelesaikan semua materi Chapter • Durasi 30 Menit • 30 Soal Ujian • Skala Nilai 0-100
         </p>
       </div>
 
-      {/* SUBBAB GRID FOR DESKTOP */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 font-hand flex-1 overflow-y-auto drag-scroller py-1">
-        {Object.values(SUBBABS_DATA).map((sub) => {
-          const subProg = userProgress?.[sub.key];
-          const isUnlocked = Boolean(subProg?.stars?.[21]) || ((subProg?.currentStage || 1) > 21);
+      {/* CHAPTER GRID (5 CHAPTERS, FIXED ZERO SCROLL) */}
+      <div className="flex-1 min-h-0 flex flex-col justify-start pt-1 sm:pt-2 md:pt-3 relative z-10 overflow-hidden">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-hand w-full max-w-6xl mx-auto px-2 sm:px-4">
+          {Object.values(CHAPTERS_DATA).map((ch) => {
+            const chProgress = userProgress?.[ch.key] || userProgress?.[`subbab${ch.id}`];
+            const completedSegs = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
+            const isAdmin = Boolean(
+              currentUser?.isAdmin ||
+              (currentUser?.username || '').toLowerCase() === 'fikran02' ||
+              (currentUser?.fullname || '').toLowerCase() === 'admin'
+            );
+            const isUnlocked = isAdmin || completedSegs >= ch.totalSegments || Boolean(chProgress?.completed);
+            const chScore = questScores[ch.id];
 
-          return (
-            <button
-              key={sub.id}
-              onClick={() => {
-                if (isUnlocked) {
-                  audioEngine.playClick();
-                  onStartQuestSubbab(sub.id);
-                } else {
-                  audioEngine.playError();
-                }
-              }}
-              onMouseEnter={() => { if (isUnlocked) audioEngine.playHover(); }}
-              className={`pencil-btn p-2 border-2 shadow-[2px_2px_0px_#2D241E] flex items-center justify-between transition-all text-left ${
-                isUnlocked
-                  ? 'bg-white/80 border-[#2D241E] group hover:scale-[1.01]'
-                  : 'bg-white/40 border-[#A8A29E] text-[#78716C] cursor-not-allowed opacity-80'
-              }`}
-            >
-              <div className="truncate pr-2">
-                <span className={`text-[10px] font-black uppercase block ${isUnlocked ? 'text-[#D97706]' : 'text-[#78716C]'}`}>
-                  SUBBAB UJIAN {sub.id}
-                </span>
-                <h3 className={`text-xs sm:text-sm font-bold font-pencil truncate leading-tight ${isUnlocked ? 'text-[#2D241E]' : 'text-[#78716C]'}`}>
-                  {sub.title}
-                </h3>
-              </div>
+            return (
+              <button
+                key={ch.id}
+                onClick={() => {
+                  if (isUnlocked) {
+                    audioEngine.playClick();
+                    onStartQuestSubbab(ch.id);
+                  } else {
+                    audioEngine.playError();
+                    const res = reloVoiceService.playScene('4_locked');
+                    if (res && res.text) setReloText(res.text);
+                  }
+                }}
+                onMouseEnter={() => { if (isUnlocked) audioEngine.playHover(); }}
+                className={`pencil-btn p-3 sm:p-3.5 md:p-4 rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex flex-col justify-between h-[165px] sm:h-[180px] md:h-[195px] max-h-[205px] min-h-0 transition-all text-left group ${
+                  isUnlocked
+                    ? 'glass-card border-white/80 hover:scale-[1.02]'
+                    : 'glass-panel-subtle border-white/40 text-[#78716C] cursor-not-allowed opacity-75'
+                }`}
+              >
+                {/* Header Row */}
+                <div className="flex items-center justify-between w-full">
+                  <span className={`text-xs sm:text-sm font-black uppercase tracking-wider px-2.5 py-0.5 rounded-xl border-2 shadow-[1px_1px_0px_#2D241E] ${
+                    isUnlocked
+                      ? 'bg-[#FEF3C7] text-[#D97706] border-[#2D241E]'
+                      : 'bg-[#F3F4F6] text-[#78716C] border-[#A8A29E]'
+                  }`}>
+                    UJIAN BAB {ch.id}
+                  </span>
 
-              {isUnlocked ? (
-                <div className="px-2 py-1 rounded-xl bg-[#FDE68A] text-[#78350F] font-extrabold text-xs flex items-center space-x-1 border border-[#2D241E] flex-shrink-0 group-hover:bg-[#F59E0B] group-hover:text-white transition-colors">
-                  <Play className="w-3 h-3 fill-current" />
-                  <span>Start</span>
+                  {isUnlocked ? (
+                    <div className="px-2.5 py-1 rounded-xl bg-[#FDE68A] text-[#78350F] font-black text-xs sm:text-sm flex items-center space-x-1 border-2 border-[#2D241E] shadow-[1px_1px_0px_#2D241E] group-hover:bg-[#F59E0B] group-hover:text-white transition-colors">
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>Mulai</span>
+                    </div>
+                  ) : (
+                    <div className="px-2.5 py-1 rounded-xl bg-[#E5E7EB] text-[#6B7280] font-black text-xs flex items-center space-x-1 border border-[#A8A29E]">
+                      <Lock className="w-3.5 h-3.5 text-[#6B7280]" />
+                      <span>🔒</span>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="px-2 py-1 rounded-xl bg-[#E5E7EB] text-[#6B7280] font-bold text-[10px] sm:text-xs flex items-center space-x-1 border border-[#A8A29E] flex-shrink-0">
-                  <Lock className="w-3 h-3 text-[#6B7280]" />
-                  <span>Terkunci (ST 21)</span>
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-center w-full my-1">
+                  <div className="text-xl mb-0.5">{ch.icon}</div>
+                  <h3 className={`text-sm sm:text-base lg:text-lg font-black font-pencil leading-tight break-words ${
+                    isUnlocked ? 'text-[#2D241E]' : 'text-[#78716C]'
+                  }`}>
+                    {ch.title}
+                  </h3>
                 </div>
-              )}
-            </button>
-          );
-        })}
+
+                {/* Score Badge (bottom) */}
+                {isUnlocked && (
+                  <div className="w-full flex-shrink-0">
+                    {chScore ? (
+                      <div className={`flex items-center justify-between px-2.5 py-1 rounded-xl border-2 text-xs sm:text-sm font-black ${getScoreBadgeStyle(chScore.score)}`}>
+                        <div className="flex items-center space-x-1">
+                          <Trophy className="w-3.5 h-3.5" />
+                          <span>Nilai:</span>
+                        </div>
+                        <span>{chScore.score}/100 {getScoreEmoji(chScore.score)}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center px-2.5 py-1 rounded-xl border border-white/60 bg-white/30 text-xs sm:text-sm font-bold text-[#78716C] italic">
+                        Belum Dikerjakan
+                      </div>
+                    )}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
     </div>

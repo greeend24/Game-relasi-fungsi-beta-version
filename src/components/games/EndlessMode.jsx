@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Flame, Trophy, CheckCircle2, RotateCcw, AlertTriangle, ShieldCheck, CheckSquare, Square } from 'lucide-react';
-import ProfessorOwlMascot from '../ProfessorOwlMascot';
+import InstructorMascotGuide from '../InstructorMascotGuide';
+import NetworkStatusBadge from '../NetworkStatusBadge';
 import { audioEngine } from '../../services/audioEngine';
 import { storageService } from '../../services/storageService';
 import { ENDLESS_QUESTIONS } from '../../data/endlessQuestions';
@@ -160,17 +161,17 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
           {currentQ.options.map((opt, idx) => {
             const isSelected = selectedOpt === opt;
             const isRight = opt === currentQ.correct;
-            let btnStyle = 'bg-white border-[#2D241E] text-[#2D241E] hover:bg-[#FEF3C7]';
+            let btnStyle = 'glass-btn text-[#2D241E] hover:border-white';
             if (isAnswered) {
-              if (isRight) btnStyle = 'bg-[#D1FAE5] border-[#059669] text-[#065F46] font-extrabold ring-4 ring-[#059669]/30';
-              else if (isSelected) btnStyle = 'bg-[#FFE4E6] border-[#BE123C] text-[#9F1239] font-extrabold';
+              if (isRight) btnStyle = 'bg-[#D1FAE5]/90 backdrop-blur-md border-emerald-500 text-[#065F46] font-black ring-4 ring-[#059669]/30';
+              else if (isSelected) btnStyle = 'bg-[#FFE4E6]/90 backdrop-blur-md border-rose-500 text-[#9F1239] font-black';
             }
             return (
               <button
                 key={idx}
                 disabled={isAnswered}
                 onClick={() => handleSelectMCQ(opt)}
-                className={`pencil-btn p-4 text-left text-sm font-bold transition ${btnStyle}`}
+                className={`p-3.5 sm:p-4 text-left text-base sm:text-lg lg:text-[20px] font-bold font-pencil transition rounded-2xl cursor-pointer ${btnStyle}`}
               >
                 {opt}
               </button>
@@ -183,31 +184,31 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
     if (currentQ.type === 'MCQ_COMPLEX') {
       return (
         <div className="space-y-3">
-          <p className="text-xs font-extrabold text-[#7C3AED] uppercase tracking-wide">
+          <p className="text-sm sm:text-base font-black text-[#7C3AED] uppercase tracking-wide">
             ☑️ Pilih SEMUA jawaban yang benar, lalu tekan Konfirmasi!
           </p>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-2.5">
             {currentQ.options.map((opt, idx) => {
               const isSelected = selectedMultiple.includes(opt);
               const isCorrectOpt = currentQ.correctMultiple.includes(opt);
-              let btnStyle = 'bg-white border-[#2D241E] text-[#2D241E]';
+              let btnStyle = 'glass-btn text-[#2D241E] hover:border-white';
               if (isAnswered) {
-                if (isCorrectOpt) btnStyle = 'bg-[#D1FAE5] border-[#059669] text-[#065F46] font-extrabold';
-                else if (isSelected && !isCorrectOpt) btnStyle = 'bg-[#FFE4E6] border-[#BE123C] text-[#9F1239] font-extrabold';
+                if (isCorrectOpt) btnStyle = 'bg-[#D1FAE5]/90 backdrop-blur-md border-emerald-500 text-[#065F46] font-black';
+                else if (isSelected && !isCorrectOpt) btnStyle = 'bg-[#FFE4E6]/90 backdrop-blur-md border-rose-500 text-[#9F1239] font-black';
               } else if (isSelected) {
-                btnStyle = 'bg-[#EDE9FE] border-[#7C3AED] text-[#5B21B6] font-extrabold';
+                btnStyle = 'bg-[#EDE9FE]/95 backdrop-blur-md border-[#7C3AED] text-[#5B21B6] font-black';
               }
               return (
                 <button
                   key={idx}
                   disabled={isAnswered}
                   onClick={() => handleToggleMultiple(opt)}
-                  className={`pencil-btn p-3 text-left text-sm font-bold flex items-center gap-3 transition ${btnStyle}`}
+                  className={`p-3 sm:p-3.5 text-left text-base sm:text-lg lg:text-[20px] font-bold font-pencil flex items-center gap-3 transition rounded-2xl cursor-pointer ${btnStyle}`}
                 >
                   <span className="flex-shrink-0">
                     {isSelected || (isAnswered && isCorrectOpt)
-                      ? <CheckSquare className="w-5 h-5" />
-                      : <Square className="w-5 h-5 opacity-40" />}
+                      ? <CheckSquare className="w-6 h-6 text-[#7C3AED]" />
+                      : <Square className="w-6 h-6 opacity-40" />}
                   </span>
                   <span>{opt}</span>
                 </button>
@@ -218,10 +219,10 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
             <button
               onClick={handleConfirmMultiple}
               disabled={selectedMultiple.length === 0}
-              className="pencil-btn w-full py-3 bg-[#7C3AED] text-white font-extrabold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
+              className="pencil-btn w-full py-3 sm:py-3.5 bg-[#7C3AED] text-white font-black text-xl sm:text-2xl disabled:opacity-40 flex items-center justify-center gap-2 rounded-2xl shadow-[3px_4px_0px_#2D241E] cursor-pointer transition hover:scale-105 active:scale-95"
             >
-              <ShieldCheck className="w-4 h-4" />
-              Konfirmasi Jawaban
+              <ShieldCheck className="w-6 h-6" />
+              <span>Konfirmasi Jawaban</span>
             </button>
           )}
         </div>
@@ -231,7 +232,7 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
     if (currentQ.type === 'MATCHING') {
       return (
         <div className="space-y-3">
-          <p className="text-xs font-extrabold text-[#D97706] uppercase tracking-wide">
+          <p className="text-sm sm:text-base font-black text-[#D97706] uppercase tracking-wide">
             🔗 Pasangkan setiap item di sebelah kiri dengan pilihan yang tepat!
           </p>
           <div className="space-y-3">
@@ -240,20 +241,20 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
               const isRight = selected === pair.right;
               const rowStyle = isAnswered
                 ? isRight
-                  ? 'border-[#059669] bg-[#D1FAE5]'
+                  ? 'border-emerald-500 bg-[#D1FAE5]/90 backdrop-blur-md'
                   : selected
-                  ? 'border-[#BE123C] bg-[#FFE4E6]'
-                  : 'border-[#2D241E]'
-                : 'border-[#2D241E]';
+                  ? 'border-rose-500 bg-[#FFE4E6]/90 backdrop-blur-md'
+                  : 'glass-panel-subtle'
+                : 'glass-panel-subtle';
 
               return (
-                <div key={idx} className={`rounded-2xl border-2 p-3 space-y-2 ${rowStyle}`}>
-                  <p className="text-sm font-extrabold text-[#2D241E]">{pair.left}</p>
+                <div key={idx} className={`rounded-2xl p-3 space-y-2 ${rowStyle}`}>
+                  <p className="text-base sm:text-lg lg:text-[20px] font-black text-[#2D241E]">{pair.left}</p>
                   <div className="flex flex-wrap gap-2">
                     {currentQ.rightOptions.map((opt, oi) => {
                       const isPicked = selected === opt;
                       const isCorrectOpt = isAnswered && opt === pair.right;
-                      let optStyle = 'bg-[#FFFDF9] border-[#2D241E] text-[#2D241E]';
+                      let optStyle = 'glass-btn text-[#2D241E]';
                       if (isAnswered) {
                         if (isCorrectOpt) optStyle = 'bg-[#059669] text-white border-[#059669]';
                         else if (isPicked && !isCorrectOpt) optStyle = 'bg-[#BE123C] text-white border-[#BE123C]';
@@ -265,7 +266,7 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
                           key={oi}
                           disabled={isAnswered}
                           onClick={() => handleMatchingSelect(pair.left, opt)}
-                          className={`pencil-btn px-3 py-1.5 text-xs font-bold transition ${optStyle}`}
+                          className={`px-4 py-2 text-sm sm:text-base lg:text-[18px] font-bold rounded-xl transition cursor-pointer ${optStyle}`}
                         >
                           {opt}
                         </button>
@@ -273,7 +274,7 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
                     })}
                   </div>
                   {isAnswered && !isRight && (
-                    <p className="text-xs font-bold text-[#059669]">✅ Jawaban benar: {pair.right}</p>
+                    <p className="text-sm sm:text-base font-black text-[#059669]">✅ Jawaban benar: {pair.right}</p>
                   )}
                 </div>
               );
@@ -283,10 +284,10 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
             <button
               onClick={handleConfirmMatching}
               disabled={!currentQ.pairs.every(p => matchingAnswers[p.left])}
-              className="pencil-btn w-full py-3 bg-[#D97706] text-white font-extrabold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
+              className="pencil-btn w-full py-3 sm:py-3.5 bg-[#D97706] text-white font-black text-xl sm:text-2xl disabled:opacity-40 flex items-center justify-center gap-2 rounded-2xl shadow-[3px_4px_0px_#2D241E] cursor-pointer transition hover:scale-105 active:scale-95"
             >
-              <ShieldCheck className="w-4 h-4" />
-              Konfirmasi Pasangan
+              <ShieldCheck className="w-6 h-6" />
+              <span>Konfirmasi Pasangan</span>
             </button>
           )}
         </div>
@@ -296,139 +297,161 @@ export default function EndlessMode({ onBackToMenu, currentUser, onUpdateUser })
     return null;
   };
 
-  // ── Main Render ──────────────────────────────────────────────────
   return (
-    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-2 overflow-hidden font-hand">
+    <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand relative z-10 min-h-0">
+
+      {/* Ryu's Island Background Asset (16:9 full cover) */}
+      <img 
+        src="/game asset/ryu_island.png" 
+        alt="Ryu Island"
+        className="absolute inset-0 w-full h-full object-cover object-bottom -z-10 pointer-events-none select-none"
+      />
 
       {/* Top Bar */}
-      <div className="flex items-center justify-between p-3 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[4px_5px_0px_#2D241E]">
+      <div className="flex items-center justify-between p-3 rounded-2xl sm:rounded-3xl glass-panel-subtle flex-shrink-0">
         <button
           onClick={() => { audioEngine.playClick(); audioEngine.toggleBgm(true); onBackToMenu(); }}
-          className="pencil-btn px-3 py-2 bg-[#FFFDF9] text-[#2D241E] font-extrabold text-xs flex items-center space-x-1.5"
+          className="px-4 py-2 glass-btn text-[#2D241E] font-black text-sm sm:text-base lg:text-[20px] flex items-center space-x-2 rounded-xl cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-5 h-5" />
           <span>Keluar</span>
         </button>
 
-        <div className="flex items-center gap-2 text-xs font-extrabold">
-          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#FEF3C7] border-2 border-[#2D241E] text-[#78350F]">
-            <Flame className="w-4 h-4 text-[#D97706] animate-bounce" />
+        <div className="flex items-center gap-2 sm:gap-2.5 text-base sm:text-lg lg:text-[20px] font-black">
+          <NetworkStatusBadge compact={true} />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FEF3C7]/90 backdrop-blur-md border border-amber-300 text-[#78350F] shadow-sm">
+            <Flame className="w-5 h-5 text-[#D97706] animate-bounce" />
             <span>{streak}x{multiplier}</span>
           </div>
-          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#DBEAFE] border-2 border-[#2D241E] text-[#1E40AF]">
-            <Trophy className="w-4 h-4 text-[#2563EB]" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#DBEAFE]/90 backdrop-blur-md border border-blue-300 text-[#1E40AF] shadow-sm">
+            <Trophy className="w-5 h-5 text-[#2563EB]" />
             <span>{score} PTS</span>
           </div>
         </div>
       </div>
 
-      {/* Mascot */}
-      <div className="flex justify-center sm:justify-start">
-        <ProfessorOwlMascot
-          triggerKey={questionIndex}
-          emotion={isAnswered ? (isCorrect ? 'happy' : 'error') : 'thinking'}
+      {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}
+      <div className="flex-1 w-full min-h-0 flex items-stretch gap-3 lg:gap-4 relative overflow-hidden">
+        
+        {/* Left Mascot Dock */}
+        <InstructorMascotGuide
+          layout="dock"
+          character="ryu"
+          pose={gameOver ? 'celebrating' : (isAnswered && !isCorrect ? 'thinking' : (isAnswered && isCorrect ? 'celebrating' : 'standing'))}
+          emotion={gameOver ? 'happy' : (isAnswered && !isCorrect ? 'error' : (isAnswered && isCorrect ? 'happy' : 'idle'))}
+          title={isAnswered && !isCorrect ? "EVALUASI INSTRUKTUR RYU" : "INSTRUKTUR RYU"}
+          icon="🔥"
           message={
-            isAnswered
-              ? (isCorrect ? `Hebat! Jawabanmu benar! 🎉 Streak: ${streak}` : `Kurang tepat. ${currentQ?.explanation}`)
-              : `Soal #${questionIndex + 1} dari ${totalQuestions}. Jawab dengan teliti!`
+            gameOver
+              ? `Endless Mode Selesai! Kamu meraih total skor ${score} PTS! 🔥🏆`
+              : (isAnswered && !isCorrect
+                ? `Kurang tepat. ${currentQ?.explanation || 'Coba periksa kembali konsepnya!'}`
+                : "")
           }
-          size="md"
         />
-      </div>
 
-      {/* Question Card */}
-      {currentQ && !gameOver && (
-        <div className="p-5 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] space-y-4 flex-1 overflow-y-auto min-h-0">
+        {/* Right Workspace: Question Card */}
+        {currentQ && !gameOver && (
+          <div className="flex-1 min-h-0 h-full p-3.5 sm:p-4 rounded-3xl glass-panel glass-sheen flex flex-col justify-between overflow-hidden space-y-2">
 
-          {/* Progress + Timer */}
-          <div className="space-y-1">
-            <div className="flex justify-between text-xs font-bold text-[#78350F]">
-              <span>SOAL #{questionIndex + 1} / {totalQuestions}</span>
-              <span className={timerSeconds <= 5 ? 'text-[#BE123C] animate-ping font-extrabold' : ''}>
-                ⏱️ {timerSeconds}s
+            {/* Progress + Timer */}
+            <div className="space-y-1 flex-shrink-0">
+              <div className="flex justify-between text-sm sm:text-base lg:text-[18px] font-black text-[#78350F]">
+                <span>SOAL #{questionIndex + 1} / {totalQuestions}</span>
+                <span className={timerSeconds <= 5 ? 'text-[#BE123C] animate-ping font-black' : ''}>
+                  ⏱️ {timerSeconds}s
+                </span>
+              </div>
+              <div className="w-full h-2.5 rounded-full bg-white/40 border border-white/60 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] transition-all duration-300"
+                  style={{ width: `${((questionIndex + 1) / totalQuestions) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Level Badge + Type Badge */}
+            <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+              <span className={`px-2.5 py-0.5 rounded-lg border-2 text-xs sm:text-sm font-black ${LEVEL_COLOR[currentQ.level] || 'bg-gray-100 text-gray-700 border-gray-400'}`}>
+                {LEVEL_BADGE[currentQ.level] || currentQ.level}
+              </span>
+              <span className="px-2.5 py-0.5 rounded-lg border border-white/60 glass-panel-subtle text-[#374151] text-xs sm:text-sm font-black">
+                {currentQ.type === 'MCQ' && '📝 Pilihan Ganda'}
+                {currentQ.type === 'MCQ_COMPLEX' && '☑️ Pilihan Ganda Kompleks'}
+                {currentQ.type === 'TRUE_FALSE' && '✅ Benar – Salah'}
+                {currentQ.type === 'MATCHING' && '🔗 Menjodohkan'}
               </span>
             </div>
-            <div className="w-full h-2.5 rounded-full bg-[#EFECE6] border border-[#2D241E] overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#FDE68A] via-[#F59E0B] to-[#D97706] transition-all duration-300"
-                style={{ width: `${((questionIndex + 1) / totalQuestions) * 100}%` }}
-              />
+
+            {/* Question Prompt */}
+            <div className="p-3 sm:p-3.5 rounded-2xl glass-panel-subtle space-y-1 flex-shrink-0">
+              <span className="text-xs sm:text-sm font-black text-[#D97706] uppercase tracking-wider block">{currentQ.title}</span>
+              <p className="text-base sm:text-lg lg:text-[20px] font-black font-pencil text-[#2D241E] leading-snug">
+                {currentQ.question}
+              </p>
             </div>
-          </div>
 
-          {/* Level Badge + Type Badge */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`px-2.5 py-1 rounded-xl border-2 text-xs font-extrabold ${LEVEL_COLOR[currentQ.level] || 'bg-gray-100 text-gray-700 border-gray-400'}`}>
-              {LEVEL_BADGE[currentQ.level] || currentQ.level}
-            </span>
-            <span className="px-2.5 py-1 rounded-xl border-2 border-[#2D241E] bg-[#F3F4F6] text-[#374151] text-xs font-bold">
-              {currentQ.type === 'MCQ' && '📝 Pilihan Ganda'}
-              {currentQ.type === 'MCQ_COMPLEX' && '☑️ Pilihan Ganda Kompleks'}
-              {currentQ.type === 'TRUE_FALSE' && '✅ Benar – Salah'}
-              {currentQ.type === 'MATCHING' && '🔗 Menjodohkan'}
-            </span>
-          </div>
+            {/* Answer UI */}
+            <div className="flex-1 min-h-0 flex flex-col justify-center overflow-y-auto py-1 drag-scroller">
+              {renderQuestionBody()}
+            </div>
 
-          {/* Question */}
-          <div className="p-4 rounded-2xl bg-[#FFFDF9] border-2 border-[#2D241E] space-y-1">
-            <span className="text-xs font-extrabold text-[#D97706] uppercase tracking-wider block">{currentQ.title}</span>
-            <p className="text-base sm:text-lg font-bold font-pencil text-[#2D241E] leading-relaxed">
-              {currentQ.question}
-            </p>
-          </div>
-
-          {/* Answer UI */}
-          {renderQuestionBody()}
-
-          {/* Feedback + Next */}
-          {isAnswered && (
-            <div className="space-y-3 animate-fade-in">
-              <div className={`p-4 rounded-2xl border-2 font-bold text-xs sm:text-sm ${
-                isCorrect ? 'bg-[#D1FAE5] border-[#059669] text-[#065F46]' : 'bg-[#FFE4E6] border-[#BE123C] text-[#9F1239]'
-              }`}>
-                <div className="flex items-center gap-2 font-extrabold text-sm mb-1">
-                  {isCorrect
-                    ? <CheckCircle2 className="w-5 h-5 text-[#059669]" />
-                    : <AlertTriangle className="w-5 h-5 text-[#BE123C]" />}
-                  <span>{isCorrect ? '🎉 BENAR! PETUNJUK KASUS TEPAT!' : '❌ SALAH / WAKTU HABIS!'}</span>
+            {/* Feedback + Next */}
+            {isAnswered && (
+              <div className="space-y-2 animate-fade-in flex-shrink-0">
+                <div className={`p-3 rounded-2xl border font-bold ${
+                  isCorrect ? 'bg-[#D1FAE5]/90 backdrop-blur-md border-[#059669] text-[#065F46]' : 'bg-[#FFE4E6]/90 backdrop-blur-md border-[#BE123C] text-[#9F1239]'
+                }`}>
+                  <div className="flex items-center gap-2 font-black text-sm sm:text-base lg:text-[18px] mb-0.5">
+                    {isCorrect
+                      ? <CheckCircle2 className="w-5 h-5 text-[#059669]" />
+                      : <AlertTriangle className="w-5 h-5 text-[#BE123C]" />}
+                    <span>{isCorrect ? '🎉 BENAR! PETUNJUK TEPAT!' : '❌ SALAH / WAKTU HABIS!'}</span>
+                  </div>
+                  <p className="text-sm sm:text-base lg:text-[18px] leading-snug">{currentQ.explanation}</p>
                 </div>
-                <p>{currentQ.explanation}</p>
+                <button
+                  onClick={handleNextQuestion}
+                  className="pencil-btn w-full py-3 bg-[#FDE68A] hover:bg-[#F59E0B] text-[#78350F] font-black text-xl sm:text-2xl flex items-center justify-center gap-2 shadow-[3px_4px_0px_#2D241E] rounded-2xl cursor-pointer transition hover:scale-105 active:scale-95"
+                >
+                  <ShieldCheck className="w-6 h-6 text-[#D97706]" />
+                  <span>
+                    {questionIndex < totalQuestions - 1
+                      ? `LANJUT KE SOAL #${questionIndex + 2} →`
+                      : '🏆 LIHAT HASIL AKHIR →'}
+                  </span>
+                </button>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Game Over Screen */}
+        {gameOver && (
+          <div className="flex-1 min-h-0 h-full p-6 rounded-3xl glass-panel glass-sheen text-center space-y-4 animate-fade-in flex flex-col justify-center">
+            <Trophy className="w-16 h-16 mx-auto text-[#D97706] animate-bounce" />
+            <div className="space-y-1">
+              <h2 className="text-3xl sm:text-4xl font-black font-pencil text-[#2D241E]">ENDLESS MODE SELESAI! 🎉</h2>
+              <p className="text-base sm:text-lg font-bold text-[#78350F]">Kamu telah menyelesaikan semua {totalQuestions} tantangan soal!</p>
+            </div>
+            <div className="p-4 rounded-2xl glass-panel-subtle space-y-1 max-w-sm mx-auto w-full">
+              <p className="text-sm font-black text-[#78350F]">TOTAL SKOR AKHIR</p>
+              <p className="text-3xl sm:text-4xl font-black text-[#D97706]">{score} PTS</p>
+            </div>
+            <div className="pt-2 max-w-sm mx-auto w-full">
               <button
-                onClick={handleNextQuestion}
-                className="pencil-btn w-full py-3.5 bg-[#FDE68A] text-[#78350F] font-extrabold text-base flex items-center justify-center gap-2"
+                onClick={() => { audioEngine.playClick(); audioEngine.toggleBgm(true); onBackToMenu(); }}
+                className="pencil-btn w-full py-3.5 bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#1E40AF] font-black text-xl sm:text-2xl flex items-center justify-center gap-2 rounded-2xl shadow-[3px_4px_0px_#2D241E] cursor-pointer transition hover:scale-105 active:scale-95"
               >
-                <ShieldCheck className="w-5 h-5 text-[#D97706]" />
-                {questionIndex < totalQuestions - 1
-                  ? `LANJUT KE SOAL #${questionIndex + 2} →`
-                  : '🏆 LIHAT HASIL AKHIR →'}
+                <RotateCcw className="w-6 h-6" />
+                <span>Kembali ke Menu Utama</span>
               </button>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Game Over Screen */}
-      {gameOver && (
-        <div className="p-8 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[6px_8px_0px_#2D241E] text-center space-y-6 animate-fade-in flex-1 flex flex-col justify-center">
-          <Trophy className="w-16 h-16 mx-auto text-[#D97706] animate-bounce" />
-          <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-bold font-pencil text-[#2D241E]">ENDLESS MODE SELESAI! 🎉</h2>
-            <p className="text-sm font-bold text-[#78350F]">Kamu telah menyelesaikan semua {totalQuestions} tantangan soal!</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-[#FEF3C7] border-2 border-[#2D241E] space-y-1">
-            <p className="text-sm font-bold text-[#78350F]">TOTAL SKOR AKHIR</p>
-            <p className="text-3xl font-extrabold text-[#D97706]">{score} PTS</p>
-          </div>
-          <button
-            onClick={() => { audioEngine.playClick(); audioEngine.toggleBgm(true); onBackToMenu(); }}
-            className="pencil-btn w-full py-3.5 bg-[#DBEAFE] text-[#1E40AF] font-bold text-base flex items-center justify-center gap-2"
-          >
-            <RotateCcw className="w-5 h-5" />
-            Kembali ke Menu Utama
-          </button>
-        </div>
-      )}
+      </div>
+
     </div>
   );
 }

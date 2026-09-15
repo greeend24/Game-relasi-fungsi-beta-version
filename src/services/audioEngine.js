@@ -1,4 +1,5 @@
 // Web Audio API & HTML5 Music Engine for Menu, Battle, and Victory audio tracks
+// ENFORCES STRICT EXCLUSIVE SINGLE AUDIO PLAYBACK CHANNEL
 
 import { storageService } from './storageService';
 import { reloVoiceService } from './reloVoiceService';
@@ -18,30 +19,26 @@ class AudioEngine {
 
     this.isPlayingBgm = false;
     this.isQuestBattleActive = false;
+    this.hasInteracted = false;
 
-    // HTML5 Audio Elements for Music Tracks with Pre-buffering
+    // Single persistent HTML5 Audio Elements
     this.menuAudioEl = new Audio('/music/menu.mp3');
     this.menuAudioEl.loop = true;
     this.menuAudioEl.preload = 'auto';
-    this.menuAudioEl.load();
 
     this.battleAudioEl = new Audio('/music/battle.mp3');
     this.battleAudioEl.loop = true;
     this.battleAudioEl.preload = 'auto';
-    this.battleAudioEl.load();
 
     this.victoryAudioEl = new Audio('/music/victory.mp3');
     this.victoryAudioEl.loop = false;
     this.victoryAudioEl.preload = 'auto';
-    this.victoryAudioEl.load();
 
     this.customAudioEl = new Audio();
     this.customAudioEl.loop = true;
     this.customAudioSrc = localStorage.getItem('detektif_custom_bgm') || '';
-
     if (this.customAudioSrc) {
       this.customAudioEl.src = this.customAudioSrc;
-      this.customAudioEl.preload = 'auto';
     }
 
     this.updateVolumes();
@@ -53,30 +50,28 @@ class AudioEngine {
       });
     } catch {}
 
-    // Global listener to bypass browser autoplay blocks on first touch/click
+    // Global listener to bypass browser autoplay blocks on first user gesture
     this.initAutoPlayOnFirstInteraction();
   }
 
   initAutoPlayOnFirstInteraction() {
     const handleFirstInteraction = () => {
+      if (this.hasInteracted) return;
+      this.hasInteracted = true;
       this.initCtx();
-      if (this.isMusicOn && this.musicVol > 0 && !this.isQuestBattleActive) {
-        this.menuAudioEl.play().then(() => {
-          this.isPlayingBgm = true;
-        }).catch(() => {});
+
+      if (this.isMusicOn && this.musicVol > 0 && !this.isQuestBattleActive && !this.isPlayingBgm) {
+        this.playMenuBgmFile();
       }
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('mousedown', handleFirstInteraction);
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
+
+      ['pointerdown', 'mousedown', 'click', 'keydown', 'touchstart'].forEach(evt => {
+        window.removeEventListener(evt, handleFirstInteraction);
+      });
     };
 
-    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-    window.addEventListener('mousedown', handleFirstInteraction, { once: true });
-    window.addEventListener('click', handleFirstInteraction, { once: true });
-    window.addEventListener('keydown', handleFirstInteraction, { once: true });
-    window.addEventListener('touchstart', handleFirstInteraction, { once: true, passive: true });
+    ['pointerdown', 'mousedown', 'click', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, handleFirstInteraction, { once: true, passive: true });
+    });
   }
 
   initCtx() {
@@ -103,21 +98,21 @@ class AudioEngine {
   }
 
   setMusicVolume(percent) {
-    this.musicVol = percent / 100;
+    this.musicVol = Math.max(0, Math.min(1, percent / 100));
     this.updateVolumes();
     this.saveCurrentSettings();
+
     if (this.musicVol > 0 && this.isMusicOn) {
       if (!this.isPlayingBgm && !this.isQuestBattleActive) {
-        this.toggleBgm(true);
+        this.playMenuBgmFile();
       }
     } else if (this.musicVol === 0) {
-      this.stopBgm();
-      if (this.battleAudioEl) this.battleAudioEl.pause();
+      this.stopAllBgmTracks();
     }
   }
 
   setSfxVolume(percent) {
-    this.sfxVol = percent / 100;
+    this.sfxVol = Math.max(0, Math.min(1, percent / 100));
     this.updateVolumes();
     this.saveCurrentSettings();
     if (this.sfxVol > 0 && this.isSfxOn) {
@@ -128,14 +123,14 @@ class AudioEngine {
   toggleMusic(state) {
     this.isMusicOn = state !== undefined ? state : !this.isMusicOn;
     this.saveCurrentSettings();
+
     if (!this.isMusicOn) {
-      this.stopBgm();
-      this.stopQuestBattleMusic();
+      this.stopAllBgmTracks();
     } else {
       if (this.isQuestBattleActive) {
         this.playQuestBattleMusic();
       } else {
-        this.toggleBgm(true);
+        this.playMenuBgmFile();
       }
     }
     return this.isMusicOn;
@@ -153,13 +148,13 @@ class AudioEngine {
   }
 
   updateVolumes() {
-    const duckFactor = this.isDucking ? 0.25 : 1.0;
+    const duckFactor = this.isDucking ? 0.22 : 1.0;
     const effectiveMusicVol = Math.max(0, Math.min(1, this.musicVol * duckFactor));
     const effectiveSfxVol = Math.max(0, Math.min(1, this.sfxVol));
 
     if (this.menuAudioEl) this.menuAudioEl.volume = effectiveMusicVol;
     if (this.customAudioEl) this.customAudioEl.volume = effectiveMusicVol;
-    if (this.battleAudioEl) this.battleAudioEl.volume = Math.max(0, Math.min(1, 0.5 * effectiveMusicVol));
+    if (this.battleAudioEl) this.battleAudioEl.volume = Math.max(0, Math.min(1, 0.45 * effectiveMusicVol));
     if (this.victoryAudioEl) this.victoryAudioEl.volume = effectiveSfxVol;
   }
 
@@ -187,65 +182,47 @@ class AudioEngine {
     } catch {}
   }
 
-  playHover() {
-    this.playNote(400, 'sine', 0.04, 0.05);
-  }
-
   playClick() {
-    this.playNote(523.25, 'triangle', 0.08, 0.1);
+    this.playNote(520, 'triangle', 0.08, 0.12);
   }
 
-  playMenuOpen() {
-    this.playClick();
-    this.playWoosh();
-  }
-
-  playMenuClose() {
-    this.playClick();
-    this.playSnap();
-  }
-
-  playNav() {
-    this.playNote(600, 'sine', 0.06, 0.08);
+  playHover() {
+    this.playNote(440, 'sine', 0.05, 0.04);
   }
 
   playCorrect() {
-    this.playNote(523.25, 'sine', 0.15, 0.15);
-    setTimeout(() => this.playNote(659.25, 'sine', 0.15, 0.15), 90);
-    setTimeout(() => this.playNote(783.99, 'sine', 0.25, 0.2), 180);
+    this.playNote(587.33, 'triangle', 0.12, 0.15);
+    setTimeout(() => this.playNote(880.00, 'triangle', 0.20, 0.2), 90);
   }
 
   playError() {
-    this.playNote(220, 'sawtooth', 0.2, 0.15);
-    setTimeout(() => this.playNote(185, 'sawtooth', 0.3, 0.15), 140);
-  }
-
-  playTimerTick() {
-    this.playNote(750, 'square', 0.05, 0.04);
-  }
-
-  playScan() {
-    this.playNote(880, 'sine', 0.05, 0.08);
-  }
-
-  playBadgeUnlock() {
-    const notes = [440, 554.37, 659.25, 880, 1108.73];
-    notes.forEach((n, i) => {
-      setTimeout(() => this.playNote(n, 'triangle', 0.2, 0.2), i * 80);
-    });
-  }
-
-  playTypewriter() {
-    this.playNote(800 + Math.random() * 200, 'square', 0.03, 0.04);
-  }
-
-  playCamera() {
-    this.playNote(1200, 'sawtooth', 0.05, 0.12);
-    setTimeout(() => this.playNote(400, 'sine', 0.1, 0.1), 50);
+    this.playNote(220.00, 'sawtooth', 0.18, 0.2);
+    setTimeout(() => this.playNote(164.81, 'sawtooth', 0.25, 0.25), 110);
   }
 
   playSnap() {
-    this.playNote(950, 'triangle', 0.05, 0.15);
+    this.playNote(800, 'triangle', 0.05, 0.15);
+  }
+
+  playToggle() {
+    this.playNote(600, 'sine', 0.08, 0.1);
+  }
+
+  playStageClear() {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      setTimeout(() => this.playNote(freq, 'triangle', 0.25, 0.2), idx * 100);
+    });
+  }
+
+  playMenuOpen() {
+    this.playNote(440, 'sine', 0.08, 0.1);
+    setTimeout(() => this.playNote(660, 'triangle', 0.12, 0.12), 60);
+  }
+
+  playMenuClose() {
+    this.playNote(660, 'triangle', 0.08, 0.12);
+    setTimeout(() => this.playNote(440, 'sine', 0.12, 0.1), 60);
   }
 
   playWoosh() {
@@ -254,7 +231,7 @@ class AudioEngine {
     if (!this.ctx) return;
 
     try {
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.35);
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.45);
       const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
       const output = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
@@ -266,23 +243,69 @@ class AudioEngine {
 
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.Q.setValueAtTime(2.5, this.ctx.currentTime);
-      filter.frequency.setValueAtTime(200, this.ctx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(1400, this.ctx.currentTime + 0.15);
-      filter.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.35);
+      filter.Q.setValueAtTime(2.0, this.ctx.currentTime);
+      filter.frequency.setValueAtTime(150, this.ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(1800, this.ctx.currentTime + 0.18);
+      filter.frequency.exponentialRampToValueAtTime(220, this.ctx.currentTime + 0.45);
 
       const gain = this.ctx.createGain();
-      const effectiveVol = Math.max(0, Math.min(1, 0.4 * this.sfxVol));
-      gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(effectiveVol, this.ctx.currentTime + 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.35);
+      const effectiveVol = Math.max(0, Math.min(1, 0.75 * this.sfxVol));
+      gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(effectiveVol, this.ctx.currentTime + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.45);
 
       whiteNoise.connect(filter);
       filter.connect(gain);
       gain.connect(this.ctx.destination);
 
       whiteNoise.start();
-      whiteNoise.stop(this.ctx.currentTime + 0.35);
+      whiteNoise.stop(this.ctx.currentTime + 0.45);
+    } catch {}
+  }
+
+  playBoing() {
+    if (!this.isSfxOn || this.sfxVol <= 0) return;
+    this.initCtx();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(620, this.ctx.currentTime + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(320, this.ctx.currentTime + 0.25);
+
+      const effectiveVol = Math.max(0, Math.min(1, 0.4 * this.sfxVol));
+      gain.gain.setValueAtTime(effectiveVol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.25);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.25);
+    } catch {}
+  }
+
+  playPowerUp() {
+    if (!this.isSfxOn || this.sfxVol <= 0) return;
+    this.initCtx();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.4);
+
+      const effectiveVol = Math.max(0, Math.min(1, 0.5 * this.sfxVol));
+      gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(effectiveVol, this.ctx.currentTime + 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.4);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.4);
     } catch {}
   }
 
@@ -291,30 +314,21 @@ class AudioEngine {
     setTimeout(() => this.playNote(80, 'square', 0.15, 0.2), 40);
   }
 
+
   stopAllBgmTracks() {
     this.isPlayingBgm = false;
     this.isQuestBattleActive = false;
-    if (this.menuAudioEl) {
-      try {
-        this.menuAudioEl.pause();
-        this.menuAudioEl.currentTime = 0;
-      } catch {}
-    }
-    if (this.battleAudioEl) {
-      try {
-        this.battleAudioEl.pause();
-        this.battleAudioEl.currentTime = 0;
-      } catch {}
-    }
-    if (this.customAudioEl) {
-      try {
-        this.customAudioEl.pause();
-        this.customAudioEl.currentTime = 0;
-      } catch {}
-    }
+
+    [this.menuAudioEl, this.battleAudioEl, this.victoryAudioEl, this.customAudioEl].forEach(audio => {
+      if (audio) {
+        try {
+          audio.pause();
+          audio.currentTime = 0;
+        } catch {}
+      }
+    });
   }
 
-  // Play Victory Music Track (/music/victory.mp3) & Automatically Stop Battle Music!
   playVictoryMusic() {
     this.stopAllBgmTracks();
 
@@ -328,28 +342,64 @@ class AudioEngine {
 
   playStageComplete() {
     this.stopAllBgmTracks();
-
     const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((n, i) => {
       setTimeout(() => this.playNote(n, 'triangle', 0.25, 0.2), i * 120);
     });
   }
 
-  // STRICTLY PLAY BATTLE MUSIC ONLY WHEN PLAYING QUEST MODE AT 0.5X VOLUME
   playQuestBattleMusic() {
     this.stopAllBgmTracks();
     this.isQuestBattleActive = true;
     if (!this.isMusicOn || this.musicVol <= 0) return;
 
+    this.updateVolumes();
     this.battleAudioEl.currentTime = 0;
-    this.battleAudioEl.volume = Math.max(0, Math.min(1, 0.5 * this.musicVol));
     this.battleAudioEl.play().catch(() => {});
   }
 
-  // STOP BATTLE MUSIC AND RESUME PREVIOUS NORMAL BGM
   stopQuestBattleMusic() {
-    this.stopAllBgmTracks();
-    this.toggleBgm(true);
+    if (this.battleAudioEl) {
+      try {
+        this.battleAudioEl.pause();
+        this.battleAudioEl.currentTime = 0;
+      } catch {}
+    }
+    this.isQuestBattleActive = false;
+    if (this.isMusicOn && this.musicVol > 0) {
+      this.playMenuBgmFile(false);
+    }
+  }
+
+  playMenuBgmFile(forceRestart = false) {
+    if (!this.isMusicOn || this.musicVol <= 0) return;
+
+    // Stop battle music if active
+    if (this.battleAudioEl && !this.battleAudioEl.paused) {
+      try {
+        this.battleAudioEl.pause();
+        this.battleAudioEl.currentTime = 0;
+      } catch {}
+    }
+    this.isQuestBattleActive = false;
+
+    const activeEl = this.customAudioSrc ? this.customAudioEl : this.menuAudioEl;
+
+    // If BGM is already playing and not forced to restart, DO NOT reset to 0:00!
+    // Let the song play completely until the end before looping naturally.
+    if (this.isPlayingBgm && activeEl && !activeEl.paused && !forceRestart) {
+      this.updateVolumes();
+      return;
+    }
+
+    this.isPlayingBgm = true;
+    this.updateVolumes();
+
+    if (forceRestart && activeEl) {
+      activeEl.currentTime = 0;
+    }
+
+    activeEl.play().catch(() => {});
   }
 
   setCustomBgmSource(srcOrDataUrl) {
@@ -357,54 +407,26 @@ class AudioEngine {
     if (srcOrDataUrl) {
       localStorage.setItem('detektif_custom_bgm', srcOrDataUrl);
       this.customAudioEl.src = srcOrDataUrl;
-      this.updateVolumes();
-      if (this.isMusicOn && !this.isQuestBattleActive) {
-        this.toggleBgm(true);
-      }
     } else {
       localStorage.removeItem('detektif_custom_bgm');
-      this.customAudioEl.pause();
       this.customAudioEl.src = '';
-      this.toggleBgm(true);
+    }
+
+    if (this.isMusicOn && !this.isQuestBattleActive) {
+      this.playMenuBgmFile(true);
     }
   }
 
   toggleBgm(forceState) {
-    this.initCtx();
     const targetState = forceState !== undefined ? forceState : !this.isPlayingBgm;
-
-    if (!targetState || !this.isMusicOn || this.musicVol <= 0) {
-      this.stopBgm();
+    if (targetState) {
+      // Seamless resume/play without resetting currentTime
+      this.playMenuBgmFile(false);
+      return true;
+    } else {
+      this.stopAllBgmTracks();
       return false;
     }
-
-    if (this.isQuestBattleActive) return true;
-
-    // Ensure all other BGM tracks are paused before starting menu BGM
-    if (this.battleAudioEl) {
-      try {
-        this.battleAudioEl.pause();
-        this.battleAudioEl.currentTime = 0;
-      } catch {}
-    }
-
-    this.isPlayingBgm = true;
-
-    if (this.customAudioSrc) {
-      this.updateVolumes();
-      this.customAudioEl.play().catch(() => {
-        this.playMenuBgmFile();
-      });
-    } else {
-      this.playMenuBgmFile();
-    }
-
-    return true;
-  }
-
-  playMenuBgmFile() {
-    this.updateVolumes();
-    this.menuAudioEl.play().catch(() => {});
   }
 
   stopBgm() {

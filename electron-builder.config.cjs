@@ -55,9 +55,12 @@ const config = {
     },
   ],
 
-  // Windows build target
+  // Windows build target: generates both win-unpacked directory and nsis installer
   win: {
-    target: [{ target: 'nsis', arch: ['x64'] }],
+    target: [
+      { target: 'dir', arch: ['x64'] },
+      { target: 'nsis', arch: ['x64'] }
+    ],
   },
 
   // NSIS Installer settings

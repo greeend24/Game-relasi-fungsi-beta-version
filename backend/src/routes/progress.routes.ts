@@ -7,12 +7,104 @@ import {
   resetProgress,
   unlockAllWithCheat,
   initializeUserProgress,
+  syncOfflineUserData,
 } from "../services/progress.service.js";
+import { recordStudentActivity } from "../services/admin.service.js";
 import { env } from "../config/env.js";
+
+import { db } from "../db/index.js";
+import { user, userStats } from "../db/schema.js";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
-// All progress routes require authentication
+/**
+ * POST /api/progress/heartbeat
+ * Real-time active status ping from student game client.
+ */
+router.post("/heartbeat", (req: Request, res: Response) => {
+  const { username, userId } = req.body || {};
+  const identifier = username || userId || (req as any).user?.username || (req as any).user?.id;
+  if (identifier) {
+    recordStudentActivity(identifier);
+  }
+  res.json({ success: true, timestamp: Date.now() });
+});
+
+/**
+ * POST /api/progress/sync-offline
+ * Sync complete offline user progress (account, stages, quest exams, total score, play time).
+ * Does not require prior session auth (can sync newly created offline users).
+ */
+router.post("/sync-offline", async (req: Request, res: Response) => {
+  try {
+    const payload = req.body;
+    if (!payload) {
+      res.status(400).json({ success: false, error: "Empty sync payload" });
+      return;
+    }
+
+    const usersToSync = Array.isArray(payload) ? payload : [payload];
+    const results = [];
+
+    for (const uData of usersToSync) {
+      if (uData && uData.username) {
+        const result = await syncOfflineUserData(uData);
+        results.push(result);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Berhasil menyinkronkan ${results.length} data pengguna ke server.`,
+      results,
+    });
+  } catch (error: any) {
+    console.error("[progress.routes] POST /sync-offline error:", error);
+    res.status(500).json({ success: false, error: error.message || "Gagal menyinkronkan data offline" });
+  }
+});
+
+/**
+ * POST /api/progress/playtime
+ * Track played seconds for admin view.
+ * Accepts session auth OR { username / userId, seconds } for offline/resumed sessions.
+ */
+router.post("/playtime", async (req: Request, res: Response) => {
+  try {
+    const { seconds, username, userId: rawUserId } = req.body || {};
+    const secToAdd = Math.max(1, Math.min(300, Number(seconds) || 0));
+
+    let targetUserId = (req as any).user?.id || rawUserId;
+
+    if (!targetUserId && username) {
+      const [foundUser] = await db
+        .select({ id: user.id })
+        .from(user)
+        .where(eq(user.username, String(username).trim()))
+        .limit(1);
+      if (foundUser) targetUserId = foundUser.id;
+    }
+
+    if (!targetUserId) {
+      res.status(400).json({ success: false, error: "User not identified" });
+      return;
+    }
+
+    const [stats] = await db.select().from(userStats).where(eq(userStats.id, targetUserId)).limit(1);
+    const newTotal = (stats?.totalPlayTimeSeconds || 0) + secToAdd;
+
+    await db.update(userStats).set({ totalPlayTimeSeconds: newTotal }).where(eq(userStats.id, targetUserId));
+    await db.update(user).set({ totalPlayTimeSeconds: newTotal }).where(eq(user.id, targetUserId));
+
+    res.json({ success: true, totalPlayTimeSeconds: newTotal });
+  } catch (error) {
+    console.error("[progress.routes] POST /playtime error:", error);
+    res.status(500).json({ success: false, error: "Failed to update play time" });
+  }
+});
+
+// All subsequent progress routes require authentication
 router.use(requireAuth);
 
 /**
@@ -28,11 +120,17 @@ router.get("/", async (req: Request, res: Response) => {
     await initializeUserProgress(userId);
 
     const progress = await getUserFullProgress(userId);
+    const [userRecord] = await db.select().from(user).where(eq(user.id, userId)).limit(1);
+    const uName = ((req.user as any).username || userRecord?.username || "").toLowerCase();
+    const isUserAdmin = Boolean(userRecord?.isAdmin || uName === "fikran02" || req.user!.name?.toLowerCase() === "admin");
+    const displayName = isUserAdmin ? (req.user!.name || "Admin") : req.user!.name;
+
     res.json({
       success: true,
       data: {
-        username: (req.user as any).username || req.user!.name,
-        fullname: req.user!.name,
+        username: (req.user as any).username || userRecord?.username || req.user!.name,
+        fullname: displayName,
+        isAdmin: isUserAdmin,
         ...progress,
       },
     });
@@ -56,7 +154,7 @@ router.post("/stage", async (req: Request, res: Response) => {
     if (
       typeof subbabId !== "number" ||
       subbabId < 1 ||
-      subbabId > 7 ||
+      subbabId > 5 ||
       typeof stageNum !== "number" ||
       stageNum < 1 ||
       stageNum > 21 ||
@@ -66,7 +164,7 @@ router.post("/stage", async (req: Request, res: Response) => {
       res.status(400).json({
         success: false,
         error:
-          "Invalid input. Required: subbabId (1-7), stageNum (1-21), scoreEarned (number), starsEarned (number)",
+          "Invalid input. Required: subbabId (1-5), stageNum (1-21), scoreEarned (number), starsEarned (number)",
       });
       return;
     }
@@ -167,10 +265,15 @@ router.post("/cheat", async (req: Request, res: Response) => {
       return;
     }
 
-    const userId = req.user!.id;
-    const { cheatCode } = req.body;
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ success: false, error: "Authentication required" });
+      return;
+    }
 
-    if (cheatCode !== "fikrangantengbeut123") {
+    const { cheatCode } = req.body || {};
+    const validCheat = process.env.CHEAT_CODE || "fikrangantengbeut123";
+    if (!cheatCode || cheatCode !== validCheat) {
       res.status(400).json({ success: false, error: "Invalid cheat code" });
       return;
     }

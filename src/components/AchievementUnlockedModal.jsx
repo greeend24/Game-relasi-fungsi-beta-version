@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { audioEngine } from '../services/audioEngine';
 
@@ -17,7 +17,7 @@ export default function AchievementUnlockedModal({ badge, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in font-hand">
-      <div className="w-full max-w-sm p-6 rounded-3xl bg-white border-3 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-center space-y-4 animate-scale-up">
+      <div className="w-full max-w-sm p-6 rounded-3xl glass-panel glass-sheen text-center space-y-4 animate-scale-up">
         
         <div className="w-20 h-20 mx-auto rounded-3xl border-3 border-[#2D241E] shadow-[4px_4px_0px_#2D241E] flex items-center justify-center text-4xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 animate-bounce">
           {badge.icon}

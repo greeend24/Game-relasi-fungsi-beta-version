@@ -1,36 +1,50 @@
-const { app, BrowserWindow, shell, dialog } = require('electron');
+const { app, BrowserWindow, shell, ipcMain, globalShortcut, session } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
+const { pathToFileURL } = require('url');
 const fs = require('fs');
 const http = require('http');
+const https = require('https');
 
 // ─────────────────────────────────────────────
-// Constants
+// 1. Strict Single-Instance Lock (Prevents Duplicate App Launches)
 // ─────────────────────────────────────────────
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  console.log('[Electron] Duplicate instance detected. Terminating immediately.');
+  app.quit();
+  process.exit(0);
+}
 
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+// ─────────────────────────────────────────────
+// 2. Chromium Optimization Flags (Merge Services & Disable Redundant Helpers)
+// ─────────────────────────────────────────────
+app.commandLine.appendSwitch('disable-features', 'AudioServiceOutOfProcess,NetworkServiceOutOfProcess');
+app.commandLine.appendSwitch('disable-breakpad');
+app.commandLine.appendSwitch('disable-crash-reporter');
+app.commandLine.appendSwitch('disable-component-update');
+app.commandLine.appendSwitch('no-sandbox');
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
+app.commandLine.appendSwitch('disable-background-timer-throttling');
+app.commandLine.appendSwitch('enable-gpu-rasterization');
+app.commandLine.appendSwitch('enable-zero-copy');
+
+// ─────────────────────────────────────────────
+// Constants, Ports & Remote Server
+// ─────────────────────────────────────────────
+const isDev = !app.isPackaged;
 const BACKEND_PORT = 3001;
-const FRONTEND_PORT = 3000;
+const STATIC_NGROK_DOMAIN = 'scooter-thickness-stony.ngrok-free.dev';
+const ONLINE_GAME_URL = `https://${STATIC_NGROK_DOMAIN}`;
 
 let mainWindow = null;
-let backendProcess = null;
-let serverReady = false;
-
-// ─────────────────────────────────────────────
-// Resolve Paths
-// ─────────────────────────────────────────────
 
 function getResourcesPath() {
-  if (isDev) {
-    return path.join(__dirname, '..');
-  }
+  if (isDev) return path.join(__dirname, '..');
   return process.resourcesPath;
 }
 
 function getBackendPath() {
-  if (isDev) {
-    return path.join(__dirname, '..', 'backend', 'dist', 'index.js');
-  }
+  if (isDev) return path.join(__dirname, '..', 'backend', 'dist', 'index.js');
   return path.join(getResourcesPath(), 'backend', 'dist', 'index.js');
 }
 
@@ -39,103 +53,42 @@ function getUserDataPath() {
 }
 
 // ─────────────────────────────────────────────
-// Start Embedded Backend Server
+// 3. Start Backend In-Process (Zero Extra Child Processes)
 // ─────────────────────────────────────────────
+async function startBackendInProcess() {
+  const userDataPath = getUserDataPath();
+  const backendEntry = getBackendPath();
 
-function startBackendServer() {
-  return new Promise((resolve, reject) => {
-    const userDataPath = getUserDataPath();
-    const backendEntry = getBackendPath();
+  console.log('[Electron] Loading backend in-process from:', backendEntry);
+  if (!fs.existsSync(userDataPath)) {
+    fs.mkdirSync(userDataPath, { recursive: true });
+  }
 
-    console.log('[Electron] isDev:', isDev);
-    console.log('[Electron] Starting backend from:', backendEntry);
-    console.log('[Electron] User data path:', userDataPath);
-    console.log('[Electron] resourcesPath:', process.resourcesPath);
+  process.env.PORT = String(BACKEND_PORT);
+  process.env.ELECTRON_USER_DATA = userDataPath;
+  process.env.NODE_ENV = isDev ? 'development' : 'production';
+  process.env.ELECTRON_RESOURCES_PATH = process.resourcesPath || getResourcesPath();
+  process.env.BETTER_AUTH_URL = `http://localhost:${BACKEND_PORT}`;
+  process.env.FRONTEND_URL = `http://localhost:${BACKEND_PORT}`;
 
-    // Ensure user data directory exists
-    if (!fs.existsSync(userDataPath)) {
-      fs.mkdirSync(userDataPath, { recursive: true });
-    }
+  if (!fs.existsSync(backendEntry)) {
+    console.warn('[Electron] Backend dist not found at:', backendEntry);
+    return;
+  }
 
-    // Check backend file exists before trying to fork
-    if (!fs.existsSync(backendEntry)) {
-      return reject(new Error(
-        `Backend tidak ditemukan di:\n${backendEntry}\n\nPastikan backend sudah di-compile.`
-      ));
-    }
-
-    const env = {
-      ...process.env,
-      NODE_ENV: isDev ? 'development' : 'production',
-      PORT: String(BACKEND_PORT),
-      ELECTRON_USER_DATA: userDataPath,
-      ELECTRON_RESOURCES_PATH: process.resourcesPath || getResourcesPath(),
-      BETTER_AUTH_URL: `http://localhost:${BACKEND_PORT}`,
-      BETTER_AUTH_SECRET: 'detektif-data-offline-secret-2024',
-      FRONTEND_URL: isDev ? `http://localhost:${FRONTEND_PORT}` : `http://localhost:${BACKEND_PORT}`,
-    };
-
-    // Capture stderr so we can show it in error dialog
-    let stderrOutput = '';
-
-    // Use system node (not Electron's node) to run the ESM backend
-    // process.execPath is Electron's binary; we need Node.js
-    // Try to find node in PATH, fallback to process.execPath
-    const nodeBin = process.platform === 'win32' ? 'node.exe' : 'node';
-
-    backendProcess = spawn(nodeBin, [backendEntry], {
-      env,
-      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-    });
-
-    backendProcess.stdout.on('data', (data) => {
-      process.stdout.write('[backend] ' + data.toString());
-    });
-
-    backendProcess.stderr.on('data', (data) => {
-      const msg = data.toString();
-      stderrOutput += msg;
-      process.stderr.write('[backend-err] ' + msg);
-    });
-
-    backendProcess.on('message', (msg) => {
-      if (msg === 'server-ready') {
-        console.log('[Electron] Backend server is ready!');
-        serverReady = true;
-        resolve();
-      }
-    });
-
-    backendProcess.on('error', (err) => {
-      console.error('[Electron] Backend spawn error:', err);
-      reject(err);
-    });
-
-    backendProcess.on('exit', (code) => {
-      console.log('[Electron] Backend process exited with code:', code);
-      if (!serverReady) {
-        const details = stderrOutput
-          ? `\n\nError detail:\n${stderrOutput.slice(0, 800)}`
-          : '';
-        reject(new Error(`Backend exited before ready (code: ${code})${details}`));
-      }
-    });
-
-    // Timeout after 20 seconds
-    setTimeout(() => {
-      if (!serverReady) {
-        console.warn('[Electron] Backend ready timeout — proceeding anyway');
-        resolve();
-      }
-    }, 20000);
-  });
+  try {
+    const fileUrl = pathToFileURL(backendEntry).href;
+    await import(fileUrl);
+    console.log('[Electron] Backend Express server active in-process on port', BACKEND_PORT);
+  } catch (err) {
+    console.error('[Electron] In-process backend startup error:', err);
+  }
 }
 
 // ─────────────────────────────────────────────
-// Wait for Port
+// 4. Wait For Port
 // ─────────────────────────────────────────────
-
-async function waitForPort(port, maxRetries = 30) {
+async function waitForPort(port, maxRetries = 25, retryDelay = 100, timeout = 400) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       await new Promise((resolve, reject) => {
@@ -144,41 +97,61 @@ async function waitForPort(port, maxRetries = 30) {
           else reject(new Error(`Status ${res.statusCode}`));
         });
         req.on('error', reject);
-        req.setTimeout(1000, () => reject(new Error('timeout')));
+        req.setTimeout(timeout, () => {
+          req.destroy();
+          reject(new Error('timeout'));
+        });
       });
       return true;
     } catch {
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, retryDelay));
     }
   }
   return false;
 }
 
 // ─────────────────────────────────────────────
-// Show Splash Screen while loading
+// 4b. Check Ngrok Online Server
 // ─────────────────────────────────────────────
-
-function createSplashWindow() {
-  const splash = new BrowserWindow({
-    width: 480,
-    height: 320,
-    frame: false,
-    transparent: false,
-    alwaysOnTop: true,
-    resizable: false,
-    center: true,
-    backgroundColor: '#1a1a2e',
-    webPreferences: { nodeIntegration: false },
+function checkNgrokOnline(timeoutMs = 6000, retries = 2) {
+  return new Promise((resolve) => {
+    let attempt = 0;
+    function tryCheck() {
+      attempt++;
+      const req = https.get(
+        `${ONLINE_GAME_URL}/api/health`,
+        {
+          headers: { 'ngrok-skip-browser-warning': 'true' },
+          timeout: timeoutMs,
+        },
+        (res) => {
+          if (res.statusCode === 200) {
+            resolve(true);
+          } else if (attempt <= retries) {
+            setTimeout(tryCheck, 600);
+          } else {
+            resolve(false);
+          }
+        }
+      );
+      req.on('error', () => {
+        if (attempt <= retries) setTimeout(tryCheck, 600);
+        else resolve(false);
+      });
+      req.on('timeout', () => {
+        req.destroy();
+        if (attempt <= retries) setTimeout(tryCheck, 600);
+        else resolve(false);
+      });
+    }
+    tryCheck();
   });
-  splash.loadFile(path.join(__dirname, 'loading.html'));
-  return splash;
 }
 
 // ─────────────────────────────────────────────
-// Create Main Window
+// 5. Create Single Main Window (Directly Full In-Game, No External Splash)
 // ─────────────────────────────────────────────
-
-function createMainWindow() {
+async function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -195,17 +168,34 @@ function createMainWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       webSecurity: true,
+      backgroundThrottling: false,
     },
-    show: false, // show after content loads
-    backgroundColor: '#1a1a2e',
+    show: false,
+    backgroundColor: '#FAF7F2',
   });
 
-  // Enable Strict Full-Screen Kiosk Lockdown Mode
   mainWindow.setKiosk(true);
   mainWindow.setFullScreen(true);
   mainWindow.setAlwaysOnTop(true, 'screen-saver');
 
-  // Automatically reclaim focus if user attempts to switch window/tab
+    mainWindow.once('ready-to-show', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.show();
+      mainWindow.focus();
+      mainWindow.setAlwaysOnTop(true, 'screen-saver');
+      mainWindow.setFullScreen(true);
+      mainWindow.setKiosk(true);
+    }
+  });
+
+  // Fallback reveal in case ready-to-show is delayed
+  setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  }, 800);
+
   mainWindow.on('blur', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.focus();
@@ -214,25 +204,21 @@ function createMainWindow() {
     }
   });
 
-  // Load the app
-  if (isDev) {
-    // Dev: load Vite dev server
-    mainWindow.loadURL(`http://127.0.0.1:${FRONTEND_PORT}`);
-    mainWindow.webContents.openDevTools();
-  } else {
-    // Production: load backend HTTP server which serves all static dist files cleanly
-    mainWindow.loadURL(`http://127.0.0.1:${BACKEND_PORT}`);
-  }
-
-  // Show window when ready to avoid blank screen flash
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-    mainWindow.focus();
-    mainWindow.setAlwaysOnTop(true, 'screen-saver');
-    mainWindow.setFullScreen(true);
+  // Re-try loading gracefully if server is still binding
+  mainWindow.webContents.on('did-fail-load', async (event, errorCode, errorDescription, validatedURL) => {
+    console.warn(`[Electron] Gagal memuat (${errorCode}: ${errorDescription}) pada ${validatedURL}`);
+    const isAlreadyActive = await waitForPort(BACKEND_PORT, 1, 10, 50);
+    if (!isAlreadyActive) {
+      await startBackendInProcess();
+      await waitForPort(BACKEND_PORT, 25, 50, 150);
+    }
+    setTimeout(() => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.loadURL(`http://127.0.0.1:${BACKEND_PORT}`);
+      }
+    }, 300);
   });
 
-  // Open external links in browser, not in Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
@@ -240,102 +226,123 @@ function createMainWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+    cleanupAndExit();
   });
 }
 
 // ─────────────────────────────────────────────
-// App Lifecycle
+// 6. Second Instance Handler (Focus Existing Window)
 // ─────────────────────────────────────────────
+app.on('second-instance', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+    mainWindow.setAlwaysOnTop(true, 'screen-saver');
+    mainWindow.setFullScreen(true);
+  }
+});
 
+// ─────────────────────────────────────────────
+// 7. App Initialization (Direct In-Game Startup)
+// ─────────────────────────────────────────────
 app.whenReady().then(async () => {
-  // Show splash screen immediately
-  const splash = createSplashWindow();
+  console.log('[Electron] Initializing directly into game window...');
 
+  // Automatically attach ngrok-skip-browser-warning on all outbound requests to bypass Ngrok interstitial page
   try {
-    console.log('[Electron] App ready. Checking backend...');
+    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+      details.requestHeaders['ngrok-skip-browser-warning'] = 'true';
+      callback({ requestHeaders: details.requestHeaders });
+    });
+  } catch (e) {
+    console.warn('[Electron] webRequest interceptor error:', e);
+  }
 
-    const isAlreadyRunning = await waitForPort(BACKEND_PORT, 2);
-    if (isAlreadyRunning) {
-      console.log('[Electron] Backend is already active on port 3001.');
-    } else {
-      try {
-        await startBackendServer();
-        await waitForPort(BACKEND_PORT, 10);
-      } catch (backendErr) {
-        console.warn('[Electron] Backend startup warning (proceeding offline):', backendErr.message);
-      }
-    }
+  // 1. Create window immediately (hidden until ready-to-show to prevent blank screen)
+  await createMainWindow();
 
-    createMainWindow();
+  // 2. Ensure local backend is active to serve bundled frontend assets locally
+  const isAlreadyActive = await waitForPort(BACKEND_PORT, 1, 10, 50);
+  if (!isAlreadyActive) {
+    console.log('[Electron] Memulai server lokal in-process...');
+    await startBackendInProcess();
+    await waitForPort(BACKEND_PORT, 25, 50, 150);
+  } else {
+    console.log('[Electron] Server port backend lokal sudah aktif di port', BACKEND_PORT);
+  }
 
-    // Close splash once main window is ready
-    if (mainWindow) {
-      mainWindow.once('ready-to-show', () => {
-        if (splash && !splash.isDestroyed()) splash.close();
+  // 3. Render game locally from bundled assets
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    console.log(`[Electron] 🚀 Memuat tampilan game dari aset lokal: http://127.0.0.1:${BACKEND_PORT}`);
+    mainWindow.loadURL(`http://127.0.0.1:${BACKEND_PORT}`);
+  }
+
+  // IPC Exit Handlers
+  ipcMain.handle('exit-app', () => {
+    console.log('[Electron] Exit request received via IPC.');
+    cleanupAndExit();
+  });
+
+  ipcMain.handle('app-quit', () => {
+    console.log('[Electron] Quit request received via IPC.');
+    cleanupAndExit();
+  });
+
+  // Global Shortcuts for Kiosk Mode
+  ['Alt+Tab', 'Alt+F4', 'Alt+Escape', 'Control+Escape', 'Meta', 'Super'].forEach((shortcut) => {
+    try {
+      globalShortcut.register(shortcut, () => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.focus();
+          mainWindow.setAlwaysOnTop(true, 'screen-saver');
+          mainWindow.setFullScreen(true);
+        }
       });
-    } else {
-      if (splash && !splash.isDestroyed()) splash.close();
-    }
-
-    // Register IPC exit handlers
-    ipcMain.handle('exit-app', () => {
-      cleanup();
-      app.quit();
-    });
-    ipcMain.handle('app-quit', () => {
-      cleanup();
-      app.quit();
-    });
-
-    // Register global shortcuts to block Alt+Tab, Alt+F4, Win key tab switching
-    const { globalShortcut } = require('electron');
-    ['Alt+Tab', 'Alt+F4', 'Alt+Escape', 'Control+Escape', 'Meta', 'Super'].forEach((shortcut) => {
-      try {
-        globalShortcut.register(shortcut, () => {
-          if (mainWindow && !mainWindow.isDestroyed()) {
-            mainWindow.focus();
-            mainWindow.setAlwaysOnTop(true, 'screen-saver');
-            mainWindow.setFullScreen(true);
-          }
-        });
-      } catch {}
-    });
-
-  } catch (err) {
-    console.error('[Electron] Startup error:', err);
-    if (splash && !splash.isDestroyed()) splash.close();
-    createMainWindow();
-  }
+    } catch {}
+  });
 });
 
-
-// Quit when all windows are closed
 app.on('window-all-closed', () => {
-  cleanup();
-  app.quit();
+  cleanupAndExit();
 });
 
-app.on('activate', () => {
+app.on('activate', async () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow();
+    await createMainWindow();
   }
 });
 
 // ─────────────────────────────────────────────
-// Cleanup
+// 8. Instant Clean Shutdown (Zero Stragglers)
 // ─────────────────────────────────────────────
-
-function cleanup() {
+function cleanupAndExit() {
+  console.log('[Electron] Forcefully shutting down all processes and audio...');
   try {
-    const { globalShortcut } = require('electron');
     globalShortcut.unregisterAll();
   } catch {}
-  if (backendProcess) {
-    console.log('[Electron] Terminating backend process...');
-    backendProcess.kill('SIGTERM');
-    backendProcess = null;
-  }
+
+  // Destroy all windows immediately to silence any audio and stop rendering
+  try {
+    BrowserWindow.getAllWindows().forEach((win) => {
+      if (win && !win.isDestroyed()) {
+        try { win.webContents.stop(); } catch {}
+        win.destroy();
+      }
+    });
+  } catch {}
+
+  try {
+    app.exit(0);
+  } catch {}
+
+  try {
+    process.exit(0);
+  } catch {}
 }
 
-app.on('before-quit', cleanup);
-process.on('exit', cleanup);
+app.on('before-quit', cleanupAndExit);
+app.on('will-quit', cleanupAndExit);
+process.on('exit', cleanupAndExit);
+process.on('SIGINT', cleanupAndExit);
+process.on('SIGTERM', cleanupAndExit);

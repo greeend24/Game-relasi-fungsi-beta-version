@@ -1,7 +1,31 @@
 node_modules/
+backend/node_modules/
 dist/
 dist-electron/
+backend/dist/
 *.db
 *.sqlite
 .env
+.env.local
 .DS_Store
+cloudflared.exe
+ngrok.exe
+ngrok.yml
+
+# Large distribution packages & generated zip bundles (3+ GB)
+DISTRIBUSI_GAME_ALL_PLATFORM/
+*.zip
+*.tar
+*.tar.gz
+
+# Scratch binaries, temporary files & logs
+scratch/*.exe
+scratch/*.log
+scratch/temp_asar/
+
+# Mobile build caches
+android/.gradle/
+android/app/build/
+android/build/
+ios/App/build/
+ios/App/Pods/
