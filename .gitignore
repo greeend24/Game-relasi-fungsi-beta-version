@@ -22,6 +22,8 @@ DISTRIBUSI_GAME_ALL_PLATFORM/
 scratch/*.exe
 scratch/*.log
 scratch/temp_asar/
+scratch/*.wav
+scratch/frames_3_1/
 
 # Mobile build caches
 android/.gradle/

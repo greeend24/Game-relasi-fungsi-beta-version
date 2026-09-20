@@ -1,0 +1,102 @@
+[
+  {
+    "start": 0.0,
+    "end": 7.0,
+    "text": "Sekarang kita akan belajar bagaimana menentukan rumus fungsi dari sebuah tabel"
+  },
+  {
+    "start": 7.0,
+    "end": 14.0,
+    "text": "kadang-kadang kita diberikan beberapa nilai dalam bentuk tabel lalu kita diminta untuk mencari rumus"
+  },
+  {
+    "start": 14.0,
+    "end": 21.0,
+    "text": "Perhatikan tabel yang ada di bawah kita bisa lihat Nilai x adalah"
+  },
+  {
+    "start": 21.0,
+    "end": 28.0,
+    "text": "23 dan 4 sedangkan nilai FX adalah 5 8 11"
+  },
+  {
+    "start": 28.0,
+    "end": 35.0,
+    "text": "dan 14 sekarang bagaimana cara kita menemukan rumus fungsinya kita tahu bahwa"
+  },
+  {
+    "start": 35.0,
+    "end": 42.0,
+    "text": "bentuk umum fungsi linear adalah FX = AX + B"
+  },
+  {
+    "start": 42.0,
+    "end": 49.0,
+    "text": "pertama kita cari nilai a caranya kita lihat perubahan pada nilai FX"
+  },
+  {
+    "start": 49.0,
+    "end": 56.0,
+    "text": "dari 5 ke 8 bertambah 3 dari 8 ke 11 juga bertambah"
+  },
+  {
+    "start": 56.0,
+    "end": 63.0,
+    "text": "jadi nilai a adalah 3 selanjutnya kita mencari nilai"
+  },
+  {
+    "start": 63.0,
+    "end": 70.0,
+    "text": "kita gunakan nilai yang pertama yaitu x = 1 dan F1 ="
+  },
+  {
+    "start": 70.0,
+    "end": 77.0,
+    "text": "kita masukkan ke dalam rumus jadi F1 = 3"
+  },
+  {
+    "start": 77.0,
+    "end": 84.0,
+    "text": "1 + B = 53 + B = 5 maka"
+  },
+  {
+    "start": 84.0,
+    "end": 91.0,
+    "text": "sama dengan 2 jadi kita sudah mendapatkan nilai a = 3 dan b"
+  },
+  {
+    "start": 91.0,
+    "end": 98.0,
+    "text": "2 dengan begitu rumus fungsinya adalah FX ="
+  },
+  {
+    "start": 98.0,
+    "end": 105.0,
+    "text": "x + 2 Nah sekarang kita bisa cek kalau x = 1"
+  },
+  {
+    "start": 105.0,
+    "end": 112.0,
+    "text": "maka 3 dikali 1 ditambah 2 hasilnya 5 kalau X ="
+  },
+  {
+    "start": 112.0,
+    "end": 119.0,
+    "text": "hasilnya 8 kalau x = 3 hasilnya 11"
+  },
+  {
+    "start": 119.0,
+    "end": 126.0,
+    "text": "kalau x = 4 hasilnya 14 Ternyata semuanya sesuai dengan"
+  },
+  {
+    "start": 126.0,
+    "end": 133.0,
+    "text": "jadi rumus fungsi yang kita peroleh adalah FX = 3"
+  },
+  {
+    "start": 133.0,
+    "end": 135.3,
+    "text": "+ 2"
+  }
+]

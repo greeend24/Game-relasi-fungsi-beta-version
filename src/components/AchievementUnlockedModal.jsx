@@ -16,8 +16,8 @@ export default function AchievementUnlockedModal({ badge, onClose }) {
   }, [badge]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in font-hand">
-      <div className="w-full max-w-sm p-6 rounded-3xl glass-panel glass-sheen text-center space-y-4 animate-scale-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-md animate-fade-in font-hand">
+      <div className="w-full max-w-sm p-6 sm:p-7 rounded-3xl bg-[#FFFDF9] border-3 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-center space-y-4 animate-scale-up select-none">
         
         <div className="w-20 h-20 mx-auto rounded-3xl border-3 border-[#2D241E] shadow-[4px_4px_0px_#2D241E] flex items-center justify-center text-4xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 animate-bounce">
           {badge.icon}
@@ -31,7 +31,7 @@ export default function AchievementUnlockedModal({ badge, onClose }) {
           <h2 className="text-2xl font-bold font-pencil text-[#2D241E]">
             {badge.name}
           </h2>
-          <p className="text-xs text-[#4A3E3D] font-bold">
+          <p className="text-xs sm:text-sm text-[#78350F] font-bold">
             {badge.desc}
           </p>
         </div>

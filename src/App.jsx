@@ -1,30 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import AuthScreen from './components/AuthScreen';
 import MainMenu from './components/MainMenu';
 import StageSelector from './components/StageSelector';
 import QuestModeSelector from './components/QuestModeSelector';
-import QuestModeExam from './components/games/QuestModeExam';
 import SettingsModal from './components/SettingsModal';
-import LeaderboardModal from './components/LeaderboardModal';
 import SubbabInfoModal from './components/SubbabInfoModal';
-import BadgesModal from './components/BadgesModal';
 import AvatarModal from './components/AvatarModal';
-import RankModal from './components/RankModal';
 import AchievementUnlockedModal from './components/AchievementUnlockedModal';
 import LoadingScreen from './components/LoadingScreen';
+import GameTransitionLoader from './components/GameTransitionLoader';
 import AnimatedBackground from './components/AnimatedBackground';
 
-import ChapterLearning from './components/ChapterLearning';
-import EndlessMode from './components/games/EndlessMode';
+// Code-splitting via React.lazy for heavy game modes & secondary modals
+const ChapterLearning = lazy(() => import('./components/ChapterLearning'));
+const EndlessMode = lazy(() => import('./components/games/EndlessMode'));
+const QuestModeExam = lazy(() => import('./components/games/QuestModeExam'));
+const ChapterExercise = lazy(() => import('./components/games/ChapterExercise'));
+const LeaderboardModal = lazy(() => import('./components/LeaderboardModal'));
+const BadgesModal = lazy(() => import('./components/BadgesModal'));
+const RankModal = lazy(() => import('./components/RankModal'));
 
 import { audioEngine } from './services/audioEngine';
 import { storageService } from './services/storageService';
 import { securityLockoutService } from './services/securityLockoutService';
+import { reloVoiceService } from './services/reloVoiceService';
 import SecurityLockoutModal from './components/SecurityLockoutModal';
 import StrikeWarningModal from './components/StrikeWarningModal';
 import { CHAPTERS_DATA } from './data/chapterLearningData';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import RotatePhoneOverlay from './components/RotatePhoneOverlay';
+
+// Active gameplay modes that require tab-switch anti-cheat monitoring
+// Main menu, stage select, quest select, settings, profile, and modals are completely exempt from lockout
+const ACTIVE_GAMEPLAY_MODES = ['LEARNING', 'ENDLESS', 'QUEST_EXAM'];
+const GRACE_PERIOD_MS = 1500; // 1.5 seconds grace period tolerance for accidental blur / OS notifications
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,6 +42,7 @@ export default function App() {
   const [currentSubbabId, setCurrentSubbabId] = useState(1);
   const [currentStageNum, setCurrentStageNum] = useState(1);
   const [questSubbabId, setQuestSubbabId] = useState(1);
+  const [selectedExerciseChapterId, setSelectedExerciseChapterId] = useState(1);
 
   // Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -47,6 +57,7 @@ export default function App() {
   const [lockoutState, setLockoutState] = useState(() => securityLockoutService.checkStatus());
   const [warningStrikes, setWarningStrikes] = useState(0);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const violationTimerRef = useRef(null);
 
   // Subscribe to Security Lockout Service
   useEffect(() => {
@@ -58,6 +69,15 @@ export default function App() {
     });
     return unsubscribe;
   }, []);
+
+  // Ensure previous screen's voice stops cleanly when navigating away
+  useEffect(() => {
+    return () => {
+      try {
+        reloVoiceService.stopVoice();
+      } catch {}
+    };
+  }, [viewState]);
 
   // Check if current user is admin / whitelisted from strike warnings
   const isUserAdminExempt = (user) => {
@@ -77,36 +97,100 @@ export default function App() {
     }
   }, [currentUser]);
 
-  // Monitor Tab Switch (visibilitychange) and Window Blur
+  // Monitor Tab Switch (visibilitychange) and Window Blur with 1.5s Grace Period
+  // Strictly active ONLY during active exam / gameplay modes: LEARNING, ENDLESS, QUEST_EXAM
+  // Main Menu, Stage Selector, Quest Selector, Settings, Badges, and Profile are completely exempt!
   useEffect(() => {
-    const handleVisibilityOrBlur = (e) => {
-      // Only monitor when user is logged in & not on initial loading
-      if (!currentUser || viewState === 'AUTH' || isLoading) return;
+    // Clear any existing timer when switching views or unmounting
+    if (violationTimerRef.current) {
+      clearTimeout(violationTimerRef.current);
+      violationTimerRef.current = null;
+    }
 
-      // Whitelist admin account fikran02 so they never get strike warnings or lockouts
-      if (isUserAdminExempt(currentUser)) return;
+    // Only monitor when user is logged in, not loading, and in an ACTIVE gameplay mode
+    if (!currentUser || isLoading || viewState === 'AUTH') return;
+    if (!ACTIVE_GAMEPLAY_MODES.includes(viewState)) return;
 
-      const isHidden = document.hidden || (e && e.type === 'blur');
-      if (isHidden) {
-        const result = securityLockoutService.recordViolation(currentUser);
-        if (result.justLocked) {
-          setLockoutState(result);
-          setIsWarningOpen(false);
-          try { audioEngine.playPenalty(); } catch {}
-        } else if (result.strikes === 1 || result.strikes === 2) {
-          setWarningStrikes(result.strikes);
-          setIsWarningOpen(true);
-          try { audioEngine.playWarning(); } catch {}
+    // Whitelist admin account fikran02 so they never get strike warnings or lockouts
+    if (isUserAdminExempt(currentUser)) return;
+
+    const cancelGraceTimer = () => {
+      if (violationTimerRef.current) {
+        clearTimeout(violationTimerRef.current);
+        violationTimerRef.current = null;
+      }
+    };
+
+    const triggerViolation = () => {
+      const result = securityLockoutService.recordViolation(currentUser);
+      if (result.justLocked) {
+        setLockoutState(result);
+        setIsWarningOpen(false);
+        try { audioEngine.playPenalty(); } catch {}
+      } else if (result.strikes === 1 || result.strikes === 2) {
+        setWarningStrikes(result.strikes);
+        setIsWarningOpen(true);
+        try { audioEngine.playWarning(); } catch {}
+      }
+    };
+
+    const handlePotentialViolation = (e) => {
+      // Prioritize document.hidden:
+      // If the user actually leaves or minimizes the tab/app, document.hidden is immediately true.
+      // If window.blur fired without document.hidden, it is usually an OS notification, system dialog, or flyout.
+      // We start a 1.5s grace period timer, and verify document.hidden upon expiry to prevent false positives.
+      if (document.hidden) {
+        if (!violationTimerRef.current) {
+          violationTimerRef.current = setTimeout(() => {
+            // Check again after 1.5s grace period: only penalize if still hidden
+            if (document.hidden) {
+              triggerViolation();
+            }
+            violationTimerRef.current = null;
+          }, GRACE_PERIOD_MS);
+        }
+      } else if (e && e.type === 'blur') {
+        // Window blur occurred while document is not hidden (e.g. OS notification, system popup).
+        // Start 1.5s grace period. If within/after 1.5s document actually became hidden, record violation.
+        // If document is STILL NOT hidden after 1.5s (meaning it was just an OS notification), do not penalize!
+        if (!violationTimerRef.current) {
+          violationTimerRef.current = setTimeout(() => {
+            if (document.hidden) {
+              triggerViolation();
+            }
+            violationTimerRef.current = null;
+          }, GRACE_PERIOD_MS);
         }
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityOrBlur);
-    window.addEventListener('blur', handleVisibilityOrBlur);
+    const handleVisibilityChange = (e) => {
+      if (document.hidden) {
+        handlePotentialViolation(e);
+      } else {
+        // User returned to game tab within grace period -> cancel timer, no strike!
+        cancelGraceTimer();
+      }
+    };
+
+    const handleFocus = () => {
+      // Window regained focus -> cancel timer immediately, no strike!
+      cancelGraceTimer();
+    };
+
+    const handleBlur = (e) => {
+      handlePotentialViolation(e);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityOrBlur);
-      window.removeEventListener('blur', handleVisibilityOrBlur);
+      cancelGraceTimer();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
     };
   }, [currentUser, viewState, isLoading]);
 
@@ -221,13 +305,16 @@ export default function App() {
     };
   }, []);
 
-  // 16:9 Virtual Canvas (1920x1080) Uniform Scale Factor
+  // 16:9 Virtual Canvas (1280x720 Nintendo Switch-style HD Base)
   // Guarantees pixel-perfect identical layout on mobile landscape & non-fullscreen window sizes
+  const BASE_STAGE_WIDTH = 1280;
+  const BASE_STAGE_HEIGHT = 720;
+
   const [gameScale, setGameScale] = useState(() => {
     if (typeof window !== 'undefined') {
       const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      return Math.min(vw / 1920, vh / 1080);
+      return Math.min(vw / BASE_STAGE_WIDTH, vh / BASE_STAGE_HEIGHT);
     }
     return 1;
   });
@@ -237,7 +324,7 @@ export default function App() {
       if (typeof window === 'undefined') return;
       const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      const scale = Math.min(vw / 1920, vh / 1080);
+      const scale = Math.min(vw / BASE_STAGE_WIDTH, vh / BASE_STAGE_HEIGHT);
       setGameScale(scale);
       document.documentElement.style.setProperty('--game-scale', String(scale));
     };
@@ -291,7 +378,7 @@ export default function App() {
       audioEngine.toggleBgm(true);
     } else if (viewState === 'MAIN_MENU' || viewState === 'STAGE_SELECT' || viewState === 'QUEST_SELECT') {
       audioEngine.toggleBgm(true);
-    } else if (viewState === 'LEARNING' || viewState === 'QUEST_EXAM' || viewState === 'ENDLESS') {
+    } else if (viewState === 'LEARNING' || viewState === 'QUEST_EXAM' || viewState === 'ENDLESS' || viewState === 'CHAPTER_EXERCISE') {
       // In-game components manage their own BGM or keep main BGM playing
     }
   }, [viewState, isLoading]);
@@ -429,7 +516,7 @@ export default function App() {
     }
   };
 
-  // No longer needed — ChapterLearning is rendered directly
+  // No longer needed : ChapterLearning is rendered directly
 
   const handleCheatApplied = (updatedUser) => {
     setCurrentUser(updatedUser);
@@ -476,24 +563,26 @@ export default function App() {
             '--game-scale': gameScale,
           }}
         >
-        {/* PERSISTENT CONTINUOUS BACKGROUND: SKY, CLOUDS & LEAVES NEVER RESET OR UNMOUNT ACROSS SECTIONS */}
-        <AnimatedBackground 
-          hideBottomLandscape={viewState === 'STAGE_SELECT' || viewState === 'GAME' || viewState === 'MAIN_MENU' || viewState === 'AUTH' || viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM' || viewState === 'ENDLESS'} 
-          hideBirds={true} 
-          hideClouds={false} 
-          isQuestMode={viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM'}
-          isEndlessMode={viewState === 'ENDLESS'}
-          particleType={
-            viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM'
-              ? 'snowflake'
-              : viewState === 'ENDLESS'
-              ? 'ember'
-              : 'leaf'
-          }
-        />
+        {/* PERSISTENT CONTINUOUS BACKGROUND: SKY, CLOUDS & LEAVES */}
+        {viewState !== 'QUEST_EXAM' && (
+          <AnimatedBackground 
+            hideBottomLandscape={viewState === 'STAGE_SELECT' || viewState === 'LEARNING' || viewState === 'GAME' || viewState === 'MAIN_MENU' || viewState === 'AUTH' || viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM' || viewState === 'ENDLESS' || viewState === 'CHAPTER_EXERCISE'} 
+            hideBirds={true} 
+            hideClouds={false} 
+            isQuestMode={viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM'}
+            isEndlessMode={viewState === 'ENDLESS'}
+            particleType={
+              viewState === 'QUEST_SELECT' || viewState === 'QUEST_EXAM'
+                ? 'snowflake'
+                : viewState === 'ENDLESS'
+                ? 'ember'
+                : 'leaf'
+            }
+          />
+        )}
 
         {/* RELO'S ISLAND BACKGROUND FOR CHAPTER MODE (STAGE SELECTION & ACTIVE STAGE GAMEPLAY) */}
-        {(viewState === 'STAGE_SELECT' || viewState === 'LEARNING') && (
+        {(viewState === 'STAGE_SELECT' || viewState === 'LEARNING' || viewState === 'CHAPTER_EXERCISE') && (
           <img 
             src="/game asset/relo_island.png" 
             alt="Relo Island Background" 
@@ -502,102 +591,138 @@ export default function App() {
         )}
 
         <main className="flex-1 w-full h-full flex flex-col min-h-0 overflow-hidden relative z-10">
-        {viewState === 'AUTH' && (
-          <AuthScreen onLoginSuccess={handleLoginSuccess} />
-        )}
+          <Suspense fallback={
+            <GameTransitionLoader 
+              title="Membuka Berkas Kasus..." 
+              subtitle="Detektif Relo sedang menyiapkan petunjuk..." 
+            />
+          }>
+            {viewState === 'AUTH' && (
+              <AuthScreen onLoginSuccess={handleLoginSuccess} />
+            )}
 
-        {viewState === 'MAIN_MENU' && (
-          <MainMenu
-            currentUser={currentUser}
-            isAnyModalOpen={isSettingsOpen || isLeaderboardOpen || isRankOpen || isBadgesOpen || isAvatarOpen || isSubbabInfoOpen || Boolean(newBadgeUnlocked) || isWarningOpen || lockoutState.isLocked}
-            onNewGame={handleNewGame}
-            onLoadGame={handleLoadGame}
-            onStartQuest={() => setViewState('QUEST_SELECT')}
-            onStartEndless={() => setViewState('ENDLESS')}
-            onOpenSettings={() => setIsSettingsOpen(true)}
-            onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
-            onOpenRank={() => setIsRankOpen(true)}
-            onOpenBadges={() => setIsBadgesOpen(true)}
-            onOpenAvatar={() => setIsAvatarOpen(true)}
-            onLogout={handleLogout}
-          />
-        )}
+            {viewState === 'MAIN_MENU' && (
+              <MainMenu
+                currentUser={currentUser}
+                isAnyModalOpen={isSettingsOpen || isLeaderboardOpen || isRankOpen || isBadgesOpen || isAvatarOpen || isSubbabInfoOpen || Boolean(newBadgeUnlocked) || isWarningOpen || lockoutState.isLocked}
+                onNewGame={handleNewGame}
+                onLoadGame={handleLoadGame}
+                onStartQuest={() => setViewState('QUEST_SELECT')}
+                onStartEndless={() => setViewState('ENDLESS')}
+                onOpenSettings={() => setIsSettingsOpen(true)}
+                onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+                onOpenRank={() => setIsRankOpen(true)}
+                onOpenBadges={() => setIsBadgesOpen(true)}
+                onOpenAvatar={() => setIsAvatarOpen(true)}
+                onLogout={handleLogout}
+              />
+            )}
 
-        {viewState === 'STAGE_SELECT' && (
-          <StageSelector
-            userProgress={currentUser?.progress}
-            currentSubbabId={currentSubbabId}
-            setCurrentSubbabId={setCurrentSubbabId}
-            onSelectChapter={handleSelectChapter}
-            onBackToMenu={() => setViewState('MAIN_MENU')}
-            onOpenSubbabInfo={() => setIsSubbabInfoOpen(true)}
-          />
-        )}
+            {viewState === 'STAGE_SELECT' && (
+              <StageSelector
+                userProgress={currentUser?.progress}
+                currentUser={currentUser}
+                currentSubbabId={currentSubbabId}
+                setCurrentSubbabId={setCurrentSubbabId}
+                onSelectChapter={handleSelectChapter}
+                onSelectExercise={(chId) => {
+                  setSelectedExerciseChapterId(chId);
+                  setViewState('CHAPTER_EXERCISE');
+                }}
+                onBackToMenu={() => setViewState('MAIN_MENU')}
+                onOpenSubbabInfo={() => setIsSubbabInfoOpen(true)}
+              />
+            )}
 
-        {viewState === 'QUEST_SELECT' && (
-          <QuestModeSelector
-            userProgress={currentUser?.progress}
-            currentUser={currentUser}
-            onBackToMenu={() => setViewState('MAIN_MENU')}
-            onStartQuestSubbab={(subId) => {
-              setQuestSubbabId(subId);
-              setViewState('QUEST_EXAM');
-            }}
-          />
-        )}
+            {viewState === 'QUEST_SELECT' && (
+              <QuestModeSelector
+                userProgress={currentUser?.progress}
+                currentUser={currentUser}
+                onBackToMenu={() => setViewState('MAIN_MENU')}
+                onStartQuestSubbab={(subId) => {
+                  setQuestSubbabId(subId);
+                  setViewState('QUEST_EXAM');
+                }}
+              />
+            )}
 
-        {viewState === 'QUEST_EXAM' && (
-          <QuestModeExam
-            subbabId={questSubbabId}
-            currentUser={currentUser}
-            onBackToQuestSelect={() => setViewState('QUEST_SELECT')}
-          />
-        )}
+            {viewState === 'QUEST_EXAM' && (
+              <QuestModeExam
+                subbabId={questSubbabId}
+                currentUser={currentUser}
+                onBackToQuestSelect={() => setViewState('QUEST_SELECT')}
+              />
+            )}
 
-        {viewState === 'LEARNING' && (
-          <ChapterLearning
-            key={currentSubbabId}
-            chapterId={currentSubbabId}
-            currentUser={currentUser}
-            onBack={() => setViewState('STAGE_SELECT')}
-            onBackToMenu={() => setViewState('MAIN_MENU')}
-            onChapterComplete={handleChapterComplete}
-            onSegmentComplete={handleSegmentComplete}
-          />
-        )}
+            {viewState === 'LEARNING' && (
+              <ChapterLearning
+                key={currentSubbabId}
+                chapterId={currentSubbabId}
+                currentUser={currentUser}
+                onBack={() => setViewState('STAGE_SELECT')}
+                onBackToMenu={() => setViewState('MAIN_MENU')}
+                onChapterComplete={handleChapterComplete}
+                onSegmentComplete={handleSegmentComplete}
+              />
+            )}
 
-        {viewState === 'ENDLESS' && (
-          <EndlessMode
-            onBackToMenu={() => setViewState('MAIN_MENU')}
-            currentUser={currentUser}
-            onUpdateUser={(usr) => setCurrentUser(usr)}
-          />
-        )}
-      </main>
+            {viewState === 'ENDLESS' && (
+              <EndlessMode
+                onBackToMenu={() => setViewState('MAIN_MENU')}
+                currentUser={currentUser}
+                onUpdateUser={(usr) => setCurrentUser(usr)}
+              />
+            )}
 
-      {/* Global Modals */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        onCheatApplied={handleCheatApplied}
-      />
+            {viewState === 'CHAPTER_EXERCISE' && (
+              <ChapterExercise
+                chapterId={selectedExerciseChapterId}
+                currentUser={currentUser}
+                onBackToStageSelect={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('STAGE_SELECT');
+                }}
+                onCompleteExercise={(chId) => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                }}
+              />
+            )}
+          </Suspense>
+        </main>
 
-      <LeaderboardModal
-        isOpen={isLeaderboardOpen}
-        onClose={() => setIsLeaderboardOpen(false)}
-      />
+        {/* Global Modals */}
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          onCheatApplied={handleCheatApplied}
+        />
 
-      <RankModal
-        isOpen={isRankOpen}
-        onClose={() => setIsRankOpen(false)}
-        currentUser={currentUser}
-      />
+        <Suspense fallback={null}>
+          {isLeaderboardOpen && (
+            <LeaderboardModal
+              isOpen={isLeaderboardOpen}
+              onClose={() => setIsLeaderboardOpen(false)}
+            />
+          )}
 
-      <BadgesModal
-        isOpen={isBadgesOpen}
-        onClose={() => setIsBadgesOpen(false)}
-        currentUser={currentUser}
-      />
+          {isRankOpen && (
+            <RankModal
+              isOpen={isRankOpen}
+              onClose={() => setIsRankOpen(false)}
+              currentUser={currentUser}
+            />
+          )}
+
+          {isBadgesOpen && (
+            <BadgesModal
+              isOpen={isBadgesOpen}
+              onClose={() => setIsBadgesOpen(false)}
+              currentUser={currentUser}
+            />
+          )}
+        </Suspense>
 
       <AvatarModal
         isOpen={isAvatarOpen}
@@ -636,6 +761,16 @@ export default function App() {
           strikes={warningStrikes}
           onClose={() => setIsWarningOpen(false)}
         />
+      )}
+
+      {/* Global Corner Version Badge (v1.0.0) */}
+      {['AUTH', 'MAIN_MENU', 'STAGE_SELECT', 'QUEST_SELECT'].includes(viewState) && (
+        <div className="absolute bottom-2.5 right-3.5 sm:bottom-3.5 sm:right-5 z-40 pointer-events-none select-none">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/75 backdrop-blur-md border border-amber-300/80 text-[10px] sm:text-xs font-mono font-black text-[#78350F] shadow-[0_4px_16px_rgba(180,83,9,0.12)] tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+            <span>v1.0.0</span>
+          </div>
+        </div>
       )}
       </div>
     </div>

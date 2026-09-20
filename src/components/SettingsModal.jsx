@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { X, AlertCircle, CheckCircle2, AlertTriangle, Server } from 'lucide-react';
 import { audioEngine } from '../services/audioEngine';
 import { storageService } from '../services/storageService';
 import { reloVoiceService } from '../services/reloVoiceService';
 import InstructorMascotGuide from './InstructorMascotGuide';
+import ServerConfigModal from './ServerConfigModal';
 
 export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
   const [sfxVol, setSfxVol] = useState(Math.round(audioEngine.sfxVol * 100));
@@ -19,6 +20,9 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
   const [isSecretOpen, setIsSecretOpen] = useState(false);
   const [cheatInput, setCheatInput] = useState('');
   const [cheatMsg, setCheatMsg] = useState(null);
+
+  // Server Connection Modal State
+  const [isServerModalOpen, setIsServerModalOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -249,6 +253,35 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
 
         </div>
 
+        {/* 4. SERVER & LAB CONNECTION BUTTON */}
+        <div className="w-full px-2 sm:px-4 pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              try { audioEngine.playClick(); } catch {}
+              setIsServerModalOpen(true);
+            }}
+            className="w-full py-2 px-3 rounded-2xl bg-[#FFFDF9]/95 hover:bg-[#FFFDF9] border-2 border-[#2D241E] shadow-sm flex items-center justify-between transition-transform hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+          >
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#3B82F6] flex items-center justify-center text-white shadow-sm">
+                <Server className="w-4 h-4" />
+              </div>
+              <div className="text-left">
+                <div className="text-xs sm:text-sm font-black text-[#2D241E]">
+                  Koneksi Server & Lab
+                </div>
+                <div className="text-[10px] text-[#4B5563] font-bold">
+                  Atur IP Server Laptop Guru / LAN
+                </div>
+              </div>
+            </div>
+            <span className="pencil-btn px-2.5 py-1 bg-[#2563EB] text-white text-[11px] font-black shadow">
+              Buka
+            </span>
+          </button>
+        </div>
+
         {/* Footer with Secret Cheat Button */}
         <div className="pt-2 w-full flex items-center justify-between text-xs text-white/70 font-bold border-t border-white/20">
           <span>Pengaturan Detektif Data</span>
@@ -318,6 +351,12 @@ export default function SettingsModal({ isOpen, onClose, onCheatApplied }) {
         icon="❄️"
         canSpeak={true}
         message={reloText || 'Sesuaikan pengaturan suaramu agar nyaman bermain! 🎧❄️🐻'}
+      />
+
+      {/* SERVER CONFIG MODAL */}
+      <ServerConfigModal 
+        isOpen={isServerModalOpen} 
+        onClose={() => setIsServerModalOpen(false)} 
       />
 
     </div>

@@ -3,6 +3,7 @@ import DetektifRelo from './DetektifRelo';
 import InstructorMascotGuide from './InstructorMascotGuide';
 import ConfirmExitModal from './ConfirmExitModal';
 import ConfirmLogoutModal from './ConfirmLogoutModal';
+import ConfirmEndlessModal from './ConfirmEndlessModal';
 import NetworkStatusBadge from './NetworkStatusBadge';
 import { audioEngine } from '../services/audioEngine';
 import { storageService, calculateBadge } from '../services/storageService';
@@ -24,7 +25,8 @@ export default function MainMenu({
 }) {
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const isAnyModalActive = isAnyModalOpen || isLogoutModalOpen || isExitModalOpen;
+  const [isEndlessModalOpen, setIsEndlessModalOpen] = useState(false);
+  const isAnyModalActive = isAnyModalOpen || isLogoutModalOpen || isExitModalOpen || isEndlessModalOpen;
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
@@ -39,14 +41,14 @@ export default function MainMenu({
   const getInitialReloText = () => {
     const isFirstTime = !currentUser?.lastLoginAt || (currentUser?.loginCount && currentUser.loginCount <= 1);
     const greetings = {
-      '1A_pagi': 'Selamat pagi! ☀️ Perkenalkan, aku Detektif Relo 🦉. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif? 🕵️‍♂️',
-      '1A_siang': 'Halo, detektif! 👋 Selamat siang! 🌤️ Aku Relo, Detektif Relo 🦉. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama! 🔍',
-      '1A_sore': 'Selamat sore! 🌅 Aku Detektif Relo 🦉. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan! 🚀',
-      '1A_malam': 'Hai, selamat malam! 🌙 Aku Detektif Relo 🦉. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi. 🔎',
+      '1A_pagi': 'Selamat pagi! ☀️ Perkenalkan, aku Detektif Relo 🦉. Aku akan menemanimu belajar Relasi dan Fungsi. Siap berpetualang? 🕵️‍♂️',
+      '1A_siang': 'Halo! 👋 Selamat siang! 🌤️ Aku Relo, Detektif Relo 🦉. Mulai sekarang, kita akan menjelajahi dunia matematika bersama! 🔍',
+      '1A_sore': 'Selamat sore! 🌅 Aku Detektif Relo 🦉. Ada banyak tantangan seru tentang Relasi dan Fungsi yang menunggu untuk kita selesaikan. Yuk, mulai! 🚀',
+      '1A_malam': 'Hai, selamat malam! 🌙 Aku Detektif Relo 🦉. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam memahami Relasi dan Fungsi. 🔎',
       '1B_pagi': 'Selamat pagi! ☀️ Akhirnya kamu kembali juga, Detektif! 🕵️‍♂️ Relo sudah menunggumu 🦉.',
-      '1B_siang': 'Hai! Selamat siang! 🌤️ Wah, partner-ku kembali lagi 🦉. Sudah siap melanjutkan penyelidikan? 🔍',
-      '1B_sore': 'Selamat sore dan selamat datang kembali! 🌅 Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi 🦉✨.',
-      '1B_malam': 'Hei, kamu datang lagi! Selamat malam! 🌙 Sepertinya masih ada banyak misteri yang belum kita pecahkan 🔍.'
+      '1B_siang': 'Hai! Selamat siang! 🌤️ Wah, partner-ku kembali lagi 🦉. Sudah siap melanjutkan petualangan? 🔍',
+      '1B_sore': 'Selamat sore dan selamat datang kembali! 🌅 Aku tahu kamu belum menyerah menaklukkan tantangan Relasi dan Fungsi 🦉✨.',
+      '1B_malam': 'Hei, kamu datang lagi! Selamat malam! 🌙 Sepertinya masih ada banyak tantangan yang belum kita selesaikan 🔍.'
     };
     const key = `${isFirstTime ? '1A' : '1B'}_${timeOfDay}`;
     return greetings[key] || greetings['1B_siang'];
@@ -78,12 +80,17 @@ export default function MainMenu({
 
     const isFirstTime = !currentUser?.lastLoginAt || (currentUser?.loginCount && currentUser.loginCount <= 1);
     const sceneId = isFirstTime ? '1A' : '1B';
-    const res = reloVoiceService.playScene(sceneId, false, false);
-    if (res?.text) {
-      setReloText(res.text);
-    }
+
+    // Auto-play mascot speech immediately upon entering lobby
+    const timer = setTimeout(() => {
+      const res = reloVoiceService.playScene(sceneId, false, true);
+      if (res?.text) {
+        setReloText(res.text);
+      }
+    }, 150);
 
     return () => {
+      clearTimeout(timer);
       reloVoiceService.stopVoice();
     };
   }, []);
@@ -103,7 +110,8 @@ export default function MainMenu({
         onStartQuest();
       } else if (key === 'e') {
         audioEngine.playClick();
-        onStartEndless();
+        reloVoiceService.stopVoice();
+        setIsEndlessModalOpen(true);
       } else if (key === 'l') {
         audioEngine.playClick();
         onOpenBadges();
@@ -121,7 +129,7 @@ export default function MainMenu({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isExitModalOpen, isLogoutModalOpen, isAnyModalOpen, onNewGame, onStartQuest, onStartEndless, onOpenBadges, onOpenLeaderboard, onOpenSettings]);
+  }, [isExitModalOpen, isLogoutModalOpen, isEndlessModalOpen, isAnyModalOpen, onNewGame, onStartQuest, onStartEndless, onOpenBadges, onOpenLeaderboard, onOpenSettings]);
 
   const leaveTimerRef = useRef(null);
 
@@ -352,7 +360,7 @@ export default function MainMenu({
           className={`mode-card island-group relative flex flex-col items-center justify-center select-none pointer-events-auto transition-transform duration-200 ${hoveredCard === 'quest' ? 'is-hovered -translate-y-2' : ''}`}
         >
           <button
-            onClick={() => { audioEngine.playClick(); onStartQuest(); }}
+            onClick={() => { audioEngine.playClick(); reloVoiceService.stopVoice(); onStartQuest(); }}
             onMouseEnter={() => handleModeMouseEnter('quest')}
             onMouseLeave={handleModeMouseLeave}
             onTouchStart={() => handleModeMouseEnter('quest')}
@@ -390,7 +398,7 @@ export default function MainMenu({
           className={`mode-card island-group relative flex flex-col items-center justify-center select-none pointer-events-auto -translate-y-1.5 sm:-translate-y-2 transition-transform duration-200 ${hoveredCard === 'chapter' ? 'is-hovered -translate-y-3.5' : ''}`}
         >
           <button
-            onClick={() => { audioEngine.playClick(); onNewGame(); }}
+            onClick={() => { audioEngine.playClick(); reloVoiceService.stopVoice(); onNewGame(); }}
             onMouseEnter={() => handleModeMouseEnter('chapter')}
             onMouseLeave={handleModeMouseLeave}
             onTouchStart={() => handleModeMouseEnter('chapter')}
@@ -400,7 +408,7 @@ export default function MainMenu({
           >
             {/* Relo Mascot on Chapter Board */}
             <div
-              className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[18%] sm:-translate-y-[20%] scale-[1.3] sm:scale-[1.4] origin-bottom select-none pointer-events-none z-30"
+              className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[18%] sm:-translate-y-[20%] scale-[1.365] sm:scale-[1.47] origin-bottom select-none pointer-events-none z-30"
             >
               <div className="translate-y-[6%]">
                 <DetektifRelo
@@ -430,7 +438,7 @@ export default function MainMenu({
           className={`mode-card island-group relative flex flex-col items-center justify-center select-none pointer-events-auto transition-transform duration-200 ${hoveredCard === 'endless' ? 'is-hovered -translate-y-2' : ''}`}
         >
           <button
-            onClick={() => { audioEngine.playClick(); onStartEndless(); }}
+            onClick={() => { audioEngine.playClick(); reloVoiceService.stopVoice(); setIsEndlessModalOpen(true); }}
             onMouseEnter={() => handleModeMouseEnter('endless')}
             onMouseLeave={handleModeMouseLeave}
             onTouchStart={() => handleModeMouseEnter('endless')}
@@ -492,11 +500,21 @@ export default function MainMenu({
       >
         <img
           src="/assets/Logo game/game_logo.png"
-          alt="Logo Game Detektif Relasi & Fungsi"
+          alt="Logo Game Relasi & Fungsi"
           className="w-[clamp(240px,40cqw,540px)] max-h-[22cqh] sm:max-h-[25cqh] h-auto object-contain filter drop-shadow-2xl animate-logo-float"
           onError={(e) => { e.target.style.display = 'none'; }}
         />
       </div>
+
+      {/* CONFIRM ENDLESS MODE BRIEFING MODAL */}
+      <ConfirmEndlessModal
+        isOpen={isEndlessModalOpen}
+        onClose={() => setIsEndlessModalOpen(false)}
+        onConfirm={() => {
+          setIsEndlessModalOpen(false);
+          onStartEndless();
+        }}
+      />
 
       {/* CONFIRM LOGOUT MODAL */}
       <ConfirmLogoutModal

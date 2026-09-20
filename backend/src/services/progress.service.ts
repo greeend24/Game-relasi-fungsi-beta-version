@@ -165,11 +165,12 @@ export async function getUserFullProgress(userId: string) {
 
   // Fetch user info to check admin status
   const [foundUser] = await db
-    .select({ username: user.username, name: user.name })
+    .select({ username: user.username, name: user.name, isAdmin: user.isAdmin })
     .from(user)
     .where(eq(user.id, userId))
     .limit(1);
   const isAdmin =
+    Boolean(foundUser?.isAdmin) ||
     (foundUser?.username || "").toLowerCase() === "fikran02" ||
     (foundUser?.name || "").toLowerCase() === "admin";
 
@@ -207,6 +208,9 @@ export async function getUserFullProgress(userId: string) {
   const unlockedBadges = badgeRows.map((r) => r.badgeId);
 
   return {
+    username: foundUser?.username,
+    fullname: foundUser?.name,
+    isAdmin,
     totalScore: stats?.totalScore ?? 0,
     endlessHighScore: stats?.endlessHighScore ?? 0,
     unlockedBadges,

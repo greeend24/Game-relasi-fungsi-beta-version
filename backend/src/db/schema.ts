@@ -75,7 +75,7 @@ export const verification = sqliteTable("verification", {
 // ─────────────────────────────────────────────
 
 /**
- * user_stats — 1:1 with user.
+ * user_stats : 1:1 with user.
  * Stores aggregate game scores.
  */
 export const userStats = sqliteTable("user_stats", {
@@ -91,7 +91,7 @@ export const userStats = sqliteTable("user_stats", {
 });
 
 /**
- * user_subbab_progress — Up to 7 rows per user.
+ * user_subbab_progress : Up to 7 rows per user.
  * Tracks per-subbab unlock status, current stage, and star ratings per stage.
  * `stars` is JSON text: { "1": 3, "5": 3, "21": 3 }
  */
@@ -113,7 +113,7 @@ export const userSubbabProgress = sqliteTable(
 );
 
 /**
- * user_badges — Up to 10 rows per user.
+ * user_badges : Up to 10 rows per user.
  * Tracks which badges the user has unlocked.
  */
 export const userBadges = sqliteTable(
@@ -130,7 +130,7 @@ export const userBadges = sqliteTable(
 );
 
 /**
- * quest_scores — Up to 7 rows per user (1 per subbab).
+ * quest_scores : Up to 7 rows per user (1 per subbab).
  * Records each Quest Mode exam completion (30 questions):
  * score (0-100), correct count, points, speed bonus / time remaining.
  * Critical for student score data analysis & grading.

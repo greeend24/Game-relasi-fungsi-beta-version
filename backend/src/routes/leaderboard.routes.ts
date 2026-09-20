@@ -5,7 +5,7 @@ const router = Router();
 
 /**
  * GET /api/leaderboard
- * Public endpoint — no authentication required.
+ * Public endpoint : no authentication required.
  * Returns the global leaderboard sorted by totalScore.
  * Query params: ?limit=50 (optional)
  */

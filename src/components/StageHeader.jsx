@@ -76,7 +76,11 @@ export default function StageHeader({
 
           {onShowHint && (
             <button
-              onClick={() => { audioEngine.playClick(); onShowHint(); }}
+              onClick={() => { 
+                audioEngine.playClick(); 
+                try { reloVoiceService.playScene('case_hint'); } catch {}
+                onShowHint(); 
+              }}
               className="pencil-btn flex items-center space-x-1.5 px-3 py-1.5 bg-[#FEF3C7] text-[#B45309] font-black text-base sm:text-lg lg:text-[20px] hover:scale-105 active:scale-95 transition-transform"
             >
               <Lightbulb className="w-5 h-5 text-[#D97706]" />

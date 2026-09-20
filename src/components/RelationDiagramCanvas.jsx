@@ -15,6 +15,7 @@ export default function RelationDiagramCanvas({
   selectedA = null,
   onSelectA,
   onSelectB,
+  onDisconnectPair = null,
   labelA = 'Himpunan A',
   labelB = 'Himpunan B',
   highlightRange = false,
@@ -37,6 +38,7 @@ export default function RelationDiagramCanvas({
   const activePointerIdRef = useRef(null);
   const dragOriginRef = useRef(null);
   const dragMovedRef = useRef(false);
+  const lastDragEndTimeRef = useRef(0);
 
   // Accurate detection of CSS transform scale factor (from --game-scale or viewport scaling)
   const getContainerScale = useCallback(() => {
@@ -134,19 +136,16 @@ export default function RelationDiagramCanvas({
     return bestIdx;
   }, []);
 
-  // Pointer Down on Node A: begins fluid touch drag and activates selection
+  // Pointer Down on Node A: begins fluid touch drag
   const handlePointerDownA = (idxA, e) => {
     if (readOnly) return;
     if (e.button !== undefined && e.button !== 0) return;
-
-    e.stopPropagation();
 
     activePointerIdRef.current = e.pointerId;
     dragOriginRef.current = { x: e.clientX, y: e.clientY, idxA };
     dragMovedRef.current = false;
 
     setDraggingA(idxA);
-    onSelectA?.(idxA);
 
     const { scaleX, scaleY, containerRect } = getContainerScale();
     if (containerRect) {
@@ -192,18 +191,26 @@ export default function RelationDiagramCanvas({
       if (activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) return;
 
       const targetB = findTargetNodeB(e.clientX, e.clientY);
+      const wasDragged = dragMovedRef.current;
 
       // If user dragged rope from A to B: connect immediately!
-      if (dragMovedRef.current && targetB !== null && !readOnly) {
-        onSelectB?.(targetB, draggingA);
+      if (wasDragged) {
+        lastDragEndTimeRef.current = Date.now();
+        if (targetB !== null && !readOnly) {
+          onSelectB?.(targetB, draggingA);
+        }
       }
 
       activePointerIdRef.current = null;
       dragOriginRef.current = null;
-      dragMovedRef.current = false;
       setDraggingA(null);
       setDragMousePos(null);
       setHoveredTargetB(null);
+
+      // Keep dragMovedRef true briefly so immediate synthetic click from drag release is ignored
+      setTimeout(() => {
+        dragMovedRef.current = false;
+      }, 60);
     };
 
     const handlePointerCancel = () => {
@@ -244,10 +251,19 @@ export default function RelationDiagramCanvas({
 
   const dragLine = getDragLineCoords();
 
-  // Handler for 2-tap/2-click on Node B
+  // Handler for click/tap on Node A (Domain)
+  const handleNodeClickA = (idxA, e) => {
+    e?.stopPropagation?.();
+    if (readOnly) return;
+    if (dragMovedRef.current || (Date.now() - lastDragEndTimeRef.current < 250)) return;
+    onSelectA?.(idxA);
+  };
+
+  // Handler for click/tap on Node B (Kodomain)
   const handleNodeClickB = (idxB, e) => {
     e?.stopPropagation?.();
     if (readOnly) return;
+    if (Date.now() - lastDragEndTimeRef.current < 250) return;
     onSelectB?.(idxB);
   };
 
@@ -255,7 +271,11 @@ export default function RelationDiagramCanvas({
   const handleDisconnectLine = (idxA, idxB, e) => {
     e?.stopPropagation?.();
     if (readOnly) return;
-    onSelectB?.(idxB, idxA);
+    if (onDisconnectPair) {
+      onDisconnectPair(idxA, idxB);
+    } else {
+      onSelectB?.(idxB, idxA);
+    }
   };
 
   return (
@@ -349,15 +369,15 @@ export default function RelationDiagramCanvas({
       </svg>
 
       {/* Two Columns Grid for Himpunan A and B */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-5 relative z-10">
+      <div className={`grid grid-cols-2 ${compact ? 'gap-2 sm:gap-3' : 'gap-3 sm:gap-5'} relative z-10`}>
         
         {/* HIMPUNAN A */}
-        <div className="space-y-2 text-center flex flex-col items-center w-full">
-          <div className="py-2 px-4 rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#78350F] font-black text-lg sm:text-xl lg:text-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center">
+        <div className={`${compact ? 'space-y-1.5' : 'space-y-2'} text-center flex flex-col items-center w-full`}>
+          <div className={`${compact ? 'py-1 px-3 text-xs sm:text-sm' : 'py-2 px-4 text-lg sm:text-xl lg:text-[22px]'} rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#78350F] font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center`}>
             {labelA}
           </div>
           
-          <div className="space-y-2.5 w-full">
+          <div className={`${compact ? 'space-y-1.5' : 'space-y-2.5'} w-full`}>
             {setA.map((item, idx) => {
               const isSelected = selectedA === idx || draggingA === idx;
               return (
@@ -366,8 +386,8 @@ export default function RelationDiagramCanvas({
                   ref={(el) => (cardRefsA.current[idx] = el)}
                   style={{ touchAction: 'none' }}
                   onPointerDown={(e) => handlePointerDownA(idx, e)}
-                  onClick={() => !readOnly && onSelectA?.(idx)}
-                  className={`p-3 sm:p-3.5 rounded-2xl border font-bold transition-all duration-150 flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
+                  onClick={(e) => handleNodeClickA(idx, e)}
+                  className={`${compact ? 'p-2 sm:p-2.5 rounded-xl' : 'p-3 sm:p-3.5 rounded-2xl'} border font-bold transition-all duration-150 flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
                     readOnly
                       ? 'glass-card border-white/60 text-[#2D241E]'
                       : isSelected
@@ -375,14 +395,14 @@ export default function RelationDiagramCanvas({
                       : 'glass-card border-white/60 text-[#2D241E] active:scale-98'
                   }`}
                 >
-                  <span className="pr-2 font-pencil font-bold text-lg sm:text-xl lg:text-[24px] whitespace-normal break-words text-left leading-tight">
+                  <span className={`pr-2 font-pencil font-bold ${compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl lg:text-[24px]'} whitespace-normal break-words text-left leading-tight`}>
                     {item}
                   </span>
                   {/* Brass Push-Pin Head Element for Detective Red String Anchor */}
                   <div 
                     ref={(el) => (dotRefsA.current[idx] = el)}
                     title={`Paku Pin ${item}`}
-                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_3px_6px_rgba(0,0,0,0.25)] ${
+                    className={`${compact ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-7 h-7 sm:w-8 sm:h-8'} rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_3px_6px_rgba(0,0,0,0.25)] ${
                       isSelected 
                         ? 'bg-gradient-to-br from-red-400 via-red-600 to-red-800 scale-125 ring-3 ring-red-400 shadow-[0_0_12px_rgba(225,29,72,0.7)]' 
                         : connections.some(([a]) => a === idx)
@@ -391,7 +411,7 @@ export default function RelationDiagramCanvas({
                     }`} 
                   >
                     {/* Metallic Pin Core Specular Highlight */}
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/70 shadow-xs pointer-events-none" />
+                    <div className="w-2 h-2 rounded-full bg-white/70 shadow-xs pointer-events-none" />
                   </div>
                 </div>
               );
@@ -400,12 +420,12 @@ export default function RelationDiagramCanvas({
         </div>
 
         {/* HIMPUNAN B */}
-        <div className="space-y-2 text-center flex flex-col items-center w-full">
-          <div className="py-2 px-4 rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#1E40AF] font-black text-lg sm:text-xl lg:text-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center">
+        <div className={`${compact ? 'space-y-1.5' : 'space-y-2'} text-center flex flex-col items-center w-full`}>
+          <div className={`${compact ? 'py-1 px-3 text-xs sm:text-sm' : 'py-2 px-4 text-lg sm:text-xl lg:text-[22px]'} rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#1E40AF] font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center`}>
             {labelB}
           </div>
 
-          <div className="space-y-2.5 w-full">
+          <div className={`${compact ? 'space-y-1.5' : 'space-y-2.5'} w-full`}>
             {setB.map((item, idx) => {
               const inRange = isRangeNode(idx);
               const isConnected = connections.some(([, b]) => b === idx);
@@ -416,9 +436,9 @@ export default function RelationDiagramCanvas({
                   key={idx}
                   ref={(el) => (cardRefsB.current[idx] = el)}
                   style={{ touchAction: 'none' }}
-                  onPointerDown={(e) => handleNodeClickB(idx, e)}
                   onClick={(e) => handleNodeClickB(idx, e)}
-                  className={`p-3 sm:p-3.5 rounded-2xl border font-bold transition-all duration-150 flex items-center justify-start space-x-3 shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
+                  title={!readOnly && isConnected && selectedA === null ? `Klik untuk memotong hubungan ${item}` : undefined}
+                  className={`${compact ? 'p-2 sm:p-2.5 rounded-xl space-x-2' : 'p-3 sm:p-3.5 rounded-2xl space-x-3'} border font-bold transition-all duration-150 flex items-center justify-start shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
                     readOnly
                       ? inRange
                         ? 'bg-[#D1FAE5] border-[#2D241E] text-[#065F46]'
@@ -431,8 +451,8 @@ export default function RelationDiagramCanvas({
                   {/* Brass Push-Pin Head Element for Detective Red String Anchor */}
                   <div 
                     ref={(el) => (dotRefsB.current[idx] = el)}
-                    title={`Paku Pin ${item}`}
-                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_3px_6px_rgba(0,0,0,0.25)] ${
+                    title={!readOnly && isConnected && selectedA === null ? `Klik untuk memotong tali ${item}` : `Paku Pin ${item}`}
+                    className={`${compact ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-7 h-7 sm:w-8 sm:h-8'} rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_3px_6px_rgba(0,0,0,0.25)] ${
                       inRange || isConnected 
                         ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-800 ring-2 ring-red-300' 
                         : isTargetHovered 
@@ -441,9 +461,9 @@ export default function RelationDiagramCanvas({
                     }`} 
                   >
                     {/* Metallic Pin Core Specular Highlight */}
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/70 shadow-xs pointer-events-none" />
+                    <div className="w-2 h-2 rounded-full bg-white/70 shadow-xs pointer-events-none" />
                   </div>
-                  <span className="pl-2 font-pencil font-bold text-lg sm:text-xl lg:text-[24px] whitespace-normal break-words text-left leading-tight">
+                  <span className={`pl-2 font-pencil font-bold ${compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl lg:text-[24px]'} whitespace-normal break-words text-left leading-tight`}>
                     {item}
                   </span>
                 </div>
@@ -457,7 +477,7 @@ export default function RelationDiagramCanvas({
       {/* Helpful Touch & Mouse Instruction Indicator */}
       {!readOnly && (
         <div className="mt-2 text-center text-xs sm:text-sm font-bold text-[#78350F]/90 bg-amber-100/60 rounded-xl py-1 px-2 border border-amber-300/60">
-          📌 Tarik benang merah dari pin A ke pin B (atau klik pin A lalu klik pin B). Klik benang untuk memotongnya.
+          💡 Hubungkan: Klik pin A lalu klik pin B (atau tarik benang). Putus: Klik langsung pin B yang sudah terpasang, atau klik tali merahnya.
         </div>
       )}
 

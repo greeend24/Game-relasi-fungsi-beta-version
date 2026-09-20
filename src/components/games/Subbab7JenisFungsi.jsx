@@ -67,12 +67,12 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
       audioEngine.playError();
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL KLASIFIKASI FUNGSI',
+        title: 'PETUNJUK DETEKTIF: CIRI JENIS FUNGSI',
         reasons: [
-          `⚠️ Kategori ${selectedChoice} yang kamu pilih belum sesuai dengan ciri pemetaan pada diagram.`,
-          `Amati kembali jumlah panah yang masuk ke setiap elemen pada Himpunan Kodomain B!`
+          `⚠️ Jenis fungsi ${selectedChoice} yang kamu pilih belum cocok dengan tanda panah pada diagram.`,
+          `Perhatikan jumlah panah yang menancap ke setiap anggota di Himpunan Kawan B!`
         ],
-        hint: stageConfig.conceptDef || 'Konsep: Injektif = max 1 panah per B; Surjektif = min 1 panah per B (Range=Kodomain); Bijektif = pas 1 panah per B.'
+        hint: stageConfig.conceptDef || 'Petunjuk: Injektif = paling banyak 1 panah per anggota B. Surjektif = semua anggota B kebagian panah. Bijektif = tepat 1 panah per anggota B.'
       });
     }
   };
@@ -86,7 +86,7 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || "Injektif (Satu-satu): max 1 panah per B. Surjektif (Pada): min 1 panah per B. Bijektif: tepat 1 panah per B."}
+        hintText={stageConfig.conceptDef || "Injektif: maksimal 1 panah per B. Surjektif: semua B kena panah. Bijektif: pas 1 panah per B."}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -97,7 +97,7 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText={`Relasi ini terklasifikasi sebagai FUNGSI ${stageConfig.answer.toUpperCase()} sesuai kaidah formal pemetaan elemen domain ke kodomain.`}
+        explanationText={`Fungsi ini termasuk jenis ${stageConfig.answer.toUpperCase()} karena memenuhi ciri panah menuju himpunan kawan B.`}
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}

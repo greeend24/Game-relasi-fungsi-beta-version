@@ -31,6 +31,9 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
+          lottie: ['lottie-react'],
+          icons: ['lucide-react'],
+          confetti: ['canvas-confetti'],
         },
       },
     },

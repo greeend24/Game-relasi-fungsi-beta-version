@@ -60,7 +60,7 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
   return (
     <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand min-h-0">
       <StageHeader
-        subbabTitle={`${subbabData.title} (Kesimpulan PBL)`}
+        subbabTitle={`${subbabData.title} (Kesimpulan Akhir)`}
         stageNum={21}
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}

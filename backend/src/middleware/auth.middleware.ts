@@ -28,7 +28,7 @@ export async function requireAuth(
     });
 
     if (!sessionData || !sessionData.user) {
-      res.status(401).json({ error: "Unauthorized — no valid session" });
+      res.status(401).json({ error: "Unauthorized : no valid session" });
       return;
     }
 
@@ -37,6 +37,6 @@ export async function requireAuth(
     next();
   } catch (error) {
     console.error("[auth.middleware] Session verification failed:", error);
-    res.status(401).json({ error: "Unauthorized — session verification failed" });
+    res.status(401).json({ error: "Unauthorized : session verification failed" });
   }
 }

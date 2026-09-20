@@ -128,10 +128,10 @@ router.get("/", async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: {
+        ...progress,
         username: (req.user as any).username || userRecord?.username || req.user!.name,
         fullname: displayName,
-        isAdmin: isUserAdmin,
-        ...progress,
+        isAdmin: isUserAdmin || progress.isAdmin,
       },
     });
   } catch (error) {
@@ -183,9 +183,9 @@ router.post("/stage", async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: {
+        ...updatedProgress,
         username: (req.user as any).username || req.user!.name,
         fullname: req.user!.name,
-        ...updatedProgress,
       },
       newBadges: result.newBadges,
     });
@@ -242,9 +242,9 @@ router.post("/reset", async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: {
+        ...freshProgress,
         username: (req.user as any).username || req.user!.name,
         fullname: req.user!.name,
-        ...freshProgress,
       },
     });
   } catch (error) {
@@ -284,9 +284,9 @@ router.post("/cheat", async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: {
+        ...updatedProgress,
         username: (req.user as any).username || req.user!.name,
         fullname: req.user!.name,
-        ...updatedProgress,
       },
     });
   } catch (error) {

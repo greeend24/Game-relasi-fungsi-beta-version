@@ -73,12 +73,12 @@ export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackTo
       audioEngine.playError();
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL UNSUR FUNGSI',
+        title: 'PETUNJUK DETEKTIF: DAERAH FUNGSI',
         reasons: [
-          `⚠️ Terdapat jawaban yang belum tepat pada identifikasi unsur fungsi.`,
-          `Periksa kembali perbedaan antara seluruh himpunan kawan (Kodomain) dan elemen yang benar-benar terpilih oleh panah (Range).`
+          `⚠️ Ada jawaban yang belum tepat untuk daerah asal, kawan, atau hasil.`,
+          `Ingat bedanya: Kodomain adalah SEMUA anggota di Himpunan Kawan, sedangkan Range (Hasil) HANYA anggota kawan yang kena panah.`
         ],
-        hint: stageConfig.conceptDef || 'Konsep: Domain = seluruh elemen A. Kodomain = seluruh elemen B. Range = sub-himpunan B yang punya panah dari A.'
+        hint: stageConfig.conceptDef || 'Petunjuk: Domain = semua anggota A. Kodomain = semua anggota B. Range = anggota B yang mendapat panah dari A.'
       });
     }
   };
@@ -177,7 +177,7 @@ export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackTo
                                 : 'glass-option text-[#2D241E] shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
                             }`}
                           >
-                            <span className="truncate">{opt}</span>
+                            <span className="break-words">{opt}</span>
                             {isSelected && <Check className="w-4 h-4 text-[#D97706] ml-1 flex-shrink-0" />}
                           </button>
                         );

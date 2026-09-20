@@ -1,4 +1,4 @@
-// Storage Service — Hybrid (API + localStorage)
+// Storage Service : Hybrid (API + localStorage)
 // 
 // For REAL users (authenticated via Better Auth): All data is synced with the backend API.
 // For GUEST users (detektif_tamu): Data stays in localStorage/memory only.
@@ -268,6 +268,37 @@ function getCompletedStagesCountLocal(userProgress) {
 
 const LOCAL_USERS_DB_KEY = 'detektif_local_users_db';
 
+// Lightweight reversible obfuscation for offline password sync queue
+// Prevents plain text password exposure in localStorage while allowing offline sync to backend
+function obfuscateSecret(str) {
+  if (!str) return '';
+  try {
+    const salt = 'RelasiFungsi2026';
+    let res = '';
+    for (let i = 0; i < str.length; i++) {
+      res += String.fromCharCode(str.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
+    }
+    return btoa(res);
+  } catch {
+    return str;
+  }
+}
+
+function deobfuscateSecret(b64) {
+  if (!b64) return '';
+  try {
+    const salt = 'RelasiFungsi2026';
+    const str = atob(b64);
+    let res = '';
+    for (let i = 0; i < str.length; i++) {
+      res += String.fromCharCode(str.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
+    }
+    return res;
+  } catch {
+    return b64;
+  }
+}
+
 function getLocalUsersDB() {
   try {
     const data = localStorage.getItem(LOCAL_USERS_DB_KEY);
@@ -403,6 +434,10 @@ export const storageService = {
 
   setCurrentUser(user) {
     const normalized = normalizeUserProgress(user);
+    if (normalized) {
+      delete normalized.password;
+      delete normalized.p_sec;
+    }
     this._cachedUser = normalized;
     try {
       if (normalized) {
@@ -421,12 +456,20 @@ export const storageService = {
       try {
         const localUsers = getLocalUsersDB();
         const cleanKey = user.username.trim().toLowerCase();
+        const existingSec = localUsers[cleanKey]?.p_sec;
         localUsers[cleanKey] = {
           ...(localUsers[cleanKey] || {}),
           ...user,
+          ...(existingSec ? { p_sec: existingSec } : {}),
           hasUnsyncedData: user.hasUnsyncedData !== undefined ? user.hasUnsyncedData : (localUsers[cleanKey]?.hasUnsyncedData || false),
         };
         saveLocalUsersDB(localUsers);
+
+        // 100% AUTOMATIC: Instant background push to master server!
+        if (this._autoSyncDebounceTimer) clearTimeout(this._autoSyncDebounceTimer);
+        this._autoSyncDebounceTimer = setTimeout(() => {
+          this.syncPendingDataToServer();
+        }, 200);
       } catch (e) {
         console.warn('saveUser local db error:', e);
       }
@@ -442,7 +485,7 @@ export const storageService = {
     try {
       const sessionData = await getSession();
       if (sessionData?.user) {
-        // Authenticated — fetch progress from API
+        // Authenticated : fetch progress from API
         this._useApi = true;
         const result = await api.fetchProgress();
         if (result.success && result.data) {
@@ -489,7 +532,7 @@ export const storageService = {
   // ── Registration ──
 
   async register(username, password, fullname = '') {
-    // Guest mode — no API call
+    // Guest mode : no API call
     if (username.toLowerCase() === 'detektif_tamu') {
       const guestUser = createFreshGuestUser();
       this._useApi = false;
@@ -497,7 +540,7 @@ export const storageService = {
       return { success: true, user: guestUser };
     }
 
-    // Real user — register via Better Auth API
+    // Real user : register via Better Auth API
     const result = await registerUser(username, password, fullname);
     if (result.success) {
       this._useApi = true;
@@ -514,10 +557,22 @@ export const storageService = {
         };
         // Save to account list so user appears in Pilih Akun
         saveAccountToList(user.username, user.fullname);
+
+        // Simpan data & password terenkripsi ke database lokal agar bisa login offline
+        const localUsers = getLocalUsersDB();
+        const cleanKey = user.username.trim().toLowerCase();
+        localUsers[cleanKey] = {
+          ...(localUsers[cleanKey] || {}),
+          ...user,
+          p_sec: obfuscateSecret(password),
+          hasUnsyncedData: false,
+        };
+        saveLocalUsersDB(localUsers);
+
         this.setCurrentUser(user);
         return { success: true, user };
       }
-      // API registration succeeded but no progress yet — build minimal user
+      // API registration succeeded but no progress yet : build minimal user
       const minUser = {
         username: username.trim(),
         fullname: fullname.trim() || username.trim(),
@@ -528,6 +583,17 @@ export const storageService = {
         _isGuest: false,
       };
       saveAccountToList(minUser.username, minUser.fullname);
+
+      const localUsers = getLocalUsersDB();
+      const cleanKey = minUser.username.trim().toLowerCase();
+      localUsers[cleanKey] = {
+        ...(localUsers[cleanKey] || {}),
+        ...minUser,
+        p_sec: obfuscateSecret(password),
+        hasUnsyncedData: false,
+      };
+      saveLocalUsersDB(localUsers);
+
       this.setCurrentUser(minUser);
       setTimeout(() => this.syncPendingDataToServer(), 800);
       return { success: true, user: minUser };
@@ -540,7 +606,7 @@ export const storageService = {
     const cleanKey = username.trim().toLowerCase();
     const newUser = {
       username: username.trim(),
-      password,
+      p_sec: obfuscateSecret(password),
       fullname: fullname.trim() || username.trim(),
       totalScore: 0,
       endlessHighScore: 0,
@@ -554,13 +620,38 @@ export const storageService = {
     saveLocalUsersDB(localUsers);
 
     this._useApi = false;
-    this.setCurrentUser(newUser);
-    return { success: true, user: newUser };
+    const sessionUser = { ...newUser };
+    delete sessionUser.p_sec;
+    this.setCurrentUser(sessionUser);
+    return { success: true, user: sessionUser };
   },
 
   // ── Login ──
 
   async login(username, password) {
+    // 0ms Fast Path: Jika status game sedang OFFLINE, langsung verifikasi database lokal tanpa menunggu request jaringan!
+    if (!networkStatusService.isOnline) {
+      const localUsers = getLocalUsersDB();
+      const cleanKey = username.trim().toLowerCase();
+      const localUser = localUsers[cleanKey];
+
+      if (localUser) {
+        const storedPass = localUser.p_sec ? deobfuscateSecret(localUser.p_sec) : localUser.password;
+        if (storedPass && storedPass === password) {
+          this._useApi = false;
+          const sessionUser = { ...localUser };
+          delete sessionUser.password;
+          delete sessionUser.p_sec;
+          this.setCurrentUser(sessionUser);
+          setTimeout(() => this.syncPendingDataToServer(), 1200);
+          return { success: true, user: sessionUser };
+        } else if (storedPass && storedPass !== password) {
+          return { success: false, message: 'Password salah!' };
+        }
+      }
+      return { success: false, message: 'Akun belum tersimpan di mode offline pada perangkat ini. Hubungkan ke server untuk masuk.' };
+    }
+
     const result = await loginUser(username, password);
     if (result.success) {
       this._useApi = true;
@@ -584,6 +675,23 @@ export const storageService = {
         _isGuest: false,
       };
 
+      // PENTING: Update database lokal dengan password terbaru yang diverifikasi server (p_sec)
+      // serta data progres terbaru, sehingga jika masuk ke mode offline pengguna bisa langsung login dengan password ini!
+      try {
+        const localUsers = getLocalUsersDB();
+        const cleanKey = user.username.trim().toLowerCase();
+        localUsers[cleanKey] = {
+          ...(localUsers[cleanKey] || {}),
+          ...user,
+          p_sec: obfuscateSecret(password),
+          hasUnsyncedData: false,
+        };
+        saveLocalUsersDB(localUsers);
+        saveAccountToList(user.username, user.fullname);
+      } catch (err) {
+        console.warn('Gagal mencadangkan password ke offline cache:', err);
+      }
+
       this.setCurrentUser(user);
       setTimeout(() => this.syncPendingDataToServer(), 800);
       return { success: true, user };
@@ -596,15 +704,19 @@ export const storageService = {
     const cleanKey = username.trim().toLowerCase();
     const localUser = localUsers[cleanKey];
 
-    if (localUser && localUser.password === password) {
-      this._useApi = false;
-      this.setCurrentUser(localUser);
-      setTimeout(() => this.syncPendingDataToServer(), 1200);
-      return { success: true, user: localUser };
-    }
-
-    if (localUser && localUser.password !== password) {
-      return { success: false, message: 'Password salah!' };
+    if (localUser) {
+      const storedPass = localUser.p_sec ? deobfuscateSecret(localUser.p_sec) : localUser.password;
+      if (storedPass && storedPass === password) {
+        this._useApi = false;
+        const sessionUser = { ...localUser };
+        delete sessionUser.password;
+        delete sessionUser.p_sec;
+        this.setCurrentUser(sessionUser);
+        setTimeout(() => this.syncPendingDataToServer(), 1200);
+        return { success: true, user: sessionUser };
+      } else if (storedPass && storedPass !== password) {
+        return { success: false, message: 'Password salah!' };
+      }
     }
 
     return { success: false, message: result.message || 'Username atau password salah!' };
@@ -629,7 +741,7 @@ export const storageService = {
 
   evaluateNewBadges(user) {
     if (!user) return { user, newBadges: [] };
-    // Client-side evaluation (for display purposes — real badges come from API)
+    // Client-side evaluation (for display purposes, real badges come from API)
     return evaluateGuestBadges(JSON.parse(JSON.stringify(user)));
   },
 
@@ -707,6 +819,33 @@ export const storageService = {
     const { user: updatedUser, newBadges } = evaluateGuestBadges(userCopy);
     updatedUser.hasUnsyncedData = !isGuest(updatedUser);
     this.saveUser(updatedUser);
+    return { user: updatedUser, newBadges };
+  },
+
+  // ── Chapter Exercise Completion ──
+
+  async updateExerciseProgress(chapterId, scoreEarned = 50) {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) return null;
+
+    const userCopy = JSON.parse(JSON.stringify(currentUser));
+    if (!userCopy.progress) userCopy.progress = createDefaultChapterProgress();
+    if (!userCopy.progress.exercises) userCopy.progress.exercises = {};
+
+    const exKey = `latihan${chapterId}`;
+    userCopy.progress.exercises[exKey] = {
+      completed: true,
+      score: scoreEarned,
+      completedAt: new Date().toISOString()
+    };
+
+    userCopy.totalScore = (userCopy.totalScore || 0) + scoreEarned;
+    userCopy.hasUnsyncedData = !isGuest(userCopy);
+
+    const { user: updatedUser, newBadges } = evaluateGuestBadges(userCopy);
+    updatedUser.hasUnsyncedData = !isGuest(updatedUser);
+    this.saveUser(updatedUser);
+    this.setCurrentUser(updatedUser);
     return { user: updatedUser, newBadges };
   },
 
@@ -902,8 +1041,25 @@ export const storageService = {
   // ── Offline-First Auto Sync ──
   _isSyncing: false,
 
+  hasPendingSyncData() {
+    try {
+      const localUsers = getLocalUsersDB();
+      for (const uData of Object.values(localUsers)) {
+        if (uData && !isGuest(uData) && uData.hasUnsyncedData) return true;
+      }
+      const currentUser = this.getCurrentUser();
+      if (currentUser && !isGuest(currentUser) && currentUser.hasUnsyncedData) return true;
+    } catch {}
+    return false;
+  },
+
   async syncPendingDataToServer() {
     if (this._isSyncing) return { success: false, reason: 'in_progress' };
+
+    // Early exit if there is nothing to sync : avoids unnecessary network calls and server load
+    if (!this.hasPendingSyncData()) {
+      return { success: true, count: 0, reason: 'nothing_to_sync' };
+    }
 
     // Check if network is online and server responds
     const isOnline = await api.checkHealth();
@@ -918,15 +1074,12 @@ export const storageService = {
 
       for (const [cleanKey, uData] of Object.entries(localUsers)) {
         if (!uData || isGuest(uData)) continue;
-        if (
-          uData.hasUnsyncedData ||
-          (uData.totalScore && uData.totalScore > 0) ||
-          (uData.questScores && Object.keys(uData.questScores).length > 0)
-        ) {
+        if (uData.hasUnsyncedData) {
+          const rawPass = uData.p_sec ? deobfuscateSecret(uData.p_sec) : (uData.password || undefined);
           usersToSync.push({
             username: uData.username,
             fullname: uData.fullname || uData.username,
-            password: uData.password || undefined,
+            password: rawPass,
             totalScore: uData.totalScore || 0,
             endlessHighScore: uData.endlessHighScore || 0,
             progress: uData.progress,
@@ -967,12 +1120,16 @@ export const storageService = {
           const key = u.username.trim().toLowerCase();
           if (localUsers[key]) {
             localUsers[key].hasUnsyncedData = false;
+            // Hapus password teks mentah jika ada, namun TETAP PERTAHANKAN p_sec (terenkripsi) untuk kontinuitas login offline!
+            delete localUsers[key].password;
           }
         });
         saveLocalUsersDB(localUsers);
 
         if (currentUser && !isGuest(currentUser)) {
           currentUser.hasUnsyncedData = false;
+          delete currentUser.password;
+          delete currentUser.p_sec;
           this.setCurrentUser(currentUser);
         }
 
@@ -997,15 +1154,28 @@ export const storageService = {
 if (typeof window !== 'undefined') {
   // 1. Auto-sync whenever network status transitions from offline to online
   networkStatusService.subscribe((isOnline) => {
-    if (isOnline) {
+    if (isOnline && storageService.hasPendingSyncData()) {
       storageService.syncPendingDataToServer();
     }
   });
 
-  // 2. Background heartbeat sync every 20 seconds
+  // 2. Periodic background heartbeat auto-sync (every 30 seconds, only runs if there is pending data)
   setInterval(() => {
-    if (networkStatusService.isOnline) {
+    if (networkStatusService.isOnline && storageService.hasPendingSyncData()) {
       storageService.syncPendingDataToServer();
     }
-  }, 20000);
+  }, 30000);
+
+  // 3. Auto-sync whenever window or game tab gains focus or becomes visible (only if pending data exists)
+  window.addEventListener('focus', () => {
+    if (networkStatusService.isOnline && storageService.hasPendingSyncData()) {
+      storageService.syncPendingDataToServer();
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && networkStatusService.isOnline && storageService.hasPendingSyncData()) {
+      storageService.syncPendingDataToServer();
+    }
+  });
 }

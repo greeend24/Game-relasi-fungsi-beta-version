@@ -57,6 +57,7 @@ const config = {
 
   // Windows build target: generates both win-unpacked directory and nsis installer
   win: {
+    icon: 'electron-assets/icon.ico',
     target: [
       { target: 'dir', arch: ['x64'] },
       { target: 'nsis', arch: ['x64'] }

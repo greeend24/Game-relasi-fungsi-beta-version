@@ -1,0 +1,2749 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Rekap Nilai Siswa : Game Relasi & Fungsi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- QR Code Library (Local offline + CDN fallback) -->
+  <script src="/admin/qrcode.min.js"></script>
+  <script>
+    if (typeof QRCode === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>');
+    }
+  </script>
+  <style>
+    :root {
+      --bg-main: #FDFBF7;
+      --card-bg: #FFFFFF;
+      --border-color: #2D241E;
+      --text-main: #2D241E;
+      --text-muted: #64748B;
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --accent: #F59E0B;
+      --accent-light: #FEF3C7;
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --shadow-solid: 3px 4px 0px #2D241E;
+      --shadow-solid-sm: 2px 2px 0px #2D241E;
+      --shadow-solid-lg: 5px 6px 0px #2D241E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, .heading-font {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .container {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px 32px;
+      box-shadow: var(--shadow-solid);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-title h1 {
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-export {
+      background: #10B981;
+      color: white;
+      text-decoration: none;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 22px;
+      border-radius: 16px;
+      border: 2.5px solid var(--border-color);
+      box-shadow: var(--shadow-solid-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-export:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 3px 5px 0px #2D241E;
+    }
+
+    /* ── Launch Game Button ── */
+    .btn-launch {
+      background: linear-gradient(135deg, #6366F1 0%, #4F46E5 50%, #4338CA 100%);
+      color: #FFFFFF;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 11px 22px;
+      border-radius: 16px;
+      border: 2.5px solid var(--border-color);
+      box-shadow: var(--shadow-solid-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .btn-launch:hover {
+      background: linear-gradient(135deg, #4F46E5 0%, #4338CA 50%, #3730A3 100%);
+      transform: translateY(-2px);
+      box-shadow: 3px 5px 0px #2D241E;
+    }
+
+    .btn-launch:active {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 0px #2D241E;
+    }
+
+    .status-indicator-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,0.3);
+      display: inline-block;
+      transition: background-color 0.25s ease;
+    }
+
+    .dot-offline {
+      background: #94A3B8;
+    }
+
+    .dot-online {
+      background: #10B981;
+      box-shadow: 0 0 8px #34D399;
+      animation: pulse-dot 1.8s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ── Launch Modal Dialog ── */
+    .launch-dialog {
+      background: var(--card-bg);
+      border: 3.5px solid var(--border-color);
+      border-radius: 28px;
+      max-width: 680px;
+      width: 100%;
+      box-shadow: var(--shadow-solid-lg);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .launch-dialog {
+      transform: scale(1);
+    }
+
+    .launch-alert-card {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: white;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow-solid-sm);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .badge-status-online {
+      background: #D1FAE5;
+      color: #065F46;
+      border: 1.5px solid #10B981;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+
+    .badge-status-offline {
+      background: #F1F5F9;
+      color: #64748B;
+      border: 1.5px solid #CBD5E1;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+
+    /* ── Student Online / Offline Badges ── */
+    .badge-status-student-online {
+      background: #DEF7EC;
+      color: #03543F;
+      border: 1.5px solid #31C48D;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3.5px 9px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(16, 185, 129, 0.15);
+    }
+
+    .badge-status-student-offline {
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1.5px solid #F87171;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3.5px 9px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    /* ── Student Online / Offline Indicator Lights (No Text) ── */
+    .status-light {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: help;
+      transition: transform 0.15s ease;
+      vertical-align: middle;
+    }
+    .status-light:hover {
+      transform: scale(1.2);
+    }
+    .status-light-online {
+      background: #DEF7EC;
+      border: 1.5px solid #31C48D;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.45);
+    }
+    .status-light-offline {
+      background: #FEE2E2;
+      border: 1.5px solid #F87171;
+    }
+
+    .pulse-dot-online {
+      width: 9px;
+      height: 9px;
+      background-color: #10B981;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-green 1.8s infinite;
+    }
+
+    .dot-offline-red {
+      width: 9px;
+      height: 9px;
+      background-color: #EF4444;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    @keyframes pulse-green {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 5px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .btn-action {
+      background: #F1F5F9;
+      color: var(--text-main);
+      border: 2px solid var(--border-color);
+      padding: 10px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 2px 2px 0px #2D241E;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action:hover {
+      background: #E2E8F0;
+      transform: translateY(-1px);
+    }
+
+    .btn-logout {
+      background: #FEE2E2;
+      color: #991B1B;
+      border-color: var(--border-color);
+    }
+    .btn-logout:hover {
+      background: #FECACA;
+    }
+
+    .btn-del-row {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: 1.5px solid #EF4444;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-del-row:hover {
+      background: #DC2626;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .btn-profile-row {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1.5px solid #3B82F6;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-profile-row:hover {
+      background: #2563EB;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .btn-reset-all {
+      background: #FFF1F2;
+      color: #E11D48;
+      border: 2px solid var(--border-color);
+      padding: 10px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 2px 2px 0px var(--border-color);
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .btn-reset-all:hover {
+      background: #FFE4E6;
+      transform: translateY(-1px);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow-solid-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.25;
+    }
+
+    .stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 4px;
+      color: var(--text-main);
+      line-height: 1.15;
+    }
+
+    /* Table Section */
+    .card-table {
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 24px;
+      box-shadow: var(--shadow-solid);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-toolbar {
+      padding: 20px 24px;
+      border-bottom: 2px solid #E2E8F0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .search-input {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      font-family: inherit;
+      font-size: 14px;
+      width: 340px;
+      max-width: 100%;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      max-height: 650px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    thead {
+      background: #F8FAFC;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    th {
+      padding: 13px 14px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: #334155;
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    tr:hover td {
+      background-color: #F8FAFC;
+    }
+
+    /* Clickable User Pill */
+    .user-pill {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      padding: 3px 6px;
+      border-radius: 8px;
+    }
+    .user-pill:hover {
+      background: #F1F5F9;
+    }
+    .user-pill:hover .name {
+      color: var(--primary);
+    }
+    .user-pill:hover .uname {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .user-pill .name {
+      font-weight: 800;
+      font-size: 13.5px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .user-pill .uname {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ID Pill */
+    .id-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      background: #F1F5F9;
+      color: #334155;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #CBD5E1;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      max-width: 130px;
+    }
+    .id-pill:hover {
+      background: #E2E8F0;
+      border-color: #94A3B8;
+    }
+
+    /* Password Cell */
+    .pass-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #FEF3C7;
+      border: 1px solid #F59E0B;
+      color: #92400E;
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-weight: 700;
+    }
+    .pass-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      opacity: 0.7;
+      padding: 1px 3px;
+      border-radius: 4px;
+    }
+    .pass-icon-btn:hover {
+      opacity: 1;
+      background: rgba(0,0,0,0.06);
+    }
+
+    /* Playtime Badge */
+    .playtime-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      background: #F3E8FF;
+      color: #6B21A8;
+      border: 1px solid #D8B4FE;
+      white-space: nowrap;
+    }
+
+    .th-sub {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748B;
+      margin-top: 2px;
+      letter-spacing: 0.2px;
+    }
+
+    /* Subbab badges */
+    .subbab-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .badge-stage {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+      background: #F1F5F9;
+      color: #475569;
+      border: 1px solid #CBD5E1;
+      width: fit-content;
+    }
+
+    .badge-quest {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      width: fit-content;
+    }
+
+    .badge-quest.scored {
+      background: #DEF7EC;
+      color: #03543F;
+      border: 1px solid #31C48D;
+    }
+
+    .badge-quest.empty {
+      color: #94A3B8;
+      font-size: 10.5px;
+      font-style: italic;
+    }
+
+    /* Role Badges & Actions */
+    .badge-role-admin {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      color: #92400E;
+      border: 1.5px solid #F59E0B;
+      box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);
+      white-space: nowrap;
+    }
+
+    .badge-role-student {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      background: #F1F5F9;
+      color: #475569;
+      border: 1.5px solid #CBD5E1;
+      white-space: nowrap;
+    }
+
+    .btn-role-action {
+      background: white;
+      border: 1.5px solid #94A3B8;
+      border-radius: 7px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-role-action.promote {
+      color: #15803D;
+      border-color: #86EFAC;
+      background: #F0FDF4;
+    }
+    .btn-role-action.promote:hover {
+      background: #DCFCE7;
+      border-color: #22C55E;
+      transform: scale(1.03);
+    }
+    .btn-role-action.demote {
+      color: #B91C1C;
+      border-color: #FCA5A5;
+      background: #FEF2F2;
+    }
+    .btn-role-action.demote:hover {
+      background: #FEE2E2;
+      border-color: #EF4444;
+      transform: scale(1.03);
+    }
+
+    .badge-score-total {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .badge-endless {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #D97706;
+    }
+
+    .empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* ── Login Modal Overlay ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 36, 30, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .login-box {
+      background: var(--card-bg);
+      border: 3.5px solid var(--border-color);
+      border-radius: 28px;
+      padding: 36px 32px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: var(--shadow-solid-lg);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .login-box {
+      transform: scale(1);
+    }
+
+    .login-icon {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .login-box h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .login-box p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2.5px solid var(--border-color);
+      border-radius: 16px;
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      box-shadow: 2px 2px 0px var(--border-color);
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .login-input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-login {
+      background: var(--primary);
+      color: white;
+      border: 2.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 24px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: var(--shadow-solid-sm);
+      transition: all 0.15s ease;
+    }
+
+    .btn-login:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 3px 4px 0px var(--border-color);
+    }
+
+    .login-error {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1.5px solid var(--danger);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* ── Profile Detail Modal ── */
+    .profile-dialog {
+      background: var(--card-bg);
+      border: 3.5px solid var(--border-color);
+      border-radius: 28px;
+      max-width: 820px;
+      width: 100%;
+      box-shadow: var(--shadow-solid-lg);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .profile-dialog {
+      transform: scale(1);
+    }
+
+    .profile-header {
+      padding: 22px 28px;
+      background: #F8FAFC;
+      border-bottom: 2.5px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .profile-body {
+      padding: 24px 28px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Giant Playtime Highlight Card */
+    .playtime-hero-card {
+      background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+      color: white;
+      border: 3px solid var(--border-color);
+      border-radius: 20px;
+      padding: 20px 24px;
+      box-shadow: 3px 4px 0px var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .playtime-hero-card .hero-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #DDD6FE;
+    }
+
+    .playtime-hero-card .hero-time {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-top: 4px;
+    }
+
+    .playtime-hero-card .hero-sub {
+      font-size: 12.5px;
+      color: #C4B5FD;
+      margin-top: 4px;
+    }
+
+    /* Detail Grid Cards */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-card .d-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .detail-card .d-val {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Subbab Progress Cards in Modal */
+    .subbab-grid-modal {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+    }
+
+    .subbab-modal-card {
+      background: white;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .subbab-modal-card.active-cleared {
+      border-color: #31C48D;
+      background: #F4FDF8;
+    }
+
+    .subbab-modal-card .sm-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .btn-copy-chip {
+      background: white;
+      border: 1.5px solid #94A3B8;
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #475569;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .btn-copy-chip:hover {
+      background: #F1F5F9;
+      border-color: #475569;
+    }
+
+    .toast-copy {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10B981;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13.5px;
+      box-shadow: 2px 4px 10px rgba(0,0,0,0.25);
+      z-index: 100000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .toast-copy.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Student Access & QR Code Card ── */
+    .access-qr-card {
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow-solid);
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 28px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 960px) {
+      .access-qr-card {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+      .qr-controls-info {
+        width: 100%;
+      }
+      .qr-tabs {
+        justify-content: center;
+      }
+    }
+
+    .qr-box-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qr-frame {
+      background: #FFFFFF;
+      border: 3px solid var(--border-color);
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: var(--shadow-solid-sm);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .qr-frame:hover {
+      transform: translateY(-2px);
+      box-shadow: 4px 5px 0px var(--border-color);
+    }
+
+    .qr-frame canvas, .qr-frame img {
+      display: block;
+      border-radius: 8px;
+    }
+
+    .qr-badge-scan {
+      background: #EEF2FF;
+      color: #4338CA;
+      border: 1.5px solid #C7D2FE;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qr-controls-info {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .qr-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .qr-tab-btn {
+      background: #F1F5F9;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      color: var(--text-main);
+    }
+
+    .qr-tab-btn:hover {
+      background: #E2E8F0;
+    }
+
+    .qr-tab-btn.active {
+      background: #4F46E5;
+      color: #FFFFFF;
+      box-shadow: var(--shadow-solid-sm);
+      transform: translateY(-1px);
+    }
+
+    .qr-input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .qr-url-input {
+      flex: 1;
+      min-width: 280px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 10px 14px;
+      background: #F8FAFC;
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      color: #1E293B;
+      box-shadow: 2px 2px 0px rgba(0,0,0,0.06);
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .qr-url-input:focus {
+      outline: none;
+      border-color: #4F46E5;
+      background: #FFFFFF;
+    }
+
+    /* ── Fullscreen QR Projector Modal (Glassmorphic) ── */
+    #qrProjectorModal {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .qr-projector-dialog {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      border-radius: 32px;
+      max-width: 520px;
+      width: 100%;
+      padding: 28px 30px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.active .qr-projector-dialog {
+      transform: scale(1);
+    }
+
+    .glass-projector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .glass-badge-pill {
+      background: rgba(79, 70, 229, 0.1);
+      color: #4F46E5;
+      border: 1px solid rgba(199, 210, 254, 0.8);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      width: fit-content;
+    }
+
+    .btn-glass-close {
+      background: rgba(241, 245, 249, 0.9);
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      color: #334155;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .btn-glass-close:hover {
+      background: #E2E8F0;
+      color: #0F172A;
+      transform: translateY(-1px);
+    }
+
+    .glass-qr-box {
+      background: #FFFFFF;
+      border: 2px solid rgba(226, 232, 240, 0.9);
+      border-radius: 22px;
+      padding: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .glass-qr-box:hover {
+      transform: scale(1.02);
+      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.15);
+    }
+
+    .glass-url-card {
+      width: 100%;
+      background: rgba(248, 250, 252, 0.85);
+      border: 1.5px solid rgba(203, 213, 225, 0.6);
+      border-radius: 16px;
+      padding: 12px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .glass-btn-primary {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: white;
+      border: 1.5px solid #059669;
+      border-radius: 14px;
+      padding: 10px 20px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      transition: all 0.15s ease;
+    }
+
+    .glass-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    .glass-btn-secondary {
+      background: #FFFFFF;
+      color: #1E293B;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 14px;
+      padding: 10px 20px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.15s ease;
+    }
+
+    .glass-btn-secondary:hover {
+      background: #F8FAFC;
+      border-color: #94A3B8;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="copyToast" class="toast-copy">✅ Berhasil disalin ke clipboard!</div>
+
+  <!-- Login Modal (Active by default until authenticated) -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="login-box">
+      <div class="login-icon">🔐</div>
+      <div>
+        <h2>Akses Administrator Game</h2>
+        <p>Halaman ini dilindungi. Masukkan password admin untuk melihat data akun, kata sandi, dan lama waktu bermain siswa.</p>
+      </div>
+
+      <div id="loginError" class="login-error">Password salah! Silakan coba lagi.</div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 14px;">
+        <input
+          type="password"
+          id="adminPasswordInput"
+          class="login-input"
+          placeholder="Masukkan password admin..."
+          required
+          autocomplete="current-password"
+        />
+        <button type="submit" class="btn-login">
+          Buka Dashboard 🚀
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student Profile Detail Modal ("ketika profilnya di pencet") -->
+  <div id="profileModal" class="modal-overlay">
+    <div class="profile-dialog">
+      <!-- Modal Header -->
+      <div class="profile-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-size: 34px; line-height: 1;">🕵️‍♂️</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <h2 id="modalStudentName" style="font-size: 20px; font-weight: 800;">Nama Siswa</h2>
+              <span id="modalStudentStatusBadge"></span>
+            </div>
+            <p id="modalStudentUname" style="font-size: 13px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">@username</p>
+          </div>
+        </div>
+        <button class="btn-action" onclick="closeProfileModal()" style="padding: 6px 14px; font-weight: 800;">✕ Tutup [Esc]</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="profile-body">
+        
+        <!-- 1. HERO CARD: LAMA WAKTU BERMAIN -->
+        <div class="playtime-hero-card">
+          <div>
+            <div class="hero-label">⏱️ Total Lama Waktu Bermain Siswa</div>
+            <div class="hero-time" id="modalPlayTime">0 Jam 0 Menit</div>
+            <div class="hero-sub" id="modalPlayTimeSub">Total Waktu: 0 detik</div>
+          </div>
+          <div style="text-align: right;">
+            <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 12px; font-size: 13px; font-weight: 800;">
+              🎮 Aktivitas Game
+            </span>
+          </div>
+        </div>
+
+        <!-- 2. CREDENTIALS & IDENTIFIER GRID -->
+        <div class="detail-grid">
+          <div class="detail-card">
+            <span class="d-label">🆔 ID Database Akun</span>
+            <div class="d-val">
+              <span id="modalId" style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; word-break: break-all;">-</span>
+              <button class="btn-copy-chip" onclick="copyModalId()">📋 Salin</button>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <span class="d-label">🔑 Kata Sandi (Password)</span>
+            <div class="d-val">
+              <span id="modalPassword" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #B45309;">-</span>
+              <div style="display: flex; gap: 4px;">
+                <button class="btn-copy-chip" onclick="copyModalPassword()">📋 Salin</button>
+                <button class="btn-copy-chip" onclick="editModalPassword()" style="background:#FEF3C7; color:#B45309; border-color:#F59E0B;">✏️ Ubah</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <span class="d-label">📅 Tanggal Terdaftar</span>
+            <div class="d-val">
+              <span id="modalCreatedAt" style="font-size: 13px;">-</span>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <span class="d-label">🏆 Total Skor Game</span>
+            <div class="d-val" style="color: var(--primary);">
+              <span id="modalTotalScore">-</span> PTS
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <span class="d-label">🚀 Endless High Score</span>
+            <div class="d-val" style="color: #D97706;">
+              <span id="modalEndless">-</span>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <span class="d-label">🌟 Total Bab Tamat</span>
+            <div class="d-val">
+              <span id="modalChaptersCompleted">-</span> / 5 Bab
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; margin-top: 3px;">
+              <span id="modalStagesCompleted">-</span> / 44 Segmen Materi
+            </div>
+          </div>
+
+          <div class="detail-card" id="modalRoleCard">
+            <span class="d-label">👑 Hak Akses Akun</span>
+            <div class="d-val">
+              <span id="modalRoleBadge">-</span>
+              <button id="modalBtnToggleRole" class="btn-copy-chip" onclick="toggleModalStudentAdmin()" style="font-weight: 800;">
+                Ubah Role
+              </button>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 3px;">
+              Admin dapat membuka semua bab & fitur khusus
+            </div>
+          </div>
+
+          <div class="detail-card" id="modalStatusCard">
+            <span class="d-label">📡 Status Koneksi Game</span>
+            <div class="d-val" id="modalConnectionStatus">
+              -
+            </div>
+            <div id="modalLastActiveAgo" style="font-size: 11.5px; color: var(--text-muted); font-weight: 600; margin-top: 3px;">-</div>
+          </div>
+        </div>
+
+        <!-- 3. PROGRESS BAB 1 s/d 5 & NILAI UJIAN QUEST -->
+        <div>
+          <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+            <span>📊 Kemajuan Bab (1 s/d 5) & Nilai Ujian Quest</span>
+          </h3>
+          <div class="subbab-grid-modal" id="modalSubbabGrid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Launch Game & Server Status Modal -->
+  <div id="launchModal" class="modal-overlay">
+    <div class="launch-dialog">
+      <div class="profile-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-size: 34px; line-height: 1;">🚀</div>
+          <div>
+            <h2 style="font-size: 20px; font-weight: 800;">Game & Server Siap Digunakan!</h2>
+            <p style="font-size: 13px; color: var(--text-muted);">Kontrol Akses Siswa & Koneksi Online Game</p>
+          </div>
+        </div>
+        <button class="btn-action" onclick="closeLaunchModal()" style="padding: 6px 14px; font-weight: 800;">✕ Tutup [Esc]</button>
+      </div>
+
+      <div class="profile-body">
+        <!-- Notification banner that game was opened -->
+        <div id="launchAlertBanner" class="launch-alert-card">
+          <div style="font-size: 26px;">🎉</div>
+          <div>
+            <div style="font-weight: 800; font-size: 14px;" id="launchBannerTitle">Tab Game Telah Dibuka Otomatis!</div>
+            <div style="font-size: 12.5px; opacity: 0.9;" id="launchBannerSub">Kamu bisa langsung memainkan game di tab baru browsermu.</div>
+          </div>
+        </div>
+
+        <!-- Links Grid -->
+        <div class="detail-grid">
+          <!-- Public Student Link -->
+          <div class="detail-card" style="grid-column: 1 / -1; background: #F0FDF4; border-color: #86EFAC;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="d-label" style="color: #166534; font-weight: 800;">🌐 LINK AKSES SISWA (INTERNET / HP / LAPTOP DI RUMAH)</span>
+              <span id="badgeTunnelStatus" class="badge-status-online">🟢 ONLINE</span>
+            </div>
+            <div style="margin: 6px 0;">
+              <input type="text" id="inputPublicUrl" readonly value="https://scooter-thickness-stony.ngrok-free.dev"
+                style="width: 100%; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; background: #FFFFFF; border: 2px solid #86EFAC; border-radius: 10px; color: #166534;" />
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+              <button class="btn-export" style="padding: 8px 16px; font-size: 13px;" onclick="copyPublicUrl()">
+                📋 Salin Link Siswa
+              </button>
+              <button class="btn-action" style="padding: 8px 16px; font-size: 13px;" onclick="openPublicUrl()">
+                📲 Buka Link Siswa di Tab Baru
+              </button>
+            </div>
+            <p style="font-size: 11.5px; color: #15803D; margin-top: 6px;">
+              💡 <em>Bagikan link ini ke grup WhatsApp / Google Classroom kelas. Siswa tinggal klik untuk langsung bermain tanpa perlu install apa pun.</em>
+            </p>
+          </div>
+
+          <!-- Local Link -->
+          <div class="detail-card" style="grid-column: 1 / -1;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="d-label">💻 LINK LOKAL</span>
+              <span class="badge-stage" style="background: #E2E8F0;">Lokal</span>
+            </div>
+            <div style="margin: 6px 0;">
+              <input type="text" id="inputLocalUrl" readonly value="http://localhost:3001"
+                style="width: 100%; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 10px; color: #334155;" />
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+              <button class="btn-action" style="padding: 8px 16px; font-size: 13px;" onclick="openLocalUrl()">
+                🎮 Buka Game Lokal
+              </button>
+              <button class="btn-copy-chip" style="padding: 8px 14px;" onclick="copyLocalUrl()">
+                📋 Salin Link Lokal
+              </button>
+            </div>
+          </div>
+          <!-- QR Code Section in Launch Modal -->
+          <div class="detail-card" style="grid-column: 1 / -1; background: #EEF2FF; border-color: #A5B4FC; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+            <div id="modalLaunchQrCode" class="qr-frame" style="width: 140px; height: 140px; padding: 6px; flex-shrink: 0;" onclick="openQrProjectorModal()" title="Klik untuk perbesar ke layar penuh"></div>
+            <div style="flex: 1; min-width: 220px;">
+              <span class="qr-badge-scan">📱 Scan QR Code Siswa</span>
+              <h4 style="font-size: 15px; font-weight: 800; color: #312E81; margin-top: 4px;">Langsung Masuk Game via Smartphone</h4>
+              <p style="font-size: 12px; color: #4338CA; margin-top: 2px;">
+                Minta siswa mengarahkan kamera HP/tablet ke kode QR di samping untuk langsung mulai mengerjakan soal.
+              </p>
+              <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                <button class="btn-copy-chip" onclick="openQrProjectorModal()" style="font-weight: 800;">
+                  🔍 Tampilkan Ukuran Penuh (Proyektor)
+                </button>
+                <button class="btn-copy-chip" onclick="downloadQrCode()" style="font-weight: 800;">
+                  💾 Unduh Gambar QR (.PNG)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Control buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1.5px solid #E2E8F0; flex-wrap: wrap; gap: 10px;">
+          <button id="btnStopTunnel" class="btn-action btn-logout" onclick="stopOnlineTunnel()" style="font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+            ⏹️ Matikan Koneksi Internet (Stop Ngrok)
+          </button>
+          <button class="btn-action" onclick="closeLaunchModal()" style="font-weight: 800;">
+            ✓ Selesai & Kembali ke Rekap Nilai
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen QR Code Projector Modal (Glassmorphic) -->
+  <div id="qrProjectorModal" class="modal-overlay">
+    <div class="qr-projector-dialog">
+      <!-- Header -->
+      <div class="glass-projector-header">
+        <div style="text-align: left;">
+          <span class="glass-badge-pill">📱 PANDUAN AKSES SISWA</span>
+          <h2 style="font-size: 20px; font-weight: 800; color: #1E293B; margin-top: 4px;">Scan QR Code untuk Masuk Game</h2>
+        </div>
+        <button class="btn-glass-close" onclick="closeQrProjectorModal()">✕ Tutup [Esc]</button>
+      </div>
+
+      <!-- QR Frame Box -->
+      <div class="glass-qr-box">
+        <div id="projectorQrCode"></div>
+      </div>
+
+      <!-- Active URL Box -->
+      <div class="glass-url-card">
+        <span style="font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.6px;">Link Akses Aktif Siswa:</span>
+        <div id="projectorUrlText" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 800; color: #4338CA; word-break: break-all;">-</div>
+        <span style="font-size: 12px; color: #64748B; margin-top: 2px;">
+          💡 <em>Arahkan kamera smartphone / tablet ke QR Code di atas untuk langsung membuka game.</em>
+        </span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%;">
+        <button class="glass-btn-primary" onclick="copyProjectorUrl()">
+          📋 Salin Link
+        </button>
+        <button class="glass-btn-secondary" onclick="downloadQrCode()">
+          💾 Unduh Gambar QR (.PNG)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Container -->
+  <div class="container" id="dashboardContainer">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <h1>🔍 Detektif Data : Panel Pengawas & Rekap Nilai</h1>
+        <p>Dashboard Rekapitulasi Kemajuan Belajar, Akun, & Nilai Ujian Siswa (Game Relasi & Fungsi)</p>
+      </div>
+      <div class="header-actions">
+        <button id="btnLaunchGame" class="btn-launch" onclick="launchGame()" title="Klik 1 kali untuk langsung mengaktifkan server internet Ngrok & kontrol link siswa">
+          <span class="btn-launch-icon">🌐</span>
+          <span id="btnLaunchText">Deploy / Aktifkan Ngrok</span>
+          <span id="launchDot" class="status-indicator-dot dot-offline" title="Status Server Online Ngrok"></span>
+        </button>
+        <button class="btn-action" onclick="loadAllData()">🔄 Refresh</button>
+        <button class="btn-export" onclick="downloadCsv()">
+          📥 Download Rekap Excel (.CSV)
+        </button>
+        <button class="btn-reset-all" onclick="resetAllStudents()">🗑️ Reset Semua Siswa</button>
+        <button class="btn-action btn-logout" onclick="logoutAdmin()">🔒 Kunci Panel</button>
+      </div>
+    </header>
+
+    <!-- ── Student Access Link & QR Code Card ── -->
+    <section class="access-qr-card">
+      <!-- Left: QR Code Box -->
+      <div class="qr-box-wrapper">
+        <div class="qr-frame" id="mainQrFrame" onclick="openQrProjectorModal()" title="Klik untuk memperbesar QR Code ke layar penuh (Mode Proyektor)">
+          <div id="studentQrCode"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+          <span class="qr-badge-scan">
+            <span class="status-indicator-dot dot-online" style="width: 8px; height: 8px;"></span>
+            Scan untuk Mainkan Game
+          </span>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-copy-chip" onclick="openQrProjectorModal()" title="Buka tampilan layar penuh untuk proyektor kelas">
+              🔍 Perbesar
+            </button>
+            <button class="btn-copy-chip" onclick="downloadQrCode()" title="Unduh gambar QR Code dalam format PNG">
+              💾 Unduh PNG
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Controls & URLs -->
+      <div class="qr-controls-info">
+        <div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+            <h2 style="font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+              <span>📱 Link Akses Siswa & QR Code</span>
+              <span id="qrActiveBadge" class="badge-status-student-online">🌐 Online (Ngrok)</span>
+            </h2>
+            <div class="qr-tabs">
+              <button class="qr-tab-btn active" id="tabPublic" onclick="switchQrSource('public')">🌐 Online (Ngrok)</button>
+              <button class="qr-tab-btn" id="tabLan" onclick="switchQrSource('lan')">📶 Wi-Fi Kelas / LAN</button>
+              <button class="qr-tab-btn" id="tabLocal" onclick="switchQrSource('local')">💻 Lokal</button>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+            Bagikan link atau tampilkan QR Code ini di proyektor kelas. Siswa cukup mengarahkan kamera HP/tablet untuk langsung bermain tanpa perlu install apa pun!
+          </p>
+        </div>
+
+        <div class="qr-input-group">
+          <input
+            type="text"
+            id="activeAccessUrlInput"
+            class="qr-url-input"
+            value="https://scooter-thickness-stony.ngrok-free.dev"
+            placeholder="https://scooter-thickness-stony.ngrok-free.dev"
+            oninput="handleManualQrInput(event)"
+          />
+          <button class="btn-export" onclick="copyActiveAccessUrl()" style="padding: 10px 18px; font-size: 14px;">
+            📋 Salin Link
+          </button>
+          <button class="btn-action" onclick="openActiveAccessUrl()" style="padding: 10px 18px; font-size: 14px; background: white;">
+            🚀 Buka Game
+          </button>
+        </div>
+
+        <div style="background: #F8FAFC; border: 1.5px dashed #CBD5E1; border-radius: 12px; padding: 10px 14px; font-size: 12px; color: #475569; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div>
+            💡 <strong>Tips Kelas:</strong>
+            <span id="qrTipText">Untuk kelas tatap muka, gunakan <strong>Wi-Fi Kelas</strong> agar siswa terkoneksi super cepat & tanpa kuota internet!</span>
+          </div>
+          <div id="lanIpBadgeWrapper" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #64748B;">
+            IP Laptop Guru: <strong id="lanIpTextDisplay">-</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Siswa Terdaftar</div>
+        <div class="stat-val" id="stat-total-students">-</div>
+      </div>
+      <div class="stat-card" style="border-color: #10B981; background: #F0FDF4;">
+        <div class="stat-label" style="color: #166534; font-weight: 800;">🟢 Siswa Online (Aktif)</div>
+        <div class="stat-val" id="stat-online-students" style="color: #15803D;">0</div>
+      </div>
+      <div class="stat-card" style="border-color: #F87171; background: #FEF2F2;">
+        <div class="stat-label" style="color: #991B1B; font-weight: 800;">🔴 Siswa Offline</div>
+        <div class="stat-val" id="stat-offline-students" style="color: #DC2626;">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-Rata Total Skor</div>
+        <div class="stat-val" id="stat-avg-score">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-Rata Endless Mode</div>
+        <div class="stat-val" id="stat-avg-endless">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ujian Quest Selesai</div>
+        <div class="stat-val" id="stat-total-quests">-</div>
+      </div>
+    </section>
+
+    <!-- Table Section -->
+    <section class="card-table">
+      <div class="table-toolbar">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800;">Daftar Siswa & Rincian Nilai</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            💡 <strong>Petunjuk:</strong> Klik <strong>Nama Siswa atau Username (@username)</strong> untuk melihat detail profil akun, waktu bermain, & kata sandi.
+          </p>
+        </div>
+        <input type="text" id="searchInput" class="search-input" placeholder="Cari nama, username, ID, atau password..." oninput="filterTable()" />
+      </div>
+
+      <div class="table-wrap">
+        <table id="studentsTable">
+          <thead>
+            <tr>
+              <th style="width: 40px;">No</th>
+              <th style="width: 50px; text-align: center;">Status</th>
+              <th>Nama Siswa & Role</th>
+              <th>Lama Main</th>
+              <th title="Bab 1: Pengertian & Cara Menyatakan Relasi (12 Segmen)">
+                <div>Bab 1</div>
+                <span class="th-sub">Relasi (12 Seg)</span>
+              </th>
+              <th title="Bab 2: Pengertian & Unsur Fungsi (10 Segmen)">
+                <div>Bab 2</div>
+                <span class="th-sub">Fungsi (10 Seg)</span>
+              </th>
+              <th title="Bab 3: Notasi & Rumus Fungsi (4 Segmen)">
+                <div>Bab 3</div>
+                <span class="th-sub">Rumus f(x) (4 Seg)</span>
+              </th>
+              <th title="Bab 4: Grafik Fungsi Linear (10 Segmen)">
+                <div>Bab 4</div>
+                <span class="th-sub">Grafik (10 Seg)</span>
+              </th>
+              <th title="Bab 5: Korespondensi Satu-Satu (8 Segmen)">
+                <div>Bab 5</div>
+                <span class="th-sub">Bijektif (8 Seg)</span>
+              </th>
+              <th>Endless</th>
+              <th>Total Skor</th>
+              <th style="width: 50px; text-align: center;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="12" class="empty-state">Memuat data siswa dari server...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'detektif_admin_secret_key';
+    let allStudents = [];
+    let selectedStudentForModal = null;
+    let revealedPasswords = new Set();
+
+    function getAdminKey() {
+      return sessionStorage.getItem(STORAGE_KEY) || '';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('copyToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(text, label = 'Teks') {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`✅ ${label} berhasil disalin!`);
+      }).catch(() => {
+        prompt('Salin manual teks ini:', text);
+      });
+    }
+
+    function showLoginModal(errorMsg = '') {
+      const modal = document.getElementById('loginModal');
+      const errBox = document.getElementById('loginError');
+      if (errorMsg) {
+        errBox.textContent = errorMsg;
+        errBox.style.display = 'block';
+      } else {
+        errBox.style.display = 'none';
+      }
+      modal.classList.add('active');
+      setTimeout(() => {
+        document.getElementById('adminPasswordInput')?.focus();
+      }, 100);
+    }
+
+    function hideLoginModal() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const input = document.getElementById('adminPasswordInput');
+      const pass = input.value.trim();
+      const errBox = document.getElementById('loginError');
+
+      if (!pass) return;
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pass }),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          sessionStorage.setItem(STORAGE_KEY, pass);
+          hideLoginModal();
+          input.value = '';
+          errBox.style.display = 'none';
+          loadAllData();
+        } else {
+          errBox.textContent = data.message || 'Password admin salah!';
+          errBox.style.display = 'block';
+          input.select();
+        }
+      } catch (err) {
+        errBox.textContent = 'Gagal menghubungi server backend!';
+        errBox.style.display = 'block';
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem(STORAGE_KEY);
+      showLoginModal('Panel berhasil dikunci.');
+    }
+
+    async function loadAllData() {
+      const key = getAdminKey();
+      if (!key) {
+        showLoginModal();
+        return;
+      }
+
+      checkTunnelStatus();
+
+      try {
+        // Load overview
+        const resOverview = await fetch('/api/admin/overview', {
+          headers: { 'x-admin-key': key },
+        });
+
+        if (resOverview.status === 401) {
+          sessionStorage.removeItem(STORAGE_KEY);
+          showLoginModal('Sesi berakhir atau password salah.');
+          return;
+        }
+
+        const dataOverview = await resOverview.json();
+        if (dataOverview.success && dataOverview.data) {
+          const d = dataOverview.data;
+          document.getElementById('stat-total-students').textContent = d.totalStudents;
+          const statOnline = document.getElementById('stat-online-students');
+          if (statOnline) statOnline.textContent = d.onlineStudentsCount ?? 0;
+          const statOffline = document.getElementById('stat-offline-students');
+          if (statOffline) statOffline.textContent = d.offlineStudentsCount ?? 0;
+          document.getElementById('stat-avg-score').textContent = d.averageScore.toLocaleString() + ' PTS';
+          document.getElementById('stat-avg-endless').textContent = d.averageEndless.toLocaleString();
+          document.getElementById('stat-total-quests').textContent = d.totalQuestExamsTaken;
+        }
+
+        // Load students
+        const resStudents = await fetch('/api/admin/students', {
+          headers: { 'x-admin-key': key },
+        });
+
+        if (resStudents.status === 401) {
+          sessionStorage.removeItem(STORAGE_KEY);
+          showLoginModal('Sesi berakhir atau password salah.');
+          return;
+        }
+
+        const dataStudents = await resStudents.json();
+        if (dataStudents.success && Array.isArray(dataStudents.data)) {
+          allStudents = dataStudents.data;
+          renderTable(allStudents);
+
+          // If modal is currently open, refresh its data
+          if (selectedStudentForModal) {
+            const updated = allStudents.find(s => s.id === selectedStudentForModal.id);
+            if (updated) openProfileModal(updated.id);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching admin data:', err);
+      }
+    }
+
+    function downloadCsv() {
+      const key = getAdminKey();
+      if (!key) {
+        showLoginModal('Silakan masukkan password admin terlebih dahulu.');
+        return;
+      }
+      window.open(`/api/admin/export-csv?key=${encodeURIComponent(key)}`, '_blank');
+    }
+
+    function togglePassword(idx) {
+      if (revealedPasswords.has(idx)) {
+        revealedPasswords.delete(idx);
+      } else {
+        revealedPasswords.add(idx);
+      }
+      filterTable();
+    }
+
+    function renderTable(students) {
+      const tbody = document.getElementById('tableBody');
+      if (!students || students.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" class="empty-state">Belum ada siswa yang mendaftar di game.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = students.map((s, idx) => {
+        const renderSubbab = (subId) => {
+          const ch = s.chaptersProgress ? s.chaptersProgress[subId] : null;
+          const info = CHAPTER_INFO[subId] || { totalSegs: 10 };
+          const maxSeg = info.totalSegs;
+          if (!ch) return `<div class="subbab-cell"><span class="badge-quest empty">0/${maxSeg}</span><span class="badge-quest empty">No Ujian</span></div>`;
+
+          const segCount = ch.starsCount || 0;
+          const isTamat = Boolean(ch.isStage21Completed || segCount >= maxSeg);
+
+          const stageLabel = isTamat
+            ? `<span class="badge-stage" style="background:#DEF7EC;color:#03543F;border-color:#31C48D;" title="Tamat seluruh ${maxSeg} segmen materi">✅ Tamat (${maxSeg}/${maxSeg})</span>`
+            : (segCount > 0
+              ? `<span class="badge-stage" title="${segCount} dari ${maxSeg} segmen materi selesai">${segCount}/${maxSeg} Segmen</span>`
+              : `<span class="badge-quest empty" title="Belum memulai materi">0/${maxSeg} Segmen</span>`);
+
+          const questBadge = ch.questScore !== null && ch.questScore !== undefined
+            ? `<span class="badge-quest scored" title="Nilai Ujian Quest: ${ch.questScore}/100 (Benar ${ch.questCorrectCount || 0}/30 soal)">🎯 ${ch.questScore}</span>`
+            : '<span class="badge-quest empty" title="Belum mengerjakan Ujian Quest">No Ujian</span>';
+
+          return `<div class="subbab-cell">${stageLabel}${questBadge}</div>`;
+        };
+
+        const statusBadge = s.isOnline
+          ? `<span class="status-light status-light-online" title="Online: Siswa sedang aktif terhubung (terakhir terlihat: ${escapeHtml(s.lastActiveAgo || 'baru saja')})"><span class="pulse-dot-online"></span></span>`
+          : `<span class="status-light status-light-offline" title="Offline (terakhir aktif: ${escapeHtml(s.lastActiveAgo || 'belum ada aktivitas')})"><span class="dot-offline-red"></span></span>`;
+
+        return `
+          <tr>
+            <td style="font-weight:700; color:var(--text-muted);">${idx + 1}</td>
+            <td style="text-align: center;">${statusBadge}</td>
+            <td>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <div class="user-pill" onclick="openProfileModal('${s.id}')" title="Klik untuk lihat detail profil & lama waktu bermain">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span class="name">🔍 ${escapeHtml(s.name)}</span>
+                    ${s.isAdmin ? `
+                      <span class="badge-role-admin" title="Memiliki hak akses Administrator game (semua bab terbuka)">👑 ADMIN</span>
+                    ` : `
+                      <span class="badge-role-student" title="Akun siswa biasa">🎓 Siswa</span>
+                    `}
+                  </div>
+                  <span class="uname">@${escapeHtml(s.username)}</span>
+                </div>
+                <div>
+                  ${s.isAdmin ? `
+                    <button class="btn-role-action demote" onclick="toggleStudentAdmin('${s.id}', '${escapeHtml(s.name || s.username)}', false)" title="Cabut status admin">
+                      Cabut
+                    </button>
+                  ` : `
+                    <button class="btn-role-action promote" onclick="toggleStudentAdmin('${s.id}', '${escapeHtml(s.name || s.username)}', true)" title="Jadikan administrator">
+                      + Jadi Admin
+                    </button>
+                  `}
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="playtime-badge" title="Total lama waktu bermain">
+                ⏱️ ${s.formattedPlayTime}
+              </span>
+            </td>
+            <td>${renderSubbab(1)}</td>
+            <td>${renderSubbab(2)}</td>
+            <td>${renderSubbab(3)}</td>
+            <td>${renderSubbab(4)}</td>
+            <td>${renderSubbab(5)}</td>
+            <td><span class="badge-endless">${s.endlessHighScore.toLocaleString()}</span></td>
+            <td><span class="badge-score-total">${s.totalScore.toLocaleString()} PTS</span></td>
+            <td style="text-align: center;">
+              <button class="btn-del-row" onclick="deleteStudent('${s.id}', '${escapeHtml(s.name || s.username)}')" title="Hapus akun siswa ini">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ── Chapter Metadata Matching Game ──
+    const CHAPTER_INFO = {
+      1: {
+        id: 1,
+        title: "Bab 1: Relasi & Cara Menyatakan",
+        sub: "Konsep, Benang Merah, 4 Bentuk Relasi",
+        totalSegs: 12,
+        icon: "🪢",
+        color: "#D97706"
+      },
+      2: {
+        id: 2,
+        title: "Bab 2: Pengertian & Unsur Fungsi",
+        sub: "Syarat Fungsi, Domain, Kodomain, Range",
+        totalSegs: 10,
+        icon: "📦",
+        color: "#2563EB"
+      },
+      3: {
+        id: 3,
+        title: "Bab 3: Notasi & Rumus Fungsi",
+        sub: "f(x) = ax + b & Hitung Nilai Fungsi",
+        totalSegs: 4,
+        icon: "📐",
+        color: "#7C3AED"
+      },
+      4: {
+        id: 4,
+        title: "Bab 4: Grafik Fungsi Linear",
+        sub: "Titik Koordinat & Gradien Garis (m)",
+        totalSegs: 10,
+        icon: "📈",
+        color: "#059669"
+      },
+      5: {
+        id: 5,
+        title: "Bab 5: Korespondensi Satu-Satu",
+        sub: "Fungsi Bijektif & Faktorial n!",
+        totalSegs: 8,
+        icon: "🔗",
+        color: "#DC2626"
+      }
+    };
+
+    function openProfileModal(studentId) {
+      const s = allStudents.find(item => item.id === studentId);
+      if (!s) return;
+
+      selectedStudentForModal = s;
+
+      document.getElementById('modalStudentName').textContent = s.name;
+      document.getElementById('modalStudentUname').textContent = `@${s.username} • ${s.email}`;
+      
+      const badgeContainer = document.getElementById('modalStudentStatusBadge');
+      if (badgeContainer) {
+        badgeContainer.innerHTML = s.isOnline
+          ? `<span class="status-light status-light-online" title="Online: Siswa sedang aktif"><span class="pulse-dot-online"></span></span>`
+          : `<span class="status-light status-light-offline" title="Offline"><span class="dot-offline-red"></span></span>`;
+      }
+
+      const modalConn = document.getElementById('modalConnectionStatus');
+      if (modalConn) {
+        modalConn.innerHTML = s.isOnline
+          ? `<span style="color: #059669; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;">🟢 Online (Aktif)</span>`
+          : `<span style="color: #DC2626; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;">🔴 Offline</span>`;
+      }
+
+      const modalLastActive = document.getElementById('modalLastActiveAgo');
+      if (modalLastActive) {
+        modalLastActive.textContent = `Aktivitas: ${s.lastActiveAgo || 'Belum ada catatan'}`;
+      }
+
+      document.getElementById('modalPlayTime').textContent = s.formattedPlayTime;
+      document.getElementById('modalPlayTimeSub').textContent = `Total bermain: ${s.totalPlayTimeSeconds.toLocaleString()} detik ${s.isEstimatedPlayTime ? '(Estimasi aktivitas stage & quest)' : '(Terpantau realtime)'}`;
+      
+      document.getElementById('modalId').textContent = s.id;
+      document.getElementById('modalPassword').textContent = s.plainPassword || '[Tersimpan saat login berikutnya]';
+      
+      const formatDate = s.createdAt ? new Date(s.createdAt).toLocaleString('id-ID') : '-';
+      document.getElementById('modalCreatedAt').textContent = formatDate;
+      
+      document.getElementById('modalTotalScore').textContent = s.totalScore.toLocaleString();
+      document.getElementById('modalEndless').textContent = s.endlessHighScore.toLocaleString() + ' PTS';
+
+      const roleBadge = document.getElementById('modalRoleBadge');
+      if (roleBadge) {
+        roleBadge.innerHTML = s.isAdmin
+          ? `<span class="badge-role-admin">👑 Administrator</span>`
+          : `<span class="badge-role-student">🎓 Siswa Biasa</span>`;
+      }
+      const btnRole = document.getElementById('modalBtnToggleRole');
+      if (btnRole) {
+        btnRole.textContent = s.isAdmin ? 'Cabut Admin 🎓' : 'Jadikan Admin 👑';
+        btnRole.className = s.isAdmin ? 'btn-copy-chip btn-role-action demote' : 'btn-copy-chip btn-role-action promote';
+      }
+
+      // Render 5 Chapter Cards & Calculate Completed Chapters
+      const grid = document.getElementById('modalSubbabGrid');
+      let chaptersDone = 0;
+
+      grid.innerHTML = [1, 2, 3, 4, 5].map(subId => {
+        const ch = s.chaptersProgress ? s.chaptersProgress[subId] : null;
+        const info = CHAPTER_INFO[subId];
+        const maxSeg = info.totalSegs;
+        const segCount = ch?.starsCount || 0;
+        const isCompleted = Boolean(ch?.isStage21Completed || segCount >= maxSeg);
+        if (isCompleted) chaptersDone++;
+
+        const pct = Math.min(100, Math.round((segCount / maxSeg) * 100));
+
+        return `
+          <div class="subbab-modal-card ${isCompleted ? 'active-cleared' : ''}">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 18px;">${info.icon}</span>
+              <div class="sm-title" style="flex: 1; line-height: 1.25;">${info.title}</div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); line-height: 1.2;">${info.sub}</div>
+
+            <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #E2E8F0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 700;">
+                <span>Progres Materi:</span>
+                <span style="color: ${isCompleted ? '#059669' : '#D97706'};">
+                  ${isCompleted ? `✅ Tamat (${maxSeg}/${maxSeg})` : `${segCount}/${maxSeg} Segmen`}
+                </span>
+              </div>
+              <div style="background: #E2E8F0; height: 5px; border-radius: 99px; overflow: hidden; margin-top: 3px;">
+                <div style="background: ${isCompleted ? '#10B981' : '#F59E0B'}; width: ${pct}%; height: 100%; transition: width 0.3s;"></div>
+              </div>
+            </div>
+
+            <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed #E2E8F0;">
+              <div style="font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 2px;">Ujian Quest:</div>
+              ${ch?.questScore !== null && ch?.questScore !== undefined ? `
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span class="badge-quest scored" style="font-size: 11px; font-weight: 800;">🎯 Nilai: ${ch.questScore}/100</span>
+                  <span style="font-size: 10.5px; color: #047857; font-weight: 700;">Benar ${ch.questCorrectCount || 0}/30</span>
+                </div>
+              ` : `
+                <span class="badge-quest empty" style="font-size: 10.5px;">Belum Mengerjakan Ujian</span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('modalChaptersCompleted').textContent = (typeof s.chaptersCompletedTotal === 'number') ? s.chaptersCompletedTotal : chaptersDone;
+      document.getElementById('modalStagesCompleted').textContent = s.stagesCompletedTotal;
+
+      document.getElementById('profileModal').classList.add('active');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.remove('active');
+      selectedStudentForModal = null;
+    }
+
+    function copyModalId() {
+      if (selectedStudentForModal) {
+        copyToClipboard(selectedStudentForModal.id, 'ID Akun');
+      }
+    }
+
+    function copyModalPassword() {
+      if (selectedStudentForModal && selectedStudentForModal.plainPassword) {
+        copyToClipboard(selectedStudentForModal.plainPassword, 'Password Siswa');
+      } else {
+        alert('Password belum tersimpan dalam format teks plain untuk akun lama ini.\nKlik tombol "Ubah" untuk menentukan password baru.');
+      }
+    }
+
+    function editModalPassword() {
+      if (!selectedStudentForModal) return;
+      promptEditPassword(selectedStudentForModal.id, selectedStudentForModal.username);
+    }
+
+    function toggleModalStudentAdmin() {
+      if (!selectedStudentForModal) return;
+      toggleStudentAdmin(selectedStudentForModal.id, selectedStudentForModal.name || selectedStudentForModal.username, !selectedStudentForModal.isAdmin);
+    }
+
+    async function toggleStudentAdmin(userId, studentName, makeAdmin) {
+      const key = getAdminKey();
+      if (!key) {
+        showLoginModal('Silakan masukkan password admin terlebih dahulu.');
+        return;
+      }
+
+      const promptMsg = makeAdmin
+        ? `Jadikan "${studentName}" sebagai ADMIN GAME?\n\nAkun ini akan memiliki hak akses administrator dan dapat membuka seluruh bab materi game.`
+        : `Cabut status Administrator dari "${studentName}"?\n\nAkun ini akan kembali menjadi akun siswa biasa.`;
+
+      if (!confirm(promptMsg)) return;
+
+      try {
+        const res = await fetch('/api/admin/set-role', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': key,
+          },
+          body: JSON.stringify({ userId, isAdmin: makeAdmin }),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(data.message || (makeAdmin ? '👑 Berhasil dijadikan Admin!' : '🎓 Status admin dicabut!'));
+          loadAllData();
+        } else {
+          alert(data.error || 'Gagal mengubah status admin.');
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan saat menghubungi server.');
+      }
+    }
+
+    async function promptEditPassword(userId, username) {
+      const newPass = prompt(`Masukkan Kata Sandi baru untuk siswa "@${username}" (minimal 4 karakter):`);
+      if (!newPass || newPass.trim().length < 4) {
+        if (newPass !== null) alert('Password minimal harus 4 karakter!');
+        return;
+      }
+      const key = getAdminKey();
+      try {
+        const res = await fetch('/api/admin/set-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': key
+          },
+          body: JSON.stringify({ userId, newPassword: newPass.trim() })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ Password untuk "@${username}" berhasil diubah menjadi: ${newPass.trim()}`);
+          loadAllData();
+        } else {
+          alert(data.error || 'Gagal mengubah password');
+        }
+      } catch (err) {
+        alert('Gagal menghubungi server!');
+      }
+    }
+
+    async function deleteStudent(id, name) {
+      if (!confirm(`Hapus data siswa "${name}"?\nSeluruh progress bab, stage, dan nilai ujiannya akan dihapus permanen dari database.`)) {
+        return;
+      }
+      const key = getAdminKey();
+      try {
+        const res = await fetch(`/api/admin/students/${id}`, {
+          method: 'DELETE',
+          headers: { 'x-admin-key': key }
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadAllData();
+        } else {
+          alert(data.error || 'Gagal menghapus siswa');
+        }
+      } catch (err) {
+        alert('Gagal menghubungi server backend!');
+      }
+    }
+
+    async function resetAllStudents() {
+      const confirmText = prompt('⚠️ PERHATIAN!\nSeluruh data siswa, skor, dan nilai ujian di database akan DIHAPUS PERMANEN (Clean Slate untuk mulai riset baru).\n\nKetik "RESET" untuk mengonfirmasi:');
+      if (confirmText !== 'RESET') {
+        if (confirmText !== null) alert('Reset dibatalkan (kata kunci tidak cocok).');
+        return;
+      }
+      const key = getAdminKey();
+      try {
+        const res = await fetch('/api/admin/reset-all', {
+          method: 'POST',
+          headers: { 'x-admin-key': key }
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('✅ Seluruh data siswa berhasil dibersihkan!');
+          loadAllData();
+        } else {
+          alert(data.error || 'Gagal mereset data');
+        }
+      } catch (err) {
+        alert('Gagal menghubungi server backend!');
+      }
+    }
+
+    function filterTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (!q) {
+        renderTable(allStudents);
+        return;
+      }
+      const filtered = allStudents.filter(s =>
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.username && s.username.toLowerCase().includes(q)) ||
+        (s.id && s.id.toLowerCase().includes(q)) ||
+        (s.plainPassword && s.plainPassword.toLowerCase().includes(q))
+      );
+      renderTable(filtered);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── Tunnel & QR Access State ──
+    let currentTunnelStatus = {
+      isRunning: false,
+      publicUrl: 'https://scooter-thickness-stony.ngrok-free.dev',
+      localUrl: 'http://localhost:3001',
+      lanUrl: 'http://localhost:3001',
+      lanIp: '',
+    };
+
+    let activeQrSource = 'public'; // 'public' | 'lan' | 'local' | 'custom'
+    let currentQrUrl = 'https://scooter-thickness-stony.ngrok-free.dev';
+    let qrMainInstance = null;
+    let qrProjectorInstance = null;
+    let qrModalInstance = null;
+
+    function renderQrCodes(targetUrl) {
+      if (!targetUrl) return;
+      currentQrUrl = targetUrl.trim();
+
+      const input = document.getElementById('activeAccessUrlInput');
+      if (input && document.activeElement !== input) {
+        input.value = currentQrUrl;
+      }
+      const projText = document.getElementById('projectorUrlText');
+      if (projText) {
+        projText.textContent = currentQrUrl;
+      }
+
+      if (typeof QRCode === 'undefined') {
+        console.warn('QRCode library not ready yet, retrying...');
+        setTimeout(() => renderQrCodes(currentQrUrl), 300);
+        return;
+      }
+
+      try {
+        // 1. Dashboard Card QR (180x180)
+        const mainEl = document.getElementById('studentQrCode');
+        if (mainEl) {
+          mainEl.innerHTML = '';
+          qrMainInstance = new QRCode(mainEl, {
+            text: currentQrUrl,
+            width: 180,
+            height: 180,
+            colorDark: '#1E1B18',
+            colorLight: '#FFFFFF',
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+        }
+
+        // 2. Projector Modal QR (260x260)
+        const projEl = document.getElementById('projectorQrCode');
+        if (projEl) {
+          projEl.innerHTML = '';
+          qrProjectorInstance = new QRCode(projEl, {
+            text: currentQrUrl,
+            width: 260,
+            height: 260,
+            colorDark: '#1E1B18',
+            colorLight: '#FFFFFF',
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+        }
+
+        // 3. Launch Modal QR (120x120)
+        const modalEl = document.getElementById('modalLaunchQrCode');
+        if (modalEl) {
+          modalEl.innerHTML = '';
+          qrModalInstance = new QRCode(modalEl, {
+            text: currentQrUrl,
+            width: 120,
+            height: 120,
+            colorDark: '#1E1B18',
+            colorLight: '#FFFFFF',
+            correctLevel: QRCode.CorrectLevel.M,
+          });
+        }
+      } catch (err) {
+        console.error('Error generating QR codes:', err);
+      }
+    }
+
+    function switchQrSource(type) {
+      activeQrSource = type;
+      document.querySelectorAll('.qr-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('tab' + type.charAt(0).toUpperCase() + type.slice(1));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const badge = document.getElementById('qrActiveBadge');
+      const tip = document.getElementById('qrTipText');
+
+      let targetUrl = '';
+      if (type === 'lan') {
+        targetUrl = currentTunnelStatus.lanUrl || (window.location.protocol + '//' + (currentTunnelStatus.lanIp || window.location.hostname) + (window.location.port ? ':' + window.location.port : ''));
+        if (badge) {
+          badge.className = 'badge-status-student-online';
+          badge.textContent = '📶 Wi-Fi Kelas / LAN';
+        }
+        if (tip) tip.innerHTML = 'Untuk kelas tatap muka, gunakan <strong>Wi-Fi Kelas</strong> agar siswa terkoneksi super cepat & tanpa kuota internet!';
+      } else if (type === 'public') {
+        targetUrl = currentTunnelStatus.publicUrl || 'https://scooter-thickness-stony.ngrok-free.dev';
+        if (badge) {
+          badge.className = 'badge-status-student-online';
+          badge.textContent = currentTunnelStatus.isRunning ? '🟢 Online (Ngrok Aktif)' : '🌐 Online (Ngrok)';
+        }
+        if (tip) tip.innerHTML = 'Link <strong>Online (Ngrok)</strong> siap digunakan siswa untuk langsung bermain tanpa instalasi dari HP / tablet / laptop.';
+      } else if (type === 'local') {
+        targetUrl = currentTunnelStatus.localUrl || 'http://127.0.0.1:3001';
+        if (badge) {
+          badge.className = 'badge-stage';
+          badge.textContent = '💻 Lokal';
+        }
+        if (tip) tip.innerHTML = 'Link lokal hanya dapat dibuka pada perangkat ini (bukan dari smartphone siswa).';
+      }
+
+      renderQrCodes(targetUrl);
+    }
+
+    function handleManualQrInput(e) {
+      const url = e.target.value.trim();
+      activeQrSource = 'custom';
+      document.querySelectorAll('.qr-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const badge = document.getElementById('qrActiveBadge');
+      if (badge) {
+        badge.className = 'badge-stage';
+        badge.textContent = '✏️ Custom URL';
+      }
+      renderQrCodes(url);
+    }
+
+    function copyActiveAccessUrl() {
+      const url = document.getElementById('activeAccessUrlInput')?.value || currentQrUrl;
+      copyToClipboard(url, 'Link Akses Siswa');
+    }
+
+    function openActiveAccessUrl() {
+      const url = document.getElementById('activeAccessUrlInput')?.value || currentQrUrl;
+      if (url) window.open(url, '_blank');
+    }
+
+    function copyProjectorUrl() {
+      copyToClipboard(currentQrUrl, 'Link Akses Siswa');
+    }
+
+    function downloadQrCode() {
+      const canvas = document.querySelector('#studentQrCode canvas') || document.querySelector('#projectorQrCode canvas');
+      if (!canvas) {
+        showToast('⚠️ QR code belum siap.');
+        return;
+      }
+      const a = document.createElement('a');
+      a.download = 'QR_Akses_Siswa_Game_Relasi_Fungsi.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+      showToast('📥 Gambar QR Code berhasil diunduh!');
+    }
+
+    function openQrProjectorModal() {
+      const modal = document.getElementById('qrProjectorModal');
+      if (modal) {
+        modal.classList.add('active');
+        renderQrCodes(currentQrUrl);
+      }
+    }
+
+    function closeQrProjectorModal() {
+      document.getElementById('qrProjectorModal')?.classList.remove('active');
+    }
+
+    async function checkTunnelStatus() {
+      try {
+        const key = getAdminKey();
+        const headers = key ? { 'x-admin-key': key } : {};
+        const res = await fetch('/api/admin/tunnel/status', { headers });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success && data.data) {
+          currentTunnelStatus = {
+            ...currentTunnelStatus,
+            ...data.data,
+            lanUrl: data.data.lanUrl || currentTunnelStatus.lanUrl,
+            lanIp: data.data.lanIp || currentTunnelStatus.lanIp,
+          };
+          updateTunnelUI(Boolean(data.data.isRunning));
+
+          // Display LAN IP badge
+          const lanIpDisplay = document.getElementById('lanIpTextDisplay');
+          if (lanIpDisplay) {
+            lanIpDisplay.textContent = currentTunnelStatus.lanIp || window.location.hostname;
+          }
+
+          // Initial render of QR code: default to Ngrok (public)
+          if (!currentQrUrl || currentQrUrl.includes('localhost') || currentQrUrl.includes('192.168')) {
+            switchQrSource('public');
+          } else if (activeQrSource !== 'custom') {
+            switchQrSource(activeQrSource);
+          }
+        }
+      } catch (err) {
+        if (!currentQrUrl || currentQrUrl.includes('localhost') || currentQrUrl.includes('192.168')) {
+          switchQrSource('public');
+        }
+      }
+    }
+
+    function updateTunnelUI(isRunning) {
+      const dot = document.getElementById('launchDot');
+      const badge = document.getElementById('badgeTunnelStatus');
+      const stopBtn = document.getElementById('btnStopTunnel');
+
+      if (dot) {
+        if (isRunning) {
+          dot.className = 'status-indicator-dot dot-online';
+          dot.title = 'Server Online Ngrok Aktif';
+        } else {
+          dot.className = 'status-indicator-dot dot-offline';
+          dot.title = 'Server Online Belum Aktif';
+        }
+      }
+
+      if (badge) {
+        if (isRunning) {
+          badge.className = 'badge-status-online';
+          badge.textContent = '🟢 ONLINE';
+        } else {
+          badge.className = 'badge-status-offline';
+          badge.textContent = '⚪ STANDBY';
+        }
+      }
+
+      if (stopBtn) {
+        stopBtn.style.display = isRunning ? 'inline-flex' : 'none';
+      }
+
+      const btnText = document.getElementById('btnLaunchText');
+      if (btnText) {
+        btnText.textContent = isRunning ? '🟢 Ngrok Online (Aktif)' : '🌐 Deploy / Aktifkan Ngrok';
+      }
+    }
+
+    async function launchGame() {
+      const key = getAdminKey();
+      if (!key) {
+        showLoginModal('Silakan masukkan password admin terlebih dahulu.');
+        return;
+      }
+
+      const btn = document.getElementById('btnLaunchGame');
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-launch-icon">⏳</span><span>Menyiapkan Game...</span>';
+
+      try {
+        const res = await fetch('/api/admin/launch', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': key,
+          },
+        });
+
+        const data = await res.json();
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+
+        if (res.ok && data.success) {
+          const gameUrl = data.localUrl || '/';
+          const publicUrl = data.publicUrl || 'https://scooter-thickness-stony.ngrok-free.dev';
+
+          // Update state & UI
+          currentTunnelStatus.isRunning = Boolean(data.isTunnelRunning);
+          currentTunnelStatus.publicUrl = publicUrl;
+          currentTunnelStatus.localUrl = data.localUrl || 'http://localhost:3001';
+          if (data.lanUrl) currentTunnelStatus.lanUrl = data.lanUrl;
+          if (data.lanIp) currentTunnelStatus.lanIp = data.lanIp;
+          updateTunnelUI(currentTunnelStatus.isRunning);
+
+          // Update input elements in modal
+          const inputPub = document.getElementById('inputPublicUrl');
+          const inputLoc = document.getElementById('inputLocalUrl');
+          if (inputPub) inputPub.value = publicUrl;
+          if (inputLoc) inputLoc.value = currentTunnelStatus.localUrl;
+
+          // Re-render QR codes to match current status
+          if (activeQrSource === 'public') {
+            renderQrCodes(publicUrl);
+          } else {
+            renderQrCodes(currentTunnelStatus.lanUrl || currentTunnelStatus.localUrl);
+          }
+
+          // Open game in a new browser tab immediately!
+          window.open(gameUrl, '_blank');
+
+          // Auto-copy public URL to clipboard if online
+          if (data.isTunnelRunning) {
+            copyToClipboard(publicUrl, 'Link Siswa');
+          } else {
+            showToast('🎮 Tab Game berhasil dibuka!');
+          }
+
+          // Open launch modal
+          document.getElementById('launchModal').classList.add('active');
+        } else {
+          alert(data.error || 'Gagal menyiapkan game.');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        // Fallback: open local game directly
+        window.open('/', '_blank');
+        showToast('🎮 Tab Game dibuka secara lokal.');
+      }
+    }
+
+    function closeLaunchModal() {
+      document.getElementById('launchModal')?.classList.remove('active');
+    }
+
+    function copyPublicUrl() {
+      const url = document.getElementById('inputPublicUrl')?.value || currentTunnelStatus.publicUrl;
+      copyToClipboard(url, 'Link Siswa');
+    }
+
+    function copyLocalUrl() {
+      const url = document.getElementById('inputLocalUrl')?.value || currentTunnelStatus.localUrl;
+      copyToClipboard(url, 'Link Game Lokal');
+    }
+
+    function openPublicUrl() {
+      const url = document.getElementById('inputPublicUrl')?.value || currentTunnelStatus.publicUrl;
+      if (url) window.open(url, '_blank');
+    }
+
+    function openLocalUrl() {
+      const url = document.getElementById('inputLocalUrl')?.value || currentTunnelStatus.localUrl;
+      if (url) window.open(url, '_blank');
+    }
+
+    async function stopOnlineTunnel() {
+      if (!confirm('Yakin ingin mematikan koneksi internet Ngrok? Siswa di rumah tidak akan bisa mengakses game setelah koneksi dimatikan.')) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/admin/tunnel/stop', {
+          method: 'POST',
+          headers: { 'x-admin-key': getAdminKey() },
+        });
+        const data = await res.json();
+        showToast('⏹️ ' + (data.message || 'Koneksi internet dihentikan.'));
+        updateTunnelUI(false);
+        closeLaunchModal();
+        checkTunnelStatus();
+      } catch {
+        alert('Gagal menghentikan tunnel.');
+      }
+    }
+
+    // Escape key listener to close modals
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProfileModal();
+        closeLaunchModal();
+        closeQrProjectorModal();
+      }
+    });
+
+    // Check auth on load
+    window.addEventListener('DOMContentLoaded', () => {
+      checkTunnelStatus();
+      if (!getAdminKey()) {
+        showLoginModal();
+      } else {
+        loadAllData();
+      }
+    });
+
+    // Auto-refresh data every 5 seconds so teachers see real-time online/offline status
+    setInterval(() => {
+      if (getAdminKey() && !document.hidden) {
+        loadAllData();
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "appId": "com.detektifdata.game",
+  "appName": "Detektif Data",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "ScreenOrientation": {
+      "orientation": "landscape"
+    },
+    "StatusBar": {
+      "overlaysWebView": true,
+      "style": "DARK"
+    }
+  }
+}

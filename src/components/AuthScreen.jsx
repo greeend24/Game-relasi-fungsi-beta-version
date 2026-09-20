@@ -143,11 +143,11 @@ export default function AuthScreen({ onLoginSuccess }) {
   };
 
   return (
-    <div className="h-full w-full flex flex-col justify-between font-hand relative z-10 overflow-hidden bg-transparent select-none animate-fade-in">
+    <div className="h-full w-full flex flex-col justify-between font-pencil relative z-10 overflow-hidden bg-transparent select-none animate-fade-in">
       
-      {/* Network Status Badge (Online/Offline) */}
+      {/* Network Status Badge (Online/Offline with Label) */}
       <div className="absolute top-2.5 right-3 sm:top-4 sm:right-6 z-40 pointer-events-auto">
-        <NetworkStatusBadge />
+        <NetworkStatusBadge showLabel={true} size="md" />
       </div>
 
       {/* 1. BOTTOM LANDSCAPE BACKGROUND ASSET */}
@@ -212,33 +212,33 @@ export default function AuthScreen({ onLoginSuccess }) {
 
       {/* 4. MODAL POPUP (FIXED BOARD, ZERO-SCROLL DESIGN) */}
       {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-sm animate-fade-in font-hand overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in font-pencil overflow-hidden">
           
           <div 
-            className="relative w-full max-w-[min(92vw,620px)] max-h-[92dvh] rounded-3xl bg-[length:100%_100%] bg-no-repeat border-4 border-[#2D241E] shadow-[10px_12px_0px_#2D241E] flex flex-col select-none overflow-y-auto my-auto p-4 sm:p-6 md:p-8"
+            className="relative w-full max-w-[min(92vw,460px)] rounded-3xl bg-[length:100%_100%] bg-no-repeat border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] flex flex-col select-none overflow-hidden my-auto p-4 sm:p-6"
             style={{ backgroundImage: `url('/assets/tampilan sebelum masuk lobby/Asset/board_buat_akun_pilih_akun@4x.png')` }}
           >
             {/* CLOSE BUTTON - TOP RIGHT */}
             <button
               onClick={closeModal}
               onMouseEnter={() => audioEngine.playHover()}
-              className="clean-icon-btn absolute top-3 right-3 sm:top-5 sm:right-5 z-40 cursor-pointer rounded-full overflow-hidden hover:scale-110 active:scale-95 transition-transform"
+              className="clean-icon-btn absolute top-3 right-3 sm:top-4 sm:right-4 z-40 cursor-pointer rounded-full overflow-hidden hover:scale-110 active:scale-95 transition-transform"
               title="Tutup Menu"
             >
               <img 
                 src="/assets/tampilan di logout/Asset/exit_button_of_menu@4x.png" 
                 alt="Close" 
-                className="w-9 h-9 sm:w-11 sm:h-11 object-contain rounded-full drop-shadow"
+                className="w-8 h-8 sm:w-10 sm:h-10 object-contain rounded-full drop-shadow"
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
             </button>
 
             {/* MODAL HEADER */}
-            <div className="text-center pb-3.5 space-y-1 relative z-30 pr-8 pl-4">
-              <h2 className="text-3xl sm:text-4xl font-black font-pencil text-[#FEF3C7] tracking-wide drop-shadow">
+            <div className="text-center pb-2.5 sm:pb-3 space-y-0.5 relative z-30 pr-7 pl-3">
+              <h2 className="text-2xl sm:text-3xl font-black font-pencil text-[#FEF3C7] tracking-wide drop-shadow">
                 {activeModal === 'REGISTER' ? '📝 BUAT AKUN BARU' : '🔑 MASUK KE AKUN'}
               </h2>
-              <p className="text-sm sm:text-base text-[#FDE68A] font-bold">
+              <p className="text-xs sm:text-sm text-[#FDE68A] font-bold">
                 {activeModal === 'REGISTER' 
                   ? 'Daftar sebagai detektif cilik matematika' 
                   : 'Masukkan username & kata sandi kamu'}
@@ -247,7 +247,7 @@ export default function AuthScreen({ onLoginSuccess }) {
 
             {/* ERROR MESSAGE BANNER */}
             {errorMsg && (
-              <div className="mb-2.5 p-2.5 rounded-xl bg-[#FFE4E6] border-2 border-[#BE123C] text-[#BE123C] text-sm sm:text-base font-bold text-center animate-shake shadow">
+              <div className="mb-2 p-1.5 sm:p-2 rounded-xl bg-[#FFE4E6] border-2 border-[#BE123C] text-[#BE123C] text-xs sm:text-sm font-bold text-center animate-shake shadow">
                 {errorMsg}
               </div>
             )}
@@ -256,12 +256,12 @@ export default function AuthScreen({ onLoginSuccess }) {
             {/* ── MODE 1: BUAT AKUN (REGISTER) ── */}
             {/* ══════════════════════════════════════ */}
             {activeModal === 'REGISTER' && (
-              <form onSubmit={handleSubmit} className="space-y-2.5 font-bold relative z-30">
+              <form onSubmit={handleSubmit} className="space-y-2 font-bold relative z-30">
                 
                 {/* ROW 1: NAMA LENGKAP & NO ABSEN (SIDE-BY-SIDE) */}
-                <div className="grid grid-cols-3 gap-2.5">
-                  <div className="col-span-2 space-y-1">
-                    <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="col-span-2 space-y-0.5">
+                    <label className="text-[11px] sm:text-xs text-[#FDE68A] font-black uppercase tracking-wider block">
                       NAMA LENGKAP
                     </label>
                     <div className="relative">
@@ -270,14 +270,14 @@ export default function AuthScreen({ onLoginSuccess }) {
                         placeholder="Masukkan nama lengkap..."
                         value={fullname}
                         onChange={(e) => setFullname(e.target.value)}
-                        className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold"
+                        className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-xs sm:text-sm font-bold font-pencil"
                         autoFocus
                       />
                     </div>
                   </div>
 
-                  <div className="col-span-1 space-y-1">
-                    <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                  <div className="col-span-1 space-y-0.5">
+                    <label className="text-[11px] sm:text-xs text-[#FDE68A] font-black uppercase tracking-wider block font-pencil">
                       NO. ABSEN
                     </label>
                     <div className="relative">
@@ -288,7 +288,7 @@ export default function AuthScreen({ onLoginSuccess }) {
                         placeholder="1-99"
                         value={absen}
                         onChange={(e) => setAbsen(e.target.value)}
-                        className="w-full px-2.5 py-2 sm:py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold text-center font-mono"
+                        className="w-full px-2 py-1.5 sm:py-2 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-xs sm:text-sm font-bold text-center font-pencil"
                       />
                     </div>
                   </div>
@@ -296,18 +296,18 @@ export default function AuthScreen({ onLoginSuccess }) {
 
                 {/* LIVE PREVIEW USERNAME */}
                 {fullname.trim() && absen.trim() && Number(absen) >= 1 && Number(absen) <= 99 && (
-                  <div className="py-1.5 px-3 rounded-lg bg-black/40 border border-[#FDE68A]/30 flex items-center justify-between text-xs sm:text-sm text-[#FEF3C7]">
-                    <span>Username kamu nanti:</span>
-                    <span className="font-mono font-black text-[#6EE7B7] text-sm sm:text-base underline">
+                  <div className="py-1 px-2.5 rounded-lg bg-black/40 border border-[#FDE68A]/30 flex items-center justify-between text-xs text-[#FEF3C7]">
+                    <span>Username kamu:</span>
+                    <span className="font-mono font-black text-[#6EE7B7] text-xs sm:text-sm underline">
                       {buildUsername(fullname, absen)}
                     </span>
                   </div>
                 )}
 
                 {/* ROW 2: KATA SANDI */}
-                <div className="space-y-1">
-                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
-                    KATA SANDI (MIN. 4 HURUF/ANGKA)
+                <div className="space-y-0.5">
+                  <label className="text-[11px] sm:text-xs text-[#FDE68A] font-black uppercase tracking-wider block">
+                    KATA SANDI (MIN. 4 DIGIT)
                   </label>
                   <div className="relative">
                     <input
@@ -315,22 +315,22 @@ export default function AuthScreen({ onLoginSuccess }) {
                       placeholder="Masukkan kata sandi..."
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3.5 py-2 sm:py-2.5 pr-10 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold"
+                      className="w-full px-3 py-1.5 sm:py-2 pr-9 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-xs sm:text-sm font-bold font-pencil"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-2.5 sm:top-3 opacity-70 hover:opacity-100 cursor-pointer"
+                      className="absolute right-2.5 top-2 opacity-70 hover:opacity-100 cursor-pointer"
                       tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5 text-[#78350F]" /> : <Eye className="w-5 h-5 text-[#78350F]" />}
+                      {showPassword ? <EyeOff className="w-4 h-4 text-[#78350F]" /> : <Eye className="w-4 h-4 text-[#78350F]" />}
                     </button>
                   </div>
                 </div>
 
                 {/* ROW 3: KONFIRMASI KATA SANDI */}
-                <div className="space-y-1">
-                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                <div className="space-y-0.5">
+                  <label className="text-[11px] sm:text-xs text-[#FDE68A] font-black uppercase tracking-wider block">
                     ULANGI KATA SANDI
                   </label>
                   <div className="relative">
@@ -339,7 +339,7 @@ export default function AuthScreen({ onLoginSuccess }) {
                       placeholder="Ketik ulang kata sandi..."
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={`w-full px-3.5 py-2 sm:py-2.5 pr-10 rounded-xl border-2 text-[#2D241E] focus:outline-none shadow-inner text-sm sm:text-base font-bold ${
+                      className={`w-full px-3 py-1.5 sm:py-2 pr-9 rounded-xl border-2 text-[#2D241E] focus:outline-none shadow-inner text-xs sm:text-sm font-bold font-pencil ${
                         confirmPassword && confirmPassword !== password
                           ? 'bg-[#FFE4E6] border-[#BE123C]'
                           : confirmPassword && confirmPassword === password
@@ -350,10 +350,10 @@ export default function AuthScreen({ onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-2.5 sm:top-3 opacity-70 hover:opacity-100 cursor-pointer"
+                      className="absolute right-2.5 top-2 opacity-70 hover:opacity-100 cursor-pointer"
                       tabIndex={-1}
                     >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5 text-[#78350F]" /> : <Eye className="w-5 h-5 text-[#78350F]" />}
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4 text-[#78350F]" /> : <Eye className="w-4 h-4 text-[#78350F]" />}
                     </button>
                   </div>
                 </div>
@@ -363,13 +363,13 @@ export default function AuthScreen({ onLoginSuccess }) {
                   type="submit"
                   disabled={isSubmitting}
                   onMouseEnter={() => audioEngine.playHover()}
-                  className="w-full py-2.5 sm:py-3.5 mt-2.5 font-black text-sm sm:text-base flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#047857] bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white transition-all disabled:opacity-50"
+                  className="w-full py-2 sm:py-2.5 mt-1.5 font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#047857] bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="animate-pulse">Mendaftarkan Akun...</span>
                   ) : (
                     <>
-                      <UserPlus className="w-5 h-5" />
+                      <UserPlus className="w-4 h-4" />
                       <span>BUAT AKUN DETEKTIF</span>
                     </>
                   )}
@@ -381,11 +381,11 @@ export default function AuthScreen({ onLoginSuccess }) {
             {/* ── MODE 2: MASUK AKUN (LOGIN) ── */}
             {/* ══════════════════════════════════════ */}
             {activeModal === 'LOGIN' && (
-              <form onSubmit={handleSubmit} className="space-y-3 font-bold relative z-30">
+              <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3 font-bold relative z-30">
                 
                 {/* 1. INPUT USERNAME */}
-                <div className="space-y-1">
-                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                <div className="space-y-0.5 sm:space-y-1">
+                  <label className="text-[11px] sm:text-xs text-[#FDE68A] font-black uppercase tracking-wider block font-pencil">
                     NAMA PENGGUNA (USERNAME)
                   </label>
                   <div className="relative">
@@ -394,33 +394,33 @@ export default function AuthScreen({ onLoginSuccess }) {
                       placeholder="Masukkan username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="w-full px-3.5 py-2.5 sm:py-3 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold font-mono"
+                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-xs sm:text-sm font-bold font-pencil"
                       autoFocus
                     />
-                    <User className="w-5 h-5 text-[#78350F] absolute right-3.5 top-3 sm:top-3.5 opacity-60" />
+                    <User className="w-4 h-4 text-[#78350F] absolute right-3.5 top-2.5 sm:top-3 opacity-60" />
                   </div>
                 </div>
 
                 {/* 2. INPUT PASSWORD */}
-                <div className="space-y-1">
-                  <label className="text-xs sm:text-sm text-[#FDE68A] font-black uppercase tracking-wider block">
+                <div className="space-y-0.5 sm:space-y-1">
+                  <label className="text-[11px] sm:text-xs text-[#FDE68A] font-black uppercase tracking-wider block font-pencil">
                     KATA SANDI (PASSWORD)
                   </label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Masukkan kata sandi akunmu..."
+                      placeholder="Masukkan kata sandi..."
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3.5 py-2.5 sm:py-3 pr-11 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-sm sm:text-base font-bold"
+                      className="w-full px-3.5 py-2 sm:py-2.5 pr-10 rounded-xl bg-[#FFFDF9] border-2 border-[#2D241E] text-[#2D241E] focus:outline-none focus:bg-[#FEF3C7] shadow-inner text-xs sm:text-sm font-bold font-pencil"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3 sm:top-3.5 opacity-70 hover:opacity-100 cursor-pointer"
+                      className="absolute right-3 top-2.5 sm:top-3 opacity-70 hover:opacity-100 cursor-pointer"
                       tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5 text-[#78350F]" /> : <Eye className="w-5 h-5 text-[#78350F]" />}
+                      {showPassword ? <EyeOff className="w-4 h-4 text-[#78350F]" /> : <Eye className="w-4 h-4 text-[#78350F]" />}
                     </button>
                   </div>
                 </div>
@@ -430,13 +430,13 @@ export default function AuthScreen({ onLoginSuccess }) {
                   type="submit"
                   disabled={isSubmitting}
                   onMouseEnter={() => audioEngine.playHover()}
-                  className="w-full py-3 sm:py-3.5 mt-2 font-black text-sm sm:text-base flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#B45309] bg-gradient-to-r from-[#F59E0B] to-[#D97706] hover:from-[#D97706] hover:to-[#B45309] text-[#2D241E] transition-all disabled:opacity-50"
+                  className="w-full py-2.5 sm:py-3 mt-1.5 font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#B45309] bg-gradient-to-r from-[#F59E0B] to-[#D97706] hover:from-[#D97706] hover:to-[#B45309] text-[#2D241E] transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span className="animate-pulse">Memverifikasi Akun...</span>
                   ) : (
                     <>
-                      <LogIn className="w-5 h-5" />
+                      <LogIn className="w-4 h-4" />
                       <span>MASUK SEBAGAI DETEKTIF</span>
                     </>
                   )}
@@ -445,12 +445,12 @@ export default function AuthScreen({ onLoginSuccess }) {
             )}
 
             {/* SWITCH MODE LINK FOOTER */}
-            <div className="text-center pt-2.5 mt-2 border-t border-white/20 relative z-30">
+            <div className="text-center pt-2 mt-2 border-t border-white/20 relative z-30">
               {activeModal === 'REGISTER' ? (
                 <button
                   type="button"
                   onClick={openSelectAccount}
-                  className="text-xs sm:text-sm font-bold text-[#FDE68A] hover:underline cursor-pointer"
+                  className="text-xs font-bold text-[#FDE68A] hover:underline cursor-pointer"
                 >
                   Sudah punya akun? <span className="underline text-white font-black">Masuk di sini</span>
                 </button>

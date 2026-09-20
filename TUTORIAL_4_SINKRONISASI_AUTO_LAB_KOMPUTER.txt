@@ -1,0 +1,98 @@
+================================================================================
+PANDUAN LENGKAP: SINKRONISASI OTOMATIS MULTI-LAPTOP DI LAB SEKOLAH (DIST ELECTRON)
+GAME EDUKASI: DETEKTIF DATA : RELASI & FUNGSI (VERSI TESIS S2)
+================================================================================
+
+Dokumen ini memuat panduan praktis penggunaan Game Detektif Data versi Electron 
+di laboratorium komputer sekolah. Sistem ini dirancang 100% OTOMATIS di latar 
+belakang (Silent Background Auto-Sync), sehingga Anda dan siswa TIDAK PERLU 
+menekan tombol sinkronisasi manual sama sekali.
+
+--------------------------------------------------------------------------------
+1. KEUNGGULAN SISTEM AUTO-SYNC (100% OTOMATIS)
+--------------------------------------------------------------------------------
+* Registrasi & Login Otomatis Tersimpan di Server:
+  Begitu siswa membuat akun di laptop manapun, data akun dan kata sandi langsung
+  tersimpan ke database master di Laptop Guru dalam hitungan milidetik.
+
+* Pengiriman Nilai & Bintang Instan:
+  Setiap kali siswa menyelesaikan 1 soal, menamatkan subbab, atau lulus kuis ujian,
+  skor, bintang, dan lencana BARU detik itu juga langsung dikirim ke Laptop Guru.
+
+* Pengecekan Otomatis (Heartbeat Tiap 5 Detik):
+  Game memeriksa status koneksi setiap 5 detik. Jika ada data yang tertunda, sistem 
+  langsung mengirimkannya secara mandiri tanpa campur tangan pengguna.
+
+* Mode Offline Aman & Pemulihan Mandiri:
+  Jika Wi-Fi lab tiba-tiba putus, permainan TIDAK AKAN macet atau keluar. Nilai 
+  tetap tersimpan aman di memori laptop siswa. Begitu Wi-Fi tersambung kembali, 
+  seluruh nilai otomatis disetorkan ke Laptop Guru.
+
+--------------------------------------------------------------------------------
+2. PANDUAN PENGATURAN "ZERO-CONFIG" UNTUK GURU (HANYA 3 LANGKAH)
+--------------------------------------------------------------------------------
+Guru hanya perlu mengatur 1 KALI di laptop guru sebelum membagikan game ke murid:
+
+LANGKAH 1: Cek IP Laptop Guru (Server Host)
+------------------------------------------
+1. Hubungkan laptop guru dan laptop siswa ke Wi-Fi / Hotspot yang sama.
+   (Bisa router lab sekolah atau Hotspot HP tanpa internet luar).
+2. Di laptop guru, buka Command Prompt (CMD), lalu ketik:
+      ipconfig
+3. Cari bagian "IPv4 Address", perhatikan angkanya.
+   Contoh: 192.168.1.15
+
+LANGKAH 2: Isi Alamat IP di File "server_url.txt"
+-----------------------------------------------
+1. Buka folder "DISTRIBUSI_GAME_ALL_PLATFORM".
+2. Buka file "server_url.txt" menggunakan Notepad.
+3. Tuliskan alamat IP laptop guru di baris paling bawah, contoh:
+      http://192.168.1.15:3001
+4. Simpan file tersebut (Ctrl + S).
+
+LANGKAH 3: Bagikan Game ke Laptop Siswa (via Flashdisk)
+------------------------------------------------------
+1. Salin folder game atau file "Detektif_Data_Windows_Electron.zip" ke flashdisk.
+2. Ekstrak di setiap laptop siswa.
+3. Siswa cukup klik 2x pada "Detektif Data.exe".
+
+SELESAI! Game di laptop siswa sekarang otomatis langsung terhubung ke laptop guru.
+Siswa tidak perlu mengetik IP, tidak perlu membuka menu pengaturan, dan tidak perlu
+menekan tombol sync apapun.
+
+--------------------------------------------------------------------------------
+3. CARA PANTAU DATA SISWA SECARA REAL-TIME DI LAPTOP GURU
+--------------------------------------------------------------------------------
+1. Pastikan server di laptop guru sedang aktif:
+   - Klik 2x file "JALANKAN_SERVER_ADMIN.bat"
+   ATAU buka aplikasi game Electron di laptop guru.
+2. Buka Google Chrome / Microsoft Edge di laptop guru, akses:
+      http://localhost:3001/admin
+3. Masuk dengan akun Admin guru.
+4. Anda dapat melihat:
+   - Daftar seluruh akun siswa yang sudah mendaftar.
+   - Progres bab siswa (Bab 1 s/d Bab 5).
+   - Nilai kuis ujian detektif & skor akumulasi siswa.
+   - Total waktu bermain siswa.
+   - Lencana detektif yang sudah berhasil didapatkan.
+   - Tombol "Export Excel / CSV" untuk mengunduh rekap nilai tesis secara instan.
+
+--------------------------------------------------------------------------------
+4. PERTANYAAN UMUM (FAQ)
+--------------------------------------------------------------------------------
+Q: Apakah siswa harus menekan tombol "Sync" saat selesai bermain?
+A: TIDAK PERLU. Nilai sudah otomatis terkirim setiap kali siswa menjawab soal dan 
+   menyelesaikan subbab. Tombol sync di dalam menu hanyalah cadangan darurat.
+
+Q: Bagaimana jika siswa pindah ke laptop lain?
+A: Siswa tinggal memasukkan username dan kata sandi yang sama di laptop barunya. 
+   Semua bab yang sudah tamat dan nilai dari laptop sebelumnya akan langsung 
+   muncul otomatis karena ditarik dari database Laptop Guru.
+
+Q: Apakah butuh kuota internet luar?
+A: TIDAK BUTUH. Cukup menggunakan jaringan Wi-Fi lokal atau Hotspot HP tanpa kuota. 
+   Semua komunikasi data berjalan cepat di dalam jaringan lokal (LAN) lab sekolah.
+
+================================================================================
+Detektif Data : Game Edukasi Relasi & Fungsi | Tim Peneliti Tesis S2
+================================================================================

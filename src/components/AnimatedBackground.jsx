@@ -106,82 +106,92 @@ const FloatingParticle = memo(({ particleType = 'leaf', type, size = 36 }) => {
 });
 
 /**
- * 60FPS Interactive Floating Particles (Leaves, Snowflakes, Embers)
- * - DIRECT DOM TRANSFORM MUTATIONS (0% REACT RE-RENDER LAG)
- * - Floating, undulating, and tumbling in the breeze ("melayang kea dulu")
- * - Interactive mouse repulsion & click bursts
+ * 60FPS INTERACTIVE FLOATING & BLOWING LEAVES ("MELAYANG SEPERTI SEMULA")
+ * - Smooth horizontal breeze drifting across the screen from left to right
+ * - Wave undulation (sine/cosine sway) so leaves FLOAT, NOT plummet down
+ * - 0% React re-render lag via requestAnimationFrame + direct DOM translate3d
+ * - Seamless screen wrap-around when exiting screen edges
+ * - Interactive breeze with mouse movement & click bursts
  */
-const createInitialParticles = (particleType) => {
-  const numParticles = 8;
-  const initialParticles = [];
-  const width = typeof window !== 'undefined' ? window.innerWidth || 1200 : 1200;
-  const height = typeof window !== 'undefined' ? window.innerHeight || 800 : 800;
-  const distinctSizes = [32, 38, 44, 50, 36, 42, 46, 52];
-
-  for (let i = 0; i < numParticles; i++) {
-    const isLeaf = particleType === 'leaf';
-    const isEmber = particleType === 'ember' || particleType === 'fire';
-
-    initialParticles.push({
-      id: i,
-      x: Math.random() * width,
-      y: Math.random() * (height * 0.9),
-      vx: 0,
-      vy: 0,
-      // Base drift speeds: leaves float horizontally across to the right; embers float up; snow drifts down
-      baseSpeedX: isLeaf ? 0.35 + Math.random() * 0.45 : isEmber ? 0.15 + Math.random() * 0.3 : 0.2 + Math.random() * 0.3,
-      baseSpeedY: isLeaf ? (Math.random() - 0.5) * 0.15 : isEmber ? -(0.55 + Math.random() * 0.6) : 0.45 + Math.random() * 0.4,
-      swayAmp: isLeaf ? 0.9 + Math.random() * 0.8 : 0.4 + Math.random() * 0.5,
-      swayFreq: 0.01 + Math.random() * 0.012,
-      phase: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.15 + Math.random() * 0.35),
-      rotation: Math.random() * 360,
-      vRot: 0,
-      type: i,
-      size: distinctSizes[i]
-    });
-  }
-  return initialParticles;
-};
-
-const InteractiveFloatingParticles = memo(({ particleType = 'leaf' }) => {
-  const particlesRef = useRef(createInitialParticles(particleType));
+const InteractiveBlowingLeaves2D = memo(() => {
+  const containerRef = useRef(null);
+  const leavesRef = useRef([]);
   const domRefs = useRef({});
   const mouseRef = useRef({ x: -1000, y: -1000, active: false });
   const clickBurstRef = useRef({ x: -1000, y: -1000, active: false, time: 0 });
   const frameCountRef = useRef(0);
 
-  // Re-init particles if particleType changes (e.g. going to Quest/Endless mode)
   useEffect(() => {
-    particlesRef.current = createInitialParticles(particleType);
-  }, [particleType]);
+    const numLeaves = 7;
+    const initialLeaves = [];
+    const width = containerRef.current?.clientWidth || window.innerWidth || 1440;
+    const height = containerRef.current?.clientHeight || window.innerHeight || 810;
+
+    const distinctSizes = [32, 38, 44, 50, 56, 36, 42];
+
+    for (let i = 0; i < numLeaves; i++) {
+      initialLeaves.push({
+        id: i,
+        x: Math.random() * width,
+        y: 40 + Math.random() * (height * 0.75),
+        vx: 0,
+        vy: 0,
+        baseSpeedX: 0.35 + Math.random() * 0.45,
+        baseSpeedY: 0.02 + Math.random() * 0.08,
+        swayAmp: 0.8 + Math.random() * 0.9,
+        swayFreq: 0.012 + Math.random() * 0.01,
+        phase: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() > 0.5 ? 1 : -1) * (0.15 + Math.random() * 0.3),
+        rotation: Math.random() * 360,
+        vRot: 0,
+        type: i % 10,
+        size: distinctSizes[i % distinctSizes.length]
+      });
+    }
+
+    leavesRef.current = initialLeaves;
+  }, []);
 
   useEffect(() => {
+    const getLocalCoords = (clientX, clientY) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return { x: clientX, y: clientY };
+      const scaleX = (containerRef.current.clientWidth || 1440) / (rect.width || 1);
+      const scaleY = (containerRef.current.clientHeight || 810) / (rect.height || 1);
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    };
+
     const handleMouseMove = (e) => {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
+      const { x, y } = getLocalCoords(e.clientX, e.clientY);
+      mouseRef.current.x = x;
+      mouseRef.current.y = y;
       mouseRef.current.active = true;
     };
 
     const handleTouchMove = (e) => {
       if (e.touches && e.touches[0]) {
-        mouseRef.current.x = e.touches[0].clientX;
-        mouseRef.current.y = e.touches[0].clientY;
+        const { x, y } = getLocalCoords(e.touches[0].clientX, e.touches[0].clientY);
+        mouseRef.current.x = x;
+        mouseRef.current.y = y;
         mouseRef.current.active = true;
       }
     };
 
     const handleClick = (e) => {
-      const cx = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : window.innerWidth / 2);
-      const cy = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : window.innerHeight / 2);
+      const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : window.innerWidth / 2);
+      const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : window.innerHeight / 2);
+      const { x, y } = getLocalCoords(clientX, clientY);
 
-      mouseRef.current.x = cx;
-      mouseRef.current.y = cy;
+      mouseRef.current.x = x;
+      mouseRef.current.y = y;
       mouseRef.current.active = true;
 
       clickBurstRef.current = {
-        x: cx,
-        y: cy,
+        x,
+        y,
         active: true,
         time: Date.now()
       };
@@ -204,8 +214,8 @@ const InteractiveFloatingParticles = memo(({ particleType = 'leaf' }) => {
     let animId;
 
     const updatePhysics = () => {
-      const width = window.innerWidth || 1200;
-      const height = window.innerHeight || 800;
+      const width = containerRef.current?.clientWidth || window.innerWidth || 1440;
+      const height = containerRef.current?.clientHeight || window.innerHeight || 810;
       const mouse = mouseRef.current;
       const burst = clickBurstRef.current;
 
@@ -214,80 +224,72 @@ const InteractiveFloatingParticles = memo(({ particleType = 'leaf' }) => {
 
       const isBursting = burst.active && (Date.now() - burst.time < 350);
 
-      particlesRef.current.forEach((p) => {
-        // 1. Click burst force
+      leavesRef.current.forEach((leaf) => {
         if (isBursting) {
-          const bdx = p.x - burst.x;
-          const bdy = p.y - burst.y;
+          const bdx = leaf.x - burst.x;
+          const bdy = leaf.y - burst.y;
           const bdist = Math.sqrt(bdx * bdx + bdy * bdy) || 1;
-          const blastRadius = 380;
+          const blastRadius = 350;
 
           if (bdist < blastRadius) {
-            const blastPower = ((blastRadius - bdist) / blastRadius) * 22;
+            const blastPower = ((blastRadius - bdist) / blastRadius) * 18;
             const bnx = bdx / bdist;
             const bny = bdy / bdist;
 
-            p.vx += bnx * blastPower;
-            p.vy += bny * blastPower;
-            p.vRot += (Math.random() - 0.5) * 4;
+            leaf.vx += bnx * blastPower;
+            leaf.vy += bny * blastPower;
+            leaf.vRot += (Math.random() - 0.5) * 4;
           }
         } 
-        // 2. Mouse interactive wind repulsion
         else if (mouse.active) {
-          const dx = mouse.x - p.x;
-          const dy = mouse.y - p.y;
+          const dx = mouse.x - leaf.x;
+          const dy = mouse.y - leaf.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const attractionRadius = 260;
+          const attractionRadius = 240;
 
           if (dist < attractionRadius && dist > 15) {
-            const pullFactor = (1 - dist / attractionRadius) * 0.45;
+            const pullFactor = (1 - dist / attractionRadius) * 0.35;
             const nx = dx / dist;
             const ny = dy / dist;
             const tangentX = -ny;
             const tangentY = nx;
 
-            p.vx -= (nx * 0.5 + tangentX * 0.2) * pullFactor;
-            p.vy -= (ny * 0.5 + tangentY * 0.2) * pullFactor;
-            p.vRot += (Math.random() - 0.5) * 0.6 * pullFactor;
+            leaf.vx += (nx * 0.3 + tangentX * 0.1) * pullFactor;
+            leaf.vy += (ny * 0.3 + tangentY * 0.1) * pullFactor;
+            leaf.vRot += (Math.random() - 0.5) * 0.4 * pullFactor;
           }
         }
 
         // Apply friction decay to impulse velocities
-        p.vx *= 0.92;
-        p.vy *= 0.92;
-        p.vRot *= 0.93;
+        leaf.vx *= 0.92;
+        leaf.vy *= 0.92;
+        leaf.vRot *= 0.93;
 
-        // Dynamic organic sine wave sway offset (melayang di udara naik-turun halus)
-        const swayX = Math.sin(frame * p.swayFreq + p.phase) * p.swayAmp;
-        const swayY = Math.cos(frame * (p.swayFreq * 0.7) + p.phase) * (p.swayAmp * 0.6);
+        // Dynamic sine wave sway offset (melayang bergelombang ditiup angin)
+        const swayX = Math.sin(frame * leaf.swayFreq + leaf.phase) * leaf.swayAmp;
+        const swayY = Math.cos(frame * (leaf.swayFreq * 0.7) + leaf.phase) * (leaf.swayAmp * 0.6);
 
-        // Move particle with continuous wind + sway + impulse velocities
-        p.x += p.baseSpeedX + swayX + p.vx;
-        p.y += p.baseSpeedY + swayY + p.vy;
-        p.rotation += p.rotSpeed + p.vRot;
+        // Move leaf with continuous wind + sway + impulse velocities
+        leaf.x += leaf.baseSpeedX + swayX + leaf.vx;
+        leaf.y += leaf.baseSpeedY + swayY + leaf.vy;
+        leaf.rotation += leaf.rotSpeed + leaf.vRot;
 
-        // Seamless wrapping around screen borders
-        if (p.x > width + 80) {
-          p.x = -80;
-          p.y = Math.random() * (height * 0.95);
+        // Wrap around screen seamlessly (melayang ke kanan, lalu masuk kembali perlahan dari kiri)
+        if (leaf.x > width + 80) {
+          leaf.x = -80;
+          leaf.y = 40 + Math.random() * (height * 0.75);
         }
-        if (p.x < -90) {
-          p.x = width + 80;
-          p.y = Math.random() * (height * 0.95);
+        if (leaf.y > height + 80) {
+          leaf.y = -60;
+          leaf.x = Math.random() * (width * 0.85);
         }
-        if (p.y > height + 80) {
-          p.y = -80;
-          p.x = Math.random() * (width * 0.95);
-        }
-        if (p.y < -90) {
-          p.y = height + 80;
-          p.x = Math.random() * (width * 0.95);
-        }
+        if (leaf.x < -100) leaf.x = width + 80;
+        if (leaf.y < -100) leaf.y = height + 80;
 
-        // DIRECT DOM TRANSFORM MUTATION (0% REACT RE-RENDER LAG, 100% HARDWARE ACCELERATED)
-        const el = domRefs.current[p.id];
+        // DIRECT DOM TRANSFORM MUTATION (0% REACT RE-RENDER LAG)
+        const el = domRefs.current[leaf.id];
         if (el) {
-          el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) rotate(${p.rotation}deg)`;
+          el.style.transform = `translate3d(${leaf.x}px, ${leaf.y}px, 0) rotate(${leaf.rotation}deg)`;
         }
       });
 
@@ -303,23 +305,66 @@ const InteractiveFloatingParticles = memo(({ particleType = 'leaf' }) => {
   }, []);
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-      {particlesRef.current.map((p) => (
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+      {leavesRef.current.map((leaf) => (
         <div
-          key={`${particleType}-${p.id}`}
-          ref={(el) => (domRefs.current[p.id] = el)}
+          key={leaf.id}
+          ref={(el) => (domRefs.current[leaf.id] = el)}
           className="absolute pointer-events-none"
           style={{
-            transform: `translate3d(${p.x}px, ${p.y}px, 0) rotate(${p.rotation}deg)`,
+            transform: `translate3d(${leaf.x}px, ${leaf.y}px, 0) rotate(${leaf.rotation}deg)`,
             willChange: 'transform'
           }}
         >
-          <FloatingParticle particleType={particleType} type={p.type} size={p.size} />
+          <FloatingParticle particleType="leaf" type={leaf.type} size={leaf.size} />
         </div>
       ))}
     </div>
   );
 });
+
+/**
+ * Interactive Floating Particles (Delegates to InteractiveBlowingLeaves2D for leaves)
+ */
+const InteractiveFloatingParticles = memo(({ particleType = 'leaf' }) => {
+  if (particleType === 'leaf') {
+    return <InteractiveBlowingLeaves2D />;
+  }
+
+  const isEmber = particleType === 'ember' || particleType === 'fire';
+  const particles = useMemo(() => [
+    { id: 0, left: '8%', duration: 18, delay: 0, size: 34 },
+    { id: 1, left: '28%', duration: 24, delay: 5, size: 42 },
+    { id: 2, left: '52%', duration: 20, delay: 10, size: 32 },
+    { id: 3, left: '74%', duration: 22, delay: 3, size: 46 },
+    { id: 4, left: '92%', duration: 26, delay: 7, size: 36 },
+  ], []);
+
+  const animName = isEmber ? 'cssParticleRise' : 'cssParticleFall';
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+      {particles.map((p) => (
+        <div
+          key={`${particleType}-${p.id}`}
+          className="absolute pointer-events-none"
+          style={{
+            left: p.left,
+            top: isEmber ? '100%' : '-60px',
+            animation: `${animName} ${p.duration}s linear infinite`,
+            animationDelay: `${p.delay}s`,
+            willChange: 'transform',
+          }}
+        >
+          <div style={{ animation: `cssParticleSway 4s ease-in-out infinite alternate` }}>
+            <FloatingParticle particleType={particleType} type={p.id} size={p.size} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+});
+
 
 /**
  * 100% GPU-ACCELERATED CSS WIND STREAMERS (0% CPU USAGE)

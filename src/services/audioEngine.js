@@ -22,9 +22,26 @@ class AudioEngine {
     this.hasInteracted = false;
 
     // Single persistent HTML5 Audio Elements
-    this.menuAudioEl = new Audio('/music/menu.mp3');
+    this.menuAudioEl = new Audio(encodeURI('/music/menu pengganti.mp3'));
     this.menuAudioEl.loop = true;
     this.menuAudioEl.preload = 'auto';
+    this.menuAudioEl.addEventListener('ended', () => {
+      if (this.isPlayingBgm && !this.isQuestBattleActive) {
+        this.menuAudioEl.currentTime = 0;
+        this.menuAudioEl.play().catch(() => {});
+      }
+    });
+
+    // Add-on Bird Chirping Track (active during pagi, siang, sore)
+    this.birdsAudioEl = new Audio(encodeURI('/music/add ons menu pengganti birds charping.mp3'));
+    this.birdsAudioEl.loop = true;
+    this.birdsAudioEl.preload = 'auto';
+    this.birdsAudioEl.addEventListener('ended', () => {
+      if (this.isPlayingBgm && !this.isQuestBattleActive && this.isDaytime()) {
+        this.birdsAudioEl.currentTime = 0;
+        this.birdsAudioEl.play().catch(() => {});
+      }
+    });
 
     this.battleAudioEl = new Audio('/music/battle.mp3');
     this.battleAudioEl.loop = true;
@@ -49,6 +66,15 @@ class AudioEngine {
         this.setDucking(isSpeaking);
       });
     } catch {}
+
+    // Periodic time-of-day checker to transition birds chirping seamlessly (e.g. sore -> malam or malam -> pagi)
+    if (typeof window !== 'undefined') {
+      setInterval(() => {
+        if (this.isPlayingBgm && !this.isQuestBattleActive) {
+          this.syncBirdsPlayback();
+        }
+      }, 30000);
+    }
 
     // Global listener to bypass browser autoplay blocks on first user gesture
     this.initAutoPlayOnFirstInteraction();
@@ -105,6 +131,8 @@ class AudioEngine {
     if (this.musicVol > 0 && this.isMusicOn) {
       if (!this.isPlayingBgm && !this.isQuestBattleActive) {
         this.playMenuBgmFile();
+      } else {
+        this.syncBirdsPlayback();
       }
     } else if (this.musicVol === 0) {
       this.stopAllBgmTracks();
@@ -147,12 +175,72 @@ class AudioEngine {
     this.updateVolumes();
   }
 
+  // Helper: check if daytime (pagi, siang, sore)
+  isDaytime() {
+    try {
+      if (reloVoiceService && typeof reloVoiceService.getTimeOfDay === 'function') {
+        const tod = reloVoiceService.getTimeOfDay();
+        return tod === 'pagi' || tod === 'siang' || tod === 'sore';
+      }
+    } catch {}
+    const hour = new Date().getHours();
+    return hour >= 4 && hour < 19;
+  }
+
+  // Synchronize birds chirping playback according to BGM state & time of day
+  syncBirdsPlayback(forceRestart = false) {
+    if (!this.birdsAudioEl) return;
+
+    const isMenuTrackActive = !this.customAudioSrc;
+    const shouldPlay = this.isMusicOn && 
+                       this.musicVol > 0 && 
+                       this.isPlayingBgm && 
+                       !this.isQuestBattleActive && 
+                       isMenuTrackActive && 
+                       this.isDaytime();
+
+    if (shouldPlay) {
+      this.updateVolumes();
+      if (forceRestart) {
+        this.birdsAudioEl.currentTime = 0;
+      }
+      if (this.birdsAudioEl.paused) {
+        this.birdsAudioEl.play().catch(() => {});
+      }
+    } else {
+      if (!this.birdsAudioEl.paused) {
+        this.birdsAudioEl.pause();
+      }
+      if (!this.isPlayingBgm || this.isQuestBattleActive || !this.isMusicOn || this.musicVol <= 0 || !isMenuTrackActive) {
+        this.birdsAudioEl.currentTime = 0;
+      }
+    }
+  }
+
+  setVideoAudioActive(active) {
+    this.isVideoPlaying = Boolean(active);
+    if (this.isVideoPlaying) {
+      if (this.menuAudioEl && !this.menuAudioEl.paused) this.menuAudioEl.pause();
+      if (this.birdsAudioEl && !this.birdsAudioEl.paused) this.birdsAudioEl.pause();
+      if (this.battleAudioEl && !this.battleAudioEl.paused) this.battleAudioEl.pause();
+      if (this.customAudioEl && !this.customAudioEl.paused) this.customAudioEl.pause();
+    } else {
+      if (this.isMusicOn && this.musicVol > 0 && this.isPlayingBgm && !this.isQuestBattleActive) {
+        if (this.menuAudioEl && this.menuAudioEl.paused) {
+          this.menuAudioEl.play().catch(() => {});
+        }
+        this.syncBirdsPlayback();
+      }
+    }
+  }
+
   updateVolumes() {
     const duckFactor = this.isDucking ? 0.22 : 1.0;
     const effectiveMusicVol = Math.max(0, Math.min(1, this.musicVol * duckFactor));
     const effectiveSfxVol = Math.max(0, Math.min(1, this.sfxVol));
 
     if (this.menuAudioEl) this.menuAudioEl.volume = effectiveMusicVol;
+    if (this.birdsAudioEl) this.birdsAudioEl.volume = Math.max(0, Math.min(1, 0.70 * effectiveMusicVol));
     if (this.customAudioEl) this.customAudioEl.volume = effectiveMusicVol;
     if (this.battleAudioEl) this.battleAudioEl.volume = Math.max(0, Math.min(1, 0.45 * effectiveMusicVol));
     if (this.victoryAudioEl) this.victoryAudioEl.volume = effectiveSfxVol;
@@ -319,7 +407,7 @@ class AudioEngine {
     this.isPlayingBgm = false;
     this.isQuestBattleActive = false;
 
-    [this.menuAudioEl, this.battleAudioEl, this.victoryAudioEl, this.customAudioEl].forEach(audio => {
+    [this.menuAudioEl, this.birdsAudioEl, this.battleAudioEl, this.victoryAudioEl, this.customAudioEl].forEach(audio => {
       if (audio) {
         try {
           audio.pause();
@@ -389,6 +477,7 @@ class AudioEngine {
     // Let the song play completely until the end before looping naturally.
     if (this.isPlayingBgm && activeEl && !activeEl.paused && !forceRestart) {
       this.updateVolumes();
+      this.syncBirdsPlayback(false);
       return;
     }
 
@@ -400,6 +489,7 @@ class AudioEngine {
     }
 
     activeEl.play().catch(() => {});
+    this.syncBirdsPlayback(forceRestart);
   }
 
   setCustomBgmSource(srcOrDataUrl) {

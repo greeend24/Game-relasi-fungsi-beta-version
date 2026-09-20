@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=DynaPuff:wght@400;500;600;700&family=Patrick+Hand&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -19,7 +18,7 @@
   --theme-glow-strength: 10px;
   --theme-card-radius: 16px;
   --theme-btn-radius: 12px;
-  --theme-font-family: 'Patrick Hand', 'Balsamiq Sans', cursive, sans-serif;
+  --theme-font-family: 'Balsamiq Sans', cursive, sans-serif;
   --theme-font-scale: 1;
   --theme-title-scale: 1;
   --theme-mascot-scale: 1;
@@ -70,7 +69,7 @@ html, body, #root {
   padding: 0;
   background-color: #0d0c0a !important;
   color: #2D241E;
-  font-family: 'Patrick Hand', 'Balsamiq Sans', cursive, sans-serif;
+  font-family: 'Balsamiq Sans', cursive, sans-serif;
   font-size: 12pt;
   height: 100%;
   height: 100dvh;
@@ -105,15 +104,15 @@ html, body, #root {
 }
 
 .game-stage-16-9 {
-  /* Fixed 1920x1080 Virtual Canvas:
-     Maintains pixel-perfect fidelity with the Electron desktop build.
+  /* Fixed 1280x720 Virtual Canvas (Nintendo Switch-style 16:9 HD Base):
+     Maintains pixel-perfect fidelity between Desktop PC and Mobile Landscape.
      Scales uniformly via CSS transform scale based on viewport dimensions. */
-  width: 1920px;
-  height: 1080px;
-  min-width: 1920px;
-  min-height: 1080px;
-  max-width: 1920px;
-  max-height: 1080px;
+  width: 1280px;
+  height: 720px;
+  min-width: 1280px;
+  min-height: 720px;
+  max-width: 1280px;
+  max-height: 720px;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -128,8 +127,17 @@ html, body, #root {
   container-type: size;
   container-name: game-stage;
   flex-shrink: 0;
-  font-size: 18px;
+  font-size: 16px;
+  contain: layout style paint;
+  will-change: transform;
+  transform-style: flat;
+  backface-visibility: hidden;
 }
+
+/* ───────────────────────────────────────────────────────────── */
+/* GLASSMORPHISM BACKDROP BLUR SYSTEM                             */
+/* GPU-accelerated frosted glass effect for panels & buttons      */
+/* ───────────────────────────────────────────────────────────── */
 
 /* STABLE BASE TYPOGRAPHY (Standard 16px rem base, scales uniformly with canvas) */
 html, body, #root {
@@ -164,18 +172,20 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-color: #F59E0B rgba(45, 36, 30, 0.15);
 }
 
-.font-pencil {
+.font-pencil,
+.font-hand,
+.font-sans {
   font-family: 'Balsamiq Sans', cursive, sans-serif !important;
   text-shadow: none !important;
 }
 
-.font-hand {
-  font-family: 'Patrick Hand', cursive, sans-serif !important;
-  text-shadow: none !important;
+input, textarea, select, button,
+input::placeholder, textarea::placeholder {
+  font-family: 'Balsamiq Sans', cursive, sans-serif !important;
 }
 
-.font-sans {
-  font-family: 'Balsamiq Sans', 'Patrick Hand', sans-serif !important;
+.font-daruma {
+  font-family: 'Darumadrop One', cursive, sans-serif !important;
   text-shadow: none !important;
 }
 
@@ -249,6 +259,23 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+@keyframes cssParticleRise {
+  0% {
+    transform: translate3d(0, 110vh, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(30px, -50px, 0);
+    opacity: 0;
+  }
+}
+
 @keyframes cssWindDrift {
   0% {
     transform: translate3d(0, 0, 0);
@@ -267,38 +294,41 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Pencil Cartoon Card & Panel Styles (Optimized for 60fps) */
-.glass-panel, .glass-panel-glow {
-  background: rgba(255, 255, 255, 0.94) !important;
-  border: 2.5px solid #2D241E;
-  border-radius: 24px;
-  box-shadow: 4px 5px 0px #2D241E, 0 10px 25px rgba(45, 36, 30, 0.08);
+/* Glassmorphism Card & Panel Base */
+.glass-panel-glow {
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .pencil-card {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 2px solid #2D241E;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.30);
   border-radius: 20px;
-  box-shadow: 3px 4px 0px #2D241E;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
-/* Default pencil-btn */
+/* Glassmorphism Button */
 .pencil-btn {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 2.5px solid #2D241E;
+  background: rgba(255, 255, 255, 0.20) !important;
+  backdrop-filter: blur(14px) saturate(1.3);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.30);
   border-radius: 16px;
-  box-shadow: 3px 3px 0px #2D241E;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
 }
 
 .pencil-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 4px 5px 0px #2D241E;
+  background: rgba(255, 255, 255, 0.30) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .pencil-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px #2D241E;
+  transform: translateY(1px);
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Light Beam Glint Overlay Sweep (SOLID CARDS ONLY - EXCLUDE IMAGE / ICON / CLEAN BUTTONS) */
@@ -381,7 +411,7 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
 .snowy-mascot.is-hovered,
 .snowy-mascot.is-touched,
 .snowy-mascot:active {
-  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 22px rgba(56, 189, 248, 0.98)) drop-shadow(0 0 38px rgba(56, 189, 248, 0.75)) !important;
+  filter: grayscale(0%) brightness(1.15) contrast(1.05) drop-shadow(0 6px 14px rgba(56, 189, 248, 0.8)) !important;
 }
 
 /* 2. Chapter Mode Island & Relo Mascot Synchronized Hover & Touch/Hold Glow */
@@ -408,7 +438,7 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
 .relo-mascot.is-hovered,
 .relo-mascot.is-touched,
 .relo-mascot:active {
-  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 22px rgba(253, 224, 71, 0.98)) drop-shadow(0 0 38px rgba(253, 224, 71, 0.75)) !important;
+  filter: grayscale(0%) brightness(1.15) contrast(1.05) drop-shadow(0 6px 14px rgba(253, 224, 71, 0.8)) !important;
 }
 
 /* 3. Endless Mode Island & Ryu Mascot Synchronized Hover & Touch/Hold Glow */
@@ -435,7 +465,7 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
 .ryu-mascot.is-hovered,
 .ryu-mascot.is-touched,
 .ryu-mascot:active {
-  filter: grayscale(0%) brightness(1.2) contrast(1.08) drop-shadow(0 0 22px rgba(249, 115, 22, 0.98)) drop-shadow(0 0 38px rgba(249, 115, 22, 0.75)) !important;
+  filter: grayscale(0%) brightness(1.15) contrast(1.05) drop-shadow(0 6px 14px rgba(249, 115, 22, 0.8)) !important;
 }
 
 /* MODE MASCOT PNG/GIF: 70% GRAYSCALE DEFAULT -> 100% VIBRANT COLOR & GLOW ON HOVER / TOUCH / HOLD */
@@ -828,20 +858,29 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   scrollbar-width: none !important;
 }
 
-/* GLOBAL CUSTOM WOODEN SCROLLER PIN & TRACK ASSETS FROM ASSETS/TAMPILAN DI RANK/ASSET */
-.drag-scroller,
+/* GLOBAL CUSTOM WOODEN SCROLLER PIN & TRACK ASSETS (DISABLED - NO SCROLL) */
+.drag-scroller {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow: hidden !important;
+}
+
+.drag-scroller::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
 .highscore-scroller {
   scrollbar-width: thin;
   scrollbar-color: #8A6746 transparent;
 }
 
-.drag-scroller::-webkit-scrollbar,
 .highscore-scroller::-webkit-scrollbar {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
 }
 
-.drag-scroller::-webkit-scrollbar-track,
 .highscore-scroller::-webkit-scrollbar-track {
   background-image: url('/assets/tampilan di rank/asset/scroller.png');
   background-size: 100% 100%;
@@ -851,7 +890,6 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   background-color: transparent;
 }
 
-.drag-scroller::-webkit-scrollbar-thumb,
 .highscore-scroller::-webkit-scrollbar-thumb {
   background-image: url('/assets/tampilan di rank/asset/button_of_scroller@4x.png');
   background-size: contain;
@@ -859,7 +897,7 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   background-position: center;
   background-color: transparent;
   border-radius: 9999px;
-  min-height: 36px;
+  min-height: 28px;
   cursor: pointer;
 }
 
@@ -1414,68 +1452,57 @@ img {
 /* ───────────────────────────────────────────────────────────── */
 
 .glass-panel {
-  /* High transparency + subtle gradient simulating light refraction */
   background: linear-gradient(
     135deg, 
-    rgba(255, 255, 255, 0.28) 0%, 
-    rgba(255, 255, 255, 0.08) 55%,
-    rgba(255, 255, 255, 0.16) 100%
+    rgba(255, 255, 255, 0.62) 0%, 
+    rgba(255, 255, 255, 0.38) 55%,
+    rgba(255, 255, 255, 0.52) 100%
   ) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(108%) contrast(102%) !important;
-  backdrop-filter: blur(20px) saturate(200%) brightness(108%) contrast(102%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(104%) !important;
+  backdrop-filter: blur(24px) saturate(180%) brightness(104%) !important;
   
-  /* Luminous specular beveled glass border */
-  border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
-  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
-  border-left: 2px solid rgba(255, 255, 255, 0.80) !important;
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.30) !important;
-  border-right: 1.5px solid rgba(255, 255, 255, 0.40) !important;
+  /* Specular beveled glass border */
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
   
-  /* Beveled inner reflections + soft diffuse realistic ambient shadow (NO SOLID COMIC BROWN SHADOW) */
+  /* Ambient shadow with warm tint */
   box-shadow: 
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.92),
-    inset 0 -1.5px 2px 0 rgba(255, 255, 255, 0.15),
-    inset 2px 0 3px 0 rgba(255, 255, 255, 0.45),
-    0 24px 48px -12px rgba(0, 0, 0, 0.20),
-    0 4px 12px 0 rgba(0, 0, 0, 0.08) !important;
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.90),
+    0 16px 36px -8px rgba(45, 36, 30, 0.12),
+    0 4px 12px 0 rgba(45, 36, 30, 0.06) !important;
   position: relative;
-  color: #1E293B;
+  color: #2D241E;
 }
 
 .glass-panel-subtle {
   background: linear-gradient(
     135deg, 
-    rgba(255, 255, 255, 0.22) 0%, 
-    rgba(255, 255, 255, 0.06) 100%
+    rgba(255, 255, 255, 0.55) 0%, 
+    rgba(255, 255, 255, 0.32) 100%
   ) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(106%) !important;
-  backdrop-filter: blur(16px) saturate(180%) brightness(106%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.50) !important;
-  border-top: 1.5px solid rgba(255, 255, 255, 0.85) !important;
-  border-left: 1.5px solid rgba(255, 255, 255, 0.70) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(104%) !important;
+  backdrop-filter: blur(18px) saturate(170%) brightness(104%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
   box-shadow: 
     inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
-    0 8px 24px -4px rgba(0, 0, 0, 0.12),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06) !important;
+    0 8px 20px -4px rgba(45, 36, 30, 0.08),
+    0 2px 6px 0 rgba(45, 36, 30, 0.04) !important;
   position: relative;
-  color: #1E293B;
+  color: #2D241E;
 }
 
 .glass-btn {
   background: linear-gradient(
     135deg, 
-    rgba(255, 255, 255, 0.32) 0%, 
-    rgba(255, 255, 255, 0.10) 100%
+    rgba(255, 255, 255, 0.65) 0%, 
+    rgba(255, 255, 255, 0.42) 100%
   ) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(175%) brightness(106%) !important;
-  backdrop-filter: blur(14px) saturate(175%) brightness(106%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
-  border-top: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-  border-left: 1.5px solid rgba(255, 255, 255, 0.80) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(175%) !important;
+  backdrop-filter: blur(16px) saturate(175%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
   box-shadow: 
     inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.90),
-    0 4px 14px 0 rgba(0, 0, 0, 0.10) !important;
-  color: #1E293B !important;
+    0 4px 14px 0 rgba(45, 36, 30, 0.08) !important;
+  color: #2D241E !important;
   border-radius: 16px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative;
@@ -1485,25 +1512,25 @@ img {
 .glass-btn:hover {
   background: linear-gradient(
     135deg, 
-    rgba(255, 255, 255, 0.52) 0%, 
-    rgba(255, 255, 255, 0.22) 100%
+    rgba(255, 255, 255, 0.85) 0%, 
+    rgba(255, 255, 255, 0.62) 100%
   ) !important;
-  border-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #F59E0B !important;
   box-shadow: 
     inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
-    0 10px 28px 0 rgba(0, 0, 0, 0.16) !important;
+    0 8px 24px 0 rgba(245, 158, 11, 0.2) !important;
   transform: translateY(-2px) !important;
 }
 
 .glass-btn:active {
   background: linear-gradient(
     135deg, 
-    rgba(255, 255, 255, 0.20) 0%, 
-    rgba(255, 255, 255, 0.08) 100%
+    rgba(255, 251, 235, 0.85) 0%, 
+    rgba(255, 251, 235, 0.62) 100%
   ) !important;
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.70),
-    0 2px 6px 0 rgba(0, 0, 0, 0.10) !important;
+    0 2px 6px 0 rgba(0, 0, 0, 0.08) !important;
   transform: translateY(1px) scale(0.98) !important;
 }
 
@@ -1613,77 +1640,87 @@ img {
   z-index: 2;
 }
 
-/* Crisp text legibility over transparent glass */
+/* Crisp text legibility over milky frosted glass - No blurry white shadows */
 .glass-panel h1, .glass-panel h2, .glass-panel h3, 
 .glass-panel-subtle h1, .glass-panel-subtle h2, .glass-panel-subtle h3,
 .glass-card h1, .glass-card h2, .glass-card h3 {
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
+  text-shadow: none !important;
 }
 .glass-panel p, .glass-panel-subtle p,
 .glass-panel span, .glass-panel-subtle span,
 .glass-card p, .glass-card span {
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
+  text-shadow: none !important;
 }
 
 /* Glass Card - for in-game panels and cards */
 .glass-card {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.36) 0%,
-    rgba(255, 255, 255, 0.12) 100%
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.40) 100%
   ) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(190%) brightness(107%) contrast(102%) !important;
-  backdrop-filter: blur(18px) saturate(190%) brightness(107%) contrast(102%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
-  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
-  border-left: 2px solid rgba(255, 255, 255, 0.80) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(175%) brightness(104%) !important;
+  backdrop-filter: blur(20px) saturate(175%) brightness(104%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.70) !important;
   box-shadow:
     inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.90),
-    0 16px 36px -8px rgba(0, 0, 0, 0.14),
-    0 4px 10px 0 rgba(0, 0, 0, 0.06) !important;
+    0 12px 28px -6px rgba(45, 36, 30, 0.10),
+    0 3px 8px 0 rgba(45, 36, 30, 0.05) !important;
   position: relative;
-  color: #1E293B;
+  color: #2D241E;
+}
+
+/* Glass Bubble - for mascot speech bubbles and floating dialogue boxes */
+.glass-bubble {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.50) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(105%) !important;
+  backdrop-filter: blur(20px) saturate(180%) brightness(105%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow:
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95),
+    0 10px 28px -4px rgba(45, 36, 30, 0.14),
+    0 3px 8px 0 rgba(45, 36, 30, 0.06) !important;
+  position: relative;
+  color: #2D241E;
 }
 
 /* Glass Option - for interactive buttons and choices (unselected state) */
 .glass-option {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.16) 100%
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.40) 100%
   ) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(175%) brightness(106%) !important;
-  backdrop-filter: blur(12px) saturate(175%) brightness(106%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.70) !important;
-  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
-  border-left: 2px solid rgba(255, 255, 255, 0.80) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(170%) !important;
+  backdrop-filter: blur(14px) saturate(170%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
   box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.88),
-    0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.90),
+    0 4px 12px rgba(45, 36, 30, 0.06) !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: #1E293B !important;
+  color: #2D241E !important;
 }
 
 .glass-option:hover {
   background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.62) 0%,
-    rgba(255, 255, 255, 0.28) 100%
+    135deg, 
+    rgba(255, 255, 255, 0.85) 0%, 
+    rgba(255, 255, 255, 0.60) 100%
   ) !important;
-  border-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: #F59E0B !important;
   transform: translateY(-2px) !important;
   box-shadow:
     inset 0 1px 2px 0 rgba(255, 255, 255, 1),
-    0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    0 6px 18px rgba(245, 158, 11, 0.15) !important;
 }
 
 .glass-option:active {
   transform: translateY(1px) scale(0.98) !important;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.10) 100%
-  ) !important;
+  background: rgba(255, 251, 235, 0.80) !important;
 }
 
 /* Glass Input - for text/number fields */
@@ -1732,4 +1769,48 @@ img {
 /* 16:9 UNIFORM SCALING ENGINE HANDLES ALL MOBILE & DESKTOP RESOLUTIONS       */
 /* Virtual resolution is locked to 1920x1080; all assets scale seamlessly.    */
 /* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* PREMIUM LOADING SCREEN STYLES & SHIMMER ANIMATIONS                         */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes loadingBarShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-bar-shimmer {
+  animation: loadingBarShimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes orbitRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-orbit-ring {
+  animation: orbitRotate 16s linear infinite;
+}
+
+@keyframes pulseGlowRing {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.95;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlowRing 3.2s ease-in-out infinite;
+}
 

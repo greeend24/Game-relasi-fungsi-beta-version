@@ -34,20 +34,39 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
 
   const handleSelectA = (idxA) => {
     audioEngine.playClick();
-    setSelectedIdxA(idxA);
+    setSelectedIdxA(prev => prev === idxA ? null : idxA);
     setErrorDetails(null);
   };
 
   const handleSelectB = (idxB, overrideIdxA) => {
     const fromA = overrideIdxA !== undefined ? overrideIdxA : selectedIdxA;
-    if (fromA === null || fromA === undefined) return;
+
+    // KASUS 1: Tidak ada Domain A yang dipilih (pemain klik langsung di Kodomain B)
+    if (fromA === null || fromA === undefined) {
+      const hasConnection = userConnections.some(([, b]) => b === idxB);
+      if (hasConnection) {
+        audioEngine.playHover();
+        setUserConnections(prev => prev.filter(([, b]) => b !== idxB));
+        setErrorDetails(null);
+      }
+      return;
+    }
+
+    // KASUS 2: Ada Domain A yang dipilih (sambungkan tanpa memutus sambungan Domain A ke kodomain lain)
     audioEngine.playClick();
 
-    const filtered = userConnections.filter(([a, b]) => a !== fromA && b !== idxB);
-    const updated = [...filtered, [fromA, idxB]];
+    const alreadyConnected = userConnections.some(([a, b]) => a === fromA && b === idxB);
+    if (!alreadyConnected) {
+      setUserConnections(prev => [...prev, [fromA, idxB]]);
+    }
 
-    setUserConnections(updated);
     setSelectedIdxA(null);
+    setErrorDetails(null);
+  };
+
+  const handleDisconnectPair = (idxA, idxB) => {
+    audioEngine.playHover();
+    setUserConnections(prev => prev.filter(([a, b]) => !(a === idxA && b === idxB)));
     setErrorDetails(null);
   };
 
@@ -71,16 +90,16 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
 
       let reasons = [];
       if (!isAllMappedA) {
-        reasons.push(`⚠️ Belum semua Saksi (Himpunan A) mendapatkan alokasi Kursi (Himpunan B).`);
+        reasons.push(`⚠️ Belum semua saksi di Himpunan A mendapatkan pasangan kursi di Himpunan B.`);
       }
       if (!isUniqueB) {
-        reasons.push(`⚠️ Terdapat dua Saksi yang menduduki Kursi yang sama! Syarat 1:1 mewajibkan tiap Kursi diisi tepat satu Saksi.`);
+        reasons.push(`⚠️ Ada dua saksi yang memilih kursi yang sama! Pada korespondensi satu-satu, satu kursi hanya boleh untuk satu saksi.`);
       }
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL KORESPONDENSI SATU-SATU',
+        title: 'PETUNJUK DETEKTIF: PASANGAN SATU-SATU',
         reasons,
-        hint: stageConfig.conceptDef || 'Konsep: n(A) harus sama dengan n(B). Setiap elemen A terhubung ke TEPAT SATU elemen B yang unik.'
+        hint: stageConfig.conceptDef || 'Petunjuk: Jumlah anggota A dan B harus sama. Setiap anggota A dipasangkan tepat ke satu anggota B secara adil tanpa rebutan.'
       });
     }
   };
@@ -153,6 +172,7 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
                 selectedA={selectedIdxA}
                 onSelectA={handleSelectA}
                 onSelectB={handleSelectB}
+                onDisconnectPair={handleDisconnectPair}
                 labelA="SAKSI (Himpunan A)"
                 labelB="KURSI (Himpunan B)"
               />

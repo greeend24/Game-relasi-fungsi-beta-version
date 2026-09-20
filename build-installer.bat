@@ -4,7 +4,7 @@ title Detektif Data - Build Installer
 
 echo.
 echo ╔══════════════════════════════════════════════════════════╗
-echo ║          DETEKTIF DATA — Build Installer (.exe)          ║
+echo ║          DETEKTIF DATA - Build Installer (.exe)          ║
 echo ╚══════════════════════════════════════════════════════════╝
 echo.
 

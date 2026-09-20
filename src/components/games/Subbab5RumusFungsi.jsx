@@ -76,16 +76,16 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
 
       let reasons = [];
       if (!isFormulaCorrect) {
-        reasons.push(`⚠️ Rumus notasi f(x) yang kamu pilih belum tepat menyimbolkan kasus cerita.`);
+        reasons.push(`⚠️ Rumus notasi f(x) yang kamu pilih belum cocok dengan cerita kasusnya.`);
       }
       if (!isValueCorrect) {
-        reasons.push(`⚠️ Hasil perhitungan nilai f(${stageConfig.xVal}) belum pas dengan operasi aljabar.`);
+        reasons.push(`⚠️ Hasil hitungan nilai f(${stageConfig.xVal}) masih kurang tepat.`);
       }
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL NOTASI & RUMUS FUNGSI',
+        title: 'PETUNJUK DETEKTIF: RUMUS & NILAI',
         reasons,
-        hint: stageConfig.conceptDef || `Konsep: f(x) = ax + b. Gantikan posisi x dengan angka ${stageConfig.xVal}, lalu kalikan dengan koefisien a dan tambah konstanta b.`
+        hint: stageConfig.conceptDef || `Petunjuk: f(x) = ax + b. Ganti huruf x dengan angka ${stageConfig.xVal}, lalu kalikan dan jumlahkan hasilnya.`
       });
     }
   };
@@ -99,7 +99,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || `Rumus fungsi: f(x) = ax + b. Substitusikan nilai x ke dalam rumus.`}
+        hintText={stageConfig.conceptDef || `Rumus fungsi: f(x) = ax + b. Masukkan angka x ke dalam rumus untuk mencari nilainya.`}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -111,7 +111,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText={`Nilai fungsi f(${stageConfig.xVal}) diperoleh secara aljabar dengan menyubstitusikan variabel x = ${stageConfig.xVal} ke rumus fungsi f(x) = ${stageConfig.correctFormula}.`}
+        explanationText={`Nilai fungsi f(${stageConfig.xVal}) didapat dengan memasukkan nilai x = ${stageConfig.xVal} ke dalam rumus f(x) = ${stageConfig.correctFormula}.`}
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}

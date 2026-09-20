@@ -3,6 +3,7 @@ import { Award, Lock, CheckCircle2, Trophy } from 'lucide-react';
 import { BADGE_DEFINITIONS, storageService } from '../services/storageService';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
+import InstructorMascotGuide from './InstructorMascotGuide';
 
 /**
  * BadgesModal
@@ -127,6 +128,19 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
         </div>
 
       </div>
+
+      {/* DETEKTIF RYU MASCOT & SPEECH BUBBLE VIA UNIFIED INSTRUCTOR GUIDE */}
+      <InstructorMascotGuide
+        layout="floating"
+        character="ryu"
+        pose="standing"
+        emotion="happy"
+        title="INSTRUKTUR RYU"
+        icon="🔥"
+        canSpeak={true}
+        message={reloText || 'Kumpulkan semua 10 lencana detektif dengan menuntaskan setiap tantangan! 🏅🔥🐉'}
+      />
+
     </div>
   );
 }

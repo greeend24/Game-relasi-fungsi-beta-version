@@ -35,25 +35,41 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
 
   const handleSelectA = (idxA) => {
     audioEngine.playClick();
-    setSelectedIdxA(idxA);
+    setSelectedIdxA(prev => prev === idxA ? null : idxA);
     setErrorDetails(null);
   };
 
   const handleSelectB = (idxB, overrideIdxA) => {
     const fromA = overrideIdxA !== undefined ? overrideIdxA : selectedIdxA;
-    if (fromA === null || fromA === undefined) return;
-    audioEngine.playClick();
 
-    const exists = userConnections.some(([a, b]) => a === fromA && b === idxB);
-    let updated;
-    if (exists) {
-      updated = userConnections.filter(([a, b]) => !(a === fromA && b === idxB));
-    } else {
-      updated = [...userConnections, [fromA, idxB]];
+    // KASUS 1: Tidak ada Domain A yang dipilih (pemain klik langsung di Kodomain B)
+    // Putus tali jika Kodomain B yang dipencet sudah dipasangkan
+    if (fromA === null || fromA === undefined) {
+      const hasConnection = userConnections.some(([, b]) => b === idxB);
+      if (hasConnection) {
+        audioEngine.playHover();
+        setUserConnections(prev => prev.filter(([, b]) => b !== idxB));
+        setErrorDetails(null);
+      }
+      return;
     }
 
-    setUserConnections(updated);
+    // KASUS 2: Ada Domain A yang dipilih (Menyambungkan Domain A ke Kodomain B)
+    // Menambahkan pasangan baru tanpa memutus sambungan Domain A ke Kodomain lain!
+    audioEngine.playClick();
+
+    const alreadyConnected = userConnections.some(([a, b]) => a === fromA && b === idxB);
+    if (!alreadyConnected) {
+      setUserConnections(prev => [...prev, [fromA, idxB]]);
+    }
+
     setSelectedIdxA(null);
+    setErrorDetails(null);
+  };
+
+  const handleDisconnectPair = (idxA, idxB) => {
+    audioEngine.playHover();
+    setUserConnections(prev => prev.filter(([a, b]) => !(a === idxA && b === idxB)));
     setErrorDetails(null);
   };
 
@@ -90,9 +106,9 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
       }
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL KESALAHAN RELASI',
+        title: 'PETUNJUK DETEKTIF: CEK ATURAN RELASI',
         reasons,
-        hint: stageConfig.conceptDef || `Konsep: Uji setiap elemen A satu per satu. Apakah benar-benar memenuhi aturan ${stageConfig.relationRule} terhadap elemen B?`
+        hint: stageConfig.conceptDef || `Petunjuk: Coba cek setiap anggota A satu per satu. Apakah sudah sesuai aturan ${stageConfig.relationRule} dengan anggota B?`
       });
     }
   };
@@ -173,6 +189,7 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
                 selectedA={selectedIdxA}
                 onSelectA={handleSelectA}
                 onSelectB={handleSelectB}
+                onDisconnectPair={handleDisconnectPair}
                 labelA="HIMPUNAN A (Domain)"
                 labelB="HIMPUNAN B (Kodomain)"
               />

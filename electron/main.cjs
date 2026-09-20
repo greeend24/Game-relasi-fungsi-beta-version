@@ -52,6 +52,192 @@ function getUserDataPath() {
   return app.getPath('userData');
 }
 
+/**
+ * Otomatis sinkronkan database master (dari project / backend / resources)
+ * ke AppData agar perubahan di Server Admin (seperti ganti password) otomatis aktif di game Electron!
+ */
+function autoSyncDatabase(userDataPath) {
+  try {
+    const targetDb = path.join(userDataPath, 'detektif_data.db');
+    const candidateMasters = [
+      path.join(getResourcesPath(), 'backend', 'detektif_data.db'),
+      path.join(__dirname, '..', 'backend', 'detektif_data.db'),
+      path.join(process.cwd(), 'backend', 'detektif_data.db'),
+    ];
+
+    for (const master of candidateMasters) {
+      if (fs.existsSync(master)) {
+        if (!fs.existsSync(targetDb)) {
+          fs.copyFileSync(master, targetDb);
+          console.log('[Electron] Inisialisasi database awal dari master:', master);
+          return;
+        } else {
+          const masterStat = fs.statSync(master);
+          const targetStat = fs.statSync(targetDb);
+          // Jika database master lebih baru daripada di AppData (misal admin baru saja ubah password)
+          if (masterStat.mtimeMs > targetStat.mtimeMs + 1000) {
+            fs.copyFileSync(master, targetDb);
+            console.log('[Electron] Berhasil auto-sync database terbaru dari master ke AppData:', master);
+            return;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[Electron] Auto-sync database warning:', e.message);
+  }
+}
+
+/**
+ * Dapatkan URL server update remote:
+ * 1. Prioritas utama: file server_url.txt di folder game (untuk konfigurasi lab sekolah)
+ * 2. Default: Domain Ngrok Server Resmi (https://scooter-thickness-stony.ngrok-free.dev)
+ */
+function getRemoteServerUrl() {
+  try {
+    const candidates = [
+      path.join(process.cwd(), 'server_url.txt'),
+      path.join(path.dirname(process.execPath), 'server_url.txt'),
+      path.join(__dirname, '..', 'server_url.txt'),
+    ];
+    for (const c of candidates) {
+      if (fs.existsSync(c)) {
+        const raw = fs.readFileSync(c, 'utf-8').trim();
+        if (raw && !raw.startsWith('#')) {
+          return (raw.startsWith('http://') || raw.startsWith('https://')) ? raw.replace(/\/+$/, '') : `http://${raw}`.replace(/\/+$/, '');
+        }
+      }
+    }
+  } catch {}
+  return ONLINE_GAME_URL.replace(/\/+$/, '');
+}
+
+/**
+ * ⚡ In-App Asset Hot-Updater (OTA)
+ * Memeriksa pembaruan frontend terbaru dari server dan menyimpannya di AppData (userData/cached_frontend)
+ * sehingga laptop siswa selalu otomatis update materi, visual, dan soal terbaru tanpa perlu install ulang!
+ */
+async function checkAndApplyHotUpdate(remoteServerUrl, userDataPath) {
+  return new Promise((resolve) => {
+    try {
+      const manifestUrl = `${remoteServerUrl}/api/updates/manifest`;
+      console.log('[AutoUpdater] 🔍 Memeriksa pembaruan game dari:', manifestUrl);
+
+      const client = manifestUrl.startsWith('https') ? https : http;
+      const req = client.get(manifestUrl, {
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+        timeout: 2500,
+      }, (res) => {
+        if (res.statusCode !== 200) {
+          console.log(`[AutoUpdater] Server update merespon status ${res.statusCode}. Menggunakan berkas lokal.`);
+          return resolve(false);
+        }
+
+        let body = '';
+        res.on('data', (chunk) => { body += chunk; });
+        res.on('end', async () => {
+          try {
+            const manifest = JSON.parse(body);
+            if (!manifest || !manifest.success || !manifest.buildTimestamp) {
+              return resolve(false);
+            }
+
+            const cachedDir = path.join(userDataPath, 'cached_frontend');
+            const updateRecordFile = path.join(userDataPath, 'last_update.json');
+            let localTimestamp = 0;
+
+            if (fs.existsSync(updateRecordFile)) {
+              try {
+                const record = JSON.parse(fs.readFileSync(updateRecordFile, 'utf-8'));
+                localTimestamp = record.buildTimestamp || 0;
+              } catch {}
+            }
+
+            // Jika sudah versi terbaru dan index.html ada di cache, lewati download
+            if (localTimestamp >= manifest.buildTimestamp && fs.existsSync(path.join(cachedDir, 'index.html'))) {
+              console.log(`[AutoUpdater] ✅ Game sudah versi terbaru (Build: ${manifest.buildTimestamp}).`);
+              return resolve(false);
+            }
+
+            console.log(`[AutoUpdater] 🚀 Pembaruan baru terdeteksi! (Server: ${manifest.buildTimestamp} vs Lokal: ${localTimestamp})`);
+            console.log('[AutoUpdater] 📥 Mengunduh pembaruan materi & visual ke laptop...');
+
+            fs.mkdirSync(path.join(cachedDir, 'assets'), { recursive: true });
+
+            // 1. Tulis index.html terbaru
+            if (manifest.indexHtml) {
+              fs.writeFileSync(path.join(cachedDir, 'index.html'), manifest.indexHtml, 'utf-8');
+            }
+
+            // 2. Unduh setiap file JS/CSS baru di dist/assets
+            const assets = manifest.assets || [];
+            let downloadCount = 0;
+
+            for (const asset of assets) {
+              const targetPath = path.join(cachedDir, asset.path);
+              if (fs.existsSync(targetPath)) continue;
+
+              const fileUrl = `${remoteServerUrl}/${asset.path}`;
+              try {
+                await new Promise((resolveFile, rejectFile) => {
+                  const reqFile = client.get(fileUrl, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' },
+                    timeout: 8000,
+                  }, (resFile) => {
+                    if (resFile.statusCode !== 200) {
+                      return rejectFile(new Error(`Status ${resFile.statusCode}`));
+                    }
+                    const fileStream = fs.createWriteStream(targetPath);
+                    resFile.pipe(fileStream);
+                    fileStream.on('finish', () => {
+                      fileStream.close();
+                      downloadCount++;
+                      resolveFile();
+                    });
+                  });
+                  reqFile.on('error', rejectFile);
+                  reqFile.on('timeout', () => {
+                    reqFile.destroy();
+                    rejectFile(new Error('Timeout'));
+                  });
+                });
+              } catch (e) {
+                console.warn(`[AutoUpdater] Gagal mengunduh aset ${asset.path}:`, e.message);
+              }
+            }
+
+            fs.writeFileSync(updateRecordFile, JSON.stringify({
+              buildTimestamp: manifest.buildTimestamp,
+              downloadCount,
+              updatedAt: new Date().toISOString(),
+            }, null, 2), 'utf-8');
+
+            console.log(`[AutoUpdater] 🎉 Berhasil menerapkan pembaruan! (${downloadCount} aset baru disinkronkan)`);
+            resolve(true);
+          } catch (e) {
+            console.warn('[AutoUpdater] Parse manifest error:', e.message);
+            resolve(false);
+          }
+        });
+      });
+
+      req.on('error', (e) => {
+        console.log('[AutoUpdater] Tidak dapat terhubung ke server update (Offline mode aktif):', e.message);
+        resolve(false);
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        console.log('[AutoUpdater] Timeout koneksi ke server update. Melanjutkan mode lokal.');
+        resolve(false);
+      });
+    } catch (err) {
+      console.warn('[AutoUpdater] Error:', err.message);
+      resolve(false);
+    }
+  });
+}
+
 // ─────────────────────────────────────────────
 // 3. Start Backend In-Process (Zero Extra Child Processes)
 // ─────────────────────────────────────────────
@@ -63,6 +249,9 @@ async function startBackendInProcess() {
   if (!fs.existsSync(userDataPath)) {
     fs.mkdirSync(userDataPath, { recursive: true });
   }
+
+  // Otomatis sinkronkan database sebelum backend libSQL dihidupkan
+  autoSyncDatabase(userDataPath);
 
   process.env.PORT = String(BACKEND_PORT);
   process.env.ELECTRON_USER_DATA = userDataPath;
@@ -86,9 +275,9 @@ async function startBackendInProcess() {
 }
 
 // ─────────────────────────────────────────────
-// 4. Wait For Port
+// 4. Fast Port Polling
 // ─────────────────────────────────────────────
-async function waitForPort(port, maxRetries = 25, retryDelay = 100, timeout = 400) {
+async function waitForPort(port, maxRetries = 25, retryDelay = 20, timeout = 100) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       await new Promise((resolve, reject) => {
@@ -111,53 +300,21 @@ async function waitForPort(port, maxRetries = 25, retryDelay = 100, timeout = 40
 }
 
 // ─────────────────────────────────────────────
-// 4b. Check Ngrok Online Server
-// ─────────────────────────────────────────────
-function checkNgrokOnline(timeoutMs = 6000, retries = 2) {
-  return new Promise((resolve) => {
-    let attempt = 0;
-    function tryCheck() {
-      attempt++;
-      const req = https.get(
-        `${ONLINE_GAME_URL}/api/health`,
-        {
-          headers: { 'ngrok-skip-browser-warning': 'true' },
-          timeout: timeoutMs,
-        },
-        (res) => {
-          if (res.statusCode === 200) {
-            resolve(true);
-          } else if (attempt <= retries) {
-            setTimeout(tryCheck, 600);
-          } else {
-            resolve(false);
-          }
-        }
-      );
-      req.on('error', () => {
-        if (attempt <= retries) setTimeout(tryCheck, 600);
-        else resolve(false);
-      });
-      req.on('timeout', () => {
-        req.destroy();
-        if (attempt <= retries) setTimeout(tryCheck, 600);
-        else resolve(false);
-      });
-    }
-    tryCheck();
-  });
-}
-
-// ─────────────────────────────────────────────
-// 5. Create Single Main Window (Directly Full In-Game, No External Splash)
+// 5. Create Single Main Window (Directly Full In-Game)
 // ─────────────────────────────────────────────
 async function createMainWindow() {
+  const appIconIco = path.join(__dirname, '..', 'public', 'assets', 'Logo game', 'logo game icon.ico');
+  const appIconPng = path.join(__dirname, '..', 'public', 'assets', 'Logo game', 'logo game icon.png');
+  const faviconIco = path.join(__dirname, '..', 'public', 'favicon.ico');
+  const iconPath = fs.existsSync(appIconIco) ? appIconIco : (fs.existsSync(faviconIco) ? faviconIco : appIconPng);
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 1024,
     minHeight: 700,
-    title: 'Detektif Data — Game Relasi & Fungsi',
+    title: 'Detektif Data : Game Relasi & Fungsi',
+    icon: iconPath,
     fullscreen: true,
     kiosk: true,
     alwaysOnTop: true,
@@ -174,49 +331,35 @@ async function createMainWindow() {
     backgroundColor: '#FAF7F2',
   });
 
-  mainWindow.setKiosk(true);
-  mainWindow.setFullScreen(true);
-  mainWindow.setAlwaysOnTop(true, 'screen-saver');
-
-    mainWindow.once('ready-to-show', () => {
+  mainWindow.once('ready-to-show', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.show();
       mainWindow.focus();
-      mainWindow.setAlwaysOnTop(true, 'screen-saver');
-      mainWindow.setFullScreen(true);
-      mainWindow.setKiosk(true);
     }
   });
 
-  // Fallback reveal in case ready-to-show is delayed
+  // Snappy fallback reveal to guarantee zero blank waiting time
   setTimeout(() => {
     if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
       mainWindow.show();
       mainWindow.focus();
     }
-  }, 800);
+  }, 600);
 
   mainWindow.on('blur', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.focus();
-      mainWindow.setAlwaysOnTop(true, 'screen-saver');
-      mainWindow.setFullScreen(true);
     }
   });
 
   // Re-try loading gracefully if server is still binding
   mainWindow.webContents.on('did-fail-load', async (event, errorCode, errorDescription, validatedURL) => {
-    console.warn(`[Electron] Gagal memuat (${errorCode}: ${errorDescription}) pada ${validatedURL}`);
-    const isAlreadyActive = await waitForPort(BACKEND_PORT, 1, 10, 50);
-    if (!isAlreadyActive) {
-      await startBackendInProcess();
-      await waitForPort(BACKEND_PORT, 25, 50, 150);
-    }
+    console.warn(`[Electron] Retrying load (${errorCode}: ${errorDescription}) on ${validatedURL}`);
     setTimeout(() => {
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.loadURL(`http://127.0.0.1:${BACKEND_PORT}`);
       }
-    }, 300);
+    }, 150);
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -244,10 +387,10 @@ app.on('second-instance', () => {
 });
 
 // ─────────────────────────────────────────────
-// 7. App Initialization (Direct In-Game Startup)
+// 7. App Initialization (Online-First Check + Auto Hot-Updater)
 // ─────────────────────────────────────────────
 app.whenReady().then(async () => {
-  console.log('[Electron] Initializing directly into game window...');
+  console.log('[Electron] Initializing game environment with Auto Hot-Updater...');
 
   // Automatically attach ngrok-skip-browser-warning on all outbound requests to bypass Ngrok interstitial page
   try {
@@ -259,26 +402,42 @@ app.whenReady().then(async () => {
     console.warn('[Electron] webRequest interceptor error:', e);
   }
 
-  // 1. Create window immediately (hidden until ready-to-show to prevent blank screen)
-  await createMainWindow();
+  const userDataPath = getUserDataPath();
+  const remoteServerUrl = getRemoteServerUrl();
 
-  // 2. Ensure local backend is active to serve bundled frontend assets locally
-  const isAlreadyActive = await waitForPort(BACKEND_PORT, 1, 10, 50);
-  if (!isAlreadyActive) {
-    console.log('[Electron] Memulai server lokal in-process...');
-    await startBackendInProcess();
-    await waitForPort(BACKEND_PORT, 25, 50, 150);
-  } else {
-    console.log('[Electron] Server port backend lokal sudah aktif di port', BACKEND_PORT);
+  // 1. Cek & terapkan hot-update secara cepat (maksimal 2.5s)
+  let hotUpdateApplied = false;
+  try {
+    hotUpdateApplied = await checkAndApplyHotUpdate(remoteServerUrl, userDataPath);
+  } catch (e) {
+    console.warn('[Electron] Hot-update check failed:', e.message);
   }
 
-  // 3. Render game locally from bundled assets
+  // 2. Concurrently start local backend and prepare game window
+  const backendPromise = (async () => {
+    await startBackendInProcess();
+    await waitForPort(BACKEND_PORT, 25, 20, 100);
+  })();
+
+  const windowPromise = createMainWindow();
+
+  // 3. Wait for both in parallel
+  await Promise.all([backendPromise, windowPromise]);
+
+  // 4. Render game locally (yang otomatis menyajikan versi terbaru dari cached_frontend jika baru diupdate!)
   if (mainWindow && !mainWindow.isDestroyed()) {
-    console.log(`[Electron] 🚀 Memuat tampilan game dari aset lokal: http://127.0.0.1:${BACKEND_PORT}`);
+    console.log(`[Electron] 🚀 Memuat tampilan game: http://127.0.0.1:${BACKEND_PORT} (Hot Update: ${hotUpdateApplied ? 'Applied' : 'Up-to-date/Local'})`);
     mainWindow.loadURL(`http://127.0.0.1:${BACKEND_PORT}`);
   }
 
-  // IPC Exit Handlers
+  // IPC Handlers
+  ipcMain.handle('check-for-updates', async () => {
+    const updated = await checkAndApplyHotUpdate(remoteServerUrl, userDataPath);
+    return { updated };
+  });
+
+  ipcMain.handle('get-remote-url', () => remoteServerUrl);
+
   ipcMain.handle('exit-app', () => {
     console.log('[Electron] Exit request received via IPC.');
     cleanupAndExit();

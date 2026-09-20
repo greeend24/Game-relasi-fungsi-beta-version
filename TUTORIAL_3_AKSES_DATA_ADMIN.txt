@@ -1,0 +1,129 @@
+================================================================================
+          PANDUAN 3: CARA MEMBUKA & MENGELOLA DATA ADMIN
+              (KHUSUS PENGELOLA / GURU / PENELITI / PENGUJI)
+================================================================================
+
+Dashboard Admin adalah panel kontrol rahasia yang dirancang khusus untuk memantau,
+menganalisis, dan mengunduh seluruh data pemain/siswa secara real-time.
+
+Halaman ini DILINDUNGI PASSWORD dan tidak bisa diakses oleh siswa biasa.
+
+--------------------------------------------------------------------------------
+1. CARA MEMBUKA DASHBOARD ADMIN
+--------------------------------------------------------------------------------
+Ada 2 cara mudah untuk membuka halaman admin:
+
+A. CARA 1: DARI KOMPUTER SERVER (OTOMATIS 1 KLIK)
+   1. Buka folder utama game di komputermu (folder tempat file tutorial ini berada)
+   2. Klik dua kali (double-click) file:
+      "JALANKAN_SERVER_ADMIN.bat"
+   3. Jendela browser akan OTOMATIS TERBUKA langsung ke halaman admin:
+      URL: http://127.0.0.1:3001/admin
+
+B. CARA 2: DARI HP ATAU LAPTOP LAIN LEWAT INTERNET (MONITOR JARAK JAUH)
+   1. Pastikan server internet menyala (lewat "JALANKAN_SERVER_INTERNET.bat").
+   2. Buka browser di HP atau laptop mana saja (tidak harus di komputer server).
+   3. Masukkan URL:
+      https://scooter-thickness-stony.ngrok-free.dev/admin
+   4. Halaman login panel admin akan langsung tampil di layarmu.
+
+--------------------------------------------------------------------------------
+2. KATA SANDI / PASSWORD ADMIN
+--------------------------------------------------------------------------------
+Ketika halaman admin terbuka, kamu akan diminta memasukkan kata sandi keamanan:
+
+   ========================================
+   PASSWORD DEFAULT ADMIN: adminrelo2026
+   ========================================
+
+Ketik kata sandi di atas, lalu klik tombol "Masuk ke Panel Admin".
+
+Catatan Keamanan:
+- Password ini dapat kamu ubah kapan saja langsung dari dalam dashboard admin 
+  pada menu "Ganti Password Admin".
+- Siswa yang mencoba mengakses alamat "/admin" tanpa password tidak akan bisa 
+  melihat data apa pun karena dilindungi autentikasi session dan enkripsi backend.
+
+--------------------------------------------------------------------------------
+3. DATA APA SAJA YANG BISA DILIHAT DI DASHBOARD ADMIN?
+--------------------------------------------------------------------------------
+Setelah berhasil masuk, kamu akan melihat ringkasan lengkap penyelidikan siswa:
+
+A. KARTU STATISTIK UTAMA (OVERVIEW CARDS):
+   - Total Detektif / Siswa yang Terdaftar: Jumlah total akun siswa yang aktif.
+   - Total Skor Seluruh Siswa: Akumulasi seluruh poin yang didapatkan.
+   - Rata-rata Progres Belajar: Persentase rata-rata penyelesaian materi.
+   - Status Server & Engine Database: Menampilkan status aktif server SQLite.
+
+B. TABEL DATA RINCI SETIAP SISWA (LIVE DATA TABLE):
+   Untuk setiap siswa, kamu bisa melihat data super detail:
+   1. Nomor Absen Siswa (sesuai yang diisi saat pendaftaran)
+   2. Nama Lengkap Siswa
+   3. Username Akun Siswa (misalnya: masukkan username)
+   4. Total Skor Keseluruhan
+   5. Progres Stage Chapter Mode:
+      - Menampilkan Bab mana saja yang sudah dikerjakan (Bab 1 s.d. 5)
+      - Menampilkan segmen materi yang dicapai
+      - Menampilkan jumlah bintang penyelidikan yang diraih
+   6. Nilai Ujian Quest Mode (Skala 0 - 100):
+      - Menampilkan skor ujian 30 soal per bab yang telah diikuti
+   7. Skor Tertinggi Endless Mode (Mode Bertahan Hidup)
+   8. Jumlah Lencana / Badges yang Berhasil Dikoleksi (Kategori 1 s.d. 10)
+   9. Status Integritas / Kejujuran:
+      - Mengetahui apakah siswa terkena strike peringatan / lockout akibat 
+        membuka tab lain saat ujian
+   10. Waktu Login & Aktivitas Terakhir
+
+C. FITUR PENCARIAN & FILTER CEPAT:
+   Tersedia kotak pencarian (Search Box) di atas tabel. Kamu cukup mengetik nama 
+   atau nomor absen siswa untuk menemukan datanya dalam sekejap!
+
+--------------------------------------------------------------------------------
+4. CARA MENGUNDUH / EXPORT DATA KE EXCEL (CSV SPREADSHEET)
+--------------------------------------------------------------------------------
+Untuk keperluan rekapitulasi nilai, analisis hasil belajar, atau pelaporan:
+
+1. Di dalam Dashboard Admin, cari tombol hijau bertuliskan:
+   "📥 Download / Export Data Siswa (CSV)"
+2. Klik tombol tersebut satu kali.
+3. Browser akan otomatis mengunduh file spreadsheet dengan nama seperti:
+   "Rekap_Data_Detektif_Relasi_Fungsi.csv"
+4. File CSV ini bisa langsung kamu buka menggunakan:
+   - Microsoft Excel
+   - Google Sheets
+   - WPS Office
+   - SPSS / Software Analisis Statistik lainnya
+5. Data di Excel sudah tersusun rapi per kolom: Nama, Absen, Username, Skor, 
+   Stage, Nilai Quest, dan Tanggal Aktivitas.
+
+--------------------------------------------------------------------------------
+5. CARA MENGELOLA AKUN SISWA & RESET DATA
+--------------------------------------------------------------------------------
+A. MENGHAPUS AKUN SISWA TERTENTU:
+   - Jika ada siswa yang salah mendaftar nama/absen atau ingin mengulang dari awal, 
+     cukup cari nama siswa tersebut di tabel.
+   - Klik tombol merah "Hapus" di baris siswa tersebut.
+   - Akun siswa akan terhapus dan siswa bisa mendaftar ulang.
+
+B. MERESET SELURUH DATA SISWA (RESET ALL):
+   - Jika kamu ingin memulai sesi kelas atau kelompok siswa yang baru:
+   - Klik tombol merah "Reset Semua Data Siswa" di bagian bawah dashboard.
+   - Masukkan kata sandi konfirmasi untuk mencegah ketidaksengajaan.
+   - Seluruh data siswa akan dibersihkan dan siap digunakan untuk kelas baru.
+
+--------------------------------------------------------------------------------
+6. LOKASI FISIK FILE DATABASE DI KOMPUTER (BACKUP CADANGAN)
+--------------------------------------------------------------------------------
+Seluruh data akun, skor, dan progres siswa tersimpan di dalam file database lokal:
+Lokasi file di folder utama game:
+- File Database: "detektif_data.db"
+- Folder Cadangan: "SaveData/"
+
+CARA MEMBUAT BACKUP:
+Cukup salin (copy) file "detektif_data.db" ke Flashdisk atau Google Drive milikmu. 
+Jika suatu saat komputermu berpindah, kamu tinggal menempelkan (paste) file tersebut 
+kembali dan semua data nilai siswa akan pulih 100%!
+
+================================================================================
+Panel Admin siap digunakan kapan saja untuk memantau jalannya pembelajaran!
+================================================================================

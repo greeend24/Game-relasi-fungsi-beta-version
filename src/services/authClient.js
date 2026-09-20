@@ -2,42 +2,33 @@
 // Handles sign-up, sign-in, sign-out, and session management
 
 import { createAuthClient } from 'better-auth/react';
+import { resolveApiBase } from './apiService.js';
 
-const PERMANENT_REMOTE_URL = 'https://scooter-thickness-stony.ngrok-free.dev';
+let cachedClient = null;
+let lastBaseUrl = null;
 
-function resolveApiBase() {
-  // 1. Local Vite dev server on port 5173 -> point to local backend 3001
-  if (typeof window !== 'undefined' && window.location && window.location.port === '5173') {
-    return `http://${window.location.hostname}:3001`;
+export function getAuthClient() {
+  const currentBase = resolveApiBase();
+  if (!cachedClient || lastBaseUrl !== currentBase) {
+    lastBaseUrl = currentBase;
+    cachedClient = createAuthClient({
+      baseURL: currentBase,
+      credentials: 'include', // Send cookies for session auth
+      fetchOptions: {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
+      },
+    });
   }
-
-  // 2. Explicit environment variable if provided
-  if (import.meta.env?.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-
-  // 3. Web browser running on a remote domain (not file: or localhost)
-  if (typeof window !== 'undefined' && window.location && window.location.origin) {
-    const origin = window.location.origin;
-    if (!origin.startsWith('file:') && !origin.startsWith('app:') && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
-      return origin;
-    }
-  }
-
-  // 4. Default for Electron / Standalone apps -> permanent Ngrok domain
-  return PERMANENT_REMOTE_URL;
+  return cachedClient;
 }
 
-const API_BASE = resolveApiBase();
-
-export const authClient = createAuthClient({
-  baseURL: API_BASE,
-  credentials: 'include', // Send cookies for session auth
-  fetchOptions: {
-    headers: {
-      'ngrok-skip-browser-warning': 'true',
-    },
-  },
+export const authClient = new Proxy({}, {
+  get(_target, prop) {
+    const client = getAuthClient();
+    return client[prop];
+  }
 });
 
 /**
@@ -47,12 +38,17 @@ export const authClient = createAuthClient({
 export async function registerUser(username, password, fullname = '') {
   try {
     const email = `${username.toLowerCase()}@detektifdata.local`;
-    const result = await authClient.signUp.email({
+    const regPromise = authClient.signUp.email({
       email,
       password,
       name: fullname || username,
       username: username.trim(),
     });
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Koneksi pendaftaran timeout (3.5s)')), 3500)
+    );
+
+    const result = await Promise.race([regPromise, timeoutPromise]);
 
     if (result.error) {
       return {
@@ -74,10 +70,15 @@ export async function registerUser(username, password, fullname = '') {
 export async function loginUser(username, password) {
   try {
     const email = `${username.toLowerCase()}@detektifdata.local`;
-    const result = await authClient.signIn.email({
+    const loginPromise = authClient.signIn.email({
       email,
       password,
     });
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Koneksi login timeout (2.5s)')), 2500)
+    );
+
+    const result = await Promise.race([loginPromise, timeoutPromise]);
 
     if (result.error) {
       return {

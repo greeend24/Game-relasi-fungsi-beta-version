@@ -28,7 +28,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
       <div className="flex justify-center sm:justify-start">
         <DetectiveMascot
           emotion="idle"
-          message={`Halo Detektif! Pelajari aturan main kasus "${subbabData.caseTitle}" dan selesaikan stage-nya!` }
+          message={`Halo Detektif! Pelajari aturan main tantangan "${subbabData.caseTitle}" dan selesaikan stage-nya!` }
           size="md"
         />
       </div>

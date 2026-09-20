@@ -1,19 +1,19 @@
-// PBL Subbab Briefings and Stage Level Data for 7 Subbabs (21 Stages each)
-// Enforcing 50% Real-World Detective Story Cases + 50% Math/Logic Challenges
-// Enforcing Progressive Bloom's Taxonomy Difficulty Levels: C3 (Applying) ➔ C4 (Analyzing) ➔ C5 (Evaluating)!
+// Data Kasus Kehidupan Sehari-hari dan Stage Level Data (21 Stages each)
+// Enforcing 50% Real-World Everyday Life Cases + 50% Math/Logic Challenges
+// Enforcing Progressive Bloom's Taxonomy Difficulty Levels: C3 (Applying) → C4 (Analyzing) → C5 (Evaluating)!
 
 export const SUBBABS_DATA = {
   1: {
     id: 1,
     key: 'subbab1',
     title: 'Pengertian Relasi',
-    caseTitle: 'Berkas yang Tercampur',
+    caseTitle: 'Pasangan yang Cocok',
     iconName: 'GitFork',
     image: '/images/1.png',
-    briefing: 'Kantor detektif menerima dua tumpukan berkas: daftar nama saksi dan daftar ciri-ciri kejadian. Tugas pemain: mencari tahu apakah dua tumpukan itu bisa "dihubungkan" atau tidak — dan menandai hubungan mana yang masuk akal.',
+    briefing: 'Di kelas, ada dua daftar: daftar nama siswa dan daftar hobi mereka. Tugasmu: mencari tahu siapa suka apa, dan menghubungkan pasangan yang cocok!',
     rules: [
-      'Ada dua kolom: Kolom A (kotak bukti) dan Kolom B (kotak petunjuk).',
-      'Klik satu item di Kolom A, lalu klik satu item di Kolom B untuk menghubungkannya dengan benang merah.',
+      'Ada dua kolom: Kolom A (Daftar Nama) dan Kolom B (Daftar Pilihan).',
+      'Klik satu item di Kolom A, lalu klik satu item di Kolom B untuk menghubungkannya dengan garis penghubung.',
       'Sistem akan menilai apakah hubungan tersebut valid berdasarkan aturan relasi yang ditampilkan di layar.'
     ],
     goal: 'Menyambungkan semua pasangan yang valid berdasarkan aturan relasi sebelum waktu habis.',
@@ -24,43 +24,43 @@ export const SUBBABS_DATA = {
           stage: 21,
           isConclusionStage: true,
           bloomLevel: 'C5/C6 (Evaluasi & Sintesis)',
-          question: 'Berdasarkan 20 stage penyelidikan berjenjang (C3 - C5), apakah KESIMPULAN UTAMA dari konsep "RELASI"?',
+          question: 'Berdasarkan 20 stage latihan berjenjang (C3 - C5), apakah KESIMPULAN UTAMA dari konsep "RELASI"?',
           options: [
             'Relasi adalah hubungan antara anggota Himpunan A (Domain) ke Himpunan B (Kodomain) di mana setiap elemen A boleh dipasangkan dengan 0, 1, atau lebih dari 1 elemen B.',
             'Relasi adalah aturan wajib di mana setiap elemen A harus punya tepat 1 pasangan di B.',
             'Relasi hanya berlaku jika jumlah n(A) sama dengan n(B).'
           ],
           correctAnswer: 'Relasi adalah hubungan antara anggota Himpunan A (Domain) ke Himpunan B (Kodomain) di mana setiap elemen A boleh dipasangkan dengan 0, 1, atau lebih dari 1 elemen B.',
-          hint: '💡 Petunjuk Detektif: Berbeda dengan Fungsi, Relasi TIDAK membatasi jumlah panah. Suatu anggota A boleh tidak punya pasangan, atau punya banyak pasangan di B.'
+          hint: '💡 Petunjuk: Berbeda dengan Fungsi, Relasi TIDAK membatasi jumlah panah. Suatu anggota A boleh tidak punya pasangan, atau punya banyak pasangan di B.'
         };
       }
 
       const stagePool = [
         // STAGES 1-7: C3 (APPLYING / MENGAPLIKASIKAN)
-        { stage: 1, bloomLevel: 'C3', isStoryCase: true, rule: 'Hubungkan Saksi di A dengan "Menu Pesanan Favorit"-nya di B', conceptDef: 'Relasi memetakan setiap anggota Himpunan Asal A (Domain) ke Himpunan Kawan B (Kodomain) sesuai aturan pasangan berurutan (x, y). Suatu anggota A boleh memiliki 0, 1, atau lebih dari 1 pasangan di B.', story: 'Berdasarkan bon Restoran TKP: Budi memesan Nasi Goreng; Siti memesan Soto; Rudi memesan Bakso. Hubungkan saksi ke pesanannya!', setA: ['Budi', 'Siti', 'Rudi'], setB: ['Nasi Goreng', 'Soto', 'Bakso'], validPairs: [[0, 0], [1, 1], [2, 2]] },
-        { stage: 2, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang "Kurang dari" angka di B', conceptDef: 'Relasi kurang dari (a < b) memetakan elemen a ∈ A ke elemen b ∈ B jika nilai kuantitas a lebih kecil secara matematis daripada b.', story: 'Detektif mencatat angka bukti A [1, 2, 3] dan B [2, 4]. Hubungkan elemen A yang nilainya lebih kecil dari elemen B!', setA: [1, 2, 3], setB: [2, 4], validPairs: [[0, 0], [0, 1], [1, 1], [2, 1]] },
-        { stage: 3, bloomLevel: 'C3', isStoryCase: true, rule: 'Hubungkan Plat Kendaraan di A dengan "Kota Asal Registrasi"-nya di B', conceptDef: 'Relasi memetakan elemen Himpunan A ke elemen Himpunan B berdasarkan aturan pengelompokan huruf registrasi wilayah.', story: 'Tim lalu lintas melacak plat kendaraan tersangka: B-1234 (Jakarta), D-5678 (Bandung), L-9012 (Surabaya). Hubungkan mobil dengan kota asalnya!', setA: ['B-1234 (Sedan)', 'D-5678 (Minibus)', 'L-9012 (Pickup)'], setB: ['Jakarta', 'Bandung', 'Surabaya'], validPairs: [[0, 0], [1, 1], [2, 2]] },
-        { stage: 4, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang merupakan "Faktor dari" angka di B', conceptDef: 'Aturan relasi "faktor dari" memetakan a ke b jika b habis dibagi a tanpa sisa (b mod a = 0).', story: 'Detektif memverifikasi pembagian kode A [2, 3, 5] dengan B [4, 6, 9]. Hubungkan a ke b jika b habis dibagi a!', setA: [2, 3, 5], setB: [4, 6, 9], validPairs: [[0, 0], [0, 1], [1, 1], [1, 2]] },
-        { stage: 5, bloomLevel: 'C3', isStoryCase: true, rule: 'Hubungkan Detektif di A dengan "Peralatan Forensic Khusus"-nya di B', conceptDef: 'Relasi memasangkan setiap individu pada himpunan asal dengan objek fungsionalnya pada himpunan kawan.', story: 'Di markas: Detektif Roy membawa Kaca Pembesar; Detektif Ana membawa Lensa UV; Detektif Maya membawa Pemindai Sidik Jari. Hubungkan detektif ke peralatannya!', setA: ['Detektif Roy', 'Detektif Ana', 'Detektif Maya'], setB: ['Kaca Pembesar', 'Lensa UV', 'Pemindai Sidik Jari'], validPairs: [[0, 0], [1, 1], [2, 2]] },
-        { stage: 6, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang "Dua lebihnya dari" angka di B', conceptDef: 'Persamaan relasi aljabar a = b + 2 menyatakan bahwa selisih nilai antarelemen terhubung adalah persis 2 satuan (a - b = 2).', story: 'Detektif menghitung selisih angka A [4, 5, 6] dengan B [2, 3, 4]. Hubungkan a ke b jika a persis 2 lebih besar dari b!', setA: [4, 5, 6], setB: [2, 3, 4], validPairs: [[0, 0], [1, 1], [2, 2]] },
-        { stage: 7, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang "Kelipatan dari" angka di B', conceptDef: 'Suatu bilangan a adalah kelipatan dari b jika terdapat bilangan bulat k sehingga a = k × b.', story: 'Tim forensic menguji bilangan A [6, 8, 10, 12] terhadap B [2, 4]. Hubungkan a ke b jika a adalah kelipatan dari b!', setA: [6, 8, 10, 12], setB: [2, 4], validPairs: [[0, 0], [1, 0], [1, 1], [2, 0], [3, 0], [3, 1]] },
+        { stage: 1, bloomLevel: 'C3', isStoryCase: true, rule: 'Hubungkan Siswa di A dengan "Menu Kesukaan"-nya di B', conceptDef: 'Relasi memetakan setiap anggota Himpunan Asal A (Domain) ke Himpunan Kawan B (Kodomain) sesuai aturan pasangan berurutan (x, y). Suatu anggota A boleh memiliki 0, 1, atau lebih dari 1 pasangan di B.', story: 'Berdasarkan daftar pesanan kantin: Budi memesan Nasi Goreng; Siti memesan Soto; Rudi memesan Bakso. Hubungkan siswa ke pesanannya!', setA: ['Budi', 'Siti', 'Rudi'], setB: ['Nasi Goreng', 'Soto', 'Bakso'], validPairs: [[0, 0], [1, 1], [2, 2]] },
+        { stage: 2, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang "Kurang dari" angka di B', conceptDef: 'Relasi kurang dari (a < b) memetakan elemen a ∈ A ke elemen b ∈ B jika nilai kuantitas a lebih kecil secara matematis daripada b.', story: 'Bandingkan angka-angka di A [1, 2, 3] dan B [2, 4]. Hubungkan elemen A yang nilainya lebih kecil dari elemen B!', setA: [1, 2, 3], setB: [2, 4], validPairs: [[0, 0], [0, 1], [1, 1], [2, 1]] },
+        { stage: 3, bloomLevel: 'C3', isStoryCase: true, rule: 'Hubungkan Siswa di A dengan "Kota Kelahiran"-nya di B', conceptDef: 'Relasi memetakan elemen Himpunan A ke elemen Himpunan B berdasarkan aturan pengelompokan asal daerah.', story: 'Data biodata kelas: Andi lahir di Jakarta, Dewi lahir di Bandung, Fajar lahir di Surabaya. Hubungkan siswa dengan kota kelahirannya!', setA: ['Andi', 'Dewi', 'Fajar'], setB: ['Jakarta', 'Bandung', 'Surabaya'], validPairs: [[0, 0], [1, 1], [2, 2]] },
+        { stage: 4, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang merupakan "Faktor dari" angka di B', conceptDef: 'Aturan relasi "faktor dari" memetakan a ke b jika b habis dibagi a tanpa sisa (b mod a = 0).', story: 'Cek pembagian angka A [2, 3, 5] dengan B [4, 6, 9]. Hubungkan a ke b jika b habis dibagi a!', setA: [2, 3, 5], setB: [4, 6, 9], validPairs: [[0, 0], [0, 1], [1, 1], [1, 2]] },
+        { stage: 5, bloomLevel: 'C3', isStoryCase: true, rule: 'Hubungkan Siswa di A dengan "Alat Tulis Favorit"-nya di B', conceptDef: 'Relasi memasangkan setiap individu pada himpunan asal dengan objek pilihannya pada himpunan kawan.', story: 'Dari survei kelas: Rina suka Pensil Warna; Tono suka Spidol; Maya suka Penghapus Lucu. Hubungkan siswa ke alat tulis favoritnya!', setA: ['Rina', 'Tono', 'Maya'], setB: ['Pensil Warna', 'Spidol', 'Penghapus Lucu'], validPairs: [[0, 0], [1, 1], [2, 2]] },
+        { stage: 6, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang "Dua lebihnya dari" angka di B', conceptDef: 'Persamaan relasi aljabar a = b + 2 menyatakan bahwa selisih nilai antarelemen terhubung adalah persis 2 satuan (a - b = 2).', story: 'Cek selisih angka A [4, 5, 6] dengan B [2, 3, 4]. Hubungkan a ke b jika a persis 2 lebih besar dari b!', setA: [4, 5, 6], setB: [2, 3, 4], validPairs: [[0, 0], [1, 1], [2, 2]] },
+        { stage: 7, bloomLevel: 'C3', isStoryCase: false, rule: 'Hubungkan angka di A yang "Kelipatan dari" angka di B', conceptDef: 'Suatu bilangan a adalah kelipatan dari b jika terdapat bilangan bulat k sehingga a = k × b.', story: 'Uji bilangan A [6, 8, 10, 12] terhadap B [2, 4]. Hubungkan a ke b jika a adalah kelipatan dari b!', setA: [6, 8, 10, 12], setB: [2, 4], validPairs: [[0, 0], [1, 0], [1, 1], [2, 0], [3, 0], [3, 1]] },
 
         // STAGES 8-14: C4 (ANALYZING / MENGANALISIS)
-        { stage: 8, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Alibi TKP: Hubungkan Saksi di A yang "Hadir di Jam TKP Sama" dengan Lokasi B', conceptDef: 'Relasi memetakan elemen berdasarkan kesamaan interval nilai variabel waktu pada himpunan domain dan kodomain.', story: 'Analisis CCTV: Saksi Anton dan Budi berada di Restoran Jam 19.00; Saksi Candra di Bank Jam 20.00. Hubungkan saksi ke lokasi berdasarkan jam alibi!', setA: ['Anton (19.00)', 'Budi (19.00)', 'Candra (20.00)'], setB: ['Restoran TKP', 'Bank TKP'], validPairs: [[0, 0], [1, 0], [2, 1]] },
-        { stage: 9, bloomLevel: 'C4', isStoryCase: false, rule: 'Analisis Kuadrat Sempurna: Hubungkan a di A jika "a² = b" di B', conceptDef: 'Aturan pemetaan fungsi kuadrat a² = b menghubungkan setiap elemen a dengan hasil perkalian dirinya sendiri.', story: 'Tim pembongkar sandi menganalisis angka bukti A [2, 3, 4, 5] dan kode B [4, 9, 16, 25]. Hubungkan a ke b jika a² = b!', setA: [2, 3, 4, 5], setB: [4, 9, 16, 25], validPairs: [[0, 0], [1, 1], [2, 2], [3, 3]] },
-        { stage: 10, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Log Peretasan: Hubungkan Komputer TKP di A yang "Mengakses Server B"', conceptDef: 'Relasi jaringan memetakan satu titik asal ke beberapa titik tujuan tanpa batasan jumlah cabang.', story: 'Tim cyber crime menganalisis log IP: PC-A1 mengakses Server Keuangan & Server Email; PC-A2 mengakses Server Backup. Hubungkan PC ke server tujuannya!', setA: ['PC-A1', 'PC-A2'], setB: ['Server Keuangan', 'Server Email', 'Server Backup'], validPairs: [[0, 0], [0, 1], [1, 2]] },
-        { stage: 11, bloomLevel: 'C4', isStoryCase: false, rule: 'Analisis Persamaan Komposit: Hubungkan a di A dan b di B jika "a + b = 10"', conceptDef: 'Persamaan linear dua variabel a + b = 10 memetakan setiap elemen a ke elemen b sehingga hasilnya konstan 10.', story: 'Detektif mencocokkan pasangan kunci kombinasi A [2, 3, 4, 7] dan B [3, 6, 7, 8]. Hubungkan a ke b jika a + b = 10!', setA: [2, 3, 4, 7], setB: [3, 6, 7, 8], validPairs: [[0, 3], [1, 2], [2, 1], [3, 0]] },
-        { stage: 12, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Transaksi Mencurigakan: Hubungkan Rekening Pengirim A yang "Transfer > Rp 10 Juta" ke Penerima B', conceptDef: 'Relasi kriteria ambang batas memetakan elemen yang memenuhi pertidaksamaan nilai kuantitatif > 10 Juta.', story: 'Audit forensic bank: Rekening X kirim 15 Juta ke Rek A; Rek Y kirim 5 Juta ke Rek B; Rek Z kirim 20 Juta ke Rek C. Hubungkan pengirim yang transfernya > 10 Juta!', setA: ['Rek X (15 Juta)', 'Rek Y (5 Juta)', 'Rek Z (20 Juta)'], setB: ['Penerima A', 'Penerima B', 'Penerima C'], validPairs: [[0, 0], [2, 2]] },
-        { stage: 13, bloomLevel: 'C4', isStoryCase: false, rule: 'Analisis Akar Pangkat: Hubungkan a di A jika "a = √b" di B', conceptDef: 'Relasi akar kuadrat a = √b memetakan nilai utama non-negatif dari b.', story: 'Detektif matematika menguji variabel A [3, 4, 5] terhadap B [9, 16, 25, 36]. Hubungkan a ke b jika a adalah akar kuadrat dari b!', setA: [3, 4, 5], setB: [9, 16, 25, 36], validPairs: [[0, 0], [1, 1], [2, 2]] },
-        { stage: 14, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Sinyal Tower HP: Hubungkan No HP Saksi di A yang "Terjangkau Tower BTS B (< 3km)"', conceptDef: 'Relasi spasial memetakan titik koordinat asal ke lokasi dalam jangkauan radius tertentu.', story: 'Laporan BTS: HP Saksi 1 terjangkau Tower A (< 2km); HP Saksi 2 terjangkau Tower A dan Tower B (< 2.5km). Hubungkan HP saksi ke tower BTS terdekat!', setA: ['HP Saksi 1', 'HP Saksi 2'], setB: ['Tower BTS A', 'Tower BTS B'], validPairs: [[0, 0], [1, 0], [1, 1]] },
+        { stage: 8, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Jadwal: Hubungkan Siswa di A yang "Hadir di Jam Pelajaran Sama" dengan Ruang Kelas B', conceptDef: 'Relasi memetakan elemen berdasarkan kesamaan interval nilai variabel waktu pada himpunan domain dan kodomain.', story: 'Jadwal sekolah: Siswa Andi dan Budi ada di Ruang Lab Jam 09.00; Siswa Cici di Ruang Seni Jam 10.00. Hubungkan siswa ke ruangan berdasarkan jadwal!', setA: ['Andi (09.00)', 'Budi (09.00)', 'Cici (10.00)'], setB: ['Ruang Lab', 'Ruang Seni'], validPairs: [[0, 0], [1, 0], [2, 1]] },
+        { stage: 9, bloomLevel: 'C4', isStoryCase: false, rule: 'Analisis Kuadrat Sempurna: Hubungkan a di A jika "a² = b" di B', conceptDef: 'Aturan pemetaan fungsi kuadrat a² = b menghubungkan setiap elemen a dengan hasil perkalian dirinya sendiri.', story: 'Analisis angka A [2, 3, 4, 5] dan kode B [4, 9, 16, 25]. Hubungkan a ke b jika a² = b!', setA: [2, 3, 4, 5], setB: [4, 9, 16, 25], validPairs: [[0, 0], [1, 1], [2, 2], [3, 3]] },
+        { stage: 10, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Penggunaan WiFi: Hubungkan HP Siswa di A yang "Terhubung ke WiFi B"', conceptDef: 'Relasi jaringan memetakan satu titik asal ke beberapa titik tujuan tanpa batasan jumlah cabang.', story: 'Di sekolah: HP Andi terhubung ke WiFi Perpustakaan & WiFi Lab; HP Budi terhubung ke WiFi Kantin. Hubungkan HP ke jaringan WiFi tujuannya!', setA: ['HP Andi', 'HP Budi'], setB: ['WiFi Perpustakaan', 'WiFi Lab', 'WiFi Kantin'], validPairs: [[0, 0], [0, 1], [1, 2]] },
+        { stage: 11, bloomLevel: 'C4', isStoryCase: false, rule: 'Analisis Persamaan Komposit: Hubungkan a di A dan b di B jika "a + b = 10"', conceptDef: 'Persamaan linear dua variabel a + b = 10 memetakan setiap elemen a ke elemen b sehingga hasilnya konstan 10.', story: 'Cocokkan pasangan angka A [2, 3, 4, 7] dan B [3, 6, 7, 8]. Hubungkan a ke b jika a + b = 10!', setA: [2, 3, 4, 7], setB: [3, 6, 7, 8], validPairs: [[0, 3], [1, 2], [2, 1], [3, 0]] },
+        { stage: 12, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Uang Jajan: Hubungkan Siswa A yang "Menabung > Rp 10.000" ke Celengan B', conceptDef: 'Relasi kriteria ambang batas memetakan elemen yang memenuhi pertidaksamaan nilai kuantitatif > 10.000.', story: 'Data tabungan kelas: Rani menabung 15 Ribu ke Celengan Merah; Doni menabung 5 Ribu ke Celengan Biru; Sari menabung 20 Ribu ke Celengan Hijau. Hubungkan siswa yang menabung > 10 Ribu!', setA: ['Rani (15 Ribu)', 'Doni (5 Ribu)', 'Sari (20 Ribu)'], setB: ['Celengan Merah', 'Celengan Biru', 'Celengan Hijau'], validPairs: [[0, 0], [2, 2]] },
+        { stage: 13, bloomLevel: 'C4', isStoryCase: false, rule: 'Analisis Akar Pangkat: Hubungkan a di A jika "a = √b" di B', conceptDef: 'Relasi akar kuadrat a = √b memetakan nilai utama non-negatif dari b.', story: 'Uji variabel A [3, 4, 5] terhadap B [9, 16, 25, 36]. Hubungkan a ke b jika a adalah akar kuadrat dari b!', setA: [3, 4, 5], setB: [9, 16, 25, 36], validPairs: [[0, 0], [1, 1], [2, 2]] },
+        { stage: 14, bloomLevel: 'C4', isStoryCase: true, rule: 'Analisis Jarak Rumah: Hubungkan Siswa di A yang "Rumahnya Dekat Sekolah (< 3km)" ke Jalur B', conceptDef: 'Relasi spasial memetakan titik koordinat asal ke lokasi dalam jangkauan radius tertentu.', story: 'Data alamat: Rumah Andi dekat Jalur A (< 2km); Rumah Budi dekat Jalur A dan Jalur B (< 2.5km). Hubungkan siswa ke jalur terdekat sekolah!', setA: ['Rumah Andi', 'Rumah Budi'], setB: ['Jalur A', 'Jalur B'], validPairs: [[0, 0], [1, 0], [1, 1]] },
 
         // STAGES 15-20: C5 (EVALUATING / MENGEVALUASI)
-        { stage: 15, bloomLevel: 'C5', isStoryCase: false, rule: 'Evaluasi Perkalian Multivariabel: Hubungkan a di A dan b di B jika "a × b ≥ 12"', conceptDef: 'Pertidaksamaan perkalian a × b ≥ 12 memetakan pasangan berurutan yang memenuhi ambang batas batas nilai hasil kali minimal 12.', story: 'Ujian evaluasi forensic: Diberikan Himpunan A [2, 3, 4] dan B [3, 4, 5]. Hubungkan pasangan yang hasil kalinya minimal 12!', setA: [2, 3, 4], setB: [3, 4, 5], validPairs: [[1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]] },
-        { stage: 16, bloomLevel: 'C5', isStoryCase: true, rule: 'Evaluasi Jaringan Kontak Telepon: Hubungkan Nomor A yang "Menghubungi Nomor B minimal 2 kali"', conceptDef: 'Relasi frekuensi memetakan elemen domain yang memenuhi syarat batas frekuensi interaksi minimal n kali.', story: 'Log panggilan: No A telepon No X (3 kali) & No Y (1 kali); No B telepon No Y (4 kali). Hubungkan penelpon yang menghubungi tujuan minimal 2 kali!', setA: ['No A (Tersangka 1)', 'No B (Tersangka 2)'], setB: ['No X (Saksi)', 'No Y (Saksi)'], validPairs: [[0, 0], [1, 1]] },
-        { stage: 17, bloomLevel: 'C5', isStoryCase: false, rule: 'Evaluasi Kongruensi Modulo: Hubungkan a di A dan b di B jika "a ≡ b (mod 3)"', conceptDef: 'Relasi kongruensi aritmetika modulo a ≡ b (mod 3) berlaku jika selisih (a - b) habis dibagi 3 tanpa sisa.', story: 'Detektif membongkar kripto modulo: Himpunan A [4, 7, 9] dan B [1, 3, 4, 6]. Hubungkan a ke b jika memiliki sisa pembagian 3 yang persis sama!', setA: [4, 7, 9], setB: [1, 3, 4, 6], validPairs: [[0, 0], [0, 2], [1, 0], [1, 2], [2, 1], [2, 3]] },
-        { stage: 18, bloomLevel: 'C5', isStoryCase: true, rule: 'Evaluasi Alibi Lintas Kota: Hubungkan Saksi A yang "Bisa Bepergian dari Kota A ke B dalam waktu < 2 Jam"', conceptDef: 'Evaluasi kelayakan relasi fisik berdasarkan rasio jarak tempuh terhadap kecepatan waktu perjalanan.', story: 'Evaluasi alibi: Saksi A klaim dari Jakarta ke Bogor (1 jam - Valid); Saksi B klaim dari Jakarta ke Surabaya (1 jam - Tidak Valid!). Hubungkan alibi yang masuk akal!', setA: ['Saksi A (Jakarta-Bogor)', 'Saksi B (Jakarta-Surabaya)'], setB: ['Alibi Valid (< 2 Jam)', 'Alibi Tidak Valid (> 2 Jam)'], validPairs: [[0, 0], [1, 1]] },
-        { stage: 19, bloomLevel: 'C5', isStoryCase: false, rule: 'Evaluasi Persamaan Diophantine: Hubungkan a di A dan b di B jika "a + 2b = 10"', conceptDef: 'Persamaan Diophantine aljabar a + 2b = 10 menentukan pasangan bilangan bulat penyelesaian.', story: 'Detektif mengevaluasi kunci sandi A [2, 4, 6, 8] dan B [1, 2, 3, 4]. Hubungkan a ke b jika a + 2b = 10!', setA: [2, 4, 6, 8], setB: [1, 2, 3, 4], validPairs: [[0, 3], [1, 2], [2, 1], [3, 0]] },
-        { stage: 20, bloomLevel: 'C5', isStoryCase: true, rule: 'Evaluasi Misi Terakhir: Hubungkan Kasus Utama A dengan "Hasil Keputusan Sidang B"', conceptDef: 'Evaluasi kebenaran logika memetakan hipotesis ke nilai kebenaran validitas hukum.', story: 'Sidang Agung: Kasus 1 (Bukti Kuat) -> Terbukti Valid; Kasus 2 (Bukti Kurang) -> Ditolak. Hubungkan kasus ke keputusan sidang!', setA: ['Kasus 1 (Bukti Kuat)', 'Kasus 2 (Bukti Kurang)'], setB: ['Putusan Valid', 'Putusan Ditolak'], validPairs: [[0, 0], [1, 1]] }
+        { stage: 15, bloomLevel: 'C5', isStoryCase: false, rule: 'Evaluasi Perkalian Multivariabel: Hubungkan a di A dan b di B jika "a × b ≥ 12"', conceptDef: 'Pertidaksamaan perkalian a × b ≥ 12 memetakan pasangan berurutan yang memenuhi ambang batas batas nilai hasil kali minimal 12.', story: 'Latihan evaluasi: Diberikan Himpunan A [2, 3, 4] dan B [3, 4, 5]. Hubungkan pasangan yang hasil kalinya minimal 12!', setA: [2, 3, 4], setB: [3, 4, 5], validPairs: [[1, 1], [1, 2], [2, 0], [2, 1], [2, 2]] },
+        { stage: 16, bloomLevel: 'C5', isStoryCase: true, rule: 'Evaluasi Chat Grup: Hubungkan Nomor A yang "Mengirim Pesan ke Nomor B minimal 2 kali"', conceptDef: 'Relasi frekuensi memetakan elemen domain yang memenuhi syarat batas frekuensi interaksi minimal n kali.', story: 'Log chat grup kelas: Andi mengirim pesan ke Budi (3 kali) & ke Cici (1 kali); Dewi mengirim pesan ke Cici (4 kali). Hubungkan pengirim yang menghubungi teman minimal 2 kali!', setA: ['Andi', 'Dewi'], setB: ['Budi', 'Cici'], validPairs: [[0, 0], [1, 1]] },
+        { stage: 17, bloomLevel: 'C5', isStoryCase: false, rule: 'Evaluasi Kongruensi Modulo: Hubungkan a di A dan b di B jika "a ≡ b (mod 3)"', conceptDef: 'Relasi kongruensi aritmetika modulo a ≡ b (mod 3) berlaku jika selisih (a - b) habis dibagi 3 tanpa sisa.', story: 'Tantangan modulo: Himpunan A [4, 7, 9] dan B [1, 3, 4, 6]. Hubungkan a ke b jika memiliki sisa pembagian 3 yang persis sama!', setA: [4, 7, 9], setB: [1, 3, 4, 6], validPairs: [[0, 0], [0, 2], [1, 0], [1, 2], [2, 1], [2, 3]] },
+        { stage: 18, bloomLevel: 'C5', isStoryCase: true, rule: 'Evaluasi Waktu Perjalanan: Hubungkan Siswa A yang "Bisa Sampai dari Rumah ke Sekolah dalam waktu < 30 Menit"', conceptDef: 'Evaluasi kelayakan relasi fisik berdasarkan rasio jarak tempuh terhadap kecepatan waktu perjalanan.', story: 'Data perjalanan siswa: Andi dari rumah ke sekolah naik sepeda (15 menit - Wajar); Budi dari rumah ke sekolah jalan kaki (5 menit untuk 10 km - Tidak Wajar!). Hubungkan yang masuk akal!', setA: ['Andi (Sepeda 15 mnt)', 'Budi (Jalan Kaki 5 mnt/10km)'], setB: ['Wajar (< 30 Menit)', 'Tidak Wajar (> 30 Menit)'], validPairs: [[0, 0], [1, 1]] },
+        { stage: 19, bloomLevel: 'C5', isStoryCase: false, rule: 'Evaluasi Persamaan Diophantine: Hubungkan a di A dan b di B jika "a + 2b = 10"', conceptDef: 'Persamaan Diophantine aljabar a + 2b = 10 menentukan pasangan bilangan bulat penyelesaian.', story: 'Evaluasi rumus: Himpunan A [2, 4, 6, 8] dan B [1, 2, 3, 4]. Hubungkan a ke b jika a + 2b = 10!', setA: [2, 4, 6, 8], setB: [1, 2, 3, 4], validPairs: [[0, 3], [1, 2], [2, 1], [3, 0]] },
+        { stage: 20, bloomLevel: 'C5', isStoryCase: true, rule: 'Evaluasi Tantangan Akhir: Hubungkan Tugas A dengan "Hasil Penilaian B"', conceptDef: 'Evaluasi kebenaran logika memetakan hipotesis ke nilai kebenaran validitas.', story: 'Penilaian tugas: Tugas 1 (Dikerjakan Lengkap) -> Lulus; Tugas 2 (Tidak Lengkap) -> Perlu Perbaikan. Hubungkan tugas ke hasil penilaiannya!', setA: ['Tugas 1 (Lengkap)', 'Tugas 2 (Tidak Lengkap)'], setB: ['Lulus', 'Perlu Perbaikan'], validPairs: [[0, 0], [1, 1]] }
       ];
 
       return stagePool[stageNum - 1];
@@ -71,15 +71,15 @@ export const SUBBABS_DATA = {
     id: 2,
     key: 'subbab2',
     title: 'Cara Menyatakan Relasi',
-    caseTitle: 'Empat Cara Melapor',
+    caseTitle: 'Empat Cara Menunjukkan Hubungan',
     iconName: 'Kanban',
     image: '/images/2.png',
-    briefing: 'Setiap detektif punya gaya melapor berbeda: ada yang pakai sketsa panah, grafik titik kartesius, himpunan pasangan berurutan, dan tabel rapi. Markas pusat meminta semua laporan diseragamkan formatnya.',
+    briefing: 'Sebuah hubungan antar data bisa ditampilkan dengan cara yang berbeda-beda: ada yang pakai diagram panah, grafik titik, himpunan pasangan berurutan, dan tabel. Tugasmu: mengubah dari satu bentuk ke bentuk lainnya!',
     rules: [
-      'Pemain diberi satu bentuk laporan (misalnya tabel), lalu diminta memilih/menyusun bentuk lain yang menyatakan informasi SAMA PERSIS.',
+      'Pemain diberi satu bentuk tampilan (misalnya tabel), lalu diminta memilih/menyusun bentuk lain yang menyatakan informasi SAMA PERSIS.',
       'Ada 4 mode tampilan: Diagram Panah, Diagram Kartesius, Himpunan Pasangan Berurutan, dan Tabel.'
     ],
-    goal: 'Mengubah laporan ke format yang diminta tanpa mengubah isi atau maknanya.',
+    goal: 'Mengubah data ke format yang diminta tanpa mengubah isi atau maknanya.',
     stages: Array.from({ length: 21 }, (_, i) => {
       const stageNum = i + 1;
       if (stageNum === 21) {
@@ -87,23 +87,23 @@ export const SUBBABS_DATA = {
           stage: 21,
           isConclusionStage: true,
           bloomLevel: 'C5/C6 (Evaluasi & Sintesis)',
-          question: 'Berdasarkan penyelidikan 20 stage berjenjang (C3-C5), apakah KESIMPULAN UTAMA dari 4 cara menyatakan relasi?',
+          question: 'Berdasarkan 20 stage latihan berjenjang (C3-C5), apakah KESIMPULAN UTAMA dari 4 cara menyatakan relasi?',
           options: [
-            'Relasi dapat dinyatakan dengan Diagram Panah, Diagram Kartesius, Himpunan Pasangan Berurutan, dan Tabel — semuanya menyampaikan himpunan pasangan (x, y) yang sama tanpa mengubah arti.',
+            'Relasi dapat dinyatakan dengan Diagram Panah, Diagram Kartesius, Himpunan Pasangan Berurutan, dan Tabel : semuanya menyampaikan himpunan pasangan (x, y) yang sama tanpa mengubah arti.',
             'Diagram Kartesius adalah satu-satunya cara yang sah untuk menyatakan fungsi.',
             'Setiap cara menyatakan relasi menghasilkan nilai pasangan x dan y yang berbeda-beda.'
           ],
-          correctAnswer: 'Relasi dapat dinyatakan dengan Diagram Panah, Diagram Kartesius, Himpunan Pasangan Berurutan, dan Tabel — semuanya menyampaikan himpunan pasangan (x, y) yang sama tanpa mengubah arti.',
-          hint: '💡 Petunjuk Detektif: Keempat bentuk hanyalah variasi penyajian visual. Nilai elemen asal x dan elemen kawan y wajib identik di semua format.'
+          correctAnswer: 'Relasi dapat dinyatakan dengan Diagram Panah, Diagram Kartesius, Himpunan Pasangan Berurutan, dan Tabel : semuanya menyampaikan himpunan pasangan (x, y) yang sama tanpa mengubah arti.',
+          hint: '💡 Petunjuk: Keempat bentuk hanyalah variasi penyajian visual. Nilai elemen asal x dan elemen kawan y wajib identik di semua format.'
         };
       }
 
       const isStory = stageNum % 2 === 1;
       const bloomLevel = stageNum <= 7 ? 'C3' : stageNum <= 14 ? 'C4' : 'C5';
       const pairsList = isStory ? [
-        [{x: 'Saksi A', y: 'Ruang 1'}, {x: 'Saksi B', y: 'Ruang 2'}, {x: 'Saksi C', y: 'Ruang 3'}],
-        [{x: 'Detektif 1', y: 'Mobil A'}, {x: 'Detektif 2', y: 'Mobil B'}, {x: 'Detektif 3', y: 'Mobil C'}],
-        [{x: 'Tersangka X', y: 'Pos A'}, {x: 'Tersangka Y', y: 'Pos B'}, {x: 'Tersangka Z', y: 'Pos C'}]
+        [{x: 'Andi', y: 'Kelas A'}, {x: 'Budi', y: 'Kelas B'}, {x: 'Cici', y: 'Kelas C'}],
+        [{x: 'Guru 1', y: 'Ruang A'}, {x: 'Guru 2', y: 'Ruang B'}, {x: 'Guru 3', y: 'Ruang C'}],
+        [{x: 'Siswa X', y: 'Loker 1'}, {x: 'Siswa Y', y: 'Loker 2'}, {x: 'Siswa Z', y: 'Loker 3'}]
       ] : [
         [{x: 1, y: 2}, {x: 2, y: 4}, {x: 3, y: 6}],
         [{x: 2, y: 3}, {x: 3, y: 5}, {x: 4, y: 7}],
@@ -126,10 +126,10 @@ export const SUBBABS_DATA = {
     id: 3,
     key: 'subbab3',
     title: 'Pengertian Fungsi',
-    caseTitle: 'Mesin Sidik Jari Rusak',
+    caseTitle: 'Mesin Minuman Otomatis',
     iconName: 'CheckCheck',
     image: '/images/3.png',
-    briefing: 'Ada mesin pemindai sidik jari di markas yang katanya bisa mengenali identitas seseorang secara otomatis. Pemain harus menemukan mesin mana yang valid sebagai FUNGSI.',
+    briefing: 'Bayangkan mesin minuman otomatis di kantin sekolah: kamu memasukkan koin, dan keluar SATU jenis minuman. Tugasmu: menemukan mesin mana yang bekerja dengan benar sebagai FUNGSI!',
     rules: [
       'Disodorkan beberapa mesin (masing-masing berupa pemetaan relasi).',
       'Klik mesin yang VALID FUNGSI (Setiap item di A memiliki TEPAT SATU pasangan di B).'
@@ -149,7 +149,7 @@ export const SUBBABS_DATA = {
             'Fungsi adalah relasi di mana anggota A tidak boleh dipasangkan sama sekali.'
           ],
           correctAnswer: 'Fungsi adalah relasi khusus di mana SETIAP anggota Himpunan A dipasangkan dengan TEPAT SATU anggota Himpunan B.',
-          hint: '💡 Petunjuk Detektif: Dua kata kunci FUNGSI: (1) Semua elemen Domain A HARUS terpasang habis, (2) Elemen A TIDAK BOLEH bercabang.'
+          hint: '💡 Petunjuk: Dua kata kunci FUNGSI: (1) Semua elemen Domain A HARUS terpasang habis, (2) Elemen A TIDAK BOLEH bercabang.'
         };
       }
 
@@ -162,10 +162,10 @@ export const SUBBABS_DATA = {
         isStoryCase: isStory,
         conceptDef: 'Fungsi (Pemetaan) dari Himpunan A ke Himpunan B mensyaratkan setiap elemen x ∈ A dipasangkan dengan tepat satu elemen y ∈ B (tidak boleh kosong dan tidak boleh bercabang).',
         machines: isStory ? [
-          { id: 1, pairs: [['Saksi Budi', 'KTP-101'], ['Saksi Siti', 'KTP-102'], ['Saksi Rudi', 'KTP-103']], isFunction: true, reason: 'Semua saksi terdeteksi tepat ke 1 KTP resmi' },
-          { id: 2, pairs: [['Saksi Budi', 'KTP-101'], ['Saksi Budi', 'KTP-999'], ['Saksi Siti', 'KTP-102']], isFunction: false, reason: 'Saksi Budi terdeteksi punya 2 KTP ganda!' },
-          { id: 3, pairs: [['Saksi Budi', 'KTP-101'], ['Saksi Siti', 'KTP-102']], isFunction: false, reason: 'Saksi Rudi tidak terdeteksi KTP sama sekali!' },
-          { id: 4, pairs: [['Saksi Budi', 'Polres A'], ['Saksi Siti', 'Polres A'], ['Saksi Rudi', 'Polres A']], isFunction: true, reason: 'Semua saksi melapor di Polres A yang sama' }
+          { id: 1, pairs: [['Siswa Budi', 'Loker 101'], ['Siswa Siti', 'Loker 102'], ['Siswa Rudi', 'Loker 103']], isFunction: true, reason: 'Semua siswa punya tepat 1 loker masing-masing' },
+          { id: 2, pairs: [['Siswa Budi', 'Loker 101'], ['Siswa Budi', 'Loker 999'], ['Siswa Siti', 'Loker 102']], isFunction: false, reason: 'Siswa Budi punya 2 loker sekaligus!' },
+          { id: 3, pairs: [['Siswa Budi', 'Loker 101'], ['Siswa Siti', 'Loker 102']], isFunction: false, reason: 'Siswa Rudi tidak punya loker sama sekali!' },
+          { id: 4, pairs: [['Siswa Budi', 'Kantin A'], ['Siswa Siti', 'Kantin A'], ['Siswa Rudi', 'Kantin A']], isFunction: true, reason: 'Semua siswa pergi ke Kantin A yang sama' }
         ] : [
           { id: 1, pairs: [[1, 'A'], [2, 'B'], [3, 'C']], isFunction: true, reason: 'Semua input A terpasang ke tepat 1 output B' },
           { id: 2, pairs: [[1, 'A'], [1, 'B'], [2, 'C']], isFunction: false, reason: 'Input 1 bercabang ke 2 output berbeda (A dan B)!' },
@@ -180,10 +180,10 @@ export const SUBBABS_DATA = {
     id: 4,
     key: 'subbab4',
     title: 'Unsur Fungsi (Domain, Kodomain, Range)',
-    caseTitle: 'Inventaris Gudang Bukti',
+    caseTitle: 'Rak Buku Perpustakaan',
     iconName: 'Layers',
     image: '/images/4.png',
-    briefing: 'Gudang bukti markas punya daftar barang yang masuk (Domain), daftar seluruh rak yang tersedia (Kodomain), dan daftar rak yang benar-benar terisi barang (Range).',
+    briefing: 'Di perpustakaan sekolah, ada daftar buku yang perlu disimpan (Domain), daftar seluruh rak yang tersedia (Kodomain), dan daftar rak yang benar-benar terisi buku (Range).',
     rules: [
       'Tarik warna label ke area yang sesuai: DOMAIN (Daerah Asal), KODOMAIN (Daerah Kawan), dan RANGE (Daerah Hasil).'
     ],
@@ -202,7 +202,7 @@ export const SUBBABS_DATA = {
             'Domain, Kodomain, dan Range selalu bernilai sama pada setiap fungsi.'
           ],
           correctAnswer: 'Domain = Seluruh Himpunan Asal A; Kodomain = Seluruh Himpunan Tujuan B; Range = Sub-himpunan B yang benar-benar terpilih oleh panah dari A.',
-          hint: '💡 Petunjuk Detektif: Domain = daerah asal (A). Kodomain = seluruh daerah kawan (B). Range = daerah hasil (bagian dari B yang terisi).'
+          hint: '💡 Petunjuk: Domain = daerah asal (A). Kodomain = seluruh daerah kawan (B). Range = daerah hasil (bagian dari B yang terisi).'
         };
       }
 
@@ -214,18 +214,18 @@ export const SUBBABS_DATA = {
         bloomLevel,
         isStoryCase: isStory,
         conceptDef: 'Unsur-unsur fungsi terdiri dari: Domain D_f (himpunan asal A), Kodomain K_f (seluruh himpunan kawan B), dan Range R_f (sub-himpunan B yang benar-benar dipasangkan dari A).',
-        setA: isStory ? ['Bukti 1 (Dompet)', 'Bukti 2 (Kunci)', 'Bukti 3 (HP)', 'Bukti 4 (Dokumen)'] : [1, 2, 3, 4],
+        setA: isStory ? ['Buku Matematika', 'Buku IPA', 'Buku Bahasa', 'Buku Sejarah'] : [1, 2, 3, 4],
         setB: isStory ? ['Rak A', 'Rak B', 'Rak C', 'Rak D', 'Rak E'] : ['Rak A', 'Rak B', 'Rak C', 'Rak D', 'Rak E'],
         mappedPairs: isStory 
-          ? [['Bukti 1 (Dompet)', 'Rak A'], ['Bukti 2 (Kunci)', 'Rak C'], ['Bukti 3 (HP)', 'Rak C'], ['Bukti 4 (Dokumen)', 'Rak E']]
+          ? [['Buku Matematika', 'Rak A'], ['Buku IPA', 'Rak C'], ['Buku Bahasa', 'Rak C'], ['Buku Sejarah', 'Rak E']]
           : [[1, 'Rak A'], [2, 'Rak C'], [3, 'Rak C'], [4, 'Rak E']],
-        correctDomain: isStory ? ['Bukti 1 (Dompet)', 'Bukti 2 (Kunci)', 'Bukti 3 (HP)', 'Bukti 4 (Dokumen)'] : [1, 2, 3, 4],
+        correctDomain: isStory ? ['Buku Matematika', 'Buku IPA', 'Buku Bahasa', 'Buku Sejarah'] : [1, 2, 3, 4],
         correctKodomain: ['Rak A', 'Rak B', 'Rak C', 'Rak D', 'Rak E'],
         correctRange: ['Rak A', 'Rak C', 'Rak E'],
         quiz: isStory ? [
-          { question: 'Manakah himpunan barang bukti yang masuk (Domain)?', options: ['{Bukti 1 (Dompet), Bukti 2 (Kunci), Bukti 3 (HP), Bukti 4 (Dokumen)}', '{Rak A, Rak B, Rak C}', '{Rak A, Rak C, Rak E}'], answer: '{Bukti 1 (Dompet), Bukti 2 (Kunci), Bukti 3 (HP), Bukti 4 (Dokumen)}' },
-          { question: 'Manakah rak gudang yang benar-benar terisi barang (Range)?', options: ['{Rak A, Rak C, Rak E}', '{Rak A, Rak B, Rak C, Rak D, Rak E}', '{Bukti 1, Bukti 2}'], answer: '{Rak A, Rak C, Rak E}' },
-          { question: 'Apakah Rak B dan Rak D termasuk Kodomain?', options: ['Ya, Kodomain adalah seluruh rak gudang yang tersedia', 'Tidak, karena belum terisi', 'Tergantung barang bukti'], answer: 'Ya, Kodomain adalah seluruh rak gudang yang tersedia' }
+          { question: 'Manakah himpunan buku yang perlu disimpan (Domain)?', options: ['{Buku Matematika, Buku IPA, Buku Bahasa, Buku Sejarah}', '{Rak A, Rak B, Rak C}', '{Rak A, Rak C, Rak E}'], answer: '{Buku Matematika, Buku IPA, Buku Bahasa, Buku Sejarah}' },
+          { question: 'Manakah rak yang benar-benar terisi buku (Range)?', options: ['{Rak A, Rak C, Rak E}', '{Rak A, Rak B, Rak C, Rak D, Rak E}', '{Buku Matematika, Buku IPA}'], answer: '{Rak A, Rak C, Rak E}' },
+          { question: 'Apakah Rak B dan Rak D termasuk Kodomain?', options: ['Ya, Kodomain adalah seluruh rak yang tersedia', 'Tidak, karena belum terisi', 'Tergantung jenis buku'], answer: 'Ya, Kodomain adalah seluruh rak yang tersedia' }
         ] : [
           { question: 'Manakah daerah asal (Domain)?', options: ['{1, 2, 3, 4}', '{Rak A, Rak B, Rak C}', '{Rak A, Rak C, Rak E}'], answer: '{1, 2, 3, 4}' },
           { question: 'Manakah daerah hasil (Range)?', options: ['{Rak A, Rak C, Rak E}', '{Rak A, Rak B, Rak C, Rak D, Rak E}', '{1, 2, 3, 4}'], answer: '{Rak A, Rak C, Rak E}' },
@@ -239,10 +239,10 @@ export const SUBBABS_DATA = {
     id: 5,
     key: 'subbab5',
     title: 'Notasi & Rumus Fungsi',
-    caseTitle: 'Kode Rahasia Sang Tersangka',
+    caseTitle: 'Rumus Ajaib Matematika',
     iconName: 'Binary',
     image: '/images/5.png',
-    briefing: 'Tersangka meninggalkan catatan berisi pola angka. Menerjemahkan pola menjadi notasi resmi f(x) = ax + b dan hitung nilai kuncinya.',
+    briefing: 'Di kehidupan sehari-hari, banyak hal yang bisa dihitung pakai rumus matematika! Tugasmu: menerjemahkan pola angka menjadi notasi resmi f(x) = ax + b dan hitung hasilnya.',
     rules: [
       'Pilih notasi f(x) yang tepat dan hitung nilai substitusi f(x).'
     ],
@@ -261,7 +261,7 @@ export const SUBBABS_DATA = {
             'Notasi f(x) hanya hiasan dan tidak mempengaruhi perhitungan angka.'
           ],
           correctAnswer: 'Nilai fungsi f(x) diperoleh dengan mengganti (men-substitusi) variabel input x pada rumus notasi f(x) dengan angka yang ditentukan.',
-          hint: '💡 Petunjuk Detektif: Notasi f: x ➔ ax + b berarti f(x) = ax + b. Masukkan angka x ke posisi x pada rumus untuk menghitung hasilnya.'
+          hint: '💡 Petunjuk: Notasi f: x ➔ ax + b berarti f(x) = ax + b. Masukkan angka x ke posisi x pada rumus untuk menghitung hasilnya.'
         };
       }
 
@@ -269,13 +269,13 @@ export const SUBBABS_DATA = {
       const bloomLevel = stageNum <= 7 ? 'C3' : stageNum <= 14 ? 'C4' : 'C5';
 
       const stories = [
-        { isStoryCase: true, story: 'Ongkos Taksi Penyelidikan: Tarif buka pintu Rp 5.000, ditambah Rp 3.000 per km (x). Berapa total ongkos untuk perjalanan 4 km?', options: ['f(x) = 3000x + 5000', 'f(x) = 5000x + 3000', 'f(x) = 3000x - 5000'], correct: 'f(x) = 3000x + 5000', x: 4, ans: 17000 },
+        { isStoryCase: true, story: 'Ongkos Ojek Online: Tarif awal Rp 5.000, ditambah Rp 3.000 per km (x). Berapa total ongkos untuk perjalanan 4 km?', options: ['f(x) = 3000x + 5000', 'f(x) = 5000x + 3000', 'f(x) = 3000x - 5000'], correct: 'f(x) = 3000x + 5000', x: 4, ans: 17000 },
         { isStoryCase: false, story: 'Sebuah fungsi aljabar memetakan x ke 2x + 5. Hitunglah nilai fungsi f(3)!', options: ['f(x) = 2x + 5', 'f(x) = 5x + 2', 'f(x) = 2x - 5'], correct: 'f(x) = 2x + 5', x: 3, ans: 11 },
-        { isStoryCase: true, story: 'Biaya Sewa Kamera Forensic: Biaya administrasi Rp 20.000, ditambah Rp 50.000 per hari (x). Berapa biaya sewa selama 3 hari?', options: ['f(x) = 50000x + 20000', 'f(x) = 20000x + 50000', 'f(x) = 50000x - 20000'], correct: 'f(x) = 50000x + 20000', x: 3, ans: 170000 },
+        { isStoryCase: true, story: 'Biaya Sewa Kostum Pentas Seni: Biaya administrasi Rp 20.000, ditambah Rp 50.000 per hari (x). Berapa biaya sewa selama 3 hari?', options: ['f(x) = 50000x + 20000', 'f(x) = 20000x + 50000', 'f(x) = 50000x - 20000'], correct: 'f(x) = 50000x + 20000', x: 3, ans: 170000 },
         { isStoryCase: false, story: 'Diketahui rumus fungsi aljabar f(x) = 4x - 7. Berapakah nilai substitusi dari f(5)?', options: ['f(x) = 4x - 7', 'f(x) = 7x - 4', 'f(x) = 4x + 7'], correct: 'f(x) = 4x - 7', x: 5, ans: 13 },
         { isStoryCase: false, story: 'HOTS: Fungsi linier f(x) = ax + b memenuhi f(2) = 11 dan f(5) = 20. Tentukan rumus f(x) dan hitung nilai f(8)!', options: ['f(x) = 3x + 5', 'f(x) = 2x + 7', 'f(x) = 4x + 3'], correct: 'f(x) = 3x + 5', x: 8, ans: 29 },
         { isStoryCase: false, story: 'HOTS: Suatu fungsi f(x) = ax - 4 memiliki nilai f(3) = 11. Tentukan rumus f(x) lalu hitung nilai f(-2)!', options: ['f(x) = 5x - 4', 'f(x) = 3x - 4', 'f(x) = 4x - 4'], correct: 'f(x) = 5x - 4', x: -2, ans: -14 },
-        { isStoryCase: true, story: 'HOTS Sewa Kendaraan: Biaya pokok Rp 5.000, biaya f(10) = Rp 45.000 dan f(20) = Rp 85.000 (dalam ribuan). Hitung f(30)!', options: ['f(x) = 4000x + 5000', 'f(x) = 3000x + 15000', 'f(x) = 5000x'], correct: 'f(x) = 4000x + 5000', x: 30, ans: 125000 },
+        { isStoryCase: true, story: 'HOTS Sewa Sepeda Wisata: Biaya pokok Rp 5.000, biaya f(10) = Rp 45.000 dan f(20) = Rp 85.000 (dalam ribuan). Hitung f(30)!', options: ['f(x) = 4000x + 5000', 'f(x) = 3000x + 15000', 'f(x) = 5000x'], correct: 'f(x) = 4000x + 5000', x: 30, ans: 125000 },
         { isStoryCase: false, story: 'HOTS Non-Linier: Fungsi f(x) = 3x² - 2x + 1. Evaluasi dan hitunglah nilai f(-3)!', options: ['f(x) = 3x² - 2x + 1', 'f(x) = 2x² - 3x + 1', 'f(x) = 3x² + 2x - 1'], correct: 'f(x) = 3x² - 2x + 1', x: -3, ans: 34 },
         { isStoryCase: false, story: 'HOTS Persamaan: Diketahui rumus f(x) = 2x + 3. Jika nilai f(k) = 19, tentukan nilai variabel k!', options: ['f(x) = 2x + 3', 'f(x) = 3x + 2', 'f(x) = 2x - 3'], correct: 'f(x) = 2x + 3', x: 8, ans: 19 },
         { isStoryCase: false, story: 'Fungsi linier f(x) = 5 - 3x. Hitunglah nilai dari f(-4)!', options: ['f(x) = 5 - 3x', 'f(x) = 3x - 5', 'f(x) = -5 - 3x'], correct: 'f(x) = 5 - 3x', x: -4, ans: 17 },
@@ -310,14 +310,14 @@ export const SUBBABS_DATA = {
     id: 6,
     key: 'subbab6',
     title: 'Korespondensi Satu-Satu',
-    caseTitle: 'Alibi dan Kursi Saksi',
+    caseTitle: 'Kursi dan Siswa di Kelas',
     iconName: 'Repeat',
     image: '/images/6.png',
-    briefing: 'Di ruang sidang, setiap saksi harus duduk di kursi yang berbeda-beda — n(A) harus sama dengan n(B).',
+    briefing: 'Di kelas, setiap siswa harus duduk di kursi yang berbeda-beda, sehingga jumlah siswa harus sama dengan jumlah kursi. Tidak boleh ada yang berbagi atau tersisa!',
     rules: [
-      'Hubungkan tiap Saksi (Kolom A) ke TEPAT SATU Kursi (Kolom B).'
+      'Hubungkan tiap Siswa (Kolom A) ke TEPAT SATU Kursi (Kolom B).'
     ],
-    goal: 'Menata seluruh saksi dan kursi sampai kondisi "pas satu-satu" tercapai tanpa sisa.',
+    goal: 'Menata seluruh siswa dan kursi sampai kondisi "pas satu-satu" tercapai tanpa sisa.',
     stages: Array.from({ length: 21 }, (_, i) => {
       const stageNum = i + 1;
       if (stageNum === 21) {
@@ -332,7 +332,7 @@ export const SUBBABS_DATA = {
             'Korespondensi satu-satu berlaku meskipun n(A) berbeda dengan n(B).'
           ],
           correctAnswer: 'Jumlah n(A) harus sama dengan n(B), di mana setiap anggota A dipasangkan dengan tepat 1 anggota B, dan tidak ada sisa di kedua himpunan.',
-          hint: '💡 Petunjuk Detektif: Syarat Mutlak Korespondensi 1:1 yaitu n(A) = n(B), dan setiap elemen terhubung pas 1-ke-1 tanpa sisa.'
+          hint: '💡 Petunjuk: Syarat Mutlak Korespondensi 1:1 yaitu n(A) = n(B), dan setiap elemen terhubung pas 1-ke-1 tanpa sisa.'
         };
       }
 
@@ -341,11 +341,11 @@ export const SUBBABS_DATA = {
       const count = Math.min(3 + Math.floor((stageNum - 1) / 4), 6);
 
       const setA = isStory 
-        ? Array.from({ length: count }, (_, j) => `Saksi ${String.fromCharCode(65 + j)}`)
+        ? Array.from({ length: count }, (_, j) => `Siswa ${String.fromCharCode(65 + j)}`)
         : Array.from({ length: count }, (_, j) => `Elemen A-${j + 1}`);
 
       const setB = isStory 
-        ? Array.from({ length: count }, (_, j) => `Kursi Sidang ${j + 1}`)
+        ? Array.from({ length: count }, (_, j) => `Kursi ${j + 1}`)
         : Array.from({ length: count }, (_, j) => `Elemen B-${j + 1}`);
 
       return {
@@ -365,10 +365,10 @@ export const SUBBABS_DATA = {
     id: 7,
     key: 'subbab7',
     title: 'Jenis-Jenis Fungsi',
-    caseTitle: 'Ujian Akhir Calon Detektif (Boss Stage)',
+    caseTitle: 'Tantangan Akhir Matematika',
     iconName: 'ShieldAlert',
     image: '/images/7.png',
-    briefing: 'Ini ujian kelulusan detektif data. Klasifikasikan diagram fungsi ke Injektif, Surjektif, Bijektif, atau Bukan Ketiganya.',
+    briefing: 'Ini tantangan akhir penjelajah matematika! Klasifikasikan diagram fungsi ke Injektif, Surjektif, Bijektif, atau Bukan Ketiganya.',
     rules: [
       'Analisis diagram panah dan pilih jenis fungsi yang tepat.'
     ],
@@ -387,7 +387,7 @@ export const SUBBABS_DATA = {
             'Fungsi Bijektif tidak memerlukan syarat Injektif maupun Surjektif.'
           ],
           correctAnswer: 'Injektif = tidak ada B yang kena panah >1x (boleh ada B kosong); Surjektif = seluruh B terisi panah (Range=Kodomain); Bijektif = gabungan Injektif + Surjektif (pas 1:1 sempurna).',
-          hint: '💡 Petunjuk Detektif: Injektif = max 1 panah per B; Surjektif = min 1 panah per B; Bijektif = tepat 1 panah per B.'
+          hint: '💡 Petunjuk: Injektif = max 1 panah per B; Surjektif = min 1 panah per B; Bijektif = tepat 1 panah per B.'
         };
       }
 
@@ -395,9 +395,9 @@ export const SUBBABS_DATA = {
       const bloomLevel = stageNum <= 7 ? 'C3' : stageNum <= 14 ? 'C4' : 'C5';
 
       const typesList = isStory ? [
-        { type: 'Injektif', setA: ['Saksi 1', 'Saksi 2'], setB: ['Kamar A', 'Kamar B', 'Kamar C'], mappedPairs: [['Saksi 1', 'Kamar A'], ['Saksi 2', 'Kamar B']], description: 'Kasus Alibi Hotel: Saksi 1 di Kamar A, Saksi 2 di Kamar B. Tidak ada kamar yang diisi 2 orang, Kamar C kosong. Ini adalah FUNGSI INJEKTIF.', answer: 'Injektif' },
-        { type: 'Surjektif', setA: ['Detektif A', 'Detektif B', 'Detektif C'], setB: ['Pos 1', 'Pos 2'], mappedPairs: [['Detektif A', 'Pos 1'], ['Detektif B', 'Pos 1'], ['Detektif C', 'Pos 2']], description: 'Kasus Patroli TKP: 3 Detektif mengisi Pos 1 dan Pos 2. Semua pos penjagaan terisi (Range = Kodomain). Ini adalah FUNGSI SURJEKTIF.', answer: 'Surjektif' },
-        { type: 'Bijektif', setA: ['Tersangka A', 'Tersangka B', 'Tersangka C'], setB: ['Sel 1', 'Sel 2', 'Sel 3'], mappedPairs: [['Tersangka A', 'Sel 1'], ['Tersangka B', 'Sel 2'], ['Tersangka C', 'Sel 3']], description: 'Kasus Penahanan Tahanan: 3 Tersangka menempati 3 Sel khusus secara pas 1-ke-1 tanpa sisa. Ini adalah FUNGSI BIJEKTIF.', answer: 'Bijektif' }
+        { type: 'Injektif', setA: ['Siswa 1', 'Siswa 2'], setB: ['Kelas A', 'Kelas B', 'Kelas C'], mappedPairs: [['Siswa 1', 'Kelas A'], ['Siswa 2', 'Kelas B']], description: 'Pembagian Kelas: Siswa 1 di Kelas A, Siswa 2 di Kelas B. Tidak ada kelas yang diisi 2 siswa, Kelas C kosong. Ini adalah FUNGSI INJEKTIF.', answer: 'Injektif' },
+        { type: 'Surjektif', setA: ['Guru A', 'Guru B', 'Guru C'], setB: ['Ruang 1', 'Ruang 2'], mappedPairs: [['Guru A', 'Ruang 1'], ['Guru B', 'Ruang 1'], ['Guru C', 'Ruang 2']], description: 'Jadwal Mengajar: 3 Guru mengisi Ruang 1 dan Ruang 2. Semua ruangan terisi (Range = Kodomain). Ini adalah FUNGSI SURJEKTIF.', answer: 'Surjektif' },
+        { type: 'Bijektif', setA: ['Buku A', 'Buku B', 'Buku C'], setB: ['Rak 1', 'Rak 2', 'Rak 3'], mappedPairs: [['Buku A', 'Rak 1'], ['Buku B', 'Rak 2'], ['Buku C', 'Rak 3']], description: 'Penyimpanan Buku: 3 Buku disimpan di 3 Rak secara pas 1-ke-1 tanpa sisa. Ini adalah FUNGSI BIJEKTIF.', answer: 'Bijektif' }
       ] : [
         { type: 'Injektif', setA: [1, 2], setB: ['X', 'Y', 'Z'], mappedPairs: [[1, 'X'], [2, 'Y']], description: 'Domain A = {1, 2}, Kodomain B = {X, Y, Z}. Pasangan: (1,X), (2,Y). Tidak ada elemen B yang menerima lebih dari 1 panah. (INJEKTIF)', answer: 'Injektif' },
         { type: 'Surjektif', setA: [1, 2, 3], setB: ['X', 'Y'], mappedPairs: [[1, 'X'], [2, 'X'], [3, 'Y']], description: 'Domain A = {1, 2, 3}, Kodomain B = {X, Y}. Pasangan: (1,X), (2,X), (3,Y). Seluruh B terisi panah (SURJEKTIF)', answer: 'Surjektif' },
@@ -423,7 +423,7 @@ export const SUBBABS_DATA = {
 };
 
 /**
- * Math Symbol Explanations per Subbab provided by Detektif Relo
+ * Math Symbol Explanations per Subbab provided by Kak Relo
  */
 export const SUBBAB_SYMBOL_EXPLANATIONS = {
   1: "🔣 SIMBOL MATEMATIKA DETEKTIF RELO:\n• A → B dibaca 'Himpunan A dihubungkan ke Himpunan B'.\n• (x, y) dibaca 'pasangan berurutan' di mana elemen x dihubungkan ke y.",
@@ -434,4 +434,3 @@ export const SUBBAB_SYMBOL_EXPLANATIONS = {
   6: "🔣 SIMBOL MATEMATIKA DETEKTIF RELO:\n• n(A) = n(B) dibaca 'jumlah anggota Himpunan A sama dengan Himpunan B'.\n• n! (Faktorial) = n × (n-1) × ... × 1 (banyaknya cara susunan korespondensi 1-1).",
   7: "🔣 SIMBOL MATEMATIKA DETEKTIF RELO:\n• Injektif (Satu-Satu): Tidak ada 2 input x yang punya output y sama.\n• Surjektif (Pada/Onto): Range R_f = Kodomain K_f.\n• Bijektif: Gabungan Injektif & Surjektif (Korespondensi 1-1)."
 };
-

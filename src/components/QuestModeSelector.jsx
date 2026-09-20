@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Play, Clock, Lock, Trophy } from 'lucide-react';
+import { ArrowLeft, Clock, Lock, Trophy } from 'lucide-react';
 import { CHAPTERS_DATA } from '../data/chapterLearningData';
 import InstructorMascotGuide from './InstructorMascotGuide';
 import NetworkStatusBadge from './NetworkStatusBadge';
@@ -18,10 +18,13 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
   const [questScores, setQuestScores] = useState({}); // { subbabId: { score, correctCount, ... } }
 
   useEffect(() => {
-    const res = reloVoiceService.playScene('4');
-    if (res && res.text) {
-      setReloText(res.text);
-    }
+    // Auto-play mascot speech immediately upon entering quest mode
+    const timer = setTimeout(() => {
+      const res = reloVoiceService.playScene('4', false, true);
+      if (res && res.text) {
+        setReloText(res.text);
+      }
+    }, 150);
 
     // Fetch quest scores from backend (non-blocking)
     if (currentUser && !currentUser._isGuest) {
@@ -41,7 +44,10 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
       }).catch(() => {});
     }
 
-    return () => reloVoiceService.stopVoice();
+    return () => {
+      clearTimeout(timer);
+      reloVoiceService.stopVoice();
+    };
   }, [currentUser]);
 
   /**
@@ -85,7 +91,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
           <span>Menu Utama</span>
         </button>
 
-        <h2 className="text-base sm:text-lg lg:text-[20px] font-black font-pencil text-[#2D241E] truncate">
+        <h2 className="text-base sm:text-lg lg:text-[20px] font-black font-pencil text-[#2D241E]">
           QUEST MODE: UJIAN 30 SOAL
         </h2>
 
@@ -118,7 +124,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
 
       {/* CHAPTER GRID (5 CHAPTERS, FIXED ZERO SCROLL) */}
       <div className="flex-1 min-h-0 flex flex-col justify-start pt-1 sm:pt-2 md:pt-3 relative z-10 overflow-hidden">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-hand w-full max-w-6xl mx-auto px-2 sm:px-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-pencil w-full max-w-6xl mx-auto px-2 sm:px-4">
           {Object.values(CHAPTERS_DATA).map((ch) => {
             const chProgress = userProgress?.[ch.key] || userProgress?.[`subbab${ch.id}`];
             const completedSegs = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
@@ -127,7 +133,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
               (currentUser?.username || '').toLowerCase() === 'fikran02' ||
               (currentUser?.fullname || '').toLowerCase() === 'admin'
             );
-            const isUnlocked = isAdmin || completedSegs >= ch.totalSegments || Boolean(chProgress?.completed);
+            const isUnlocked = isAdmin || ch.id === 1 || completedSegs >= ch.totalSegments || Boolean(chProgress?.completed);
             const chScore = questScores[ch.id];
 
             return (
@@ -144,15 +150,15 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
                   }
                 }}
                 onMouseEnter={() => { if (isUnlocked) audioEngine.playHover(); }}
-                className={`pencil-btn p-3 sm:p-3.5 md:p-4 rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex flex-col justify-between h-[165px] sm:h-[180px] md:h-[195px] max-h-[205px] min-h-0 transition-all text-left group ${
+                className={`pencil-btn p-3 sm:p-3.5 md:p-4 rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex flex-col justify-between h-[180px] sm:h-[195px] md:h-[215px] max-h-[225px] min-h-[175px] transition-all text-left group relative overflow-hidden cursor-pointer ${
                   isUnlocked
                     ? 'glass-card border-white/80 hover:scale-[1.02]'
                     : 'glass-panel-subtle border-white/40 text-[#78716C] cursor-not-allowed opacity-75'
                 }`}
               >
-                {/* Header Row */}
-                <div className="flex items-center justify-between w-full">
-                  <span className={`text-xs sm:text-sm font-black uppercase tracking-wider px-2.5 py-0.5 rounded-xl border-2 shadow-[1px_1px_0px_#2D241E] ${
+                {/* Header Row: UJIAN BAB Box */}
+                <div className="flex items-center justify-between w-full relative z-10">
+                  <span className={`text-xs sm:text-sm font-daruma uppercase tracking-wider px-3.5 py-1.5 rounded-xl border-2 shadow-[2px_2px_0px_#2D241E] whitespace-nowrap ${
                     isUnlocked
                       ? 'bg-[#FEF3C7] text-[#D97706] border-[#2D241E]'
                       : 'bg-[#F3F4F6] text-[#78716C] border-[#A8A29E]'
@@ -160,23 +166,17 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
                     UJIAN BAB {ch.id}
                   </span>
 
-                  {isUnlocked ? (
-                    <div className="px-2.5 py-1 rounded-xl bg-[#FDE68A] text-[#78350F] font-black text-xs sm:text-sm flex items-center space-x-1 border-2 border-[#2D241E] shadow-[1px_1px_0px_#2D241E] group-hover:bg-[#F59E0B] group-hover:text-white transition-colors">
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Mulai</span>
-                    </div>
-                  ) : (
-                    <div className="px-2.5 py-1 rounded-xl bg-[#E5E7EB] text-[#6B7280] font-black text-xs flex items-center space-x-1 border border-[#A8A29E]">
+                  {!isUnlocked && (
+                    <div className="p-1.5 rounded-xl bg-[#E5E7EB] text-[#6B7280] font-black text-xs flex items-center justify-center border border-[#A8A29E]">
                       <Lock className="w-3.5 h-3.5 text-[#6B7280]" />
-                      <span>🔒</span>
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 flex flex-col justify-center w-full my-1">
-                  <div className="text-xl mb-0.5">{ch.icon}</div>
-                  <h3 className={`text-sm sm:text-base lg:text-lg font-black font-pencil leading-tight break-words ${
+                <div className="flex-1 flex flex-col justify-center w-full my-1.5 min-h-0 relative z-10">
+                  <div className="text-2xl mb-1">{ch.icon}</div>
+                  <h3 className={`text-xs sm:text-sm md:text-base font-black font-pencil leading-tight break-words group-hover:text-[#D97706] transition-colors ${
                     isUnlocked ? 'text-[#2D241E]' : 'text-[#78716C]'
                   }`}>
                     {ch.title}
@@ -185,9 +185,9 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
 
                 {/* Score Badge (bottom) */}
                 {isUnlocked && (
-                  <div className="w-full flex-shrink-0">
+                  <div className="w-full flex-shrink-0 mt-1 relative z-10">
                     {chScore ? (
-                      <div className={`flex items-center justify-between px-2.5 py-1 rounded-xl border-2 text-xs sm:text-sm font-black ${getScoreBadgeStyle(chScore.score)}`}>
+                      <div className={`flex items-center justify-between px-2.5 py-1 rounded-xl border-2 text-xs sm:text-sm font-black font-pencil ${getScoreBadgeStyle(chScore.score)}`}>
                         <div className="flex items-center space-x-1">
                           <Trophy className="w-3.5 h-3.5" />
                           <span>Nilai:</span>
@@ -195,7 +195,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
                         <span>{chScore.score}/100 {getScoreEmoji(chScore.score)}</span>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center px-2.5 py-1 rounded-xl border border-white/60 bg-white/30 text-xs sm:text-sm font-bold text-[#78716C] italic">
+                      <div className="flex items-center justify-center px-2.5 py-1 rounded-xl border border-white/60 bg-white/40 text-xs font-bold text-[#78350F] italic font-pencil">
                         Belum Dikerjakan
                       </div>
                     )}

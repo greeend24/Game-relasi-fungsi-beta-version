@@ -76,12 +76,12 @@ export default function Subbab2FormatRelasi({ stageNum, onStageComplete, onBackT
       audioEngine.playError();
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL FORMAT RELASI',
+        title: 'PETUNJUK DETEKTIF: BENTUK RELASI',
         reasons: [
-          '⚠️ Pilihan format yang kamu buat menukar posisi x dan y atau mengubah nilai elemen.',
-          'Format relasi harus mempertahankan pasangan berurutan (x, y) tanpa mengubah urutan domain dan kodomain.'
+          '⚠️ Pilihan format yang kamu buat menukar posisi x dan y atau mengubah nilai anggota.',
+          'Format relasi harus mempertahankan pasangan berurutan (x, y) tanpa mengubah urutan daerah asal (Domain) dan kawan (Kodomain).'
         ],
-        hint: stageConfig.conceptDef || 'Konsep: Dalam Pasangan Berurutan (x, y), elemen pertama x selalu Domain dan elemen kedua y selalu Kodomain.'
+        hint: stageConfig.conceptDef || 'Ingat: Dalam Pasangan Berurutan (x, y), nilai pertama x selalu dari Himpunan Asal dan nilai kedua y selalu dari Himpunan Kawan.'
       });
     }
   };
@@ -95,7 +95,7 @@ export default function Subbab2FormatRelasi({ stageNum, onStageComplete, onBackT
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || `Bentuk relasi: Diagram Panah, Pasangan Berurutan, Diagram Kartesius.`}
+        hintText={stageConfig.conceptDef || `Bentuk relasi: Diagram Panah, Pasangan Berurutan, Diagram Kartesius, dan Tabel.`}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -106,7 +106,7 @@ export default function Subbab2FormatRelasi({ stageNum, onStageComplete, onBackT
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText={stageConfig?.conceptDef || 'Relasi matematika dapat disajikan dalam 3 bentuk identik: Diagram Panah, Himpunan Pasangan Berurutan, dan Diagram Kartesius.'}
+        explanationText={stageConfig?.conceptDef || 'Relasi matematika bisa disajikan dalam 4 bentuk yang sama: Diagram Panah, Pasangan Berurutan, Diagram Kartesius, dan Tabel.'}
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}

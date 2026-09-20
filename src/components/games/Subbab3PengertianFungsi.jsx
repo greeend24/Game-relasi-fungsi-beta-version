@@ -63,17 +63,17 @@ export default function Subbab3PengertianFungsi({ stageNum, onStageComplete, onB
       let reasons = [];
       
       if (falselySelected.length > 0) {
-        reasons.push(`⚠️ Terdapat mesin yang kamu tandai sebagai Fungsi, padahal melanggar syarat pemetaan (input bercabang atau tidak terpasang).`);
+        reasons.push(`⚠️ Ada diagram yang kamu pilih padahal bukan fungsi (karena ada anggota himpunan asal yang bercabang atau tidak punya pasangan).`);
       }
 
       if (missedValid.length > 0) {
-        reasons.push(`⚠️ Masih ada mesin valid fungsi yang belum kamu tandai.`);
+        reasons.push(`⚠️ Masih ada diagram fungsi yang benar namun belum kamu tandai.`);
       }
 
       setErrorDetails({
-        title: 'EVALUASI KONSEPTUAL KAIDAH FUNGSI',
+        title: 'PETUNJUK DETEKTIF: SYARAT FUNGSI',
         reasons,
-        hint: stageConfig.conceptDef || 'Konsep: Fungsi mensyaratkan (1) Seluruh elemen Domain A habis terpasang, (2) Tidak ada elemen A yang bercabang ke >1 pasangan di B.'
+        hint: stageConfig.conceptDef || 'Ingat syarat fungsi: (1) Semua anggota di Himpunan A harus punya pasangan, (2) Anggota di Himpunan A tidak boleh bercabang (hanya boleh punya 1 pasangan di B).'
       });
     }
   };
@@ -87,7 +87,7 @@ export default function Subbab3PengertianFungsi({ stageNum, onStageComplete, onB
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || `Fungsi (Pemetaan): Relasi khusus yang memasangkan SETIAP elemen Himpunan A TEPAT SATU ke Himpunan B.`}
+        hintText={stageConfig.conceptDef || `Fungsi: Relasi khusus yang memasangkan SETIAP anggota Himpunan A TEPAT SATU ke Himpunan B.`}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -98,7 +98,7 @@ export default function Subbab3PengertianFungsi({ stageNum, onStageComplete, onB
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText={stageConfig?.conceptDef || 'Syarat formal Fungsi (Pemetaan): (1) Seluruh elemen Domain A terhubung habis, (2) Tidak ada elemen Domain A yang bercabang lebih dari satu.'}
+        explanationText={stageConfig?.conceptDef || 'Syarat Fungsi: (1) Semua anggota di Himpunan A harus punya pasangan, (2) Anggota di Himpunan A tidak boleh bercabang lebih dari satu.'}
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}

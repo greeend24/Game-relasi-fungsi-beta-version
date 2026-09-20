@@ -24,7 +24,9 @@ const CHAPTER_ICONS = {
 
 export default function StageSelector({
   userProgress,
+  currentUser,
   onSelectChapter,
+  onSelectExercise,
   onBackToMenu,
   currentSubbabId,
   setCurrentSubbabId,
@@ -55,9 +57,17 @@ export default function StageSelector({
 
   useEffect(() => {
     startIdleTimers();
-    const res = reloVoiceService.playScene('2A');
-    if (res.text) setReloText(res.text);
-    return () => clearIdleTimers();
+    // Auto-play mascot speech immediately upon entering chapter selector
+    const timer = setTimeout(() => {
+      const res = reloVoiceService.playScene('2A', false, true);
+      if (res?.text) setReloText(res.text);
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      clearIdleTimers();
+      reloVoiceService.stopVoice();
+    };
   }, []);
 
   const handleChapterClick = (chapterId) => {
@@ -81,7 +91,7 @@ export default function StageSelector({
           <span>Kembali ke Menu Utama</span>
         </button>
 
-        <h2 className="text-base sm:text-xl lg:text-2xl font-black font-pencil text-[#2D241E] tracking-wide truncate">
+        <h2 className="text-base sm:text-xl lg:text-2xl font-black font-pencil text-[#2D241E] tracking-wide">
           📖 Pilih Chapter Pembelajaran
         </h2>
 
@@ -110,7 +120,7 @@ export default function StageSelector({
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-hand w-full max-w-6xl mx-auto px-2 sm:px-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-pencil w-full max-w-6xl mx-auto px-2 sm:px-4">
           {Object.values(CHAPTERS_DATA).map((ch) => {
             const chProgress = userProgress?.[ch.key] || userProgress?.[`subbab${ch.id}`];
             const completedSegments = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
@@ -123,78 +133,138 @@ export default function StageSelector({
               (prevProgress?.completedSegments >= (prevCh?.totalSegments || 10))
             );
 
+            const isUserAdmin = Boolean(
+              currentUser?.isAdmin ||
+              (currentUser?.username || '').toLowerCase() === 'fikran02' ||
+              (currentUser?.fullname || '').toLowerCase() === 'admin'
+            );
+
             const isUnlocked = Boolean(
+              isUserAdmin ||
               ch.id === 1 ||
               chProgress?.unlocked ||
               (ch.id > 1 && prevCompleted)
             );
             const IconComp = CHAPTER_ICONS[ch.id] || BookOpen;
 
+            const isExerciseUnlocked = Boolean(isUserAdmin || isCompleted);
+            const isExerciseCompleted = Boolean(userProgress?.exercises?.[`latihan${ch.id}`]?.completed);
+
             return (
-              <button
-                key={ch.id}
-                disabled={!isUnlocked}
-                onClick={() => isUnlocked && handleChapterClick(ch.id)}
-                onMouseEnter={() => audioEngine.playHover()}
-                className={`pencil-btn p-3 sm:p-3.5 md:p-4 rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex flex-col justify-between h-[185px] sm:h-[205px] md:h-[225px] max-h-[235px] min-h-0 transition-all text-left group relative overflow-hidden cursor-pointer ${
-                  isCompleted
-                    ? 'glass-card border-emerald-400/70 text-[#2D241E] ring-2 ring-[#22C55E]/60 shadow-[0_8px_24px_rgba(34,197,94,0.18)]'
-                    : isUnlocked
-                    ? 'glass-card border-white/80 text-[#2D241E] hover:scale-[1.02]'
-                    : 'glass-panel-subtle border-white/40 text-[#78716C] cursor-not-allowed opacity-75'
-                }`}
-              >
-                {/* Header */}
-                <div className="relative z-10 flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <div className={`p-1.5 rounded-xl text-white border border-[#2D241E] shadow-[1px_1px_0px_#2D241E] ${
-                      isCompleted ? 'bg-[#22C55E]' : 'bg-[#D97706]'
-                    }`}>
-                      <IconComp className="w-4 h-4" />
+              <div key={ch.id} className="flex flex-col gap-2 w-full min-w-0">
+                {/* Chapter Card */}
+                <button
+                  disabled={!isUnlocked}
+                  onClick={() => isUnlocked && handleChapterClick(ch.id)}
+                  onMouseEnter={() => audioEngine.playHover()}
+                  className={`pencil-btn p-3 sm:p-3.5 rounded-2xl border shadow-[0_6px_16px_rgba(0,0,0,0.08)] flex flex-col justify-between h-[175px] sm:h-[185px] md:h-[195px] min-h-[170px] transition-all text-left group relative overflow-hidden cursor-pointer w-full ${
+                    isCompleted
+                      ? 'glass-card border-emerald-400/70 text-[#2D241E] ring-2 ring-[#22C55E]/60 shadow-[0_6px_20px_rgba(34,197,94,0.15)]'
+                      : isUnlocked
+                      ? 'glass-card border-white/80 text-[#2D241E] hover:scale-[1.02]'
+                      : 'glass-panel-subtle border-white/40 text-[#78716C] cursor-not-allowed opacity-75'
+                  }`}
+                >
+                  {/* Header with Darumadrop One for Chapter Badge */}
+                  <div className="relative z-10 flex items-center justify-between w-full">
+                    <div className="flex items-center space-x-2">
+                      <div className={`p-1.5 rounded-xl text-white border border-[#2D241E] shadow-[1px_1px_0px_#2D241E] ${
+                        isCompleted ? 'bg-[#22C55E]' : 'bg-[#D97706]'
+                      }`}>
+                        <IconComp className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-sm font-daruma text-[#D97706] tracking-wide uppercase">
+                        Chapter {ch.id}
+                      </span>
                     </div>
-                    <span className="text-xs sm:text-sm font-black text-[#D97706] tracking-wider uppercase">
-                      Chapter {ch.id}
-                    </span>
+
+                    {!isUnlocked ? (
+                      <Lock className="w-4 h-4 text-[#A8A29E]" />
+                    ) : isCompleted ? (
+                      <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />
+                    ) : (
+                      <div className="p-1 rounded-full glass-panel-subtle border border-[#2D241E] group-hover:translate-x-1 transition-transform">
+                        <ChevronRight className="w-3.5 h-3.5 text-[#2563EB]" />
+                      </div>
+                    )}
                   </div>
 
-                  {!isUnlocked ? (
-                    <Lock className="w-4 h-4 text-[#A8A29E]" />
-                  ) : isCompleted ? (
-                    <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />
-                  ) : (
-                    <div className="p-1 rounded-full glass-panel-subtle border border-[#2D241E] group-hover:translate-x-1 transition-transform">
-                      <ChevronRight className="w-4 h-4 text-[#2563EB]" />
+                  {/* Title & subtitle */}
+                  <div className="relative z-10 flex-1 flex flex-col justify-center my-1 min-h-0">
+                    <div className="text-xl mb-0.5">{ch.icon}</div>
+                    <h3 className="text-xs sm:text-sm md:text-base font-black font-pencil text-[#2D241E] leading-tight break-words group-hover:text-[#D97706] transition-colors line-clamp-2">
+                      {ch.title}
+                    </h3>
+                    <p className="text-[10px] sm:text-[11px] text-[#78350F] mt-0.5 font-pencil font-medium leading-snug break-words line-clamp-2">
+                      {ch.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Progress bar */}
+                  {isUnlocked && (
+                    <div className="relative z-10 w-full font-pencil mt-1 flex-shrink-0">
+                      <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-[#78350F] mb-0.5">
+                        <span>{completedSegments}/{ch.totalSegments}</span>
+                        {isCompleted && <span className="text-[#22C55E]">✅ Selesai</span>}
+                      </div>
+                      <div className="w-full h-1.5 sm:h-2 bg-white/60 rounded-full border border-[#2D241E] overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${isCompleted ? 'bg-[#22C55E]' : 'bg-[#D97706]'}`}
+                          style={{ width: `${Math.min(100, (completedSegments / ch.totalSegments) * 100)}%` }}
+                        />
+                      </div>
                     </div>
                   )}
-                </div>
+                </button>
 
-                {/* Title & subtitle (fully visible without cutting off with ...) */}
-                <div className="relative z-10 flex-1 flex flex-col justify-center my-1">
-                  <div className="text-2xl mb-1">{ch.icon}</div>
-                  <h3 className="text-sm sm:text-base lg:text-lg font-black font-pencil text-[#2D241E] leading-tight break-words group-hover:text-[#D97706] transition-colors">
-                    {ch.title}
-                  </h3>
-                  <p className="text-[11px] sm:text-xs md:text-sm text-[#78350F] mt-1 font-bold leading-snug break-words">
-                    {ch.subtitle}
-                  </p>
-                </div>
-
-                {/* Progress bar */}
-                {isUnlocked && (
-                  <div className="relative z-10 w-full">
-                    <div className="flex items-center justify-between text-xs font-bold text-[#78350F] mb-0.5">
-                      <span>{completedSegments}/{ch.totalSegments}</span>
-                      {isCompleted && <span className="text-[#22C55E]">✅ Selesai</span>}
-                    </div>
-                    <div className="w-full h-2 bg-white/60 rounded-full border border-[#2D241E] overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${isCompleted ? 'bg-[#22C55E]' : 'bg-[#D97706]'}`}
-                        style={{ width: `${Math.min(100, (completedSegments / ch.totalSegments) * 100)}%` }}
-                      />
+                {/* Box Latihan 1-5 di Bawah Chapter (Sesuai Kotak Merah Pengguna) */}
+                <button
+                  disabled={!isExerciseUnlocked}
+                  onClick={() => {
+                    if (isExerciseUnlocked && onSelectExercise) {
+                      audioEngine.playClick();
+                      clearIdleTimers();
+                      onSelectExercise(ch.id);
+                    }
+                  }}
+                  onMouseEnter={() => isExerciseUnlocked && audioEngine.playHover()}
+                  className={`pencil-btn px-2.5 py-2 sm:py-2.5 rounded-xl border flex items-center justify-between transition-all text-left w-full cursor-pointer group shadow-sm ${
+                    isExerciseCompleted
+                      ? 'bg-gradient-to-r from-emerald-100 to-green-100 border-emerald-400 text-emerald-950 ring-2 ring-emerald-500/40 shadow-[0_3px_10px_rgba(16,185,129,0.2)]'
+                      : isExerciseUnlocked
+                      ? 'bg-gradient-to-r from-amber-100 via-amber-50 to-yellow-100 border-[#D97706]/70 text-[#78350F] hover:scale-[1.02] shadow-[0_3px_10px_rgba(217,119,6,0.18)] hover:border-[#D97706]'
+                      : 'glass-panel-subtle border-white/40 text-stone-400 cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-base sm:text-lg flex-shrink-0">
+                      {isExerciseCompleted ? '⭐' : isExerciseUnlocked ? '✏️' : '🔒'}
+                    </span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs sm:text-sm font-black font-pencil tracking-wide leading-tight truncate">
+                        Latihan {ch.id}
+                      </span>
+                      <span className="text-[9.5px] sm:text-[10px] font-bold opacity-80 leading-none truncate">
+                        {isExerciseCompleted ? '30 Soal Tuntas' : isExerciseUnlocked ? '30 Soal + Remedial' : 'Selesaikan Materi'}
+                      </span>
                     </div>
                   </div>
-                )}
-              </button>
+
+                  <div className="flex-shrink-0 ml-1">
+                    {isExerciseCompleted ? (
+                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-emerald-200 text-emerald-800">
+                        Selesai
+                      </span>
+                    ) : isExerciseUnlocked ? (
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 group-hover:bg-amber-300 transition">
+                        Mulai →
+                      </span>
+                    ) : (
+                      <Lock className="w-3.5 h-3.5 text-stone-400" />
+                    )}
+                  </div>
+                </button>
+              </div>
             );
           })}
         </div>

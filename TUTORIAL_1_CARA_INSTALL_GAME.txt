@@ -1,0 +1,134 @@
+================================================================================
+          PANDUAN 1: CARA INSTALL GAME DETEKTIF DATA & FUNGSI
+               UNTUK SELURUH DISTRIBUSI PERANGKAT (LENGKAP)
+================================================================================
+
+Game "Detektif Data - Relasi & Fungsi" telah disiapkan dan dikemas ke dalam
+berbagai format distribusi resmi untuk Windows, Android, iOS, Mac, dan Web.
+
+Semua file distribusi tersimpan rapi di dalam folder:
+Folder: DISTRIBUSI_GAME_ALL_PLATFORM/
+
+Berikut panduan instalasi per masing-masing distribusi:
+
+--------------------------------------------------------------------------------
+1. DISTRIBUSI WINDOWS (LAPTOP / PC WINDOWS)
+--------------------------------------------------------------------------------
+Lokasi Folder: Detektif data (Windows Version)/
+atau file zip: Detektif data (Windows Version).zip
+File Installer Resmi: detektif data windows setup.exe
+
+Ada 2 cara yang bisa kamu pilih:
+
+A. CARA 1: MENGGUNAKAN INSTALLER RESMI (DIREKOMENDASIKAN)
+   1. Klik dua kali (double-click) file installer:
+      "detektif data windows setup.exe"
+      (Bisa langsung dibuka di folder utama atau di dalam "Detektif data (Windows Version)").
+   2. Ikuti langkah di layar (cukup klik Next -> Install).
+   3. Setelah selesai, ikon game "Detektif Data" akan otomatis muncul di:
+      - Desktop Windows
+      - Menu Start Windows
+   4. Klik ikon game tersebut kapan saja untuk langsung bermain!
+
+B. CARA 2: VERSI PORTABLE (TANPA INSTALL)
+   1. Buka folder "Detektif data (Windows Version)/Detektif_Data_Windows_Game".
+   2. Klik dua kali file:
+      "Detektif Data.exe"
+   3. Game langsung terbuka dan siap dimainkan tanpa proses instalasi apapun.
+   4. Sangat cocok jika ingin disimpan di Flashdisk dan dimainkan di komputer sekolah.
+
+--------------------------------------------------------------------------------
+2. DISTRIBUSI WINDOWS VERSI RINGAN (WEBVIEW2)
+--------------------------------------------------------------------------------
+Lokasi Folder: Detektif data (Windows WebView2 Version)/
+atau file zip: Detektif data (Windows WebView2 Version).zip
+
+Distribusi ini dirancang sangat ringan untuk laptop dengan spesifikasi standar:
+1. Buka folder "Detektif data (Windows WebView2 Version)".
+2. Klik dua kali file:
+   "Mainkan_Game_WebView2.bat"
+   atau file "Detektif Data (WebView2).exe"
+3. Game langsung berjalan mulus menggunakan engine bawaan Microsoft Edge WebView2.
+
+--------------------------------------------------------------------------------
+3. DISTRIBUSI ANDROID (SMARTPHONE & TABLET ANDROID)
+--------------------------------------------------------------------------------
+Lokasi Folder: Detektif data (Android Version)/
+atau file zip: Detektif data (Android Version).zip
+
+A. CARA 1: INSTALASI INSTAN SEBAGAI WEB APP / PWA (PALING MUDAH & CEPAT)
+   Siswa TIDAK PERLU download file APK besar! Cukup pasang shortcut instan:
+   1. Pastikan server internet game menyala di komputer (JALANKAN_SERVER_INTERNET.bat).
+   2. Buka browser Google Chrome di HP Android.
+   3. Ketik alamat URL game:
+      https://scooter-thickness-stony.ngrok-free.dev
+   4. Tekan tombol Titik Tiga (menu Chrome di kanan atas layar).
+   5. Pilih menu: "Tambahkan ke Layar Utama" (Add to Home Screen)
+      atau "Install Aplikasi".
+   6. Konfirmasi dengan menekan "Tambah" / "Install".
+   7. Selesai! Ikon burung hantu "Detektif Data" akan langsung muncul di menu HP 
+      seperti aplikasi dari Google Play Store. Ketika dibuka, game akan berjalan 
+      fullscreen tanpa bilah URL browser!
+
+B. CARA 2: MEMBUAT & INSTALL FILE APK NATIVE (ANDROID STUDIO)
+   Jika kamu ingin file installer .APK murni untuk dikirim via WhatsApp/Flashdisk:
+   1. Buka folder "Detektif data (Android Version)/Project_Android_Capacitor".
+   2. Buka project tersebut menggunakan aplikasi Android Studio.
+   3. Pilih menu: Build -> Build Bundle(s) / APK(s) -> Build APK(s).
+   4. File APK siap pakai akan berada di folder:
+      android/app/build/outputs/apk/debug/app-debug.apk
+   5. Kirim file APK tersebut ke HP Android siswa, lalu buka file untuk menginstallnya
+      (Izinkan instalasi dari sumber tidak dikenal / Install Unknown Apps).
+
+--------------------------------------------------------------------------------
+4. DISTRIBUSI IOS (IPHONE & IPAD APPLE)
+--------------------------------------------------------------------------------
+Lokasi Folder: Detektif data (iOS Version)/
+atau file zip: Detektif data (iOS Version).zip
+
+A. CARA 1: INSTALASI INSTAN DI SAFARI IOS (DIREKOMENDASIKAN UNTUK SISWA)
+   1. Buka browser Safari di iPhone atau iPad.
+   2. Masukkan alamat URL game:
+      https://scooter-thickness-stony.ngrok-free.dev
+   3. Tekan tombol "Share" (ikon kotak dengan tanda panah ke atas di bagian bawah Safari).
+   4. Geser ke bawah dan pilih menu: "Add to Home Screen" (Tambahkan ke Layar Utama).
+   5. Ketik nama aplikasi: "Detektif Data", lalu klik "Add" (Tambah).
+   6. Ikon game langsung terpasang di Home Screen iPhone/iPad. Saat dibuka, game 
+      akan berjalan standalone layar penuh seperti aplikasi App Store resmi!
+
+B. CARA 2: COMPILE NATIVE DI MAC VIA XCODE
+   1. Buka folder "Detektif data (iOS Version)/Project_iOS_Xcode_Capacitor" di komputer Mac.
+   2. Buka file "App.xcworkspace" dengan software Xcode.
+   3. Hubungkan iPhone/iPad dengan kabel data, pilih perangkatmu, lalu klik tombol "Run" (Play).
+   4. Aplikasi akan terinstall otomatis ke perangkat iOS kamu.
+
+--------------------------------------------------------------------------------
+5. DISTRIBUSI MACOS (MACBOOK & IMAC)
+--------------------------------------------------------------------------------
+Lokasi Folder: Detektif data (macOS Version)/
+atau file zip: Detektif data (macOS Version).zip
+
+1. Buka folder "Detektif data (macOS Version)".
+2. Klik dua kali file:
+   "Start_Game_MacOS.command"
+3. Jika muncul peringatan keamanan macOS Gatekeeper, buka System Settings -> 
+   Privacy & Security -> klik "Open Anyway".
+4. Game akan langsung berjalan optimal di MacBook atau iMac.
+
+--------------------------------------------------------------------------------
+6. DISTRIBUSI WEB / HTML5 OFFLINE (UNTUK FLASHDISK / LAB KOMPUTER)
+--------------------------------------------------------------------------------
+Lokasi Folder: Detektif data (Web Version)/
+atau file zip: Detektif data (Web Version).zip
+
+Distribusi ini tidak memerlukan instalasi sama sekali:
+1. Salin seluruh isi folder "Detektif data (Web Version)" ke Flashdisk.
+2. Colokkan Flashdisk ke komputer mana saja di sekolah/lab.
+3. Klik dua kali:
+   "Mainkan_Game_Offline_Windows.bat" (untuk Windows)
+   atau jalankan "Mainkan_Game_Offline_Mac_Linux.sh" (untuk Mac/Linux)
+4. Game langsung terbuka di browser lokal tanpa perlu koneksi internet.
+
+================================================================================
+Semua file distribusi selalu sinkron otomatis dengan versi terbaru dari kode game!
+================================================================================

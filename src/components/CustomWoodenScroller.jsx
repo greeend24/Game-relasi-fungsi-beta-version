@@ -6,15 +6,13 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
  * - /assets/tampilan di rank/asset/scroller.png (Vertical Track Line)
  * - /assets/tampilan di rank/asset/button_of_scroller@4x.png (Draggable Wooden Pin Button)
  */
-export default function CustomWoodenScroller({ children, className = '', containerClassName = '' }) {
+export default function CustomWoodenScroller({ children, className = '', containerClassName = '', pinSize = 28 }) {
   const contentRef = useRef(null);
   const trackRef = useRef(null);
   const [thumbTopPx, setThumbTopPx] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartYRef = useRef(0);
   const startScrollTopRef = useRef(0);
-
-  const pinSize = 36; // Height of button_of_scroller pin in px
 
   // Update thumb position based on content scroll
   const updateThumbPos = useCallback(() => {
@@ -123,12 +121,12 @@ export default function CustomWoodenScroller({ children, className = '', contain
       </div>
 
       {/* WOODEN SCROLLER TRACK & PIN THUMB BAR (RIGHT SIDE) */}
-      <div className="relative flex items-stretch justify-center pl-2 py-1 select-none flex-shrink-0 z-30">
+      <div className="relative flex items-stretch justify-center pl-1 sm:pl-1.5 py-0.5 select-none flex-shrink-0 z-30">
         {/* Scroller Track (scroller.png) */}
         <div 
           ref={trackRef}
           onClick={handleTrackClick}
-          className="relative w-6 sm:w-7 h-full min-h-[120px] cursor-pointer flex justify-center items-center"
+          className="relative w-5 sm:w-6 h-full min-h-[100px] cursor-pointer flex justify-center items-center"
           style={{
             backgroundImage: `url('/assets/tampilan di rank/asset/scroller.png')`,
             backgroundSize: '100% 100%',
@@ -140,8 +138,8 @@ export default function CustomWoodenScroller({ children, className = '', contain
           <div
             onMouseDown={handlePointerDown}
             onTouchStart={handlePointerDown}
-            className={`absolute w-8 h-8 sm:w-10 sm:h-10 cursor-grab active:cursor-grabbing flex items-center justify-center drop-shadow-md z-40 transition-transform duration-75 ${
-              isDragging ? 'scale-115' : 'hover:scale-108'
+            className={`absolute w-7 h-7 sm:w-8 sm:h-8 cursor-grab active:cursor-grabbing flex items-center justify-center drop-shadow-md z-40 transition-transform duration-75 ${
+              isDragging ? 'scale-110' : 'hover:scale-105'
             }`}
             style={{
               top: `${thumbTopPx}px`,

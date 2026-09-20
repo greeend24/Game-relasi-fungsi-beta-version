@@ -11,28 +11,28 @@ const RELO_SCENES = {
   // 1A: Welcome Menu - First Login (Relo)
   '1A_pagi': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/pagi/Selamat pagi! Perkenalkan, aku Detektif Relo. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif.wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/pagi/Selamat pagi! Perkenalkan, aku Detektif Relo. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif.mp3",
       text: 'Selamat pagi! ☀️ Perkenalkan, aku Detektif Relo 🦉. Aku akan menemanimu dalam penyelidikan Relasi dan Fungsi. Siap jadi detektif? 🕵️‍♂️🔍',
       character: 'relo'
     }
   ],
   '1A_siang': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/siang/Halo, detektif! Selamat siang Aku Relo, Detektif Relo. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama!.wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/siang/Halo, detektif! Selamat siang Aku Relo, Detektif Relo. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama!.mp3",
       text: 'Halo, detektif! 👋 Selamat siang! 🌤️ Aku Relo, Detektif Relo 🦉. Mulai sekarang, kita akan memecahkan berbagai misteri matematika bersama! 🔍✨',
       character: 'relo'
     }
   ],
   '1A_sore': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/sore/Selamat sore! Aku Detektif Relo. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan!.wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/sore/Selamat sore! Aku Detektif Relo. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan!.mp3",
       text: 'Selamat sore! 🌅 Aku Detektif Relo 🦉. Ada banyak misteri tentang Relasi dan Fungsi yang menunggu untuk kita pecahkan. Yuk, mulai penyelidikan! 🚀🕵️‍♂️',
       character: 'relo'
     }
   ],
   '1A_malam': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/malam/Hai, selamat malam! Aku Detektif Relo. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi..wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Pertama/malam/Hai, selamat malam! Aku Detektif Relo. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi..mp3",
       text: 'Hai, selamat malam! 🌙 Aku Detektif Relo 🦉. Senang akhirnya bertemu denganmu! Aku akan menjadi partner-mu dalam mengungkap rahasia Relasi dan Fungsi. 🔎✨',
       character: 'relo'
     }
@@ -41,28 +41,28 @@ const RELO_SCENES = {
   // 1B: Welcome Menu - Returning Login (Relo)
   '1B_pagi': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/pagi/selamat pagi! Akhirnya kamu kembali juga, Detektif! Relo sudah menunggumu..wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/pagi/selamat pagi! Akhirnya kamu kembali juga, Detektif! Relo sudah menunggumu..mp3",
       text: 'Selamat pagi! ☀️ Akhirnya kamu kembali juga, Detektif! 🕵️‍♂️ Relo sudah menunggumu 🦉🔍.',
       character: 'relo'
     }
   ],
   '1B_siang': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/siang/Hai! Selamat siang! Wah, partner-ku kembali lagi. Sudah siap melanjutkan penyelidikan.wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/siang/Hai! Selamat siang! Wah, partner-ku kembali lagi. Sudah siap melanjutkan penyelidikan.mp3",
       text: 'Hai! Selamat siang! 🌤️ Wah, partner-ku kembali lagi 🦉. Sudah siap melanjutkan penyelidikan? 🔍🕵️‍♂️',
       character: 'relo'
     }
   ],
   '1B_sore': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/sore/selamat sore dan Selamat datang kembali! Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi.wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/sore/selamat sore dan Selamat datang kembali! Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi.mp3",
       text: 'Selamat sore dan selamat datang kembali! 🌅 Aku tahu kamu belum menyerah mengungkap misteri Relasi dan Fungsi 🦉✨.',
       character: 'relo'
     }
   ],
   '1B_malam': [
     {
-      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/malam/Hei, kamu datang lagi! Selamat malam! Sepertinya masih ada banyak misteri yang belum kita pecahkan..wav",
+      file: "/audio/relo's sound/Menu Selamat Datang - Login Berikutnya/malam/Hei, kamu datang lagi! Selamat malam! Sepertinya masih ada banyak misteri yang belum kita pecahkan..mp3",
       text: 'Hei, kamu datang lagi! Selamat malam! 🌙 Sepertinya masih ada banyak misteri yang belum kita pecahkan 🔍🦉.',
       character: 'relo'
     }
@@ -71,18 +71,13 @@ const RELO_SCENES = {
   // 2A: Subbab Menu - Masuk (Relo)
   '2A': [
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Chapter Mode ini tempatnya para detektif belajar dan nambah pengetahuan. Yuk, asah kemampuanmu biar makin jago jadi detektif!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Chapter Mode ini tempatnya para detektif belajar dan nambah pengetahuan. Yuk, asah kemampuanmu biar makin jago jadi detektif!.mp3",
       text: 'Chapter Mode ini tempatnya para detektif belajar dan nambah pengetahuan 📚. Yuk, asah kemampuanmu biar makin jago jadi detektif! 🕵️‍♂️🦉✨',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/pelajari semuanya, ya, Detektif! Semoga nanti kamu bisa jadi detektif yang makin hebat!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/pelajari semuanya, ya, Detektif! Semoga nanti kamu bisa jadi detektif yang makin hebat!.mp3",
       text: 'Pelajari semuanya ya, Detektif! 📂 Semoga nanti kamu bisa jadi detektif yang makin hebat! 🌟🦉',
-      character: 'relo'
-    },
-    {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Yuk, lanjut ke menu Stage, Detektif!.wav",
-      text: 'Yuk, lanjut ke menu Stage, Detektif! 🗺️🚀🦉',
       character: 'relo'
     }
   ],
@@ -90,32 +85,32 @@ const RELO_SCENES = {
   // 2B: Subbab Menu - Tidak Memilih 30 Detik (Relo)
   '2B': [
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Hei, Detektif! Kok masih bengong aja Pilih satu chapter terus kita mulai penyelidikannya!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Hei, Detektif! Kok masih bengong aja Pilih satu chapter terus kita mulai penyelidikannya!.mp3",
       text: 'Hei, Detektif! Kok masih bengong aja? 😮 Pilih satu chapter terus kita mulai penyelidikannya! 🔍🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Hei, Detektif! Kok masih diam saja Yuk, pilih satu dunia untuk mulai menyelidiki!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Hei, Detektif! Kok masih diam saja Yuk, pilih satu dunia untuk mulai menyelidiki!.mp3",
       text: 'Hei, Detektif! Kok masih diam saja? 🕵️‍♂️ Yuk, pilih satu dunia untuk mulai menyelidiki! 🗺️✨',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/jangan cuma dilihat-lihat, Detektif. Kasusnya tidak akan terpecahkan sendiri, lho!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/jangan cuma dilihat-lihat, Detektif. Kasusnya tidak akan terpecahkan sendiri, lho!.mp3",
       text: 'Jangan cuma dilihat-lihat, Detektif! 🕵️‍♂️ Kasusnya tidak akan terpecahkan sendiri, lho! 🔍🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/lagi ke toiletkah detektif.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/lagi ke toiletkah detektif.mp3",
       text: 'Lagi ke toilet kah, Detektif? 🚽🤔 Jangan lama-lama ya! 🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Pilih satu chapter yang ada di depanmu. Hmm... kira-kira misteri apa yang bakal kita temuin di sana.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Pilih satu chapter yang ada di depanmu. Hmm... kira-kira misteri apa yang bakal kita temuin di sana.mp3",
       text: 'Pilih satu chapter yang ada di depanmu. Hmm… kira-kira misteri apa yang bakal kita temuin di sana? 🗺️🔍🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Waktunya jalan-jalan ke dunia penyelidikan! Pilih satu, lalu kita mulai!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 30 Detik/Waktunya jalan-jalan ke dunia penyelidikan! Pilih satu, lalu kita mulai!.mp3",
       text: 'Waktunya jalan-jalan ke dunia penyelidikan! 🗺️ Pilih satu, lalu kita mulai! 🚀✨',
       character: 'relo'
     }
@@ -124,17 +119,17 @@ const RELO_SCENES = {
   // 2C: Subbab Menu - Tidak Memilih 1 Menit (Relo)
   '2C': [
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 1 Menit/btw kamu udah 1 menit lo ga ngapa ngapain.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 1 Menit/btw kamu udah 1 menit lo ga ngapa ngapain.mp3",
       text: 'BTW, kamu udah 1 menit lho nggak ngapa-ngapain! ⏳ Ayo pilih chapternya, Detektif! 🦉🔍',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 1 Menit/Detektif... kamu masih di sana, kan Jangan bilang kamu ketiduran!.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 1 Menit/Detektif... kamu masih di sana, kan Jangan bilang kamu ketiduran!.mp3",
       text: 'Detektif… kamu masih di sana, kan? 🕵️‍♂️ Jangan bilang kamu ketiduran! 😴💤',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 1 Menit/Detektiiiiiiiif... kamu masih di sana, kan Jangan-jangan malah ketiduran, nih! banguuun weee detektif.wav",
+      file: "/audio/relo's sound/chapter mode/Menu Subbab - Masuk/Menu Subbab - Tidak Memilih 1 Menit/Detektiiiiiiiif... kamu masih di sana, kan Jangan-jangan malah ketiduran, nih! banguuun weee detektif.mp3",
       text: 'Detektiiiiif… kamu masih di sana, kan? Jangan-jangan malah ketiduran, nih! Banguuun wee, Detektif! ⏰😴🦉',
       character: 'relo'
     }
@@ -143,22 +138,17 @@ const RELO_SCENES = {
   // 3A: Stage Select - New Unplayed Stage (Relo)
   '3A': [
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/Hmm... kira-kira ada apa, ya, di depan Yuk, kita cari tahu bareng!.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/Hmm... kira-kira ada apa, ya, di depan Yuk, kita cari tahu bareng!.mp3",
       text: 'Hmm… kira-kira ada apa ya di depan? Yuk, kita cari tahu bareng! 🔍🕵️‍♂️🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/Oke, Detektif! Ada kasus baru nih. Siapin diri kamu, yuk kita mulai!.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/Oke, Detektif! Ada kasus baru nih. Siapin diri kamu, yuk kita mulai!.mp3",
       text: 'Oke, Detektif! Ada kasus baru nih. Siapin diri kamu, yuk kita mulai! 🚀📂🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/selamat datang di menu stage, pada menu ini kamu bisa memilih panduan agar pemahaman kamu tentang fungsi makin kuat!.wav",
-      text: 'Selamat datang di menu Stage! 🗺️ Pada menu ini kamu bisa memilih panduan agar pemahaman kamu tentang fungsi makin kuat! 📖🦉',
-      character: 'relo'
-    },
-    {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/Wah, ada kasus baru nih! Yuk, kita mulai dan cari tahu misterinya!.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Stage Baru/Wah, ada kasus baru nih! Yuk, kita mulai dan cari tahu misterinya!.mp3",
       text: 'Wah, ada kasus baru nih! 🔎 Yuk, kita mulai dan cari tahu misterinya! ✨🦉',
       character: 'relo'
     }
@@ -167,22 +157,22 @@ const RELO_SCENES = {
   // 3B: Stage Select - Resume Played Stage (Relo)
   '3B': [
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/akhirnya kamu kembali lagi, yuk lanjutkan proses belajar kamu agar kamu menjadi detektif hebat seperti aku.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/akhirnya kamu kembali lagi, yuk lanjutkan proses belajar kamu agar kamu menjadi detektif hebat seperti aku.mp3",
       text: 'Akhirnya kamu kembali lagi! Yuk, lanjutkan proses belajar kamu agar kamu menjadi detektif hebat seperti aku! 🦉🎓✨',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/selamat datang kembali detektif, kita lanjutin yang sebelumnya , siap.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/selamat datang kembali detektif, kita lanjutin yang sebelumnya , siap.mp3",
       text: 'Selamat datang kembali, Detektif. Kita lanjutin yang sebelumnya, siap? 📂🕵️‍♂️🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/yuk, Detektif! Kita lanjut lagi penyelidikannya!.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/yuk, Detektif! Kita lanjut lagi penyelidikannya!.mp3",
       text: 'Yuk, Detektif! Kita lanjut lagi penyelidikannya! 🚀🔍🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/Yuk, lanjut lagi, Detektif! Tinggal dikit lagi nih, masih ada bagian yang belum kita pecahin!.wav",
+      file: "/audio/relo's sound/chapter mode/Memilih Stage - Melanjutkan Stage/Yuk, lanjut lagi, Detektif! Tinggal dikit lagi nih, masih ada bagian yang belum kita pecahin!.mp3",
       text: 'Yuk, lanjut lagi, Detektif! Tinggal dikit lagi nih, masih ada bagian yang belum kita pecahin! 💡🔎🦉',
       character: 'relo'
     }
@@ -191,22 +181,22 @@ const RELO_SCENES = {
   // 4: Quest Mode - Masuk Menu (Snowy)
   '4': [
     {
-      file: "/audio/snowy's sound/quest mode- masuk menu/halo detektif, akulah si lucu dan imut detektif snowyyyyyyy, selamat datang di quest mode, pada quest mode ini, kamu akan mengerjakan soal-soal dari materi chapter mode yang sudah.wav",
+      file: "/audio/snowy's sound/quest mode- masuk menu/halo detektif, akulah si lucu dan imut detektif snowyyyyyyy, selamat datang di quest mode, pada quest mode ini, kamu akan mengerjakan soal-soal dari materi chapter mode yang sudah.mp3",
       text: 'Halo Detektif! 👋 Akulah si lucu dan imut, Detektif Snowy 🐻❄️. Selamat datang di Quest Mode! Pada Quest Mode ini, kamu akan mengerjakan soal-soal dari materi Chapter Mode yang sudah kamu selesaikan sebelumnya. Lakukan yang terbaik dan jangan berbuat curang, oke? Semangat! ✨🎯',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/quest mode- masuk menu/halo detektif, sudah siap untuk menyelesaikan quest mode! .wav",
+      file: "/audio/snowy's sound/quest mode- masuk menu/halo detektif, sudah siap untuk menyelesaikan quest mode! .mp3",
       text: 'Halo Detektif, sudah siap untuk menyelesaikan Quest Mode? ❄️🐻🎯',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/quest mode- masuk menu/selamat dataaaang di quest modeeeee!!!!, di quest mode ini kamu akan di dampingi oleh beruang imut ini, jangan sampe lupa ya, namaku snowy, S-N-O-W-Y , selamat mengerjakan detekti.wav",
+      file: "/audio/snowy's sound/quest mode- masuk menu/selamat dataaaang di quest modeeeee!!!!, di quest mode ini kamu akan di dampingi oleh beruang imut ini, jangan sampe lupa ya, namaku snowy, S-N-O-W-Y , selamat mengerjakan detekti.mp3",
       text: 'Selamat datang di Quest Mode! 🎉 Di Quest Mode ini, kamu akan didampingi oleh beruang imut ini. Jangan sampai lupa ya, namaku Snowy, S-N-O-W-Y! ❄️🐻 Selamat mengerjakan, detektif manis! ✨',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/quest mode- masuk menu/waktunya quest mode, pada quest mode ini kamu akan mengerjakan soal soal yang materinya tentu sudah kamu pelajari sebelumnya di chapter mode. jangan mudah menyerah detektif, aku y.wav",
+      file: "/audio/snowy's sound/quest mode- masuk menu/waktunya quest mode, pada quest mode ini kamu akan mengerjakan soal soal yang materinya tentu sudah kamu pelajari sebelumnya di chapter mode. jangan mudah menyerah detektif, aku y.mp3",
       text: 'Waktunya Quest Mode! ⏱️ Pada Quest Mode ini kamu akan mengerjakan soal-soal yang materinya tentu sudah kamu pelajari sebelumnya di Chapter Mode. Jangan mudah menyerah Detektif, aku yakin kamu bisa! 💪🐻❄️',
       character: 'snowy'
     }
@@ -215,7 +205,7 @@ const RELO_SCENES = {
   // 4_locked: Quest Mode Belum Terbuka (Snowy)
   '4_locked': [
     {
-      file: "/audio/snowy's sound/quest mode- masuk menu/quest mode belum terbuka karena belum menyelesaikan chapter mode/yaaah maaf detektif, belum ada quest mode yang bisa terbuka untukmuuu, kerjakan chapter mode dulu baru kesini lagi untuk menyelesaikan quest mode yaa, detektif relo sudah tidak sa.wav",
+      file: "/audio/snowy's sound/quest mode- masuk menu/quest mode belum terbuka karena belum menyelesaikan chapter mode/yaaah maaf detektif, belum ada quest mode yang bisa terbuka untukmuuu, kerjakan chapter mode dulu baru kesini lagi untuk menyelesaikan quest mode yaa, detektif relo sudah tidak sa.mp3",
       text: 'Yaaah, maaf Detektif, belum ada Quest Mode yang bisa terbuka untukmu 🥺🐻. Kerjakan Chapter Mode dulu, baru ke sini lagi untuk menyelesaikan Quest Mode ya. Detektif Relo sudah tidak sabar untuk melakukan penyelidikan denganmu! ❄️🔒✨',
       character: 'snowy'
     }
@@ -224,53 +214,175 @@ const RELO_SCENES = {
   // 5 / rank: Menu Rank (Ryu)
   '5': [
     {
-      file: "/audio/ryu's sound/Menu Rank/ini merupakan rank yang kamu dapatkan sekarang!!!...., kerjakan banyak tugas dan tingkatkan rank mu dengan memperoleh banyak score!!!!.wav",
+      file: "/audio/ryu's sound/Menu Rank/ini merupakan rank yang kamu dapatkan sekarang!!!...., kerjakan banyak tugas dan tingkatkan rank mu dengan memperoleh banyak score!!!!.mp3",
       text: 'Ini merupakan rank yang kamu dapatkan sekarang! 🔥 Kerjakan banyak tugas dan tingkatkan rank-mu dengan memperoleh banyak score! 🏆🎖️🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/Menu Rank/rank rank tersebut bisa kamu buka dengan menyelesaikan chapter mode, quest mode dan juga endless mode!!!, ayooo mulai penyelidikan mu sekarang.wav",
+      file: "/audio/ryu's sound/Menu Rank/rank rank tersebut bisa kamu buka dengan menyelesaikan chapter mode, quest mode dan juga endless mode!!!, ayooo mulai penyelidikan mu sekarang.mp3",
       text: 'Rank-rank tersebut bisa kamu buka dengan menyelesaikan Chapter Mode, Quest Mode, dan juga Endless Mode! Ayo mulai penyelidikanmu sekarang! 🔥🚀🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/Menu Rank/selamaat, ini merupakan rank yang kamu peroleh, semangat teruss yaaaa, dan jangan lupa untuk terus jujur pada dirimuuuu!!! jangan pernah mencontek ok!.wav",
+      file: "/audio/ryu's sound/Menu Rank/selamaat, ini merupakan rank yang kamu peroleh, semangat teruss yaaaa, dan jangan lupa untuk terus jujur pada dirimuuuu!!! jangan pernah mencontek ok!.mp3",
       text: 'Selamat! Ini merupakan rank yang kamu peroleh 🎖️. Semangat terus ya, dan jangan lupa untuk selalu jujur pada dirimu, jangan pernah mencontek ok! 🔥✨🐉',
       character: 'ryu'
     }
   ],
   'rank': [
     {
-      file: "/audio/ryu's sound/Menu Rank/ini merupakan rank yang kamu dapatkan sekarang!!!...., kerjakan banyak tugas dan tingkatkan rank mu dengan memperoleh banyak score!!!!.wav",
+      file: "/audio/ryu's sound/Menu Rank/ini merupakan rank yang kamu dapatkan sekarang!!!...., kerjakan banyak tugas dan tingkatkan rank mu dengan memperoleh banyak score!!!!.mp3",
       text: 'Ini merupakan rank yang kamu dapatkan sekarang! 🔥 Kerjakan banyak tugas dan tingkatkan rank-mu dengan memperoleh banyak score! 🏆🎖️🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/Menu Rank/rank rank tersebut bisa kamu buka dengan menyelesaikan chapter mode, quest mode dan juga endless mode!!!, ayooo mulai penyelidikan mu sekarang.wav",
+      file: "/audio/ryu's sound/Menu Rank/rank rank tersebut bisa kamu buka dengan menyelesaikan chapter mode, quest mode dan juga endless mode!!!, ayooo mulai penyelidikan mu sekarang.mp3",
       text: 'Rank-rank tersebut bisa kamu buka dengan menyelesaikan Chapter Mode, Quest Mode, dan juga Endless Mode! Ayo mulai penyelidikanmu sekarang! 🔥🚀🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/Menu Rank/selamaat, ini merupakan rank yang kamu peroleh, semangat teruss yaaaa, dan jangan lupa untuk terus jujur pada dirimuuuu!!! jangan pernah mencontek ok!.wav",
+      file: "/audio/ryu's sound/Menu Rank/selamaat, ini merupakan rank yang kamu peroleh, semangat teruss yaaaa, dan jangan lupa untuk terus jujur pada dirimuuuu!!! jangan pernah mencontek ok!.mp3",
       text: 'Selamat! Ini merupakan rank yang kamu peroleh 🎖️. Semangat terus ya, dan jangan lupa untuk selalu jujur pada dirimu, jangan pernah mencontek ok! 🔥✨🐉',
       character: 'ryu'
+    }
+  ],
+
+  // endless_intro: Briefing & Konfirmasi Endless Mode (Ryu)
+  'endless_intro': [
+    {
+      file: "/audio/ryu's sound/Endless Mode - Briefing & Konfirmasi/Yo, Detektif! Di Endless Mode ini kita bakal maraton kasus tanpa henti! Tapi ingat ya, begitu kamu keluar atau mengakhiri game, nilaimu bakal diulang dari 0 la.mp3",
+      text: 'Yo, Detektif! Di Endless Mode ini kita bakal maraton kasus tanpa henti! Tapi ingat ya, begitu kamu keluar atau mengakhiri game, nilaimu bakal diulang dari 0 lagi pada game berikutnya. Yakin sudah siap tempur bareng Ryu? 🔥🐉',
+      character: 'ryu'
+    }
+  ],
+
+  // endless_gameover: Selesai / Game Over Endless Mode (Ryu)
+  'endless_gameover': [
+    {
+      file: "/audio/ryu's sound/Endless Mode - Selesai & Game Over/Pertarungan tanpa henti yang luar biasa, Detektif! Pertahankan api semangatmu dan buktikan kamu layak ada di puncak papan peringkat! 🔥🏆🐉.mp3",
+      text: 'Pertarungan tanpa henti yang luar biasa, Detektif! Pertahankan api semangatmu dan buktikan kamu layak ada di puncak papan peringkat! 🔥🏆🐉',
+      character: 'ryu'
+    }
+  ],
+
+  // quest_exam_start: Mulai Ujian Quest Mode (Snowy)
+  'quest_exam_start': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Mulai Ujian/Ujian Quest Mode resmi dimulai! Cermati setiap pertanyaan dengan tenang, gunakan waktumu sebaik mungkin, dan kerjakan dengan jujur ya! Selamat berjuang! ❄️🐻📝.mp3",
+      text: 'Ujian Quest Mode resmi dimulai! Cermati setiap pertanyaan dengan tenang, gunakan waktumu sebaik mungkin, dan kerjakan dengan jujur ya! Selamat berjuang! ❄️🐻📝',
+      character: 'snowy'
+    }
+  ],
+
+  // quest_exam_pass: Hasil Quest Mode - Lulus / Nilai Tinggi (Snowy)
+  'quest_exam_pass': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Hasil Lulus/Yaaaay! Kamu berhasil lulus Quest Mode dengan nilai yang sangat membanggakan! Snowy bangga banget sama kamu, kerja keras belajarmu benar-benar terbukti! 🐻🎉❄️.mp3",
+      text: 'Yaaaay! Kamu berhasil lulus Quest Mode dengan nilai yang sangat membanggakan! Snowy bangga banget sama kamu, kerja keras belajarmu benar-benar terbukti! 🐻🎉❄️',
+      character: 'snowy'
+    }
+  ],
+
+  // quest_exam_fail: Hasil Quest Mode - Belum Lulus / Remedial (Snowy)
+  'quest_exam_fail': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Hasil Remedial/Uuuh, jangan berkecil hati ya Detektif! Nilaimu belum cukup untuk lulus kali ini. Yuk buka lagi Chapter Mode bareng Relo, pelajari materinya sekali lagi, baru .mp3",
+      text: 'Uuuh, jangan berkecil hati ya Detektif! Nilaimu belum cukup untuk lulus kali ini. Yuk buka lagi Chapter Mode bareng Relo, pelajari materinya sekali lagi, baru coba ujian ini lagi ya! Semangat! ❄️🐻💪',
+      character: 'snowy'
+    }
+  ],
+
+  // quest_exam_time_warning: Peringatan Sisa Waktu 1 Menit (Snowy)
+  'quest_exam_time_warning': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Peringatan Waktu 1 Menit/waktu ujian tinggal satu menit lagi, Ayo periksa kembali jawabanmu sebelum waktu habis! ⏰❄️🐻.mp3",
+      text: 'Detektif, waktu ujian tinggal satu menit lagi lho! Ayo periksa kembali jawabanmu sebelum waktu habis! ⏰❄️🐻',
+      character: 'snowy'
+    }
+  ],
+
+  // chapter_final_conclusion: Tamat Seluruh Chapter (Relo)
+  'chapter_final_conclusion': [
+    {
+      file: "/audio/relo's sound/chapter mode/Tamat Seluruh Chapter/Luar biasa, Detektif Hebat! Kamu telah berhasil membongkar seluruh misteri Relasi dan Fungsi dari awal sampai akhir! Relo sangat bangga pernah bermitra denganm.mp3",
+      text: 'Luar biasa, Detektif Hebat! Kamu telah berhasil membongkar seluruh misteri Relasi dan Fungsi dari awal sampai akhir! Relo sangat bangga pernah bermitra denganmu! 🏆🎉🦉',
+      character: 'relo'
+    }
+  ],
+
+  // strike_warning: Peringatan Berpindah Tab / Sanksi (Ryu)
+  'strike_warning': [
+    {
+      file: "/audio/ryu's sound/Peringatan Sanksi - Pindah Tab/detektiiiiif!!!!, kemana siii, pindah pindah tab segala, kan jadi kena sanksi.mp3",
+      text: 'Detektiiiiif!!!! Kemana sih, pindah-pindah tab segala, kan jadi kena sanksi! ⚠️🔥🐉',
+      character: 'ryu'
+    }
+  ],
+
+  // security_lockout: Kunci Keamanan Anti-Curang (Ryu)
+  'security_lockout': [
+    {
+      file: "/audio/ryu's sound/Security Lockout - Anti Curang/Eeeeeeeits! Detektif sejati selalu menjunjung tinggi kejujuran dalam penyelidikan. Ayo kembali fokus ke kasusmu! ⚠️🔍.mp3",
+      text: 'Eeeeeeeits! Detektif sejati selalu menjunjung tinggi kejujuran dalam penyelidikan. Ayo kembali fokus ke kasusmu! ⚠️🔍🔥🐉',
+      character: 'ryu'
+    },
+    {
+      file: "/audio/ryu's sound/Security Lockout - Anti Curang/udah lah detektif, mau kemana lagi disini aja, kalau mau keluar tinggal pencet exit okei!!.mp3",
+      text: 'Udah lah Detektif, mau kemana lagi? Di sini aja! Kalau mau keluar tinggal pencet exit, okei?! 🔥🚪🐉',
+      character: 'ryu'
+    }
+  ],
+
+  // case_correct: Praktik Kasus Berhasil / Benar (Relo)
+  'case_correct': [
+    {
+      file: "/audio/relo's sound/chapter mode/Praktik Kasus - Jawaban Benar/Mantap! Analisismu tepat sasaran! Seluruh benang merah tersambung sempurna sesuai aturan kasus! 🔍✨.mp3",
+      text: 'Mantap! Analisismu tepat sasaran! Seluruh benang merah tersambung sempurna sesuai aturan kasus! 🔍✨🦉',
+      character: 'relo'
+    }
+  ],
+
+  // case_wrong: Praktik Kasus Jawaban Salah / Reset (Relo)
+  'case_wrong': [
+    {
+      file: "/audio/relo's sound/chapter mode/Praktik Kasus - Jawaban Salah/Hmm... ada pasangan yang belum cocok dengan aturannya nih. Coba periksa kembali syarat domain dan kodomainnya ya! 🧐🔍.mp3",
+      text: 'Hmm... ada pasangan yang belum cocok dengan aturannya nih. Coba periksa kembali syarat domain dan kodomainnya ya! 🧐🔍🦉',
+      character: 'relo'
+    }
+  ],
+
+  // case_hint: Petunjuk Catatan Penyelidikan (Relo)
+  'case_hint': [
+    {
+      file: "/audio/relo's sound/chapter mode/Praktik Kasus - Petunjuk Kasus/Ini catatan penyelidikanku, cermati baik-baik aturannya ya detektif! .mp3",
+      text: 'Ini catatan penyelidikanku, cermati baik-baik aturannya ya detektif! 💡🦉',
+      character: 'relo'
+    }
+  ],
+
+  // chapter_complete: Selesai Satu Bab Pembelajaran (Relo)
+  'chapter_complete': [
+    {
+      file: "/audio/relo's sound/chapter mode/Selesai Satu Bab/Luar biasa! Satu bab materi kasus sudah berhasil kamu kuasai. Pemahamanmu tentang relasi dan fungsi semakin tajam, Detektif! 📖🎓.mp3",
+      text: 'Luar biasa! Satu bab materi kasus sudah berhasil kamu kuasai. Pemahamanmu tentang relasi dan fungsi semakin tajam, Detektif! 📖🎓🦉',
+      character: 'relo'
     }
   ],
 
   // 6: Global High Score (Ryu)
   '6': [
     {
-      file: "/audio/ryu's sound/Global High Score/Ini adalah skor para detektif lainnya. Jangan mau kalah! Buktikan kemampuanmu dan naikkan peringkatmu..wav",
+      file: "/audio/ryu's sound/Global High Score/Ini adalah skor para detektif lainnya. Jangan mau kalah! Buktikan kemampuanmu dan naikkan peringkatmu..mp3",
       text: 'Ini adalah skor para detektif lainnya 🥇. Jangan mau kalah! Buktikan kemampuanmu dan naikkan peringkatmu! 🔥🐉🚀',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/Global High Score/ini merupakan papan peringkat yang menampilkan papan score seluuuuruh pemain.wav",
+      file: "/audio/ryu's sound/Global High Score/ini merupakan papan peringkat yang menampilkan papan score seluuuuruh pemain.mp3",
       text: 'Ini merupakan papan peringkat yang menampilkan skor seluruh pemain! 🏆🔥🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/Global High Score/Papan peringkat berisi tampilan tampilan detektif hebat,kamu siap jadi si nomor 1 atauuuuu... jangan jangan kamu gamau dan terus menjadi orang yang ga mau maju.wav",
+      file: "/audio/ryu's sound/Global High Score/Papan peringkat berisi tampilan tampilan detektif hebat,kamu siap jadi si nomor 1 atauuuuu... jangan jangan kamu gamau dan terus menjadi orang yang ga mau maju.mp3",
       text: 'Papan peringkat berisi detektif-detektif hebat! Kamu siap jadi nomor 1, atau jangan-jangan kamu gak mau maju? Ayo buktikan! 🔥👑🐉',
       character: 'ryu'
     }
@@ -279,17 +391,17 @@ const RELO_SCENES = {
   // 7A: Settings Menu Opened (Snowy)
   '7A': [
     {
-      file: "/audio/snowy's sound/Settings - Masuk Menu/Di pengaturan ini kamu bisa mengatur berbagai suara dalam game. Silakan sesuaikan dengan kebutuhanmu..wav",
+      file: "/audio/snowy's sound/Settings - Masuk Menu/Di pengaturan ini kamu bisa mengatur berbagai suara dalam game. Silakan sesuaikan dengan kebutuhanmu..mp3",
       text: 'Di pengaturan ini, kamu bisa mengatur berbagai suara dalam game ⚙️. Silakan sesuaikan dengan kebutuhanmu! ❄️🔊🎧',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/Settings - Masuk Menu/ini merupakan menu pengaturan, sesuaikan kebutuhanmu, jangan terlalu berisik yaa, takutnya tetangga kabur! hihihihihi.wav",
+      file: "/audio/snowy's sound/Settings - Masuk Menu/ini merupakan menu pengaturan, sesuaikan kebutuhanmu, jangan terlalu berisik yaa, takutnya tetangga kabur! hihihihihi.mp3",
       text: 'Ini merupakan menu pengaturan. Sesuaikan kebutuhanmu, jangan terlalu berisik ya, takutnya tetangga kabur! Hihihihi! 🐻❄️😆',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/Settings - Masuk Menu/Kalau suara game terasa terlalu keras atau terlalu kecil, kamu bisa mengaturnya di sini..wav",
+      file: "/audio/snowy's sound/Settings - Masuk Menu/Kalau suara game terasa terlalu keras atau terlalu kecil, kamu bisa mengaturnya di sini..mp3",
       text: 'Kalau suara game terasa terlalu keras atau terlalu kecil, kamu bisa mengaturnya di sini 🎚️❄️🎧.',
       character: 'snowy'
     }
@@ -298,17 +410,17 @@ const RELO_SCENES = {
   // 7B: Settings Slider Dragging (Snowy)
   '7B': [
     {
-      file: "/audio/snowy's sound/Settings - Masuk Menu/Settings - Menggeser Sound Effect/dipengaturan ini kamu bisa mengatur sound, audio, dan mengatur suara emasku ini jugaaa, hehehe becanda ya detektif.wav",
+      file: "/audio/snowy's sound/Settings - Masuk Menu/Settings - Menggeser Sound Effect/dipengaturan ini kamu bisa mengatur sound, audio, dan mengatur suara emasku ini jugaaa, hehehe becanda ya detektif.mp3",
       text: 'Di pengaturan ini kamu bisa mengatur sound, audio, dan mengatur suara emasku ini juga! Hehe, bercanda ya Detektif! ❄️🐻✨',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/Settings - Masuk Menu/Settings - Menggeser Sound Effect/tesss tessss tesssss, 1.... 2.... 3...., gimana detektif suaraku udah pas belum takutnya suara emasku ini mengganggu temanmu hahahahahaha!.wav",
+      file: "/audio/snowy's sound/Settings - Masuk Menu/Settings - Menggeser Sound Effect/tesss tessss tesssss, 1.... 2.... 3...., gimana detektif suaraku udah pas belum takutnya suara emasku ini mengganggu temanmu hahahahahaha!.mp3",
       text: 'Tes tes tes tes, satu, dua, tiga 🎙️. Gimana Detektif, suaraku udah pas belum? Takutnya suara emasku ini mengganggu temanmu! Hahahaha! ❄️🐻',
       character: 'snowy'
     },
     {
-      file: "/audio/snowy's sound/Settings - Masuk Menu/Settings - Menggeser Sound Effect/udah belum detektif, buruan selesaikan penyelidikan muuu jangan lama lama ngatur ini aja!!.wav",
+      file: "/audio/snowy's sound/Settings - Masuk Menu/Settings - Menggeser Sound Effect/udah belum detektif, buruan selesaikan penyelidikan muuu jangan lama lama ngatur ini aja!!.mp3",
       text: 'Udah belum Detektif? Buruan selesaikan penyelidikanmu, jangan lama-lama ngatur ini aja!! ⏱️❄️🏃‍♂️',
       character: 'snowy'
     }
@@ -317,27 +429,27 @@ const RELO_SCENES = {
   // 8: Exit Game Confirmation Modal (Relo)
   '8': [
     {
-      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/ah... kamu mau meninggalkan Relo ya Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya!.wav",
+      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/ah... kamu mau meninggalkan Relo ya Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya!.mp3",
       text: 'Ah… kamu mau meninggalkan Relo ya? 🥺 Kalau memang harus pergi, kita lanjutkan penyelidikan lain kali, ya! 👋🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Eh, tunggu! Kamu benar-benar mau pergi Kita masih punya banyak misteri untuk dipecahkan!.wav",
+      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Eh, tunggu! Kamu benar-benar mau pergi Kita masih punya banyak misteri untuk dipecahkan!.mp3",
       text: 'Eh, tunggu! 🖐️ Kamu benar-benar mau pergi? Kita masih punya banyak misteri untuk dipecahkan! 🔍🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Jangan pergi dulu! Petunjuk berikutnya mungkin sudah menunggu kita..wav",
+      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Jangan pergi dulu! Petunjuk berikutnya mungkin sudah menunggu kita..mp3",
       text: 'Jangan pergi dulu! 🛑 Petunjuk berikutnya mungkin sudah menunggu kita! 💡🕵️‍♂️',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Lho... kamu mau ninggalin aku Kasus kita belum selesai, Detektif!.wav",
+      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Lho... kamu mau ninggalin aku Kasus kita belum selesai, Detektif!.mp3",
       text: 'Lho… kamu mau ninggalin aku? 🥺 Kasus kita belum selesai, Detektif! 🕵️‍♂️🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Mau berhenti sekarang Padahal aku masih penasaran dengan akhir penyelidikan kita....wav",
+      file: "/audio/relo's sound/Exit - Pemain Menekan Keluar/Mau berhenti sekarang Padahal aku masih penasaran dengan akhir penyelidikan kita....mp3",
       text: 'Mau berhenti sekarang? 🤔 Padahal aku masih penasaran dengan akhir penyelidikan kita… 🦉🔍',
       character: 'relo'
     }
@@ -346,32 +458,32 @@ const RELO_SCENES = {
   // 9: Unfinished Stage Exit Confirmation (Relo)
   '9': [
     {
-      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Aduhhh, Detektif!!! 😭 Belum selesai, nih! Yuk, balik lagi. Masih ada yang harus kita cari tahu!.wav",
+      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Aduhhh, Detektif!!! 😭 Belum selesai, nih! Yuk, balik lagi. Masih ada yang harus kita cari tahu!.mp3",
       text: 'Aduh Detektif, belum selesai nih! 😭 Yuk balik lagi, masih ada yang harus kita cari tahu! 📂🔍🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Detektif, kok pergi Padahal kasusnya belum kelar, nih. Yuk, balik lagi!.wav",
+      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Detektif, kok pergi Padahal kasusnya belum kelar, nih. Yuk, balik lagi!.mp3",
       text: 'Detektif, kok pergi? 🛑 Padahal kasusnya belum kelar nih. Yuk, balik lagi! 🔎🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Eh, Detektif! Kasus ini belum kelar, tau! Masa misterinya kita tinggal gitu aja Yuk, balik lagi dan cari jawaban.wav",
+      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Eh, Detektif! Kasus ini belum kelar, tau! Masa misterinya kita tinggal gitu aja Yuk, balik lagi dan cari jawaban.mp3",
       text: 'Eh Detektif! Kasus ini belum kelar, tahu! Masa misterinya kita tinggal gitu aja? Yuk, balik lagi dan cari jawabannya! 🕵️‍♂️📂🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Eits, tunggu dulu, Detektif! Penyelidikannya belum selesai, nih. Kenapa mau pergi Ada sesuatu, ya.wav",
+      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Eits, tunggu dulu, Detektif! Penyelidikannya belum selesai, nih. Kenapa mau pergi Ada sesuatu, ya.mp3",
       text: 'Eits, tunggu dulu, Detektif! ✋ Penyelidikannya belum selesai nih. Kenapa mau pergi? Ada sesuatu ya? ❓🕵️‍♂️🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Lhooo, Detektif! Baru juga mulai, kok udah cabut aja sih 😭.wav",
+      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Lhooo, Detektif! Baru juga mulai, kok udah cabut aja sih 😭.mp3",
       text: 'Lhoo Detektif! 😭 Baru juga mulai, kok udah cabut aja sih? 💔🦉',
       character: 'relo'
     },
     {
-      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Mau ke mana sih Buru-buru amat!.wav",
+      file: "/audio/relo's sound/chapter mode/Meninggalkan Stage - Kasus Belum Selesai/Mau ke mana sih Buru-buru amat!.mp3",
       text: 'Mau ke mana sih? Buru-buru amat! 🏃‍♂️💨🦉',
       character: 'relo'
     }
@@ -380,24 +492,24 @@ const RELO_SCENES = {
   // 10 / logout: Menu Mengganti Akun (Ryu)
   '10': [
     {
-      file: "/audio/ryu's sound/menu mengganti akun/kamu mau keluar dari akun ini detektif (, yaudah de babaiii detektif huhuhu.wav",
+      file: "/audio/ryu's sound/menu mengganti akun/kamu mau keluar dari akun ini detektif (, yaudah de babaiii detektif huhuhu.mp3",
       text: 'Kamu mau keluar dari akun ini, Detektif? Yaudah deh babaiii detektif, huhuhu... 👋🥺🔥🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/menu mengganti akun/mau ganti akun yaaa.wav",
+      file: "/audio/ryu's sound/menu mengganti akun/mau ganti akun yaaa.mp3",
       text: 'Mau ganti akun yaaa? Sampai jumpa lagi, Detektif! 🔄🔥🐉',
       character: 'ryu'
     }
   ],
   'logout': [
     {
-      file: "/audio/ryu's sound/menu mengganti akun/kamu mau keluar dari akun ini detektif (, yaudah de babaiii detektif huhuhu.wav",
+      file: "/audio/ryu's sound/menu mengganti akun/kamu mau keluar dari akun ini detektif (, yaudah de babaiii detektif huhuhu.mp3",
       text: 'Kamu mau keluar dari akun ini, Detektif? Yaudah deh babaiii detektif, huhuhu... 👋🥺🔥🐉',
       character: 'ryu'
     },
     {
-      file: "/audio/ryu's sound/menu mengganti akun/mau ganti akun yaaa.wav",
+      file: "/audio/ryu's sound/menu mengganti akun/mau ganti akun yaaa.mp3",
       text: 'Mau ganti akun yaaa? Sampai jumpa lagi, Detektif! 🔄🔥🐉',
       character: 'ryu'
     }
@@ -406,7 +518,7 @@ const RELO_SCENES = {
   // Relo Terbang Launch Voice (Relo)
   'relo_terbang': [
     {
-      file: "/audio/relo's sound/relo terbang/woooosh, detektif reloo meluncuuuur!!!!.wav",
+      file: "/audio/relo's sound/relo terbang/woooosh, detektif reloo meluncuuuur!!!!.mp3",
       text: 'Woooosh, Detektif Relo meluncur!!!! 🚀🦉✨',
       character: 'relo'
     }

@@ -5,6 +5,13 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      'sm': '0px',
+      'md': '0px',
+      'lg': '0px',
+      'xl': '0px',
+      '2xl': '0px',
+    },
     extend: {
       colors: {
         detective: {
@@ -19,9 +26,10 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Balsamiq Sans', 'Patrick Hand', 'sans-serif'],
-        hand: ['Patrick Hand', 'cursive', 'sans-serif'],
+        sans: ['Balsamiq Sans', 'sans-serif'],
+        hand: ['Balsamiq Sans', 'cursive', 'sans-serif'],
         pencil: ['Balsamiq Sans', 'cursive', 'sans-serif'],
+        daruma: ['Darumadrop One', 'cursive', 'sans-serif'],
         display: ['DynaPuff', 'cursive', 'sans-serif'],
         dynapuff: ['DynaPuff', 'cursive', 'sans-serif'],
         mono: ['Balsamiq Sans', 'Consolas', 'monospace'],

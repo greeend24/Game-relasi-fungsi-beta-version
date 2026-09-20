@@ -1,0 +1,442 @@
+[
+  {
+    "file": "App.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\AnimatedBackground.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\AuthScreen.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\AvatarModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\BadgesModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\BriefingScreen.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\ConfirmExitModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\ConfirmLogoutModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\CustomWoodenScroller.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\DetectiveMascot.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\EndlessMode.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\QuestModeExam.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab1Relasi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab2FormatRelasi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab3PengertianFungsi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab4UnsurFungsi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab5RumusFungsi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab6Korespondensi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\games\\Subbab7JenisFungsi.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\GameTransitionLoader.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\InstructorMascotGuide.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\LeaderboardModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\LoadingScreen.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\LottieLoader.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\MainMenu.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\Navbar.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\NetworkStatusBadge.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\PBLSyntaxPanel.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\QuestModeSelector.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\RankModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\RelationCartesianCanvas.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\RelationDiagramCanvas.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\RelationTableCanvas.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\RotatePhoneOverlay.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\SecurityLockoutModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\SettingsModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\Stage21Conclusion.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\StageSelector.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\StrikeWarningModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  },
+  {
+    "file": "components\\SubbabInfoModal.jsx",
+    "unusedImports": [
+      {
+        "name": "React",
+        "line": 1,
+        "source": "react"
+      }
+    ],
+    "unusedFunctions": []
+  }
+]

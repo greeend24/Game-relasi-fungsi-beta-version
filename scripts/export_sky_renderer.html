@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sky Video Renderer</title>
+</head>
+<body style="margin:0; overflow:hidden; background:#000;">
+<canvas id="skyCanvas" width="1920" height="1080"></canvas>
+<script>
+const { ipcRenderer } = require('electron');
+const { spawn } = require('child_process');
+const ffmpegPath = require('ffmpeg-static');
+const path = require('path');
+const fs = require('fs');
+
+const canvas = document.getElementById('skyCanvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+// SVG Paths
+const cloudOuterPaths = [
+  new Path2D("M 90 145 C 55 145 35 122 45 98 C 38 68 70 48 105 54 C 130 24 185 20 220 45 C 250 20 315 20 350 48 C 380 28 430 38 440 72 C 470 85 465 125 435 142 C 405 152 365 144 305 148 C 235 144 165 150 90 145 Z"),
+  new Path2D("M 80 135 C 48 135 32 114 42 92 C 36 66 68 48 100 54 C 126 26 182 24 214 46 C 244 24 310 22 344 48 C 374 28 428 38 442 68 C 478 78 490 110 464 132 C 424 144 366 135 296 138 C 218 134 148 140 80 135 Z"),
+  new Path2D("M 70 125 C 42 125 28 106 38 86 C 32 62 60 44 88 50 C 112 24 158 22 186 42 C 210 22 266 22 294 46 C 320 28 368 38 378 65 C 406 75 408 105 384 122 C 352 132 305 124 248 128 C 182 124 122 130 70 125 Z")
+];
+
+const cloudInnerPaths = [
+  new Path2D("M 120 125 C 95 125 80 110 88 92 C 85 70 110 56 135 60 C 152 38 195 35 220 54 C 242 35 292 35 320 56 C 342 42 380 50 388 75 C 410 85 408 115 385 126 C 360 134 328 128 280 130 C 225 126 175 130 120 125 Z"),
+  new Path2D("M 110 118 C 85 118 72 102 80 85 C 75 65 100 52 125 56 C 145 35 190 34 214 52 C 238 35 290 34 316 54 C 340 40 382 48 392 72 C 420 80 428 105 408 120 C 375 130 330 122 275 125 C 210 122 155 126 110 118 Z"),
+  new Path2D("M 95 110 C 75 110 65 96 72 80 C 68 62 90 48 112 52 C 130 32 168 30 190 46 C 210 30 252 30 274 48 C 295 34 332 42 340 64 C 362 72 364 95 345 108 C 320 116 280 110 235 112 C 182 110 135 114 95 110 Z")
+];
+
+const moonPath = new Path2D("M 50 10 A 35 35 0 1 0 90 60 A 40 40 0 1 1 50 10 Z");
+
+const STATIC_CLOUDS = [
+  { id: 1, topFrac: 0.04, duration: 48, delay: -5, type: 0, scale: 0.9, opacity: 0.85 },
+  { id: 2, topFrac: 0.15, duration: 62, delay: -26, type: 1, scale: 0.8, opacity: 0.75 },
+  { id: 3, topFrac: 0.26, duration: 52, delay: -40, type: 2, scale: 0.85, opacity: 0.80 },
+  { id: 4, topFrac: 0.08, duration: 70, delay: -32, type: 1, scale: 1.05, opacity: 0.70 },
+  { id: 5, topFrac: 0.20, duration: 55, delay: -12, type: 0, scale: 0.75, opacity: 0.78 },
+  { id: 6, topFrac: 0.32, duration: 65, delay: -52, type: 2, scale: 0.95, opacity: 0.72 },
+];
+
+const NIGHT_STARS = [
+  { top: 0.08 * 1080, left: 0.12 * 1920, size: 14, opacity: 0.9, glow: '#FFFFFF' },
+  { top: 0.14 * 1080, left: 0.28 * 1920, size: 10, opacity: 0.75, glow: '#FDE68A' },
+  { top: 0.22 * 1080, left: 0.45 * 1920, size: 16, opacity: 0.85, glow: '#BAE6FD' },
+  { top: 0.10 * 1080, left: 0.62 * 1920, size: 12, opacity: 0.95, glow: '#FFFFFF' },
+  { top: 0.28 * 1080, left: 0.75 * 1920, size: 15, opacity: 0.8, glow: '#FDE68A' },
+  { top: 0.18 * 1080, left: 0.88 * 1920, size: 11, opacity: 0.85, glow: '#E0F2FE' },
+  { top: 0.35 * 1080, left: 0.18 * 1920, size: 9, opacity: 0.7, glow: '#FFFFFF' },
+  { top: 0.42 * 1080, left: 0.34 * 1920, size: 13, opacity: 0.8, glow: '#FDE68A' },
+  { top: 0.05 * 1080, left: 0.38 * 1920, size: 10, opacity: 0.8, glow: '#FEF08A' },
+  { top: 0.25 * 1080, left: 0.05 * 1920, size: 12, opacity: 0.7, glow: '#FFFFFF' }
+];
+
+function getCloudTheme(timeMode) {
+  if (timeMode === 'malam') {
+    return {
+      fill: 'rgba(219, 234, 254, 0.32)',
+      innerFill: 'rgba(254, 240, 138, 0.18)'
+    };
+  }
+  if (timeMode === 'sore') {
+    return {
+      fill: 'rgba(255, 245, 235, 0.78)',
+      innerFill: 'rgba(254, 215, 170, 0.45)'
+    };
+  }
+  if (timeMode === 'pagi') {
+    return {
+      fill: 'rgba(255, 255, 255, 0.82)',
+      innerFill: 'rgba(254, 240, 138, 0.35)'
+    };
+  }
+  return {
+    fill: 'rgba(255, 255, 255, 0.80)',
+    innerFill: 'rgba(255, 255, 255, 0.55)'
+  };
+}
+
+// Pre-render Cloud Canvases for a specific timeMode
+function createCloudSprites(timeMode) {
+  const theme = getCloudTheme(timeMode);
+  const dims = [
+    { w: 500, h: 220 },
+    { w: 540, h: 210 },
+    { w: 440, h: 200 }
+  ];
+  return dims.map((d, i) => {
+    const sc = document.createElement('canvas');
+    sc.width = d.w;
+    sc.height = d.h;
+    const sctx = sc.getContext('2d');
+    sctx.fillStyle = theme.fill;
+    sctx.fill(cloudOuterPaths[i]);
+    sctx.fillStyle = theme.innerFill;
+    sctx.fill(cloudInnerPaths[i]);
+    return sc;
+  });
+}
+
+// Pre-render Sun Sprites
+function createSunSprite(timeMode) {
+  const sc = document.createElement('canvas');
+  sc.width = 300;
+  sc.height = 300;
+  const sctx = sc.getContext('2d');
+  const cx = 150;
+  const cy = 150;
+
+  if (timeMode === 'pagi') {
+    // Aura (R ~ 102)
+    const auraGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 102);
+    auraGrad.addColorStop(0, 'rgba(254, 240, 138, 0.65)');
+    auraGrad.addColorStop(0.55, 'rgba(251, 191, 36, 0.30)');
+    auraGrad.addColorStop(0.75, 'rgba(251, 191, 36, 0)');
+    sctx.fillStyle = auraGrad;
+    sctx.beginPath();
+    sctx.arc(cx, cy, 102, 0, Math.PI * 2);
+    sctx.fill();
+
+    // Disc (r=50 * 115/120 = 47.9)
+    sctx.save();
+    sctx.translate(cx, cy);
+    sctx.scale(115 / 120, 115 / 120);
+    const discGrad = sctx.createRadialGradient(-9.6, -12, 0, 0, 0, 70);
+    discGrad.addColorStop(0, '#FFFFFF');
+    discGrad.addColorStop(0.28, '#FEF08A');
+    discGrad.addColorStop(0.65, '#FBBF24');
+    discGrad.addColorStop(1.0, '#F59E0B');
+    sctx.fillStyle = discGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 50, 0, Math.PI * 2);
+    sctx.fill();
+
+    const hlGrad = sctx.createRadialGradient(-18, -21.6, 0, 0, 0, 42);
+    hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.90)');
+    hlGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+    sctx.fillStyle = hlGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 48, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+
+  } else if (timeMode === 'siang') {
+    // Aura (R ~ 118.75)
+    const auraGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 118.75);
+    auraGrad.addColorStop(0, 'rgba(255, 255, 255, 0.70)');
+    auraGrad.addColorStop(0.50, 'rgba(250, 204, 21, 0.40)');
+    auraGrad.addColorStop(0.75, 'rgba(250, 204, 21, 0)');
+    sctx.fillStyle = auraGrad;
+    sctx.beginPath();
+    sctx.arc(cx, cy, 118.75, 0, Math.PI * 2);
+    sctx.fill();
+
+    // Disc (r=50)
+    sctx.save();
+    sctx.translate(cx, cy);
+    const discGrad = sctx.createRadialGradient(-12, -14.4, 0, 0, 0, 72);
+    discGrad.addColorStop(0, '#FFFFFF');
+    discGrad.addColorStop(0.22, '#FEF9C3');
+    discGrad.addColorStop(0.58, '#FACC15');
+    discGrad.addColorStop(0.88, '#F59E0B');
+    discGrad.addColorStop(1.0, '#D97706');
+    sctx.fillStyle = discGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 50, 0, Math.PI * 2);
+    sctx.fill();
+
+    const hlGrad = sctx.createRadialGradient(-18, -21.6, 0, 0, 0, 42);
+    hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+    hlGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+    sctx.fillStyle = hlGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 48, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+
+  } else if (timeMode === 'sore') {
+    // Aura (R ~ 117)
+    const auraGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 117);
+    auraGrad.addColorStop(0, 'rgba(249, 115, 22, 0.55)');
+    auraGrad.addColorStop(0.55, 'rgba(234, 88, 12, 0.25)');
+    auraGrad.addColorStop(0.75, 'rgba(234, 88, 12, 0)');
+    sctx.fillStyle = auraGrad;
+    sctx.beginPath();
+    sctx.arc(cx, cy, 117, 0, Math.PI * 2);
+    sctx.fill();
+
+    // Disc (125px inside 120px)
+    sctx.save();
+    sctx.translate(cx, cy);
+    sctx.scale(125 / 120, 125 / 120);
+    const discGrad = sctx.createRadialGradient(-9.6, -12, 0, 0, 0, 70);
+    discGrad.addColorStop(0, '#FFF7ED');
+    discGrad.addColorStop(0.25, '#FED7AA');
+    discGrad.addColorStop(0.55, '#FB923C');
+    discGrad.addColorStop(0.85, '#EA580C');
+    discGrad.addColorStop(1.0, '#C2410C');
+    sctx.fillStyle = discGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 50, 0, Math.PI * 2);
+    sctx.fill();
+
+    const hlGrad = sctx.createRadialGradient(-18, -21.6, 0, 0, 0, 42);
+    hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
+    hlGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+    sctx.fillStyle = hlGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 48, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+  }
+
+  return sc;
+}
+
+// Pre-render Moon Sprite
+function createMoonSprite() {
+  const sc = document.createElement('canvas');
+  sc.width = 160;
+  sc.height = 160;
+  const sctx = sc.getContext('2d');
+  const cx = 80;
+  const cy = 80;
+
+  // Soft Moon Glow
+  const moonGlow = sctx.createRadialGradient(cx, cy, 15, cx, cy, 70);
+  moonGlow.addColorStop(0, 'rgba(253, 230, 138, 0.40)');
+  moonGlow.addColorStop(0.6, 'rgba(253, 230, 138, 0.12)');
+  moonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  sctx.fillStyle = moonGlow;
+  sctx.beginPath();
+  sctx.arc(cx, cy, 70, 0, Math.PI * 2);
+  sctx.fill();
+
+  // Moon SVG Path (65x65 placed at center cx-32.5, cy-32.5)
+  sctx.save();
+  sctx.translate(cx - 32.5, cy - 32.5);
+  sctx.scale(65 / 100, 65 / 100);
+  sctx.fillStyle = '#FDE68A';
+  sctx.fill(moonPath);
+  sctx.restore();
+
+  return sc;
+}
+
+// Pre-render Star Sprites
+function createStarSprites() {
+  return NIGHT_STARS.map(star => {
+    const sc = document.createElement('canvas');
+    sc.width = star.size * 2;
+    sc.height = star.size * 2;
+    const sctx = sc.getContext('2d');
+    const center = star.size;
+    const r = star.size / 2;
+
+    const starGlow = sctx.createRadialGradient(center, center, 0, center, center, r);
+    starGlow.addColorStop(0, '#FFFFFF');
+    starGlow.addColorStop(0.40, star.glow);
+    starGlow.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+
+    sctx.fillStyle = starGlow;
+    sctx.beginPath();
+    sctx.arc(center, center, r, 0, Math.PI * 2);
+    sctx.fill();
+
+    sctx.fillStyle = '#FFFFFF';
+    sctx.beginPath();
+    sctx.arc(center, center, r * 0.3, 0, Math.PI * 2);
+    sctx.fill();
+
+    return sc;
+  });
+}
+
+// Master Render Job Handler
+ipcRenderer.on('start-export', async (event, jobConfig) => {
+  const { timeMode, durationSec, fps, outputPath } = jobConfig;
+  const totalFrames = durationSec * fps;
+  
+  console.log(`[RENDERER] Preparing sprites for scene: "${timeMode}"...`);
+
+  // Pre-generate sprites for this scene
+  const cloudSprites = createCloudSprites(timeMode);
+  const sunSprite = (timeMode !== 'malam') ? createSunSprite(timeMode) : null;
+  const moonSprite = (timeMode === 'malam') ? createMoonSprite() : null;
+  const starSprites = (timeMode === 'malam') ? createStarSprites() : null;
+
+  // Pre-generate Sky Gradient
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, 1080);
+  if (timeMode === 'pagi') {
+    skyGrad.addColorStop(0, '#FEF08A');
+    skyGrad.addColorStop(0.5, '#7DD3FC');
+    skyGrad.addColorStop(1, '#FAF7F2');
+  } else if (timeMode === 'siang') {
+    skyGrad.addColorStop(0, '#38BDF8');
+    skyGrad.addColorStop(0.5, '#BAE6FD');
+    skyGrad.addColorStop(1, '#FAF7F2');
+  } else if (timeMode === 'sore') {
+    skyGrad.addColorStop(0, '#F97316');
+    skyGrad.addColorStop(0.5, '#FDE047');
+    skyGrad.addColorStop(1, '#FAF7F2');
+  } else {
+    skyGrad.addColorStop(0, '#0F172A');
+    skyGrad.addColorStop(0.5, '#1E293B');
+    skyGrad.addColorStop(1, '#334155');
+  }
+
+  // Sun Centers
+  const sunPos = {
+    pagi: { x: 1764, y: 84 },
+    siang: { x: 1761.5, y: 86.5 },
+    sore: { x: 1759, y: 93 }
+  }[timeMode];
+
+  console.log(`[RENDERER] Starting render: ${totalFrames} frames (${durationSec}s @ ${fps}fps)...`);
+  console.log(`[RENDERER] Output target: ${outputPath}`);
+
+  const outDir = path.dirname(outputPath);
+  if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir, { recursive: true });
+  }
+
+  const ffmpeg = spawn(ffmpegPath, [
+    '-y',
+    '-f', 'rawvideo',
+    '-pix_fmt', 'rgba',
+    '-s', '1920x1080',
+    '-r', String(fps),
+    '-i', '-',
+    '-c:v', 'libx264',
+    '-preset', 'ultrafast',
+    '-crf', '18',
+    '-pix_fmt', 'yuv420p',
+    '-movflags', '+faststart',
+    outputPath
+  ]);
+
+  let ffmpegErr = '';
+  ffmpeg.stderr.on('data', d => {
+    ffmpegErr += d.toString();
+  });
+
+  const startTime = Date.now();
+  const reportInterval = fps * 15; // report progress every 15 video seconds
+
+  for (let frame = 0; frame < totalFrames; frame++) {
+    const t = frame / fps;
+
+    // 1. Sky
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, 1920, 1080);
+
+    // 2. Celestial
+    if (timeMode !== 'malam') {
+      const pulse = Math.sin(t * (2 * Math.PI / 4.0)) * 0.5 + 0.5;
+      const pulseScale = 1.0 + 0.04 * pulse;
+      ctx.save();
+      ctx.translate(sunPos.x, sunPos.y);
+      ctx.scale(pulseScale, pulseScale);
+      ctx.drawImage(sunSprite, -150, -150);
+      ctx.restore();
+    } else {
+      // Moon
+      // Moon center is at 1920 - 64 - 32.5 = 1823.5, cy = 32 + 32.5 = 64.5
+      ctx.drawImage(moonSprite, 1823.5 - 80, 64.5 - 80);
+
+      // Stars
+      NIGHT_STARS.forEach((star, idx) => {
+        const twinkle = 0.82 + 0.18 * Math.sin(t * 1.6 + idx * 1.8);
+        ctx.globalAlpha = star.opacity * twinkle;
+        ctx.drawImage(starSprites[idx], star.left - star.size/2, star.top - star.size/2);
+      });
+      ctx.globalAlpha = 1.0;
+    }
+
+    // 3. Clouds
+    STATIC_CLOUDS.forEach(cloud => {
+      const elapsed = t - cloud.delay;
+      const progress = ((elapsed % cloud.duration) + cloud.duration) % cloud.duration / cloud.duration;
+      const x = -550 + progress * 2470;
+      const y = cloud.topFrac * 1080;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(cloud.scale, cloud.scale);
+      ctx.globalAlpha = cloud.opacity;
+      ctx.drawImage(cloudSprites[cloud.type], 0, 0);
+      ctx.restore();
+    });
+
+    // 4. Capture and write buffer
+    const imgData = ctx.getImageData(0, 0, 1920, 1080);
+    const buf = Buffer.from(imgData.data.buffer);
+
+    if (!ffmpeg.stdin.write(buf)) {
+      await new Promise(resolve => ffmpeg.stdin.once('drain', resolve));
+    }
+
+    if (frame % reportInterval === 0 || frame === totalFrames - 1) {
+      const pct = ((frame / totalFrames) * 100).toFixed(1);
+      const elapsedSec = ((Date.now() - startTime) / 1000).toFixed(1);
+      const videoSec = (frame / fps).toFixed(0);
+      const fpsReal = (frame / Math.max(0.1, (Date.now() - startTime) / 1000)).toFixed(1);
+      const remainingFrames = totalFrames - frame;
+      const etaSec = (remainingFrames / Math.max(1, parseFloat(fpsReal))).toFixed(0);
+      console.log(`[PROGRESS] ${timeMode.toUpperCase()}: ${pct}% (${videoSec}s / ${durationSec}s) | Speed: ${fpsReal} FPS | ETA: ${etaSec}s`);
+    }
+  }
+
+  ffmpeg.stdin.end();
+
+  await new Promise((resolve, reject) => {
+    ffmpeg.on('close', code => {
+      if (code === 0) resolve();
+      else reject(new Error(`FFmpeg error (code ${code}): ${ffmpegErr}`));
+    });
+  });
+
+  const totalTimeSec = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`[RENDERER] Scene "${timeMode}" rendered in ${totalTimeSec}s!`);
+  ipcRenderer.send('job-done', { timeMode, outputPath, totalTimeSec });
+});
+</script>
+</body>
+</html>

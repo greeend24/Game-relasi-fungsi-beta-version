@@ -1,0 +1,115 @@
+================================================================================
+          PANDUAN 2: CARA MENJALANKAN GAME DETEKTIF DATA
+               (SEMUA DISTRIBUSI + AKSES WEB ONLINE & LOKAL)
+================================================================================
+
+PERTANYAAN PENTING:
+"Kalau Antigravity saya tutup, apakah server masih bisa dijalankan?"
+
+JAWABAN:
+>>> YA, TENTU SAJA SANGAT BISA! <<<
+
+Penjelasan:
+Server game, database nilai siswa, dan koneksi internet Ngrok sama sekali 
+TIDAK bergantung pada aplikasi Antigravity. Antigravity hanyalah alat (editor) 
+untuk menulis dan mengembangkan kode game.
+
+Ketika aplikasi Antigravity ditutup:
+Server tetap bisa kamu nyalakan dan jalankan kapan saja secara mandiri 
+hanya dengan klik dua kali (double-click) file ".bat" bawaan Windows!
+
+--------------------------------------------------------------------------------
+1. CARA MENYALAKAN SERVER ONLINE UNTUK DIMAINKAN SISWA DI MANA SAJA (INTERNET)
+--------------------------------------------------------------------------------
+Langkah ini WAJIB dilakukan jika kamu ingin siswa memainkan game dari HP Android,
+iPhone, atau laptop mereka masing-masing melalui internet:
+
+1. Buka folder utama game di komputermu (folder tempat file tutorial ini berada)
+2. Klik dua kali (double-click) file:
+   "JALANKAN_SERVER_INTERNET.bat"
+3. Jendela hitam Command Prompt (CMD) akan terbuka. 
+   Tunggu sekitar 5-10 detik hingga muncul pesan:
+   --------------------------------------------------------------------
+   🦉 DETEKTIF DATA - SERVER ONLINE GAME (PERMANENT STATIC DOMAIN)
+   Backend Running on: http://localhost:3001
+   PUBLIC URL (INTERNET): https://scooter-thickness-stony.ngrok-free.dev
+   --------------------------------------------------------------------
+4. Bagikan link tersebut kepada siswa:
+   Link Game: https://scooter-thickness-stony.ngrok-free.dev
+5. PENTING:
+   Biarkan jendela hitam CMD tersebut tetap terbuka selama siswa bermain. 
+   Boleh kamu minimize ke taskbar, asalkan JANGAN DITUTUP (jangan di-close). 
+   Jika jendela ditutup, server akan mati dan siswa tidak bisa mengakses game.
+
+--------------------------------------------------------------------------------
+2. CARA MEMAINKAN GAME DI HP ANDROID ATAU IPHONE / IPAD
+--------------------------------------------------------------------------------
+1. Pastikan server internet di komputermu sudah menyala (sesuai langkah 1 di atas).
+2. Siswa membuka browser di HP masing-masing:
+   - Pengguna Android: Buka Google Chrome.
+   - Pengguna iPhone / iPad: Buka Safari.
+3. Masukkan alamat URL game:
+   https://scooter-thickness-stony.ngrok-free.dev
+4. MIRINGKAN HP KE POSISI LANDSCAPE (MENDATAR).
+   Game ini dirancang khusus dalam posisi lanskap layar penuh agar nyaman dimainkan.
+   Jika layar masih tegak (portrait), akan muncul layar animasi petunjuk untuk 
+   memiringkan HP.
+5. Siswa bisa langsung memilih:
+   - "BUAT AKUN": Mengisi nama lengkap, nomor absen, dan kata sandi.
+   - "PILIH AKUN": Masuk menggunakan username dan kata sandi yang sudah didaftarkan.
+6. Semua skor, progres stage chapter, dan nilai ujian quest otomatis tersimpan 
+   ke database di komputer server!
+
+--------------------------------------------------------------------------------
+3. CARA MEMAINKAN GAME DI LAPTOP / KOMPUTER WINDOWS SENDIRI
+--------------------------------------------------------------------------------
+Ada beberapa opsi yang sangat fleksibel:
+
+A. CARA 1: MELALUI BROWSER WEB LOKAL (TANPA INTERNET KUOTA)
+   1. Jalankan file "JALANKAN_SERVER_ADMIN.bat" atau "JALANKAN_SERVER_INTERNET.bat".
+   2. Buka browser (Chrome, Edge, Firefox, Brave) di komputermu.
+   3. Ketik alamat:
+      http://localhost:3001 atau http://127.0.0.1:3001
+   4. Tekan Enter, game akan langsung terbuka cepat tanpa memakan kuota internet!
+
+B. CARA 2: MENGGUNAKAN APLIKASI STANDALONE (WINDOWS ELECTRON)
+   1. Jika sudah install lewat "detektif data windows setup.exe", 
+      cukup klik ikon "Detektif Data" di Desktop Windows.
+   2. Atau masuk ke folder:
+      Detektif data (Windows Version)/Detektif_Data_Windows_Game/
+      lalu klik dua kali "Detektif Data.exe".
+   3. Game akan terbuka dalam jendela aplikasi desktop mandiri layar penuh.
+
+C. CARA 3: MENGGUNAKAN VERSI RINGAN WEBVIEW2
+   1. Masuk ke folder:
+      Detektif data (Windows WebView2 Version)/
+   2. Klik dua kali "Mainkan_Game_WebView2.bat".
+
+--------------------------------------------------------------------------------
+4. CARA MEMAINKAN GAME SECARA OFFLINE TOTAL (TANPA SERVER SAMA SEKALI)
+--------------------------------------------------------------------------------
+Jika komputer sekolah tidak memiliki Node.js atau tidak ada akses internet sama sekali:
+1. Buka folder:
+   Detektif data (Web Version)/
+2. Klik dua kali:
+   "Mainkan_Game_Offline_Windows.bat"
+3. Game langsung berjalan 100% offline dengan data tersimpan di LocalStorage browser.
+
+--------------------------------------------------------------------------------
+5. TIPS DAN PEMECAHAN MASALAH (TROUBLESHOOTING)
+--------------------------------------------------------------------------------
+- Masalah: "Game tidak bisa dibuka di HP siswa / Loading terus menerus"
+  Solusi: Pastikan komputermu terhubung ke internet dan jendela 
+  "JALANKAN_SERVER_INTERNET.bat" masih menyala di taskbar.
+
+- Masalah: "Port 3001 bentrok / sudah terpakai"
+  Solusi: Tutup semua jendela CMD lama, lalu jalankan ulang file 
+  "JALANKAN_SERVER_INTERNET.bat". Script otomatis akan membersihkan proses lama.
+
+- Masalah: "Suara BGM / Efek suara tidak berbunyi"
+  Solusi: Browser modern memerlukan interaksi pertama (klik layar) untuk 
+  mengizinkan audio autoplay. Cukup sentuh atau klik tombol di game sekali.
+
+================================================================================
+Game siap dijalankan kapan saja tanpa memerlukan Antigravity IDE!
+================================================================================

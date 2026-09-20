@@ -9,6 +9,7 @@ import progressRoutes from "./routes/progress.routes.js";
 import questRoutes from "./routes/quest.routes.js";
 import leaderboardRoutes from "./routes/leaderboard.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import updateRoutes from "./routes/update.routes.js";
 import { runMigrations } from "./db/migrate.js";
 import { recordStudentActivity } from "./services/admin.service.js";
 
@@ -86,6 +87,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/quest", questRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/updates", updateRoutes);
 
 // Researcher / Admin Dashboard
 function getAdminHtmlPath(): string {
@@ -110,6 +112,22 @@ app.get("/admin", (_req, res) => {
   }
 });
 
+app.get("/admin/qrcode.min.js", (_req, res) => {
+  const candidates = [
+    path.join(__dirname, "views", "qrcode.min.js"),
+    path.join(__dirname, "..", "src", "views", "qrcode.min.js"),
+    path.join(process.cwd(), "src", "views", "qrcode.min.js"),
+    path.join(process.cwd(), "dist", "views", "qrcode.min.js"),
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) {
+      res.setHeader("Content-Type", "application/javascript");
+      return res.sendFile(c);
+    }
+  }
+  res.status(404).send("qrcode.min.js not found");
+});
+
 // Health check & student heartbeat
 app.get("/api/health", (req, res) => {
   const { u, username, userId } = req.query;
@@ -127,8 +145,26 @@ app.get("/api/health", (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-// Serve Frontend Static Files
+// Serve Frontend Static Files (Hot-Update Cache + Base Dist)
 // ─────────────────────────────────────────────
+
+// 1. Hot-Updated Cached Frontend in AppData (if client downloaded an update)
+const cachedFrontendPath = process.env.ELECTRON_USER_DATA
+  ? path.join(process.env.ELECTRON_USER_DATA, "cached_frontend")
+  : null;
+
+if (cachedFrontendPath && fs.existsSync(path.join(cachedFrontendPath, "index.html"))) {
+  console.log("[server] ⚡ Serving updated frontend from cached_frontend in AppData:", cachedFrontendPath);
+  app.use(express.static(cachedFrontendPath, {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      }
+    }
+  }));
+}
 
 const candidateDistPaths = [
   process.env.ELECTRON_RESOURCES_PATH ? path.join(process.env.ELECTRON_RESOURCES_PATH, "frontend", "dist") : null,
@@ -146,7 +182,7 @@ for (const p of candidateDistPaths) {
 }
 
 if (resolvedDistPath) {
-  console.log("[server] Serving frontend static files from:", resolvedDistPath);
+  console.log("[server] Serving base frontend static files from:", resolvedDistPath);
   app.use(express.static(resolvedDistPath, {
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.html')) {
@@ -157,12 +193,16 @@ if (resolvedDistPath) {
     }
   }));
 
-  // SPA fallback — all non-API routes serve index.html with no-cache headers
+  // SPA fallback : all non-API routes serve index.html with no-cache headers
   app.get(/^(?!\/api\/).*$/, (_req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
-    res.sendFile(path.join(resolvedDistPath!, "index.html"));
+    if (cachedFrontendPath && fs.existsSync(path.join(cachedFrontendPath, "index.html"))) {
+      res.sendFile(path.join(cachedFrontendPath, "index.html"));
+    } else {
+      res.sendFile(path.join(resolvedDistPath!, "index.html"));
+    }
   });
 } else {
   console.warn("[server] Warning: No frontend dist folder found in candidates:", candidateDistPaths);

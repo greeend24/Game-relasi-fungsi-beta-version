@@ -1,0 +1,82 @@
+[
+  {
+    "start": 0.0,
+    "end": 7.0,
+    "text": "sekarang bagaimana kalau nilai x yang kita masukkan adalah bilangan negatif"
+  },
+  {
+    "start": 7.0,
+    "end": 14.0,
+    "text": "kita lihat contoh berikut diketahui FX = 2 x + 7"
+  },
+  {
+    "start": 14.0,
+    "end": 21.0,
+    "text": "kita akan mencari nilai F -3 caranya kita ganti X dengan"
+  },
+  {
+    "start": 21.0,
+    "end": 28.0,
+    "text": "jadi F -3 = 2 * -3 +"
+  },
+  {
+    "start": 28.0,
+    "end": 35.0,
+    "text": "2 dikali negatif 3 sama dengan negatif 6 Kenapa hasil"
+  },
+  {
+    "start": 35.0,
+    "end": 42.0,
+    "text": "negatif karena dalam perkalian bilangan positif dikali bilangan negatif"
+  },
+  {
+    "start": 42.0,
+    "end": 49.0,
+    "text": "negatif jadi kita punya negatif 6 ditambah 7 hasilnya"
+  },
+  {
+    "start": 49.0,
+    "end": 56.0,
+    "text": "1 jadi F -3 = 1"
+  },
+  {
+    "start": 56.0,
+    "end": 63.0,
+    "text": "Sekarang kita coba contoh yang lain Diketahui gx ="
+  },
+  {
+    "start": 63.0,
+    "end": 70.0,
+    "text": "X -4 kita akan mencari G min 2 sama seperti"
+  },
+  {
+    "start": 70.0,
+    "end": 77.0,
+    "text": "kita ganti X dengan -2 maka G"
+  },
+  {
+    "start": 77.0,
+    "end": 84.0,
+    "text": "sama dengan 5 dikali min 2 min 45 *"
+  },
+  {
+    "start": 84.0,
+    "end": 91.0,
+    "text": "2 = -10 kemudian -10 -"
+  },
+  {
+    "start": 91.0,
+    "end": 98.0,
+    "text": "4 = -14 jadi G -2"
+  },
+  {
+    "start": 98.0,
+    "end": 105.0,
+    "text": "-14 Nah dari kedua contoh tadi kalau kita mengganti X dengan"
+  },
+  {
+    "start": 105.0,
+    "end": 112.0,
+    "text": "negatif jangan lupa perhatikan tanda positif dan negatifnya ya"
+  }
+]

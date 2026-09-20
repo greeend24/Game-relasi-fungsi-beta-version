@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Snowy Sky Video Renderer</title>
+</head>
+<body style="margin:0; overflow:hidden; background:#000;">
+<canvas id="skyCanvas" width="1920" height="1080"></canvas>
+<script>
+const { ipcRenderer } = require('electron');
+const { spawn } = require('child_process');
+const ffmpegPath = require('ffmpeg-static');
+const path = require('path');
+const fs = require('fs');
+
+const canvas = document.getElementById('skyCanvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+// SVG Paths for Clouds
+const cloudOuterPaths = [
+  new Path2D("M 90 145 C 55 145 35 122 45 98 C 38 68 70 48 105 54 C 130 24 185 20 220 45 C 250 20 315 20 350 48 C 380 28 430 38 440 72 C 470 85 465 125 435 142 C 405 152 365 144 305 148 C 235 144 165 150 90 145 Z"),
+  new Path2D("M 80 135 C 48 135 32 114 42 92 C 36 66 68 48 100 54 C 126 26 182 24 214 46 C 244 24 310 22 344 48 C 374 28 428 38 442 68 C 478 78 490 110 464 132 C 424 144 366 135 296 138 C 218 134 148 140 80 135 Z"),
+  new Path2D("M 70 125 C 42 125 28 106 38 86 C 32 62 60 44 88 50 C 112 24 158 22 186 42 C 210 22 266 22 294 46 C 320 28 368 38 378 65 C 406 75 408 105 384 122 C 352 132 305 124 248 128 C 182 124 122 130 70 125 Z")
+];
+
+const cloudInnerPaths = [
+  new Path2D("M 120 125 C 95 125 80 110 88 92 C 85 70 110 56 135 60 C 152 38 195 35 220 54 C 242 35 292 35 320 56 C 342 42 380 50 388 75 C 410 85 408 115 385 126 C 360 134 328 128 280 130 C 225 126 175 130 120 125 Z"),
+  new Path2D("M 110 118 C 85 118 72 102 80 85 C 75 65 100 52 125 56 C 145 35 190 34 214 52 C 238 35 290 34 316 54 C 340 40 382 48 392 72 C 420 80 428 105 408 120 C 375 130 330 122 275 125 C 210 122 155 126 110 118 Z"),
+  new Path2D("M 95 110 C 75 110 65 96 72 80 C 68 62 90 48 112 52 C 130 32 168 30 190 46 C 210 30 252 30 274 48 C 295 34 332 42 340 64 C 362 72 364 95 345 108 C 320 116 280 110 235 112 C 182 110 135 114 95 110 Z")
+];
+
+const moonPath = new Path2D("M 50 10 A 35 35 0 1 0 90 60 A 40 40 0 1 1 50 10 Z");
+
+const STATIC_CLOUDS = [
+  { id: 1, topFrac: 0.04, duration: 52, delay: -5, type: 0, scale: 0.95, opacity: 0.85 },
+  { id: 2, topFrac: 0.15, duration: 68, delay: -26, type: 1, scale: 0.85, opacity: 0.78 },
+  { id: 3, topFrac: 0.25, duration: 58, delay: -40, type: 2, scale: 0.90, opacity: 0.82 },
+  { id: 4, topFrac: 0.07, duration: 75, delay: -32, type: 1, scale: 1.10, opacity: 0.72 },
+  { id: 5, topFrac: 0.19, duration: 60, delay: -12, type: 0, scale: 0.80, opacity: 0.80 },
+  { id: 6, topFrac: 0.30, duration: 70, delay: -52, type: 2, scale: 1.00, opacity: 0.75 },
+];
+
+const NIGHT_STARS = [
+  { top: 0.08 * 1080, left: 0.12 * 1920, size: 14, opacity: 0.9, glow: '#FFFFFF' },
+  { top: 0.14 * 1080, left: 0.28 * 1920, size: 10, opacity: 0.75, glow: '#BAE6FD' },
+  { top: 0.22 * 1080, left: 0.45 * 1920, size: 16, opacity: 0.85, glow: '#E0F2FE' },
+  { top: 0.10 * 1080, left: 0.62 * 1920, size: 12, opacity: 0.95, glow: '#FFFFFF' },
+  { top: 0.28 * 1080, left: 0.75 * 1920, size: 15, opacity: 0.8, glow: '#BAE6FD' },
+  { top: 0.18 * 1080, left: 0.88 * 1920, size: 11, opacity: 0.85, glow: '#FFFFFF' },
+  { top: 0.35 * 1080, left: 0.18 * 1920, size: 9, opacity: 0.7, glow: '#E0F2FE' },
+  { top: 0.42 * 1080, left: 0.34 * 1920, size: 13, opacity: 0.8, glow: '#BAE6FD' },
+  { top: 0.05 * 1080, left: 0.38 * 1920, size: 10, opacity: 0.8, glow: '#FFFFFF' },
+  { top: 0.25 * 1080, left: 0.05 * 1920, size: 12, opacity: 0.7, glow: '#E0F2FE' }
+];
+
+// Load Snowflake Images
+const SNOWFLAKE_FILENAMES = [
+  'Asset 29@4x.png',
+  'Asset 30@4x.png',
+  'Asset 31@4x.png',
+  'Asset 32@4x.png',
+  'Asset 33@4x.png',
+  'Asset 34@4x.png',
+  'Asset 35@4x.png',
+  'Asset 36@4x.png',
+  'Asset 37@4x.png'
+];
+
+let snowflakeImages = [];
+
+function loadSnowflakeAssets() {
+  const snowflakeDir = path.join(__dirname, '..', 'public', 'snowflake');
+  const loaded = [];
+  for (const fn of SNOWFLAKE_FILENAMES) {
+    const fullPath = path.join(snowflakeDir, fn);
+    const base64 = fs.readFileSync(fullPath).toString('base64');
+    const img = new Image();
+    img.src = `data:image/png;base64,${base64}`;
+    loaded.push(img);
+  }
+  return loaded;
+}
+
+// Pre-render Cloud Canvases for Snowy theme
+function createCloudSprites(timeMode) {
+  const dims = [
+    { w: 500, h: 220 },
+    { w: 540, h: 210 },
+    { w: 440, h: 200 }
+  ];
+  
+  let outerFill = 'rgba(255, 255, 255, 0.88)';
+  let innerFill = 'rgba(224, 242, 254, 0.65)'; // icy frosty inner highlight
+
+  if (timeMode === 'malam') {
+    outerFill = 'rgba(224, 242, 254, 0.40)';
+    innerFill = 'rgba(186, 230, 253, 0.25)';
+  } else if (timeMode === 'sore') {
+    outerFill = 'rgba(255, 250, 245, 0.85)';
+    innerFill = 'rgba(254, 215, 170, 0.45)';
+  } else if (timeMode === 'pagi') {
+    outerFill = 'rgba(255, 255, 255, 0.90)';
+    innerFill = 'rgba(254, 240, 138, 0.40)';
+  }
+
+  return dims.map((d, i) => {
+    const sc = document.createElement('canvas');
+    sc.width = d.w;
+    sc.height = d.h;
+    const sctx = sc.getContext('2d');
+    sctx.fillStyle = outerFill;
+    sctx.fill(cloudOuterPaths[i]);
+    sctx.fillStyle = innerFill;
+    sctx.fill(cloudInnerPaths[i]);
+    return sc;
+  });
+}
+
+// Pre-render Sun Sprites (Frosty Winter Sun)
+function createSunSprite(timeMode) {
+  const sc = document.createElement('canvas');
+  sc.width = 300;
+  sc.height = 300;
+  const sctx = sc.getContext('2d');
+  const cx = 150;
+  const cy = 150;
+
+  if (timeMode === 'pagi') {
+    const auraGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 110);
+    auraGrad.addColorStop(0, 'rgba(254, 240, 138, 0.70)');
+    auraGrad.addColorStop(0.55, 'rgba(251, 191, 36, 0.35)');
+    auraGrad.addColorStop(0.80, 'rgba(251, 191, 36, 0)');
+    sctx.fillStyle = auraGrad;
+    sctx.beginPath();
+    sctx.arc(cx, cy, 110, 0, Math.PI * 2);
+    sctx.fill();
+
+    sctx.save();
+    sctx.translate(cx, cy);
+    sctx.scale(115 / 120, 115 / 120);
+    const discGrad = sctx.createRadialGradient(-9.6, -12, 0, 0, 0, 70);
+    discGrad.addColorStop(0, '#FFFFFF');
+    discGrad.addColorStop(0.28, '#FEF08A');
+    discGrad.addColorStop(0.65, '#FBBF24');
+    discGrad.addColorStop(1.0, '#F59E0B');
+    sctx.fillStyle = discGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 50, 0, Math.PI * 2);
+    sctx.fill();
+
+    const hlGrad = sctx.createRadialGradient(-18, -21.6, 0, 0, 0, 42);
+    hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+    hlGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+    sctx.fillStyle = hlGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 48, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+
+  } else if (timeMode === 'siang') {
+    // Frosty Crisp Winter Sun with brilliant white-cyan glow
+    const auraGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 125);
+    auraGrad.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
+    auraGrad.addColorStop(0.45, 'rgba(224, 242, 254, 0.50)');
+    auraGrad.addColorStop(0.75, 'rgba(186, 230, 253, 0.20)');
+    auraGrad.addColorStop(1.0, 'rgba(186, 230, 253, 0)');
+    sctx.fillStyle = auraGrad;
+    sctx.beginPath();
+    sctx.arc(cx, cy, 125, 0, Math.PI * 2);
+    sctx.fill();
+
+    sctx.save();
+    sctx.translate(cx, cy);
+    const discGrad = sctx.createRadialGradient(-12, -14.4, 0, 0, 0, 72);
+    discGrad.addColorStop(0, '#FFFFFF');
+    discGrad.addColorStop(0.35, '#FEF9C3');
+    discGrad.addColorStop(0.70, '#FDE047');
+    discGrad.addColorStop(1.0, '#F59E0B');
+    sctx.fillStyle = discGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 50, 0, Math.PI * 2);
+    sctx.fill();
+
+    const hlGrad = sctx.createRadialGradient(-18, -21.6, 0, 0, 0, 42);
+    hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+    hlGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+    sctx.fillStyle = hlGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 48, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+
+  } else if (timeMode === 'sore') {
+    const auraGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 120);
+    auraGrad.addColorStop(0, 'rgba(249, 115, 22, 0.60)');
+    auraGrad.addColorStop(0.55, 'rgba(234, 88, 12, 0.30)');
+    auraGrad.addColorStop(0.80, 'rgba(234, 88, 12, 0)');
+    sctx.fillStyle = auraGrad;
+    sctx.beginPath();
+    sctx.arc(cx, cy, 120, 0, Math.PI * 2);
+    sctx.fill();
+
+    sctx.save();
+    sctx.translate(cx, cy);
+    sctx.scale(125 / 120, 125 / 120);
+    const discGrad = sctx.createRadialGradient(-9.6, -12, 0, 0, 0, 70);
+    discGrad.addColorStop(0, '#FFF7ED');
+    discGrad.addColorStop(0.25, '#FED7AA');
+    discGrad.addColorStop(0.55, '#FB923C');
+    discGrad.addColorStop(0.85, '#EA580C');
+    discGrad.addColorStop(1.0, '#C2410C');
+    sctx.fillStyle = discGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 50, 0, Math.PI * 2);
+    sctx.fill();
+
+    const hlGrad = sctx.createRadialGradient(-18, -21.6, 0, 0, 0, 42);
+    hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.90)');
+    hlGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+    sctx.fillStyle = hlGrad;
+    sctx.beginPath();
+    sctx.arc(0, 0, 48, 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+  }
+
+  return sc;
+}
+
+// Pre-render Moon Sprite
+function createMoonSprite() {
+  const sc = document.createElement('canvas');
+  sc.width = 160;
+  sc.height = 160;
+  const sctx = sc.getContext('2d');
+  const cx = 80;
+  const cy = 80;
+
+  // Cold Frosty Moon Glow
+  const moonGlow = sctx.createRadialGradient(cx, cy, 15, cx, cy, 75);
+  moonGlow.addColorStop(0, 'rgba(224, 242, 254, 0.55)');
+  moonGlow.addColorStop(0.5, 'rgba(186, 230, 253, 0.20)');
+  moonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  sctx.fillStyle = moonGlow;
+  sctx.beginPath();
+  sctx.arc(cx, cy, 75, 0, Math.PI * 2);
+  sctx.fill();
+
+  sctx.save();
+  sctx.translate(cx - 32.5, cy - 32.5);
+  sctx.scale(65 / 100, 65 / 100);
+  sctx.fillStyle = '#E0F2FE';
+  sctx.fill(moonPath);
+  sctx.restore();
+
+  return sc;
+}
+
+// Pre-render Star Sprites
+function createStarSprites() {
+  return NIGHT_STARS.map(star => {
+    const sc = document.createElement('canvas');
+    sc.width = star.size * 2;
+    sc.height = star.size * 2;
+    const sctx = sc.getContext('2d');
+    const center = star.size;
+    const r = star.size / 2;
+
+    const starGlow = sctx.createRadialGradient(center, center, 0, center, center, r);
+    starGlow.addColorStop(0, '#FFFFFF');
+    starGlow.addColorStop(0.40, star.glow);
+    starGlow.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+
+    sctx.fillStyle = starGlow;
+    sctx.beginPath();
+    sctx.arc(center, center, r, 0, Math.PI * 2);
+    sctx.fill();
+
+    sctx.fillStyle = '#FFFFFF';
+    sctx.beginPath();
+    sctx.arc(center, center, r * 0.3, 0, Math.PI * 2);
+    sctx.fill();
+
+    return sc;
+  });
+}
+
+// Pseudorandom generator with seed for 100% reproducible particle physics
+function mulberry32(a) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Generate deterministic snowflake population
+function createSnowflakePopulation(count = 72) {
+  const rand = mulberry32(123456789);
+  const flakes = [];
+
+  for (let i = 0; i < count; i++) {
+    // 3 Depth tiers: 0 = background (small, subtle), 1 = midground, 2 = foreground (large, crisp)
+    const tier = rand() < 0.35 ? 0 : (rand() < 0.75 ? 1 : 2);
+    
+    let size, speedY, swayAmp, opacity;
+    if (tier === 0) {
+      size = 18 + rand() * 12; // 18 - 30px
+      speedY = 45 + rand() * 30; // px per second
+      swayAmp = 20 + rand() * 25;
+      opacity = 0.50 + rand() * 0.20;
+    } else if (tier === 1) {
+      size = 32 + rand() * 16; // 32 - 48px
+      speedY = 65 + rand() * 40;
+      swayAmp = 35 + rand() * 40;
+      opacity = 0.70 + rand() * 0.20;
+    } else {
+      size = 50 + rand() * 24; // 50 - 74px
+      speedY = 95 + rand() * 55;
+      swayAmp = 50 + rand() * 55;
+      opacity = 0.85 + rand() * 0.15;
+    }
+
+    flakes.push({
+      id: i,
+      tier,
+      flakeIdx: Math.floor(rand() * 9),
+      spawnX: rand() * 1920,
+      spawnY: rand() * 1200,
+      speedY, // pixels / second
+      swayAmp, // sway amplitude in pixels
+      swayFreq: 0.35 + rand() * 0.55, // cycles per second
+      swayPhase: rand() * Math.PI * 2,
+      rotSpeed: (rand() > 0.5 ? 1 : -1) * (15 + rand() * 45), // deg / second
+      initialRot: rand() * 360,
+      size,
+      opacity
+    });
+  }
+
+  return flakes;
+}
+
+// Master Export Handler
+ipcRenderer.on('start-export', async (event, jobConfig) => {
+  const { timeMode, durationSec, fps, outputPath } = jobConfig;
+  const totalFrames = durationSec * fps;
+  
+  console.log(`[RENDERER] Loading snowflake image assets...`);
+  snowflakeImages = loadSnowflakeAssets();
+  
+  console.log(`[RENDERER] Preparing sprites for Snowy scene: "${timeMode}"...`);
+
+  const cloudSprites = createCloudSprites(timeMode);
+  const sunSprite = (timeMode !== 'malam') ? createSunSprite(timeMode) : null;
+  const moonSprite = (timeMode === 'malam') ? createMoonSprite() : null;
+  const starSprites = (timeMode === 'malam') ? createStarSprites() : null;
+  const snowflakes = createSnowflakePopulation(72);
+
+  // Snowy Sky Gradients (Rich Winter Atmosphere so white snowflakes pop brilliantly)
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, 1080);
+  if (timeMode === 'pagi') {
+    skyGrad.addColorStop(0, '#0284C7');
+    skyGrad.addColorStop(0.35, '#38BDF8');
+    skyGrad.addColorStop(0.70, '#BAE6FD');
+    skyGrad.addColorStop(0.90, '#FED7AA');
+    skyGrad.addColorStop(1.0, '#FEF08A');
+  } else if (timeMode === 'siang') {
+    skyGrad.addColorStop(0, '#0284C7');
+    skyGrad.addColorStop(0.40, '#38BDF8');
+    skyGrad.addColorStop(0.75, '#7DD3FC');
+    skyGrad.addColorStop(1.0, '#BAE6FD');
+  } else if (timeMode === 'sore') {
+    skyGrad.addColorStop(0, '#1E3A8A');
+    skyGrad.addColorStop(0.35, '#3B82F6');
+    skyGrad.addColorStop(0.70, '#F97316');
+    skyGrad.addColorStop(1.0, '#FDBA74');
+  } else {
+    // Malam Snowy (Icy Deep Midnight with glowing stars)
+    skyGrad.addColorStop(0, '#0B1120');
+    skyGrad.addColorStop(0.45, '#0F172A');
+    skyGrad.addColorStop(1.0, '#1E293B');
+  }
+
+  const sunPos = {
+    pagi: { x: 1764, y: 84 },
+    siang: { x: 1761.5, y: 86.5 },
+    sore: { x: 1759, y: 93 }
+  }[timeMode];
+
+  console.log(`[RENDERER] Starting Snowy render: ${totalFrames} frames (${durationSec}s @ ${fps}fps)...`);
+  console.log(`[RENDERER] Output target: ${outputPath}`);
+
+  const outDir = path.dirname(outputPath);
+  if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir, { recursive: true });
+  }
+
+  const ffmpeg = spawn(ffmpegPath, [
+    '-y',
+    '-f', 'rawvideo',
+    '-pix_fmt', 'rgba',
+    '-s', '1920x1080',
+    '-r', String(fps),
+    '-i', '-',
+    '-c:v', 'libx264',
+    '-preset', 'ultrafast',
+    '-crf', '18',
+    '-pix_fmt', 'yuv420p',
+    '-movflags', '+faststart',
+    outputPath
+  ]);
+
+  let ffmpegErr = '';
+  ffmpeg.stderr.on('data', d => {
+    ffmpegErr += d.toString();
+  });
+
+  const startTime = Date.now();
+  const reportInterval = fps * 15; // report progress every 15 video seconds
+
+  for (let frame = 0; frame < totalFrames; frame++) {
+    const t = frame / fps;
+
+    // 1. Sky Gradient
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, 1920, 1080);
+
+    // 2. Celestial (Sun or Moon & Stars)
+    if (timeMode !== 'malam') {
+      const pulse = Math.sin(t * (2 * Math.PI / 4.0)) * 0.5 + 0.5;
+      const pulseScale = 1.0 + 0.04 * pulse;
+      ctx.save();
+      ctx.translate(sunPos.x, sunPos.y);
+      ctx.scale(pulseScale, pulseScale);
+      ctx.drawImage(sunSprite, -150, -150);
+      ctx.restore();
+    } else {
+      ctx.drawImage(moonSprite, 1823.5 - 80, 64.5 - 80);
+
+      NIGHT_STARS.forEach((star, idx) => {
+        const twinkle = 0.80 + 0.20 * Math.sin(t * 1.8 + idx * 1.6);
+        ctx.globalAlpha = star.opacity * twinkle;
+        ctx.drawImage(starSprites[idx], star.left - star.size/2, star.top - star.size/2);
+      });
+      ctx.globalAlpha = 1.0;
+    }
+
+    // 3. Clouds (Background)
+    STATIC_CLOUDS.forEach(cloud => {
+      const elapsed = t - cloud.delay;
+      const progress = ((elapsed % cloud.duration) + cloud.duration) % cloud.duration / cloud.duration;
+      const x = -550 + progress * 2470;
+      const y = cloud.topFrac * 1080;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(cloud.scale, cloud.scale);
+      ctx.globalAlpha = cloud.opacity;
+      ctx.drawImage(cloudSprites[cloud.type], 0, 0);
+      ctx.restore();
+    });
+
+    // 4. Background Snowflakes (Tier 0)
+    drawSnowflakeTier(snowflakes, 0, t);
+
+    // 5. Midground Snowflakes (Tier 1)
+    drawSnowflakeTier(snowflakes, 1, t);
+
+    // 6. Foreground Snowflakes (Tier 2)
+    drawSnowflakeTier(snowflakes, 2, t);
+
+    ctx.globalAlpha = 1.0;
+
+    // 7. Write frame buffer to FFmpeg
+    const imgData = ctx.getImageData(0, 0, 1920, 1080);
+    const buf = Buffer.from(imgData.data.buffer);
+
+    if (!ffmpeg.stdin.write(buf)) {
+      await new Promise(resolve => ffmpeg.stdin.once('drain', resolve));
+    }
+
+    if (frame % reportInterval === 0 || frame === totalFrames - 1) {
+      const pct = ((frame / totalFrames) * 100).toFixed(1);
+      const elapsedSec = ((Date.now() - startTime) / 1000).toFixed(1);
+      const videoSec = (frame / fps).toFixed(0);
+      const fpsReal = (frame / Math.max(0.1, (Date.now() - startTime) / 1000)).toFixed(1);
+      const remainingFrames = totalFrames - frame;
+      const etaSec = (remainingFrames / Math.max(1, parseFloat(fpsReal))).toFixed(0);
+      console.log(`[PROGRESS] SNOWY ${timeMode.toUpperCase()}: ${pct}% (${videoSec}s / ${durationSec}s) | Speed: ${fpsReal} FPS | ETA: ${etaSec}s`);
+    }
+  }
+
+  ffmpeg.stdin.end();
+
+  await new Promise((resolve, reject) => {
+    ffmpeg.on('close', code => {
+      if (code === 0) resolve();
+      else reject(new Error(`FFmpeg error (code ${code}): ${ffmpegErr}`));
+    });
+  });
+
+  const totalTimeSec = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`[RENDERER] Snowy scene "${timeMode}" rendered in ${totalTimeSec}s!`);
+  ipcRenderer.send('job-done', { timeMode, outputPath, totalTimeSec });
+});
+
+function drawSnowflakeTier(snowflakes, targetTier, t) {
+  const SCREEN_H = 1080;
+  const WRAP_H = 1200; // -60 to 1140
+
+  for (let i = 0; i < snowflakes.length; i++) {
+    const flake = snowflakes[i];
+    if (flake.tier !== targetTier) continue;
+
+    // Calculate vertical position with wrapping
+    const totalFall = flake.spawnY + flake.speedY * t;
+    const y = ((totalFall % WRAP_H) + WRAP_H) % WRAP_H - 60;
+
+    // Calculate horizontal position with sway and gentle drift
+    const sway = Math.sin(t * (flake.swayFreq * 2 * Math.PI) + flake.swayPhase) * flake.swayAmp;
+    const breezeDrift = (t * 22) % 2120; // gentle breeze moving left-to-right
+    const rawX = flake.spawnX + sway + breezeDrift;
+    const x = ((rawX % 2120) + 2120) % 2120 - 100;
+
+    // Calculate rotation
+    const rotation = ((flake.initialRot + flake.rotSpeed * t) % 360) * (Math.PI / 180);
+
+    const img = snowflakeImages[flake.flakeIdx];
+    if (!img) continue;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.globalAlpha = flake.opacity;
+    // Delicate cool shadow to make crystalline snowflakes pop sharply
+    ctx.shadowColor = 'rgba(2, 132, 199, 0.40)';
+    ctx.shadowBlur = flake.tier === 2 ? 6 : (flake.tier === 1 ? 4 : 2);
+    ctx.drawImage(img, -flake.size / 2, -flake.size / 2, flake.size, flake.size);
+    ctx.restore();
+  }
+}
+</script>
+</body>
+</html>
