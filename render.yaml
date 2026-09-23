@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: detektif-data-relasi-fungsi
+    env: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --include=dev && npm --prefix backend install --include=dev && npm run build:render
+    startCommand: npm run start:render
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        value: adminrelo2026

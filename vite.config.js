@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
     strictPort: false,
     watch: {
-      ignored: ['**/dist/**', '**/dist-electron/**', '**/node_modules/**'],
+      ignored: ['**/dist/**', '**/dist-electron/**', '**/node_modules/**', '**/scratch/**'],
     },
     // Proxy API calls to backend during development
     proxy: {

@@ -45,18 +45,25 @@ export async function registerUser(username, password, fullname = '') {
       username: username.trim(),
     });
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Koneksi pendaftaran timeout (3.5s)')), 3500)
+      setTimeout(() => reject(new Error('Koneksi pendaftaran timeout')), 3500)
     );
 
     const result = await Promise.race([regPromise, timeoutPromise]);
 
     if (result.error) {
+      let errMsg = result.error.message || 'Gagal mendaftarkan akun!';
+      if (errMsg.toLowerCase().includes('already exists') || errMsg.toLowerCase().includes('duplicate')) {
+        errMsg = 'Username sudah terdaftar! Gunakan username lain.';
+      }
       return {
         success: false,
-        message: result.error.message || 'Gagal mendaftarkan akun!',
+        message: errMsg,
       };
     }
 
+    if (result.data?.token) {
+      try { localStorage.setItem('detektif_auth_token', result.data.token); } catch {}
+    }
     return { success: true, data: result.data };
   } catch (err) {
     console.error('[authClient] Register error:', err);
@@ -69,22 +76,34 @@ export async function registerUser(username, password, fullname = '') {
  */
 export async function loginUser(username, password) {
   try {
-    const email = `${username.toLowerCase()}@detektifdata.local`;
+    let clean = username.trim().toLowerCase();
+    if (clean === 'fikran' || clean === 'admin') {
+      clean = 'fikran02';
+    }
+    const email = `${clean}@detektifdata.local`;
     const loginPromise = authClient.signIn.email({
       email,
       password,
     });
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Koneksi login timeout (2.5s)')), 2500)
+      setTimeout(() => reject(new Error('Koneksi login timeout')), 3500)
     );
 
     const result = await Promise.race([loginPromise, timeoutPromise]);
 
     if (result.error) {
+      let errMsg = result.error.message || 'Username atau password salah!';
+      if (errMsg.toLowerCase().includes('invalid') || errMsg.toLowerCase().includes('credential') || errMsg.toLowerCase().includes('password')) {
+        errMsg = 'Username atau kata sandi salah!';
+      }
       return {
         success: false,
-        message: result.error.message || 'Username atau password salah!',
+        message: errMsg,
       };
+    }
+
+    if (result.data?.token) {
+      try { localStorage.setItem('detektif_auth_token', result.data.token); } catch {}
     }
 
     return { success: true, data: result.data };
@@ -99,6 +118,7 @@ export async function loginUser(username, password) {
  */
 export async function logoutUser() {
   try {
+    try { localStorage.removeItem('detektif_auth_token'); } catch {}
     await authClient.signOut();
     return { success: true };
   } catch (err) {

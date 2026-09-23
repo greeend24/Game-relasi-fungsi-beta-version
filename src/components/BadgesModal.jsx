@@ -29,7 +29,7 @@ export default function BadgesModal({ isOpen, onClose, currentUser }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
-      <div className="relative w-full max-w-5xl max-h-[92dvh] p-4 sm:p-5 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col justify-between space-y-3 overflow-y-auto select-none"
+      <div className="relative w-full max-w-5xl max-h-[92dvh] p-3.5 sm:p-4 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col justify-between space-y-2 sm:space-y-2.5 overflow-y-auto no-scrollbar select-none"
         style={{ backgroundImage: "url('/assets/tampilan di avatar menu board/Assets/board_of_avatar@4x.png')" }}>
         
         {/* Header */}

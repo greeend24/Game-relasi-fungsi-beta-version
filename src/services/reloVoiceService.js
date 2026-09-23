@@ -211,6 +211,55 @@ const RELO_SCENES = {
     }
   ],
 
+  // quest_before_start: Briefing Sebelum Mulai Ujian (Snowy)
+  'quest_before_start': [
+    {
+      file: "/audio/snowy's sound/Quest mode - sebelum mulai uian quest (30 menit)/sudah siap detektif mari kita mulai!.wav",
+      text: 'Sudah siap Detektif? Mari kita mulai! ❄️🐻🎯',
+      character: 'snowy'
+    },
+    {
+      file: "/audio/snowy's sound/Quest mode - sebelum mulai uian quest (30 menit)/sudah yakin detektif mari kita mulai!.wav",
+      text: 'Sudah yakin Detektif? Mari kita mulai! ❄️🐻✨',
+      character: 'snowy'
+    },
+    {
+      file: "/audio/snowy's sound/Quest mode - sebelum mulai uian quest (30 menit)/tarik nafas mu dalam dalam, tenang, kerjakan dengan fokus.wav",
+      text: 'Tarik nafasmu dalam-dalam, tenang, kerjakan dengan fokus ya! ❄️🐻🧘‍♂️',
+      character: 'snowy'
+    }
+  ],
+
+  // quest_exam_start: Ujian Dimulai (Snowy - Dinonaktifkan agar ujian tenang tanpa interupsi suara)
+  'quest_exam_start': [],
+
+  // quest_exam_time_warning: Peringatan 1 Menit (Snowy)
+  'quest_exam_time_warning': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Peringatan Waktu 1 Menit/waktu ujian tinggal satu menit lagi, Ayo periksa kembali jawabanmu sebelum waktu habis! ?????.mp3",
+      text: 'Waktu ujian tinggal satu menit lagi! Ayo periksa kembali jawabanmu sebelum waktu habis! ⏱️⚠️❄️',
+      character: 'snowy'
+    }
+  ],
+
+  // quest_exam_pass: Lulus Ujian (Snowy)
+  'quest_exam_pass': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Hasil Lulus/Yaaaay! Kamu berhasil lulus Quest Mode dengan nilai yang sangat membanggakan! Snowy bangga banget sama kamu, kerja keras belajarmu benar-benar terbukti! ??????.mp3",
+      text: 'Yaaaay! Kamu berhasil lulus Quest Mode dengan nilai yang sangat membanggakan! Snowy bangga banget sama kamu, kerja keras belajarmu benar-benar terbukti! 🏆❄️🐻🎉',
+      character: 'snowy'
+    }
+  ],
+
+  // quest_exam_fail: Belum Lulus (Snowy)
+  'quest_exam_fail': [
+    {
+      file: "/audio/snowy's sound/Quest Mode - Hasil Remedial/Uuuh, jangan berkecil hati ya Detektif! Nilaimu belum cukup untuk lulus kali ini. Yuk buka lagi Chapter Mode bareng Relo, pelajari materinya sekali lagi, baru .mp3",
+      text: 'Uuuh, jangan berkecil hati ya Detektif! Nilaimu belum cukup untuk lulus kali ini. Yuk buka lagi Chapter Mode bareng Relo, pelajari materinya sekali lagi! ❄️🐻💪',
+      character: 'snowy'
+    }
+  ],
+
   // 5 / rank: Menu Rank (Ryu)
   '5': [
     {
@@ -265,14 +314,27 @@ const RELO_SCENES = {
     }
   ],
 
-  // quest_exam_start: Mulai Ujian Quest Mode (Snowy)
-  'quest_exam_start': [
+  // quest_before_start: Quest Mode - Sebelum Mulai Ujian Quest (30 Menit) (Snowy)
+  'quest_before_start': [
     {
-      file: "/audio/snowy's sound/Quest Mode - Mulai Ujian/Ujian Quest Mode resmi dimulai! Cermati setiap pertanyaan dengan tenang, gunakan waktumu sebaik mungkin, dan kerjakan dengan jujur ya! Selamat berjuang! ❄️🐻📝.mp3",
-      text: 'Ujian Quest Mode resmi dimulai! Cermati setiap pertanyaan dengan tenang, gunakan waktumu sebaik mungkin, dan kerjakan dengan jujur ya! Selamat berjuang! ❄️🐻📝',
+      file: "/audio/snowy's sound/Quest mode - sebelum mulai uian quest (30 menit)/sudah siap detektif mari kita mulai!.wav",
+      text: 'Sudah siap Detektif? Mari kita mulai! ❄️🐻🎯',
+      character: 'snowy'
+    },
+    {
+      file: "/audio/snowy's sound/Quest mode - sebelum mulai uian quest (30 menit)/sudah yakin detektif mari kita mulai!.wav",
+      text: 'Sudah yakin Detektif? Mari kita mulai! ❄️🐻💪',
+      character: 'snowy'
+    },
+    {
+      file: "/audio/snowy's sound/Quest mode - sebelum mulai uian quest (30 menit)/tarik nafas mu dalam dalam, tenang, kerjakan dengan fokus.wav",
+      text: 'Tarik nafasmu dalam-dalam, tenang, kerjakan dengan fokus! 🧘‍♀️❄️🐻✨',
       character: 'snowy'
     }
   ],
+
+  // quest_exam_start: Mulai Ujian Quest Mode (Snowy - Dinonaktifkan agar ujian tenang tanpa interupsi suara)
+  'quest_exam_start': [],
 
   // quest_exam_pass: Hasil Quest Mode - Lulus / Nilai Tinggi (Snowy)
   'quest_exam_pass': [

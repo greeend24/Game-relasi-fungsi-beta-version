@@ -65,7 +65,7 @@ export default function RelationTableCanvas({
                 Buku Catatan Tabel Bukti Relasi
               </span>
               <span className="text-[10px] text-amber-200/80 font-mono block">
-                Bentuk Representasi Tabel (x ➔ y)
+                Bentuk Penyajian Tabel (x ➔ y)
               </span>
             </div>
           </div>
@@ -225,15 +225,15 @@ export default function RelationTableCanvas({
           </table>
         </div>
 
-        {/* Chip Bank (Baki Chip Nilai Bukti Detektif) */}
+        {/* Kotak Pilihan Kartu Angka Bukti */}
         <div className="bg-gradient-to-r from-amber-100/90 via-[#FEF3C7] to-amber-100/90 border-t-2 border-amber-300/80 p-2.5 sm:p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-black text-[#78350F] uppercase tracking-wide flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-              <span>Baki Pilihan Chip Bukti:</span>
+              <span>Kotak Pilihan Kartu Bukti:</span>
             </span>
             <span className="text-[11px] text-[#78350F]/80 font-bold">
-              {remainingCount > 0 ? `Sisa ${remainingCount} chip untuk ditempel` : 'Semua sel terisi!'}
+              {remainingCount > 0 ? `Sisa ${remainingCount} kartu angka untuk dipasang` : 'Semua sel terisi!'}
             </span>
           </div>
 

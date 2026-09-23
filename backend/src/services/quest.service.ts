@@ -52,7 +52,7 @@ export async function recordQuestExamScore(
         score: shouldUpdateScore ? input.score : existing.score,
         correctCount: shouldUpdateScore ? input.correctCount : existing.correctCount,
         totalQuestions,
-        pointsEarned: Math.max(existing.pointsEarned, input.pointsEarned),
+        pointsEarned: (existing.pointsEarned || 0) + input.pointsEarned,
         timeRemainingSeconds: Math.max(existing.timeRemainingSeconds, timeRemainingSeconds),
         updatedAt: now,
       })

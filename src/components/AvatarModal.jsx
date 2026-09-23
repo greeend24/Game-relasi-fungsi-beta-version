@@ -52,7 +52,7 @@ export default function AvatarModal({ isOpen, onClose, currentUser, onAvatarSele
       
       {/* WOODEN BOARD CONTAINER MATCHING REFERENCE SCREENSHOT (FIXED, ZERO SCROLL) */}
       <div 
-        className="relative w-full max-w-lg max-h-[92dvh] p-4 sm:p-6 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-2.5 overflow-y-auto select-none"
+        className="relative w-full max-w-lg max-h-[92dvh] p-4 sm:p-5 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-2 sm:space-y-2.5 overflow-y-auto no-scrollbar select-none"
         style={{ backgroundImage: `url('/assets/tampilan di avatar menu board/Assets/board_of_avatar@4x.png')` }}
       >
         

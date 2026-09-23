@@ -8,15 +8,15 @@ import { eq, and, sql } from "drizzle-orm";
 
 const BADGE_DEFINITIONS = [
   { id: "badge1", reqStages: 1, reqScore: 0 },
-  { id: "badge2", reqStages: 5, reqScore: 50 },
-  { id: "badge3", reqStages: 10, reqScore: 100 },
-  { id: "badge4", reqStages: 15, reqScore: 200 },
-  { id: "badge5", reqStages: 20, reqScore: 400 },
-  { id: "badge6", reqStages: 25, reqScore: 600 },
-  { id: "badge7", reqStages: 30, reqScore: 800 },
-  { id: "badge8", reqStages: 40, reqScore: 1000 },
-  { id: "badge9", reqStages: 48, reqScore: 1500 },
-  { id: "badge10", reqStages: 48, reqScore: 2500 },
+  { id: "badge2", reqStages: 2, reqScore: 50 },
+  { id: "badge3", reqStages: 3, reqScore: 100 },
+  { id: "badge4", reqStages: 5, reqScore: 200 },
+  { id: "badge5", reqStages: 7, reqScore: 350 },
+  { id: "badge6", reqStages: 9, reqScore: 500 },
+  { id: "badge7", reqStages: 11, reqScore: 700 },
+  { id: "badge8", reqStages: 15, reqScore: 900 },
+  { id: "badge9", reqStages: 18, reqScore: 1200 },
+  { id: "badge10", reqStages: 18, reqScore: 2000 },
 ];
 
 // ─────────────────────────────────────────────
@@ -207,6 +207,25 @@ export async function getUserFullProgress(userId: string) {
 
   const unlockedBadges = badgeRows.map((r) => r.badgeId);
 
+  // Fetch quest scores so quest progress syncs with the server
+  const questRows = await db
+    .select()
+    .from(questScores)
+    .where(eq(questScores.userId, userId));
+
+  const questScoresMap: Record<number, any> = {};
+  for (const q of questRows) {
+    questScoresMap[q.subbabId] = {
+      subbabId: q.subbabId,
+      score: q.score,
+      correctCount: q.correctCount,
+      totalQuestions: q.totalQuestions,
+      pointsEarned: q.pointsEarned,
+      timeRemainingSeconds: q.timeRemainingSeconds,
+      completedAt: q.completedAt,
+    };
+  }
+
   return {
     username: foundUser?.username,
     fullname: foundUser?.name,
@@ -215,6 +234,7 @@ export async function getUserFullProgress(userId: string) {
     endlessHighScore: stats?.endlessHighScore ?? 0,
     unlockedBadges,
     progress,
+    questScores: questScoresMap,
   };
 }
 
@@ -231,6 +251,9 @@ export async function updateStageProgress(
   starsEarned: number
 ): Promise<{ newBadges: string[] }> {
   const now = new Date();
+
+  // Ensure user stats & initial rows exist
+  await initializeUserProgress(userId);
 
   // Ensure subbab progress row exists
   await db
@@ -274,13 +297,13 @@ export async function updateStageProgress(
   }
 
   const CHAPTER_TOTAL_SEGS: Record<number, number> = {
-    1: 12,
-    2: 10,
-    3: 10,
-    4: 10,
-    5: 8,
+    1: 3,
+    2: 4,
+    3: 4,
+    4: 4,
+    5: 3,
   };
-  const maxStages = CHAPTER_TOTAL_SEGS[subbabId] || 10;
+  const maxStages = CHAPTER_TOTAL_SEGS[subbabId] || 4;
 
   // Advance currentStage
   let newCurrentStage = currentProgress.currentStage;
@@ -362,6 +385,7 @@ export async function updateEndlessHighScore(
   score: number
 ): Promise<{ updated: boolean; newBadges: string[] }> {
   const now = new Date();
+  await initializeUserProgress(userId);
 
   const [stats] = await db
     .select()

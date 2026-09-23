@@ -42,21 +42,19 @@ img, button, .mode-btn, .image-btn, .clean-icon-btn, .round-btn, .island-group {
   user-select: none !important;
 }
 
-/* SLEEK VISIBLE CUSTOM SCROLLBAR FOR ALL PANELS */
+/* GLOBAL SCROLLBAR ELIMINATED: ZERO BROWSER SCROLLBARS (ONLY RANK USES CUSTOM WOODEN SCROLLER PIN) */
+*::-webkit-scrollbar,
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
-::-webkit-scrollbar-track {
-  background: #090e17;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 6px;
-  border: 1px solid #334155;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+
+*,
+*::before,
+*::after {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 img, canvas, svg {
@@ -72,9 +70,8 @@ html, body, #root {
   font-family: 'Balsamiq Sans', cursive, sans-serif;
   font-size: 12pt;
   height: 100%;
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: 100lvh;
+  min-height: 100%;
   width: 100%;
   width: 100vw;
   overflow: hidden;
@@ -88,10 +85,11 @@ html, body, #root {
 /* ───────────────────────────────────────────────────────────── */
 
 .game-viewport-container {
+  width: 100%;
   width: 100vw;
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: 100%;
+  height: 100lvh;
+  min-height: 100%;
   background-color: #0d0c0a;
   background: radial-gradient(circle at center, #231c16 0%, #0d0c0a 100%);
   overflow: hidden;
@@ -150,26 +148,19 @@ h1, h2, h3, h4, h5, h6 {
   text-shadow: none !important;
 }
 
-/* Custom Scrollbar for In-Game Modals and Account Boards */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Hide scrollbars completely across all containers */
+.custom-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(45, 36, 30, 0.15);
-  border-radius: 8px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #F59E0B;
-  border-radius: 8px;
-  border: 1px solid #2D241E;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #D97706;
-}
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #F59E0B rgba(45, 36, 30, 0.15);
+.custom-scrollbar,
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 .font-pencil,
@@ -223,7 +214,7 @@ input::placeholder, textarea::placeholder {
 
 #root {
   height: 100%;
-  height: 100dvh;
+  height: 100lvh;
   width: 100%;
   overflow: hidden;
   background-color: transparent;
@@ -332,7 +323,7 @@ input::placeholder, textarea::placeholder {
 }
 
 /* Light Beam Glint Overlay Sweep (SOLID CARDS ONLY - EXCLUDE IMAGE / ICON / CLEAN BUTTONS) */
-button:not(.clean-icon-btn):not(.mode-btn):not(.icon-btn):not(.rank-btn):not(.avatar-btn):not(.image-btn)::after, 
+button:not(.clean-icon-btn):not(.mode-btn):not(.icon-btn):not(.rank-btn):not(.avatar-btn):not(.image-btn):not(.menu-stone-btn)::after, 
 .pencil-btn::after, [role="button"]::after, a.btn::after, .pencil-card::after {
   content: '';
   position: absolute;
@@ -356,15 +347,15 @@ button:not(.clean-icon-btn):not(.mode-btn):not(.icon-btn):not(.rank-btn):not(.av
 }
 
 /* BUTTON PRESS ANIMATION (ACTIVE TRANSFORMATION WITHOUT BOX OVERLAY) */
-button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn), 
-.pencil-btn:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn), 
-[role="button"]:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn) {
+button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn):not(.menu-stone-btn), 
+.pencil-btn:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn):not(.menu-stone-btn), 
+[role="button"]:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn):not(.menu-stone-btn) {
   transform: scale(0.94) translateY(2px) !important;
   transition: transform 0.08s ease !important;
 }
 
 /* MODE BUTTON & ICON BUTTON CONTAINERS: 100% TRANSPARENT, NO BORDER, NO BOX SHADOW */
-.mode-btn, .icon-btn, .rank-btn, .avatar-btn, .clean-icon-btn, .image-btn {
+.mode-btn, .icon-btn, .rank-btn, .avatar-btn, .clean-icon-btn, .image-btn, .menu-stone-btn {
   filter: none !important;
   box-shadow: none !important;
   border: none !important;
@@ -375,7 +366,7 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   padding: 0 !important;
 }
 
-.mode-btn::after, .icon-btn::after, .rank-btn::after, .clean-icon-btn::after, .avatar-btn::after, .image-btn::after {
+.mode-btn::after, .icon-btn::after, .rank-btn::after, .clean-icon-btn::after, .avatar-btn::after, .image-btn::after, .menu-stone-btn::after {
   display: none !important;
   content: none !important;
 }
@@ -671,6 +662,110 @@ button:active:not(.mode-btn):not(.icon-btn):not(.clean-icon-btn):not(.image-btn)
   transform: scale(0.94) !important;
 }
 
+/* RANK SHIELD BUTTON (BENTUK & HITBOX SESUAI ASLINYA) */
+.rank-shield-btn {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  /* Hitbox & bentuk presisi mengikuti perisai oktagon asli */
+  clip-path: polygon(
+    30% 0%, 70% 0%,
+    97% 1.5%, 100% 5%, 100% 25%,
+    98.5% 60%, 95.5% 70%, 87% 79.5%,
+    78.5% 88.5%, 70.5% 97%, 69.5% 100%,
+    30.5% 100%, 29.5% 97%, 21.5% 88.5%,
+    13% 79.5%, 4.5% 70%, 1.5% 60%,
+    0% 25%, 0% 5%, 3% 1.5%
+  ) !important;
+  -webkit-clip-path: polygon(
+    30% 0%, 70% 0%,
+    97% 1.5%, 100% 5%, 100% 25%,
+    98.5% 60%, 95.5% 70%, 87% 79.5%,
+    78.5% 88.5%, 70.5% 97%, 69.5% 100%,
+    30.5% 100%, 29.5% 97%, 21.5% 88.5%,
+    13% 79.5%, 4.5% 70%, 1.5% 60%,
+    0% 25%, 0% 5%, 3% 1.5%
+  ) !important;
+}
+
+.rank-shield-btn::after {
+  display: none !important;
+  content: none !important;
+}
+
+.rank-shield-btn img {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: filter 0.2s ease, transform 0.15s ease !important;
+}
+
+.rank-shield-btn:hover img,
+.rank-shield-btn.is-touched img {
+  filter: brightness(1.35) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
+}
+
+.rank-shield-btn:active img {
+  filter: brightness(1.35) contrast(1.08) drop-shadow(0 0 18px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 28px rgba(254, 240, 138, 0.75)) !important;
+}
+
+/* MENU STONE ARROW BUTTONS (BENTUK & HITBOX SESUAI ASLINYA) */
+.menu-stone-btn {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+}
+
+.menu-stone-btn:hover,
+.menu-stone-btn:active,
+.menu-stone-btn:focus {
+  transform: none !important;
+}
+
+.menu-stone-btn::after {
+  display: none !important;
+  content: none !important;
+}
+
+.menu-stone-btn img {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: filter 0.2s ease, transform 0.15s ease !important;
+}
+
+.menu-stone-btn:hover img,
+.menu-stone-btn.is-touched img {
+  filter: brightness(1.1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35)) !important;
+  transform: scale(1.05);
+}
+
+.menu-stone-btn:active img {
+  filter: brightness(0.95) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)) !important;
+  transform: scale(0.95);
+}
+
+
+
 /* CUSTOM AUDIO SETTINGS & RANK RANGE SCROLLER & PIN ASSETS */
 .custom-scroller {
   -webkit-appearance: none;
@@ -869,36 +964,6 @@ button.bg-\[\#F472B6\], .bg-\[\#F472B6\] { background-color: rgba(244, 114, 182,
   display: none !important;
   width: 0px !important;
   height: 0px !important;
-}
-
-.highscore-scroller {
-  scrollbar-width: thin;
-  scrollbar-color: #8A6746 transparent;
-}
-
-.highscore-scroller::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
-}
-
-.highscore-scroller::-webkit-scrollbar-track {
-  background-image: url('/assets/tampilan di rank/asset/scroller.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  border-radius: 9999px;
-  background-color: transparent;
-}
-
-.highscore-scroller::-webkit-scrollbar-thumb {
-  background-image: url('/assets/tampilan di rank/asset/button_of_scroller@4x.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: transparent;
-  border-radius: 9999px;
-  min-height: 28px;
-  cursor: pointer;
 }
 
 /* Sun Light Rays Shimmering/Pulsing Animation */
@@ -1594,6 +1659,136 @@ img {
     inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
     0 12px 36px 0 rgba(245, 158, 11, 0.45) !important;
   transform: translateY(-2px) scale(1.03) !important;
+}
+
+/* Glass Buttons & Colored Glass Badges / Cards */
+.glass-btn-blue {
+  background: linear-gradient(
+    135deg, 
+    rgba(37, 99, 235, 0.75) 0%, 
+    rgba(29, 78, 216, 0.55) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(190%) !important;
+  backdrop-filter: blur(18px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(37, 99, 235, 0.35),
+    0 2px 8px 0 rgba(0, 0, 0, 0.08) !important;
+  color: #ffffff !important;
+  border-radius: 16px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.glass-btn-blue:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(37, 99, 235, 0.90) 0%, 
+    rgba(29, 78, 216, 0.70) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
+    0 12px 32px 0 rgba(37, 99, 235, 0.45) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+.glass-btn-rose {
+  background: linear-gradient(
+    135deg, 
+    rgba(225, 29, 72, 0.75) 0%, 
+    rgba(190, 18, 60, 0.55) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(190%) !important;
+  backdrop-filter: blur(18px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+  border-top: 2px solid rgba(255, 255, 255, 0.95) !important;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(225, 29, 72, 0.35),
+    0 2px 8px 0 rgba(0, 0, 0, 0.08) !important;
+  color: #ffffff !important;
+  border-radius: 16px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.glass-btn-rose:hover {
+  background: linear-gradient(
+    135deg, 
+    rgba(225, 29, 72, 0.90) 0%, 
+    rgba(190, 18, 60, 0.70) 100%
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
+    0 12px 32px 0 rgba(225, 29, 72, 0.45) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+/* Frosted Colored Glass Card Containers */
+.glass-card-emerald {
+  background: linear-gradient(
+    135deg, 
+    rgba(16, 185, 129, 0.22) 0%, 
+    rgba(5, 150, 105, 0.12) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  border: 1.5px solid rgba(52, 211, 153, 0.65) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(16, 185, 129, 0.18),
+    0 2px 6px 0 rgba(0, 0, 0, 0.04) !important;
+  color: #064E3B !important;
+}
+
+.glass-card-rose {
+  background: linear-gradient(
+    135deg, 
+    rgba(244, 63, 94, 0.22) 0%, 
+    rgba(225, 29, 72, 0.12) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  border: 1.5px solid rgba(251, 113, 133, 0.65) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(225, 29, 72, 0.18),
+    0 2px 6px 0 rgba(0, 0, 0, 0.04) !important;
+  color: #881337 !important;
+}
+
+.glass-card-amber {
+  background: linear-gradient(
+    135deg, 
+    rgba(245, 158, 11, 0.22) 0%, 
+    rgba(217, 119, 6, 0.12) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  border: 1.5px solid rgba(251, 191, 36, 0.65) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(245, 158, 11, 0.18),
+    0 2px 6px 0 rgba(0, 0, 0, 0.04) !important;
+  color: #78350F !important;
+}
+
+.glass-card-blue {
+  background: linear-gradient(
+    135deg, 
+    rgba(59, 130, 246, 0.22) 0%, 
+    rgba(37, 99, 235, 0.12) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  backdrop-filter: blur(18px) saturate(180%) brightness(103%) !important;
+  border: 1.5px solid rgba(96, 165, 250, 0.65) !important;
+  box-shadow: 
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
+    0 8px 24px -4px rgba(37, 99, 235, 0.18),
+    0 2px 6px 0 rgba(0, 0, 0, 0.04) !important;
+  color: #1E3A8A !important;
 }
 
 /* Diagonal glass light reflection sheen overlay */

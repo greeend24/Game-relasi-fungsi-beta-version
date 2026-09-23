@@ -7,8 +7,20 @@ import { SUBBABS_DATA } from '../../data/casesData';
 import { audioEngine } from '../../services/audioEngine';
 import { GitFork } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import Game1KantinBuAni from './Game1KantinBuAni';
 
 export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
+  if (stageNum === 1) {
+    return (
+      <Game1KantinBuAni
+        onBack={onBackToStages}
+        onComplete={(score) => {
+          if (onStageComplete) onStageComplete('subbab1', 1, score || 100, 3);
+        }}
+      />
+    );
+  }
+
   const stageConfig = SUBBABS_DATA[1].stages[stageNum - 1];
 
   const [selectedIdxA, setSelectedIdxA] = useState(null);
@@ -122,7 +134,7 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || `Aturan: ${stageConfig.relationRule}. Hubungkan elemen A ke B jika memenuhi aturan.`}
+        hintText={stageConfig.conceptDef || `Aturan: ${stageConfig.relationRule}. Hubungkan anggota A ke B jika memenuhi aturan.`}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -146,7 +158,7 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
           emotion={stageCleared ? 'happy' : (errorDetails ? 'error' : 'idle')}
           title={errorDetails ? "PETUNJUK DETEKTIF RELO" : "DETEKTIF RELO"}
           icon="🕵️‍♂️"
-          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || `Aturan: ${stageConfig.relationRule}. Hubungkan elemen A ke B jika memenuhi aturan.`) : (stageCleared ? 'Luar biasa! Sambungan relasimu tepat sasaran! 🎉' : ''))}
+          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || `Aturan: ${stageConfig.relationRule}. Hubungkan anggota A ke B jika memenuhi aturan.`) : (stageCleared ? 'Luar biasa! Sambungan relasimu tepat sasaran! 🎉' : ''))}
         />
 
         <PBLSyntaxPanel
@@ -163,16 +175,11 @@ export default function Subbab1Relasi({ stageNum, onStageComplete, onBackToStage
               <img src="/images/1.png" alt="Subbab 1 Anime" className="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-35 group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#FEF3C7] via-[#FEF3C7]/90 to-transparent/30 pointer-events-none" />
               <div className="relative z-10 flex flex-col justify-end">
-                <div className="flex items-center justify-between gap-1 text-[#78350F] font-black mb-1">
+                <div className="flex items-center gap-1 text-[#78350F] font-black mb-1">
                   <div className="flex items-center space-x-1.5 text-base sm:text-lg lg:text-[20px]">
                     <GitFork className="w-5 h-5 text-[#D97706] flex-shrink-0" />
                     <span className="font-black">ATURAN: {stageConfig?.relationRule ? stageConfig.relationRule.toUpperCase() : ''}</span>
                   </div>
-                  {stageConfig?.bloomLevel && (
-                    <span className="px-2.5 py-1 rounded-full bg-[#D97706] text-white text-xs sm:text-sm font-black flex-shrink-0">
-                      {stageConfig.bloomLevel}
-                    </span>
-                  )}
                 </div>
                 <p className="text-base sm:text-lg lg:text-[20px] text-[#2D241E] font-bold leading-snug break-words">
                   {stageConfig?.story || ''}

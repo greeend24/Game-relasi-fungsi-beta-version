@@ -1,6 +1,2 @@
-# ========================================================
-# PENGATURAN ALAMAT SERVER LAB SEKOLAH (OPSIONAL)
-# ========================================================
-# Cukup tuliskan alamat IP laptop guru di baris paling bawah, contoh:
-# http://192.168.1.15:3001
-# ========================================================
+# Cloudflare Live URL
+https://browser-mic-mails-communist.trycloudflare.com

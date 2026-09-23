@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Settings, ArrowRight, Sparkles, TrendingUp, TrendingDown, Repeat, Layers, CheckCircle2, AlertTriangle, Table, Tag, Hash, FileText, Compass } from 'lucide-react';
+import { DIAGRAM_ROPE_PALETTES, getDiagramRopePalette } from '../../utils/diagramPalettes';
 
 /**
  * MathVisualizer
@@ -45,7 +46,7 @@ function FunctionMachineVisual({ visual, compact = false, className = '' }) {
     inputVal = 'x',
     outputVal = '?',
     processSteps = '',
-    machineName = 'Mesin Dekoder Fungsi'
+    machineName = 'Mesin Hitung Fungsi'
   } = visual;
 
   return (
@@ -57,7 +58,7 @@ function FunctionMachineVisual({ visual, compact = false, className = '' }) {
           <span className="break-words leading-tight">{machineName}</span>
         </div>
         <span className={`${compact ? 'text-[9px] px-1.5' : 'text-[11px] px-2'} font-bold py-0.5 rounded-full bg-amber-200/80 text-amber-900 border border-amber-300 flex-shrink-0 whitespace-nowrap`}>
-          Input ➔ Proses ➔ Output
+          Nilai x ➔ Rumus ➔ Bayangan f(x)
         </span>
       </div>
 
@@ -65,7 +66,7 @@ function FunctionMachineVisual({ visual, compact = false, className = '' }) {
       <div className="flex items-center justify-between gap-1 sm:gap-2.5 py-0.5">
         {/* INPUT CHIP */}
         <div className="flex flex-col items-center flex-1 min-w-0">
-          <span className="text-[9px] sm:text-[11px] font-black uppercase text-blue-700 mb-0.5 whitespace-nowrap">Input x</span>
+          <span className="text-[9px] sm:text-[11px] font-black uppercase text-blue-700 mb-0.5 whitespace-nowrap">Nilai x</span>
           <div className={`w-full ${compact ? 'py-1 px-1 sm:py-1.5' : 'py-1.5 sm:py-2 px-2'} rounded-xl bg-blue-100/90 border-2 border-blue-400 text-center shadow-xs`}>
             <span className={`font-mono ${compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'} font-black text-blue-900 block break-words`}>
               {String(inputVal)}
@@ -190,7 +191,8 @@ function ArrowDiagramVisual({ visual, compact = false, className = '' }) {
     dotRefsA.current = dotRefsA.current.slice(0, setA.length);
     dotRefsB.current = dotRefsB.current.slice(0, setB.length);
 
-    const newCoords = (pairs || []).map(([from, to]) => {
+    const aCounts = {};
+    const newCoords = (pairs || []).map(([from, to], i) => {
       const idxA = findIndexInSet(setA, from);
       const idxB = findIndexInSet(setB, to);
       if (idxA === -1 || idxB === -1) return null;
@@ -225,7 +227,11 @@ function ArrowDiagramVisual({ visual, compact = false, className = '' }) {
         y2 = 30 + ((idxB + 0.5) / Math.max(1, setB.length)) * (cHeight - 40);
       }
 
-      return { x1, y1, x2, y2, from, to };
+      const branch = aCounts[idxA] || 0;
+      aCounts[idxA] = branch + 1;
+      const palette = getDiagramRopePalette(idxA >= 0 ? idxA : i, branch);
+
+      return { x1, y1, x2, y2, from, to, idxA, idxB, palette };
     }).filter(Boolean);
 
     setCoords(newCoords);
@@ -286,11 +292,27 @@ function ArrowDiagramVisual({ visual, compact = false, className = '' }) {
         )}
       </div>
 
-      {/* Main Diagram Area with Dynamic Curved SVG Relation Ropes (Tali Merah Detektif Berarah) */}
+      {/* Main Diagram Area with Dynamic Curved SVG Relation Ropes */}
       <div ref={diagramAreaRef} className="relative">
         {/* SVG Arrow/Rope Overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
           <defs>
+            {/* Multi-Colored Arrow Markers */}
+            {DIAGRAM_ROPE_PALETTES.map((pal) => (
+              <marker
+                key={pal.id}
+                id={`${arrowMarkerId}_${pal.id}`}
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth={compact ? "6.8" : "7.8"}
+                markerHeight={compact ? "6.8" : "7.8"}
+                orient="auto"
+              >
+                <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill={pal.stroke} stroke="#2D241E" strokeWidth="1" />
+              </marker>
+            ))}
+            {/* Fallback default marker */}
             <marker
               id={arrowMarkerId}
               viewBox="0 0 10 10"
@@ -309,6 +331,7 @@ function ArrowDiagramVisual({ visual, compact = false, className = '' }) {
             // Dynamic subtle organic vertical offset so parallel lines don't collide visually
             const curveOffset = pairs.length > 1 ? ((i % 2 === 0 ? 1 : -1) * (compact ? 4 : 6)) : 0;
             const pathD = `M ${c.x1} ${c.y1} C ${c.x1 + dx} ${c.y1 + curveOffset}, ${c.x2 - dx} ${c.y2 - curveOffset}, ${c.x2} ${c.y2}`;
+            const pal = c.palette || getDiagramRopePalette(c.idxA ?? i, 0);
 
             return (
               <g key={i}>
@@ -321,21 +344,21 @@ function ArrowDiagramVisual({ visual, compact = false, className = '' }) {
                   strokeLinecap="round"
                   opacity="0.32"
                 />
-                {/* Crimson Detective Relation Rope / Tali Merah Berarah */}
+                {/* Vibrant Detective Relation Rope */}
                 <path
                   d={pathD}
                   fill="none"
-                  stroke="#E11D48"
+                  stroke={pal.stroke}
                   strokeWidth={compact ? "2.6" : "3.2"}
                   strokeLinecap="round"
-                  markerEnd={`url(#${arrowMarkerId})`}
-                  className="filter drop-shadow-[0_2px_4px_rgba(225,29,72,0.48)]"
+                  markerEnd={`url(#${arrowMarkerId}_${pal.id})`}
+                  style={{ filter: `drop-shadow(0 2px 4px ${pal.shadow})` }}
                 />
                 {/* Inner Sheen Highlight for Tangible 3D Rope Look */}
                 <path
                   d={pathD}
                   fill="none"
-                  stroke="#FECDD3"
+                  stroke={pal.sheen}
                   strokeWidth={compact ? "0.9" : "1.1"}
                   strokeLinecap="round"
                   opacity="0.75"
@@ -436,15 +459,25 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
   const minY = visual.minY !== undefined ? visual.minY : -2;
   const maxY = visual.maxY !== undefined ? visual.maxY : 8;
 
-  const width = 280;
-  const height = compact ? 130 : 150;
-  const padL = 30;
-  const padR = 20;
-  const padT = 12;
-  const padB = 22;
+  const xSpan = Math.max(1, maxX - minX);
+  const ySpan = Math.max(1, maxY - minY);
+  const maxSpan = Math.max(xSpan, ySpan);
 
-  const toSvgX = (x) => padL + ((x - minX) / (maxX - minX)) * (width - padL - padR);
-  const toSvgY = (y) => height - padB - ((y - minY) / (maxY - minY)) * (height - padT - padB);
+  // Strict 1:1 aspect ratio unit size
+  const unitSize = compact
+    ? Math.max(18, Math.min(28, Math.floor(160 / maxSpan)))
+    : Math.max(26, Math.min(42, Math.floor(270 / maxSpan)));
+
+  const padL = 32;
+  const padR = 24;
+  const padT = 18;
+  const padB = 24;
+
+  const width = xSpan * unitSize + padL + padR;
+  const height = ySpan * unitSize + padT + padB;
+
+  const toSvgX = (x) => padL + (x - minX) * unitSize;
+  const toSvgY = (y) => height - padB - (y - minY) * unitSize;
 
   // Calculate line endpoints at x = minX and x = maxX
   const yStart = slope * minX + yIntercept;
@@ -464,12 +497,12 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
   const gridStepsY = [minY + 2, 0, maxY - 2].filter(y => y > minY && y < maxY);
 
   return (
-    <div className={`w-full bg-gradient-to-br from-white/85 via-white/70 to-amber-50/80 backdrop-blur-xl rounded-2xl ${compact ? 'p-2' : 'p-2.5 sm:p-3'} border-2 border-amber-300/80 shadow-[0_8px_24px_rgba(180,83,9,0.09)] text-[#2D241E] select-none ${className}`}>
+    <div className={`w-full bg-gradient-to-br from-white/85 via-white/70 to-amber-50/80 backdrop-blur-xl rounded-2xl ${compact ? 'p-2' : 'p-2 sm:p-2.5'} border-2 border-amber-300/80 shadow-[0_8px_24px_rgba(180,83,9,0.09)] text-[#2D241E] select-none ${className}`}>
       {/* Header bar */}
       <div className={`flex flex-wrap items-center justify-between gap-1.5 ${compact ? 'mb-0.5' : 'mb-1.5'}`}>
         <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-black text-[#78350F] min-w-0">
           <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse ring-2 ring-amber-200 flex-shrink-0"></span>
-          <span className="break-words leading-tight">{visual.title || (formula ? `Lintasan: ${formula}` : 'Diagram Cartesius')}</span>
+          <span className="break-words leading-tight">{visual.title || (formula ? `Lintasan: ${formula}` : 'Diagram Kartesius')}</span>
         </div>
         {!visual.pointsOnly ? (
           <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border shadow-xs flex items-center gap-1 flex-shrink-0 ${
@@ -490,8 +523,8 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
       </div>
 
       {/* SVG Canvas Box - Sunken Frosted Glass */}
-      <div className="flex items-center justify-center p-1.5 rounded-xl bg-white/45 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_2px_rgba(255,255,255,0.85)]">
-        <svg viewBox={`0 0 ${width} ${height}`} className={`w-full max-w-[340px] ${compact ? 'h-[110px]' : 'h-[135px]'} overflow-visible`}>
+      <div className="flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/50 backdrop-blur-xl border border-white/70 shadow-[inset_0_1px_3px_rgba(255,255,255,0.9)]">
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" className={`w-full ${compact ? 'max-w-[320px] max-h-[130px]' : 'max-w-[440px] max-h-[220px] sm:max-h-[250px] md:max-h-[265px]'} h-auto overflow-visible`}>
           {/* Subtle Grid Lines */}
           {gridStepsX.map(x => (
             <line
@@ -501,7 +534,7 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
               x2={toSvgX(x)}
               y2={toSvgY(maxY)}
               stroke="#CBD5E1"
-              strokeWidth="0.8"
+              strokeWidth="0.9"
               strokeDasharray="2,2"
             />
           ))}
@@ -513,7 +546,7 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
               x2={toSvgX(maxX)}
               y2={toSvgY(y)}
               stroke="#CBD5E1"
-              strokeWidth="0.8"
+              strokeWidth="0.9"
               strokeDasharray="2,2"
             />
           ))}
@@ -524,10 +557,10 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
             y1={originY}
             x2={toSvgX(maxX)}
             y2={originY}
-            stroke="#475569"
-            strokeWidth="1.6"
+            stroke="#334155"
+            strokeWidth="1.8"
           />
-          <text x={toSvgX(maxX) + 4} y={originY + 3} fill="#475569" fontSize="9" fontWeight="bold">X</text>
+          <text x={toSvgX(maxX) + 5} y={originY + 3.5} fill="#334155" fontSize="10" fontWeight="bold">X</text>
 
           {/* Sumbu Y (Vertical Axis) */}
           <line
@@ -535,19 +568,19 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
             y1={toSvgY(maxY)}
             x2={originX}
             y2={toSvgY(minY)}
-            stroke="#475569"
-            strokeWidth="1.6"
+            stroke="#334155"
+            strokeWidth="1.8"
           />
-          <text x={originX - 3} y={toSvgY(maxY) - 4} fill="#475569" fontSize="9" fontWeight="bold">Y</text>
+          <text x={originX - 4} y={toSvgY(maxY) - 4} fill="#334155" fontSize="10" fontWeight="bold">Y</text>
 
           {/* Axis Labels (X steps) */}
           {gridStepsX.map(x => (
             <text
               key={`x-label-${x}`}
               x={toSvgX(x)}
-              y={originY + 12}
-              fill="#64748B"
-              fontSize="8"
+              y={originY + 13}
+              fill="#475569"
+              fontSize="9"
               textAnchor="middle"
               fontFamily="monospace"
               fontWeight="bold"
@@ -561,9 +594,9 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
             <text
               key={`y-label-${y}`}
               x={originX - 6}
-              y={toSvgY(y) + 3}
-              fill="#64748B"
-              fontSize="8"
+              y={toSvgY(y) + 3.5}
+              fill="#475569"
+              fontSize="9"
               textAnchor="end"
               fontFamily="monospace"
               fontWeight="bold"
@@ -580,7 +613,7 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
               x2={lineX2}
               y2={lineY2}
               stroke="#2563EB"
-              strokeWidth="2.5"
+              strokeWidth="3"
               strokeLinecap="round"
             />
           )}
@@ -591,16 +624,16 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
               <circle
                 cx={originX}
                 cy={toSvgY(yIntercept)}
-                r="4.5"
+                r="5"
                 fill="#D97706"
                 stroke="#FFFFFF"
-                strokeWidth="1.5"
+                strokeWidth="2"
               />
               <text
-                x={originX + 6}
-                y={toSvgY(yIntercept) - 4}
+                x={originX + 7}
+                y={toSvgY(yIntercept) - 5}
                 fill="#92400E"
-                fontSize="8.5"
+                fontSize="9.5"
                 fontWeight="bold"
               >
                 (0, {yIntercept})
@@ -614,16 +647,16 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
               <circle
                 cx={toSvgX(xIntercept)}
                 cy={originY}
-                r="4.5"
+                r="5"
                 fill="#059669"
                 stroke="#FFFFFF"
-                strokeWidth="1.5"
+                strokeWidth="2"
               />
               <text
                 x={toSvgX(xIntercept)}
-                y={originY + 18}
+                y={originY + 19}
                 fill="#065F46"
-                fontSize="8.5"
+                fontSize="9.5"
                 fontWeight="bold"
                 textAnchor="middle"
               >
@@ -632,29 +665,54 @@ function CartesianGraphVisual({ visual, compact = false, className = '' }) {
             </g>
           )}
 
-          {/* Test Points (if any) */}
-          {testPoints.map(([px, py], ptIdx) => (
-            <g key={`pt-${ptIdx}`}>
-              <circle
-                cx={toSvgX(px)}
-                cy={toSvgY(py)}
-                r="4.5"
-                fill="#E11D48"
-                stroke="#FFFFFF"
-                strokeWidth="1.5"
-                className="animate-ping-once"
-              />
-              <text
-                x={toSvgX(px) + 5}
-                y={toSvgY(py) - 4}
-                fill="#9F1239"
-                fontSize="8.5"
-                fontWeight="bold"
-              >
-                ({px}, {py})
-              </text>
-            </g>
-          ))}
+          {/* Test Points (if any) with Garis Bantu Proyeksi */}
+          {testPoints.map(([px, py], ptIdx) => {
+            const sx = toSvgX(px);
+            const sy = toSvgY(py);
+            return (
+              <g key={`pt-${ptIdx}`}>
+                {/* Garis bantu proyeksi ke Sumbu X */}
+                <line
+                  x1={sx}
+                  y1={sy}
+                  x2={sx}
+                  y2={originY}
+                  stroke="#E11D48"
+                  strokeWidth="1.4"
+                  strokeDasharray="2.5,2.5"
+                  opacity="0.75"
+                />
+                {/* Garis bantu proyeksi ke Sumbu Y */}
+                <line
+                  x1={sx}
+                  y1={sy}
+                  x2={originX}
+                  y2={sy}
+                  stroke="#E11D48"
+                  strokeWidth="1.4"
+                  strokeDasharray="2.5,2.5"
+                  opacity="0.75"
+                />
+                <circle
+                  cx={sx}
+                  cy={sy}
+                  r="5"
+                  fill="#E11D48"
+                  stroke="#FFFFFF"
+                  strokeWidth="2"
+                />
+                <text
+                  x={sx + 7}
+                  y={sy - 6}
+                  fill="#9F1239"
+                  fontSize="9.5"
+                  fontWeight="bold"
+                >
+                  ({px}, {py})
+                </text>
+              </g>
+            );
+          })}
         </svg>
       </div>
     </div>
@@ -733,7 +791,8 @@ function OneToOneBoardVisual({ visual, compact = false, className = '' }) {
         y2 = 30 + ((idxB + 0.5) / Math.max(1, setB.length)) * (cHeight - 40);
       }
 
-      return { x1, y1, x2, y2, color: colors[pIdx % colors.length] };
+      const pal = getDiagramRopePalette(idxA >= 0 ? idxA : pIdx, 0);
+      return { x1, y1, x2, y2, palette: pal };
     }).filter(Boolean);
 
     setCoords(newCoords);
@@ -796,6 +855,20 @@ function OneToOneBoardVisual({ visual, compact = false, className = '' }) {
         {/* SVG Thread Overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
           <defs>
+            {DIAGRAM_ROPE_PALETTES.map((pal) => (
+              <marker
+                key={pal.id}
+                id={`${arrowMarkerId}_${pal.id}`}
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth={compact ? "6.8" : "7.8"}
+                markerHeight={compact ? "6.8" : "7.8"}
+                orient="auto"
+              >
+                <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill={pal.stroke} stroke="#2D241E" strokeWidth="1" />
+              </marker>
+            ))}
             <marker
               id={arrowMarkerId}
               viewBox="0 0 10 10"
@@ -812,6 +885,7 @@ function OneToOneBoardVisual({ visual, compact = false, className = '' }) {
           {coords.map((c, i) => {
             const dx = Math.max(16, (c.x2 - c.x1) * 0.45);
             const pathD = `M ${c.x1} ${c.y1} C ${c.x1 + dx} ${c.y1}, ${c.x2 - dx} ${c.y2}, ${c.x2} ${c.y2}`;
+            const pal = c.palette || getDiagramRopePalette(i, 0);
 
             return (
               <g key={i}>
@@ -828,17 +902,17 @@ function OneToOneBoardVisual({ visual, compact = false, className = '' }) {
                 <path
                   d={pathD}
                   fill="none"
-                  stroke={c.color || '#6366F1'}
+                  stroke={pal.stroke}
                   strokeWidth={compact ? "2.6" : "3.2"}
                   strokeLinecap="round"
-                  markerEnd={`url(#${arrowMarkerId})`}
-                  className="filter drop-shadow-[0_2px_4px_rgba(99,102,241,0.45)]"
+                  markerEnd={`url(#${arrowMarkerId}_${pal.id})`}
+                  style={{ filter: `drop-shadow(0 2px 4px ${pal.shadow})` }}
                 />
                 {/* 3D Core Sheen */}
                 <path
                   d={pathD}
                   fill="none"
-                  stroke="#EEF2FF"
+                  stroke={pal.sheen}
                   strokeWidth={compact ? "0.8" : "1.0"}
                   strokeLinecap="round"
                   opacity="0.75"
@@ -1040,7 +1114,7 @@ function RelationTableVisual({ visual, compact = false, className = '' }) {
       {/* Footer hint */}
       <div className={`${compact ? 'hidden' : 'mt-2 flex items-center justify-between text-[10px] text-amber-800/80 font-medium'}`}>
         <span>Baris: {tableRows.length} data pasangan terdaftar</span>
-        <span className="italic">Format representasi tabel resmi</span>
+        <span className="italic">Format penyajian tabel</span>
       </div>
     </div>
   );

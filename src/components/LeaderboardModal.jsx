@@ -15,8 +15,6 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
     { fullname: 'Penyelidik Relo Pro', totalScore: 3890 },
     { fullname: 'Detektif Pintar VIII', totalScore: 3400 },
     { fullname: 'Master Fungsi SMP', totalScore: 2950 },
-    { fullname: 'Pencari Jejak Data', totalScore: 2500 },
-    { fullname: 'Detektif Pemula', totalScore: 1800 }
   ];
 
   useEffect(() => {
@@ -44,30 +42,34 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
   const displayList = leaderboard.length > 0 ? leaderboard : defaultPlayers;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
       
-      {/* WOODEN BOARD CONTAINER MATCHING EXACT PNG ASPECT RATIO 2843:2628 */}
-      <div 
-        className="relative w-full max-w-[480px] sm:max-w-[540px] max-h-[92dvh] aspect-[2843/2628] bg-contain bg-no-repeat bg-center text-[#2D241E] flex flex-col items-center drop-shadow-2xl overflow-hidden"
-        style={{ backgroundImage: `url('/assets/tampilan di highscore/Asset/board_mark_high_score@4x.png')` }}
-      >
+      {/* WOODEN BOARD WRAPPER: Sized strictly by the image so it NEVER drifts or breaks aspect ratio on any device */}
+      <div className="relative inline-flex items-center justify-center max-h-[85dvh] max-w-[min(480px,92vw)] drop-shadow-2xl select-none flex-shrink-0">
         
-        {/* GREEN ROUND EXIT BUTTON (CIRCULAR HITBOX TOP RIGHT CORNER OF BOARD) */}
+        {/* PHYSICAL BOARD IMAGE: Controls the true pixel boundaries */}
+        <img 
+          src="/assets/tampilan di highscore/Asset/board_mark_high_score@4x.png" 
+          alt="High Score Board"
+          className="block max-h-[85dvh] max-w-[min(480px,92vw)] w-auto h-auto object-contain select-none pointer-events-none"
+        />
+
+        {/* GREEN ROUND EXIT BUTTON (Locked inside the top right corner of the actual wooden board) */}
         <button 
           onClick={() => { try { audioEngine.playMenuClose(); } catch {} reloVoiceService.stopVoice(); onClose(); }}
-          className="clean-icon-btn rounded-full overflow-hidden absolute top-[4%] right-[5%] z-30 cursor-pointer"
+          className="clean-icon-btn rounded-full overflow-hidden absolute top-[4%] right-[5%] z-30 cursor-pointer hover:scale-110 active:scale-95 transition-transform"
           title="Tutup Menu High Score"
         >
           <img 
             src="/assets/tampilan di highscore/Asset/exit_button_of_highscore@4x.png" 
             alt="Exit" 
-            className="w-9 h-9 sm:w-11 sm:h-11 object-contain drop-shadow-md rounded-full"
+            className="w-8 h-8 sm:w-10 sm:h-10 object-contain drop-shadow-md rounded-full"
           />
         </button>
 
-        {/* TOP HEADER: CIRCLE WOODEN STAR ICON BADGE (SHIFTED UP 0.5 TABLE ROW HEIGHT) */}
-        <div className="flex flex-col items-center absolute top-2 sm:top-3 z-20">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center relative drop-shadow-md">
+        {/* TOP HEADER: CIRCLE WOODEN STAR ICON BADGE (Perfect horizontal center at top cutout) */}
+        <div className="absolute top-[1.5%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center relative drop-shadow-md">
             <img 
               src="/assets/tampilan di highscore/Asset/Highscore_icon@4x.png" 
               alt="Highscore Star Icon" 
@@ -77,10 +79,10 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
           </div>
         </div>
 
-        {/* PLAYER SCORES TABLE LIST (FIXED DISPLAY WITHOUT SCROLLING) */}
-        <div className="w-full flex-1 flex flex-col min-h-0 pt-[31%] sm:pt-[30%] px-[6%] sm:px-[7%] pb-[6%]">
-          <div className="space-y-1.5 w-full">
-            {displayList.slice(0, 7).map((user, idx) => {
+        {/* PLAYER SCORES TABLE LIST (Locked directly within the wooden board surface) */}
+        <div className="absolute inset-0 flex flex-col justify-start pt-[31%] px-[6.5%] pb-[6%] overflow-hidden">
+          <div className="space-y-1 sm:space-y-1.5 w-full">
+            {displayList.slice(0, 5).map((user, idx) => {
               const rank = idx + 1;
               const isCurrentUser = Boolean(
                 user.isCurrentUser ||
@@ -92,24 +94,29 @@ export default function LeaderboardModal({ isOpen, onClose, currentUser }) {
               return (
                 <div
                   key={idx}
-                  className={`grid grid-cols-12 gap-1 py-1 px-2 rounded-xl font-pencil text-base sm:text-lg font-bold  items-center transition-all ${
+                  className={`grid grid-cols-12 gap-1 py-0.5 sm:py-1 px-1.5 sm:px-2 rounded-lg sm:rounded-xl font-pencil text-xs sm:text-sm md:text-base font-bold items-center transition-all ${
                     isCurrentUser
-                      ? 'bg-gradient-to-r from-amber-400/50 via-yellow-300/55 to-amber-500/50 border-2 border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.75)] text-yellow-100 ring-2 ring-yellow-300/50'
+                      ? 'bg-gradient-to-r from-amber-400/50 via-yellow-300/55 to-amber-500/50 border border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.75)] text-yellow-100 ring-1 ring-yellow-300/50'
                       : 'bg-white/10 backdrop-blur-xs text-white hover:bg-white/20'
                   }`}
                 >
-                  <div className={`col-span-2 text-left pl-1 sm:pl-1.5 font-extrabold ${isCurrentUser ? 'text-yellow-300' : 'text-white'}`}>
+                  {/* Column 1: No */}
+                  <div className={`col-span-2 text-center font-extrabold ${isCurrentUser ? 'text-yellow-300' : 'text-white'}`}>
                     {rank}
                   </div>
-                  <div className={`col-span-7 text-left pl-0 sm:pl-0.5 truncate font-bold flex items-center space-x-1.5 ${isCurrentUser ? 'text-yellow-100 font-black' : 'text-white'}`}>
+
+                  {/* Column 2: Nama Pemain */}
+                  <div className={`col-span-6 text-left pl-1 sm:pl-2 truncate font-bold flex items-center space-x-1.5 ${isCurrentUser ? 'text-yellow-100 font-black' : 'text-white'}`}>
                     <span className="truncate">{user.fullname || user.username || 'Pemain'}</span>
                     {isCurrentUser && (
-                      <span className="text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full bg-yellow-400 text-[#2D241E] font-sans font-black flex-shrink-0 shadow-sm animate-pulse">
+                      <span className="text-[9px] sm:text-[10px] px-1 py-0.2 rounded-full bg-yellow-400 text-[#2D241E] font-sans font-black flex-shrink-0 shadow-sm animate-pulse">
                         KAMU ⭐
                       </span>
                     )}
                   </div>
-                  <div className={`col-span-3 text-center pr-12 sm:pr-16 font-black ${isCurrentUser ? 'text-yellow-300 font-black' : 'text-amber-200'}`}>
+
+                  {/* Column 3: Score */}
+                  <div className={`col-span-4 text-center font-black ${isCurrentUser ? 'text-yellow-300 font-black' : 'text-amber-200'}`}>
                     {user.totalScore || user.score || 0}
                   </div>
                 </div>

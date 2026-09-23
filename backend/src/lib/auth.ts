@@ -27,6 +27,8 @@ export const auth = betterAuth({
       "app://*",
       "https://*.hf.space",
       "https://*.vercel.app",
+      "https://*.onrender.com",
+      "https://*.trycloudflare.com",
       "https://*.github.io",
       "https://*.netlify.app",
       "https://*.ngrok-free.dev",
@@ -49,9 +51,10 @@ export const auth = betterAuth({
     return list;
   },
   advanced: {
+    useSecureCookies: env.BETTER_AUTH_URL.startsWith("https://"),
     defaultCookieAttributes: {
-      sameSite: "none",
-      secure: true,
+      sameSite: env.BETTER_AUTH_URL.startsWith("https://") ? "none" : "lax",
+      secure: env.BETTER_AUTH_URL.startsWith("https://"),
     },
   },
   rateLimit: {

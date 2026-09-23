@@ -1,0 +1,199 @@
+================================================================================
+           PANDUAN LENGKAP FITUR GAME EDUKASI: DETEKTIF DATA
+                     (RELASI DAN FUNGSI KELAS VIII)
+================================================================================
+
+I. TENTANG GAME DETEKTIF DATA
+--------------------------------------------------------------------------------
+Detektif Data adalah game edukasi matematika interaktif berbasis web dan desktop
+yang dirancang khusus untuk materi Relasi dan Fungsi Matematika SMP Kelas VIII.
+Game ini menggabungkan narasi detektif memecahkan misteri data dengan visualisasi
+matematika konkret, gamifikasi, serta sistem pembelajaran adaptif.
+
+Tema Utama: Siswa berperan sebagai "Detektif Data" yang bertugas menginvestigasi
+pola, memecahkan kode relasi, dan membuktikan fungsi matematika bersama tiga
+karakter maskot pemandu (Detektif Relo si burung hantu bijak, Instruktur Ryu si
+rubah petualang, dan Detektif Snowy si ahli investigasi).
+
+
+II. TIGA MODE PERMAINAN UTAMA
+--------------------------------------------------------------------------------
+
+1. CHAPTER MODE (LATIHAN 1, 2, 3, 4, 5 LANGSUNG)
+   Mode latihan interaktif bertingkat tanpa bertele-tele pemaparan materi/video pasif.
+   Siswa langsung masuk dan memilih Latihan 1 hingga Latihan 5:
+
+   - Latihan 1: Pengertian & 4 Cara Menyatakan Relasi
+     (10 Soal Utama + 10 Soal Remedial Interaktif: Drag & drop pengelompokan pasangan berurutan,
+     HPB Builder taktil, Table Builder, tarik garis diagram panah 2-langkah, tancap titik bidang koordinat Cartesius).
+
+   - Latihan 2: Pengertian & Unsur-unsur Fungsi (Domain, Kodomain, Range)
+     (10 Soal Utama + 10 Soal Remedial Interaktif: Membedakan relasi vs fungsi, investigasi domain, kodomain,
+     dan range lewat drag & drop kartu, diagram panah tali elastis, dan tancap titik Cartesius).
+
+   - Latihan 3: Notasi, Nilai, dan Bentuk Rumus Fungsi
+     (10 Soal Utama + 10 Soal Remedial Interaktif: Simulasi mesin fungsi aljabar slot-fill, substitusi input x
+     menghasilkan output f(x), menyusun rumus nilai a dan b, deteksi kekeliruan).
+
+   - Latihan 4: Grafik Fungsi Linear pada Bidang Cartesius
+     (10 Soal Utama + 10 Soal Remedial Interaktif: Menentukan titik potong sumbu X & Y, menghubungkan garis
+     lurus pada kanvas Cartesius berpetak, drag kartu koordinat, slot fill tabel titik potong).
+
+   - Latihan 5: Korespondensi Satu-Satu (Bijektif)
+     (10 Soal Utama + 10 Soal Remedial Interaktif: Membuktikan syarat n(A) = n(B), pembuktian pasangan tepat
+     satu anggota lewat drag & drop, diagram panah tali, rumus faktorial n!, kanvas Cartesius bijektif).
+
+   Fitur Khusus di Setiap Sesi Latihan (Latihan 1 s.d. 5):
+   a. Langsung Bermain & Taktil: Siswa langsung menyelesaikan 10 soal utama interaktif
+      per latihan tanpa penjelasan video yang membosankan.
+   b. Bukan Kumpulan Soal ABCD: 100% soal berbasis aksi fisik (HPB Builder menyusun
+      pasangan kurung kurawal, Table Builder mengisi baris tabel, Arrow Builder 2-langkah
+      menata nama lalu menyambung benang panah, Cartesian Builder menancapkan titik koordinat,
+      dan Slot Fill mengisi rumus fungsi).
+   c. Analisis Miskonsepsi Siswa (Distractor Analysis): Saat menjawab keliru,
+      game menampilkan kartu diagnosa pedagogis mendalam yang mengupas MENGAPA
+      jawaban tersebut salah dan pola kekeliruan berpikir apa yang terjadi.
+   d. Babak Remedial Angka Berbeda (10 Soal Remedial): Siswa yang salah diberikan variasi soal remedial
+      dengan konsep identik namun angka berbeda agar konsep benar-benar dikuasai.
+   e. Sistem Pengacakan Anti-Pola (Anti-Ladder): Posisi tombol dan kartu diacak
+      dinamis agar siswa tidak bisa menebak pola tangga diagonal.
+   f. Syarat Kelulusan KKM 85%: Siswa harus meraih nilai minimal 85% untuk
+      membuka Latihan berikutnya.
+
+2. ENDLESS MODE (MODE TANTANGAN BERTAHAN HIDUP / SURVIVAL)
+   Mode permainan cepat tanpa henti yang dipandu oleh Instruktur Ryu:
+   - Timer Adaptif: Setiap soal memiliki batas waktu mundur (countdown).
+   - Sistem Combo & Multiplier (1x hingga 5x): Menjawab benar berturut-turut
+      melipatgandakan perolehan poin.
+   - Poin Berdasarkan Kesulitan: Soal C3 (+5 pts), C4 (+10 pts), C5 (+15 pts).
+   - High Score Otomatis: Skor tertinggi dicatat dan disimpan ke akun siswa.
+   - Evaluasi Singkat: Memberikan feedback cepat agar alur permainan tetap seru.
+
+3. QUEST MODE EXAM (MODE UJIAN KASUS DETEKTIF 15 MENIT)
+   Mode ujian komprehensif berdurasi 15 menit yang dipandu oleh Detektif Snowy:
+   - 10 Soal Interaktif Berjenjang Bloom's Taxonomy:
+     * Soal 1 - 3 : Level C3 (Aplikasi / Penerapan Konsep) = 50 poin/soal
+     * Soal 4 - 7 : Level C4 (Analisis Kasus & Pola)      = 80 poin/soal
+     * Soal 8 - 10: Level C5 (Evaluasi & Pemecahan Kode)  = 120 poin/soal
+   - Variasi Taktil Penuh: Drag & Drop, Arrow Builder, Cartesian Plotting, Slot Fill, dan Visualizer Case.
+   - Bonus Kecepatan (Speed Bonus): 1 poin tambahan untuk setiap sisa detik timer!
+   - MathVisualizer Terintegrasi: Menampilkan tabel, diagram panah, atau grafik
+     otomatis pada setiap soal kasus.
+
+
+III. MEKANIK INTERAKTIF TAKTIL (BUKAN HANYA SOAL ABCD!)
+--------------------------------------------------------------------------------
+Game ini dirancang aktif dan interaktif, di mana porsi pilihan ganda (ABCD)
+dipangkas drastis (<20%). Lebih dari 80% soal mengharuskan siswa secara fisik
+memindahkan objek, menyusun bentuk relasi, atau menancapkan titik koordinat:
+
+1. EMPAT BENTUK REPRESENTASI RELASI TAKTIL (SMP KELAS VIII):
+   Sesuai kurikulum matematika SMP, siswa memanipulasi langsung 4 bentuk penyajian:
+
+   a. HIMPUNAN PASANGAN BERURUTAN (HPB BUILDER):
+      - Tampilan: Format kurung kurawal aljabar R = { ( [ ? ], [ ? ] ), ... }.
+      - Interaksi: Siswa mendrag kartu angka dari kotak pilihan langsung ke dalam kurung
+        pasangan (x, y), atau mengetuk angka lalu mengetuk kotak tujuannya.
+      - Kotak kurung bisa diklik kembali untuk mengembalikan angka ke kotak pilihan (undo).
+
+   b. TABEL RELASI (TABLE BUILDER):
+      - Tampilan: Tabel dua kolom Domain (x) dan Kodomain (y) dengan sel [ ? ].
+      - Interaksi: Siswa mendrag kartu angka dari kotak pilihan di bawah ke dalam sel baris
+        tabel yang kosong untuk melengkapi data bukti relasi.
+
+   c. DIAGRAM CARTESIUS / CARTESIAN PLOTTING CANVAS ("Nitik-nitikin"):
+      - Tampilan: Bidang koordinat berpetak dengan sumbu mendatar X dan tegak Y.
+      - Interaksi: Siswa menandai/menitik-nitikkan titik koordinat langsung pada
+        persilangan kisi diagram Cartesius. Terdapat tombol hapus/reset titik.
+
+   d. DIAGRAM PANAH 2-LANGKAH (ARROW BUILDER 2-STEP):
+      - Langkah 1 (Naro Nama): Siswa mendrag/memilih nama siswa, hobi, atau angka
+        ke dalam oval Himpunan A dan Himpunan B sampai kedua himpunan terisi lengkap.
+      - Langkah 2 (Sambungin Panah): Begitu nama lengkap, kanvas panah aktif!
+        Siswa menarik tali panah relasi dari pin Himpunan A ke pin Himpunan B.
+
+2. DRAG & DROP KATEGORISASI (Memindahkan Kartu Objek):
+   - Siswa memindahkan kartu ke kotak kategori target (misal: "Fungsi" vs "Bukan Fungsi",
+     "Domain" vs "Range", "Relasi Matematika" vs "Bukan Relasi").
+   - Mendukung drag mouse langsung dan ketuk-pindah (Click-to-Move) responsif.
+
+3. KOTAK ISIAN ALJABAR / SLOT FILL:
+   - Melengkapi kepingan rumus mesin fungsi f(x) atau notasi aljabar dengan kartu angka.
+
+4. MATCHING PAIRS (Menjodohkan Berpasangan):
+   - Menjodohkan item kiri dengan pasangan di kanan secara acak anti-ladder.
+
+5. INPUT NUMBER & DETECT ERROR:
+   - Mengetik angka hasil mesin fungsi dan mendeteksi langkah kekeliruan aljabar.
+
+6. TEORI SINGKAT (Pilihan Ganda & Benar/Salah):
+   - Porsi minimal (<20%) hanya untuk memeriksa pemahaman istilah formal.
+
+
+IV. SISTEM PEDAGOGIS: ANALISIS MISKONSEPSI SISWA
+--------------------------------------------------------------------------------
+Setiap kali siswa menjawab keliru, sistem tidak hanya memberi tahu kunci jawaban,
+melainkan memunculkan panel "ANALISIS KESALAHAN & MISKONSEPSI PILIHANMU":
+- Mengapa Siswa Memilih Itu: Mendiagnosa pola salah berpikir, misalnya:
+  * Membaca relasi terbalik dari kanan ke kiri (kodomain ke domain).
+  * Overgeneralisasi aturan (hanya cocok di pasangan pertama, gagal di pasangan kedua).
+  * Tertukar antara Kodomain (semua kawan) dan Range (kawan yang terpilih).
+  * Mengira relasi biasa tidak boleh bercabang seperti fungsi.
+  * Salah urutan operasi aljabar pada substitusi rumus fungsi f(x).
+- Pembahasan Solutif: Menunjukkan konsep yang sebenarnya agar siswa siap
+  menaklukkan babak remedial angka berbeda.
+
+
+V. GAMIFIKASI & FITUR PENDUKUNG
+--------------------------------------------------------------------------------
+1. Sistem Akun Siswa & Profil:
+   - Login nama siswa, kelas, dan avatar detektif.
+   - Catatan progres chapter dan capaian belajar tersimpan aman.
+
+2. Sistem Peringkat & Gelar Detektif (Rank System):
+   - Siswa naik pangkat dari Detektif Magang, Detektif Muda, Detektif Madya,
+     hingga Master Detektif Data berdasarkan akumulasi bintang dan skor.
+
+3. Papan Lencana Penghargaan (Badges):
+   - Penghargaan visual yang terbuka saat siswa mencapai prestasi tertentu
+     (misal: Akurasi 100%, Kecepatan Kilat, Penakluk Remedial, dsb).
+
+4. Papan Peringkat (Leaderboard):
+   - Menampilkan ranking skor siswa di kelas.
+   - Terintegrasi dengan server jaringan lokal kelas/lab sekolah.
+
+5. Audio Engine & Narasi Maskot:
+   - Musik latar (BGM) tematik ceria di setiap mode permainan.
+   - Efek suara interaktif (SFX) saat klik tombol, tarik benang, jawaban benar,
+     peringatan salah, dan selebrasi konfeti kemenangan.
+   - Voice scene akting suara asli untuk karakter maskot.
+
+6. Desain Visual Premium:
+   - Mengusung tema Glassmorphism cerah, font ramah pensil/buku tulis anak,
+     serta layout viewport responsif (anti-scroll) yang nyaman di desktop maupun HP.
+
+7. Multi-Platform & Offline Support:
+   - Berjalan lancar di browser Google Chrome / Microsoft Edge.
+   - Tersedia launcher desktop (WebView2 / Electron) berukuran ringan.
+   - Dapat diakses secara offline penuh tanpa koneksi internet di lab komputer.
+
+
+VI. STRUKTUR LOKASI KODE FITUR PADA PROYEK
+--------------------------------------------------------------------------------
+- Menu Pemilihan Latihan 1-5 : src/components/StageSelector.jsx
+- Engine Latihan Interaktif  : src/components/games/ChapterExercise.jsx
+- Engine Mode Bertahan Hidup : src/components/games/EndlessMode.jsx
+- Engine Mode Ujian Kasus    : src/components/games/QuestModeExam.jsx
+- Kanvas Diagram Panah       : src/components/RelationDiagramCanvas.jsx
+- Kanvas Grafik Cartesius    : src/components/RelationCartesianCanvas.jsx
+- Visualisasi Matematika     : src/components/visuals/MathVisualizer.jsx
+- Panduan Maskot Interaktif  : src/components/InstructorMascotGuide.jsx
+- Bank Soal Latihan 1 s.d. 5 : src/data/exercises/exerciseChapter1.js s.d. 5
+- Bank Soal Endless Mode     : src/data/endlessQuestions.js
+- Engine Generator Soal Quest: src/services/questQuestionsService.js
+- Audio & Voice Engine       : src/services/audioEngine.js & reloVoiceService.js
+- Penyimpanan Data Siswa     : src/services/storageService.js
+
+================================================================================
+           DOKUMEN INI DIBUAT UNTUK PROYEK TESIS S2 PENDIDIKAN MATEMATIKA
+================================================================================

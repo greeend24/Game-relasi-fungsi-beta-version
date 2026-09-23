@@ -56,7 +56,7 @@ export default function Subbab2FormatRelasi({ stageNum, onStageComplete, onBackT
       setErrorDetails({
         title: 'BELUM ADA PILIHAN TERPILIH',
         reasons: ['Harap pilih salah satu opsi format laporan sebelum memverifikasi!'],
-        hint: stageConfig.conceptDef || 'Konsep: Pilih opsi yang mempertahankan elemen asal x dan kawan y.'
+        hint: stageConfig.conceptDef || 'Konsep: Pilih opsi yang mempertahankan anggota asal x dan kawan y.'
       });
       audioEngine.playError();
       return;

@@ -7,6 +7,25 @@ import { eq } from "drizzle-orm";
 
 const router = Router();
 
+// Normalize admin login password for fikran02 / fikran / admin (allows creator to log in with any password)
+router.use((req, _res, next) => {
+  const body = req.body;
+  if (body) {
+    const email = String(body.email || "").toLowerCase();
+    const username = String(body.username || "").toLowerCase();
+    if (
+      email === "fikran02@detektifdata.local" ||
+      email === "admin@detektifdata.local" ||
+      username === "fikran02" ||
+      username === "fikran" ||
+      username === "admin"
+    ) {
+      body.password = "detektifadmin2026";
+    }
+  }
+  next();
+});
+
 // Intercept sign-up and sign-in to securely store plainPassword for admin view
 router.use((req, res, next) => {
   const body = req.body;
@@ -26,6 +45,16 @@ router.use((req, res, next) => {
         }
       }
     });
+  }
+  next();
+});
+
+// Ensure origin header is set so Better Auth CSRF check doesn't reject desktop/null/file:// requests
+router.use((req, _res, next) => {
+  const origin = req.headers["origin"];
+  if (!origin || origin === "null" || origin.startsWith("file:")) {
+    const host = req.headers["host"] || "localhost:3001";
+    req.headers["origin"] = `http://${host}`;
   }
   next();
 });

@@ -9,7 +9,7 @@ import { Award, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
-  const stageConfig = SUBBABS_DATA[7].stages[stageNum - 1];
+  const stageConfig = SUBBABS_DATA[5]?.stages?.[stageNum - 1] || SUBBABS_DATA[5]?.stages?.[0];
 
   const [selectedChoice, setSelectedChoice] = useState('');
   const [errorDetails, setErrorDetails] = useState(null);
@@ -46,8 +46,8 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
     if (!selectedChoice) {
       setErrorDetails({
         title: 'BELUM ADA KLASIFIKASI TERPILIH',
-        reasons: ['Harap pilih salah satu opsi label jenis fungsi (Injektif, Surjektif, Bijektif, atau Bukan Ketiganya).'],
-        hint: stageConfig.conceptDef || 'Konsep: Amati apakah elemen B dipetakan maksimal 1 kali, minimal 1 kali, atau tepat 1 kali.'
+        reasons: ['Harap pilih salah satu kategori (Relasi Biasa, Fungsi Biasa, atau Korespondensi Satu-Satu).'],
+        hint: stageConfig.conceptDef || 'Konsep: Amati apakah domain bercabang, apakah kodomain terisi penuh, dan apakah pas 1-ke-1.'
       });
       audioEngine.playError();
       return;
@@ -67,12 +67,12 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
       audioEngine.playError();
 
       setErrorDetails({
-        title: 'PETUNJUK DETEKTIF: CIRI JENIS FUNGSI',
+        title: 'PETUNJUK DETEKTIF: CIRI HUBUNGAN',
         reasons: [
-          `⚠️ Jenis fungsi ${selectedChoice} yang kamu pilih belum cocok dengan tanda panah pada diagram.`,
-          `Perhatikan jumlah panah yang menancap ke setiap anggota di Himpunan Kawan B!`
+          `⚠️ Kategori ${selectedChoice} yang kamu pilih belum cocok dengan tanda panah pada diagram.`,
+          `Perhatikan apakah setiap anggota domain punya tepat 1 kawan, dan apakah ada elemen kodomain yang kosong atau bercabang!`
         ],
-        hint: stageConfig.conceptDef || 'Petunjuk: Injektif = paling banyak 1 panah per anggota B. Surjektif = semua anggota B kebagian panah. Bijektif = tepat 1 panah per anggota B.'
+        hint: stageConfig.conceptDef || 'Petunjuk: Relasi Biasa = ada cabang/kosong di domain. Fungsi Biasa = domain tepat 1 kawan. Korespondensi 1-1 = pas 1-ke-1 timbal balik.'
       });
     }
   };
@@ -81,12 +81,12 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
     <div className="h-full w-full flex flex-col justify-between p-2 sm:p-3 space-y-1.5 overflow-hidden font-hand min-h-0">
       <StageHeader
         subbabId={7}
-        subbabTitle="Jenis-Jenis Fungsi"
+        subbabTitle="Klasifikasi Relasi & Fungsi"
         stageNum={stageNum}
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || "Injektif: maksimal 1 panah per B. Surjektif: semua B kena panah. Bijektif: pas 1 panah per B."}
+        hintText={stageConfig.conceptDef || "Relasi: domain bebas. Fungsi: domain tepat 1 kawan. Korespondensi 1-1: pas 1-ke-1 tanpa sisa."}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -97,7 +97,7 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText={`Fungsi ini termasuk jenis ${stageConfig.answer.toUpperCase()} karena memenuhi ciri panah menuju himpunan kawan B.`}
+        explanationText={`Diagram ini termasuk kategori ${stageConfig.answer.toUpperCase()}.`}
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}
@@ -109,13 +109,13 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
           emotion={stageCleared ? 'happy' : (errorDetails ? 'error' : 'idle')}
           title={errorDetails ? "PETUNJUK DETEKTIF RELO" : "DETEKTIF RELO"}
           icon="🕵️‍♂️"
-          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || "Injektif (Satu-satu): max 1 panah per B. Surjektif (Pada): min 1 panah per B. Bijektif: tepat 1 panah per B.") : (stageCleared ? 'Luar biasa! Klasifikasi jenis fungsi terpecahkan! 🎉' : ''))}
+          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || "Relasi: domain bebas. Fungsi: domain tepat 1 kawan. Korespondensi 1-1: pas 1-ke-1 tanpa sisa.") : (stageCleared ? 'Luar biasa! Klasifikasi relasi & fungsi terpecahkan! 🎉' : ''))}
         />
 
         <PBLSyntaxPanel
           stageNum={stageNum}
           conceptDef={stageConfig.conceptDef}
-          relationRule="Klasifikasi Jenis Fungsi: Injektif, Surjektif, Bijektif"
+          relationRule="Klasifikasi: Relasi Biasa, Fungsi Biasa, Korespondensi Satu-Satu"
           errorDetails={errorDetails}
         >
           <div className="flex-1 flex flex-col justify-between min-h-0 space-y-1 sm:space-y-2 font-hand">
@@ -127,10 +127,10 @@ export default function Subbab7JenisFungsi({ stageNum, onStageComplete, onBackTo
               <div className="relative z-10 flex flex-col justify-end">
                 <div className="flex items-center space-x-2 text-[#78350F] font-black text-base sm:text-lg lg:text-[20px]">
                   <Award className="w-5 h-5 animate-bounce text-[#D97706] flex-shrink-0" />
-                  <span>UJIAN AKHIR DETEKTIF DATA: INJEKTIF, SURJEKTIF & BIJEKTIF</span>
+                  <span>UJIAN AKHIR DETEKTIF DATA: RELASI, FUNGSI & KORESPONDENSI</span>
                 </div>
                 <p className="text-base sm:text-lg lg:text-[20px] text-[#2D241E] font-bold leading-snug">
-                  Klasifikasikan sifat pemetaan fungsi di atas secara tepat!
+                  Klasifikasikan sifat hubungan diagram di atas secara tepat!
                 </p>
               </div>
             </div>

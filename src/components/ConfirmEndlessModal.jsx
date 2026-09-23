@@ -29,7 +29,7 @@ export default function ConfirmEndlessModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in font-hand select-none overflow-y-auto">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in font-hand select-none overflow-hidden">
       
       {/* BRIEFING CONTAINER: DETEKTIF RYU + WOODEN BOARD */}
       <div className="relative flex flex-col md:flex-row items-center md:items-end justify-center gap-3 sm:gap-6 w-full max-w-4xl mx-auto my-auto py-2">

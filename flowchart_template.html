@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Flowchart Game Detektif Relasi & Fungsi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 4400px;
+      height: 2900px;
+      background: radial-gradient(circle at 50% 8%, #1c1c38 0%, #0d0e1a 50%, #05060b 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #F8FAFC;
+      position: relative;
+      overflow: hidden;
+      padding: 50px 70px;
+    }
+
+    /* Grid Background */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(150px);
+      pointer-events: none;
+      opacity: 0.20;
+    }
+    .orb-1 { width: 1000px; height: 1000px; background: #6366F1; top: -200px; left: 100px; }
+    .orb-2 { width: 900px; height: 900px; background: #10B981; top: 600px; left: 1100px; }
+    .orb-3 { width: 900px; height: 900px; background: #0284C7; top: 600px; right: 1100px; }
+    .orb-4 { width: 1000px; height: 1000px; background: #EF4444; top: -200px; right: 100px; }
+
+    /* Header */
+    .flowchart-header {
+      text-align: center;
+      margin-bottom: 45px;
+      position: relative;
+      z-index: 10;
+    }
+    .flowchart-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 32px;
+      background: rgba(99, 102, 241, 0.18);
+      border: 2px solid #818CF8;
+      border-radius: 999px;
+      color: #C7D2FE;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 25px rgba(99, 102, 241, 0.3);
+    }
+    .flowchart-title {
+      font-size: 64px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #FFFFFF 20%, #E2E8F0 55%, #94A3B8 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .flowchart-subtitle {
+      font-size: 24px;
+      color: #94A3B8;
+      font-weight: 600;
+      max-width: 2600px;
+      margin: 0 auto;
+      line-height: 1.45;
+    }
+
+    /* Cross-Lane SVG Canvas */
+    #cross-lane-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4400px;
+      height: 2900px;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    /* Grid Layout */
+    .flow-container {
+      display: grid;
+      grid-template-columns: 980px 1120px 1120px 980px;
+      gap: 40px;
+      height: 2540px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .column-lane {
+      background: rgba(255, 255, 255, 0.02);
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      border-radius: 36px;
+      padding: 34px 28px;
+      position: relative;
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .lane-header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 22px;
+      border-bottom: 2px dashed rgba(255, 255, 255, 0.12);
+      margin-bottom: 24px;
+    }
+    .lane-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 900;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    }
+    .lane-title {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    .lane-desc {
+      font-size: 16px;
+      color: #94A3B8;
+      font-weight: 600;
+      margin-top: 3px;
+    }
+
+    /* Nodes Base */
+    .node {
+      border-radius: 22px;
+      padding: 22px 26px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      border: 2px solid transparent;
+      z-index: 10;
+    }
+
+    .node-title {
+      font-size: 21px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .node-desc {
+      font-size: 16px;
+      line-height: 1.55;
+      color: #E2E8F0;
+      font-weight: 600;
+    }
+    .node-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* In-Lane Vertical Connector Arrow */
+    .lane-arrow-down {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 38px;
+      position: relative;
+      z-index: 5;
+    }
+    .lane-arrow-down svg {
+      width: 24px;
+      height: 34px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+    }
+    .arrow-label {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 6px;
+      margin-bottom: 2px;
+      background: #0B0D1B;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      letter-spacing: 0.3px;
+    }
+
+    /* Terminal */
+    .node-terminal {
+      background: linear-gradient(135deg, #4F46E5, #3730A3);
+      border-color: #818CF8;
+      color: #FFFFFF;
+      text-align: center;
+      border-radius: 999px;
+      padding: 20px 32px;
+      box-shadow: 0 0 45px rgba(99, 102, 241, 0.4);
+    }
+    .node-terminal.end {
+      background: linear-gradient(135deg, #059669, #047857);
+      border-color: #34D399;
+      box-shadow: 0 0 45px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Decision Diamond Style */
+    .node-decision {
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.18), rgba(180, 83, 9, 0.1));
+      border: 2.5px solid #F59E0B;
+      color: #FEF3C7;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.22);
+    }
+    .node-decision .node-title { color: #FBBF24; }
+    .node-decision .node-tag { background: #78350F; color: #FDE68A; border: 1px solid #D97706; }
+
+    /* Section Themes */
+    .theme-core {
+      background: linear-gradient(145deg, rgba(79, 70, 229, 0.16), rgba(30, 27, 75, 0.55));
+      border-color: rgba(129, 140, 248, 0.45);
+    }
+    .theme-core .node-title { color: #A5B4FC; }
+    .theme-core .node-tag { background: #312E81; color: #C7D2FE; border: 1px solid #4F46E5; }
+
+    .theme-chapter {
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.16), rgba(6, 78, 59, 0.5));
+      border-color: rgba(52, 211, 153, 0.48);
+    }
+    .theme-chapter .node-title { color: #6EE7B7; }
+    .theme-chapter .node-tag { background: #064E3B; color: #A7F3D0; border: 1px solid #059669; }
+
+    .theme-quest {
+      background: linear-gradient(145deg, rgba(14, 165, 233, 0.16), rgba(12, 74, 110, 0.5));
+      border-color: rgba(56, 189, 248, 0.48);
+    }
+    .theme-quest .node-title { color: #7DD3FC; }
+    .theme-quest .node-tag { background: #0C4A6E; color: #BAE6FD; border: 1px solid #0284C7; }
+
+    .theme-endless {
+      background: linear-gradient(145deg, rgba(239, 68, 68, 0.16), rgba(127, 29, 29, 0.5));
+      border-color: rgba(248, 113, 113, 0.48);
+    }
+    .theme-endless .node-title { color: #FCA5A5; }
+    .theme-endless .node-tag { background: #7F1D1D; color: #FECDD3; border: 1px solid #DC2626; }
+
+    .theme-data {
+      background: linear-gradient(145deg, rgba(168, 85, 247, 0.16), rgba(88, 28, 135, 0.5));
+      border-color: rgba(192, 132, 252, 0.48);
+    }
+    .theme-data .node-title { color: #D8B4FE; }
+    .theme-data .node-tag { background: #581C87; color: #E9D5FF; border: 1px solid #9333EA; }
+
+    /* Legend */
+    .legend-card {
+      margin-top: auto;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      font-size: 15px;
+      color: #CBD5E1;
+      font-weight: 700;
+    }
+    .legend-item { display: flex; align-items: center; gap: 12px; }
+    .legend-dot { width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+  <div class="glow-orb orb-4"></div>
+
+  <!-- HEADER -->
+  <div class="flowchart-header">
+    <div class="flowchart-badge">
+      <span>🔎</span> ARSITEKTUR SISTEM & FLOWCHART GAME TESIS S2 PENDIDIKAN MATEMATIKA
+    </div>
+    <h1 class="flowchart-title">FLOWCHART GAME: DETEKTIF DATA RELASI & FUNGSI</h1>
+    <p class="flowchart-subtitle">
+      Struktur Alur Pembelajaran Berbasis Game: Autentikasi Siswa, Chapter Mode (Materi Interaktif & Kelulusan Latihan &ge; 85%), 
+      Quest Mode (Ujian 30 Menit Teracak Fisher-Yates), Endless Mode (3 Nyawa), dan Integrasi Dual Storage REST API
+    </p>
+  </div>
+
+  <!-- SVG CANVAS FOR CROSS-LANE HIGH-GLOW CONNECTORS -->
+  <svg id="cross-lane-canvas">
+    <defs>
+      <marker id="arrow-green-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#34D399" />
+      </marker>
+      <marker id="arrow-blue-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#38BDF8" />
+      </marker>
+      <marker id="arrow-red-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#F87171" />
+      </marker>
+      <marker id="arrow-purple-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#C084FC" />
+      </marker>
+    </defs>
+
+    <!-- Branch from Main Menu (Lane 1, x: 1050, y: 1040) to Chapter Mode (Lane 2, x: 1090, y: 260) -->
+    <path d="M 1050 1040 C 1070 1040, 1070 260, 1090 260" fill="none" stroke="#34D399" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arrow-green-head)" />
+    
+    <!-- Branch from Main Menu (Lane 1, x: 1050, y: 1090) to Quest Mode (Lane 3, x: 2250, y: 260) -->
+    <path d="M 1050 1090 C 1600 1090, 1700 260, 2250 260" fill="none" stroke="#38BDF8" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arrow-blue-head)" />
+
+    <!-- Branch from Main Menu (Lane 1, x: 1050, y: 1140) to Endless Mode (Lane 4, x: 3410, y: 260) -->
+    <path d="M 1050 1140 C 2200 1140, 2400 260, 3410 260" fill="none" stroke="#F87171" stroke-width="4" stroke-dasharray="8 6" marker-end="url(#arrow-red-head)" />
+
+    <!-- Sync from Chapter Save (Lane 2, x: 2210, y: 2360) to Dual Storage (Lane 4, x: 3410, y: 1540) -->
+    <path d="M 2210 2360 C 2800 2360, 2900 1540, 3410 1540" fill="none" stroke="#C084FC" stroke-width="4" marker-end="url(#arrow-purple-head)" />
+
+    <!-- Sync from Quest Eval (Lane 3, x: 3370, y: 2360) to Dual Storage (Lane 4, x: 3410, y: 1590) -->
+    <path d="M 3370 2360 C 3390 2360, 3390 1590, 3410 1590" fill="none" stroke="#C084FC" stroke-width="4" marker-end="url(#arrow-purple-head)" />
+  </svg>
+
+  <!-- 4-COLUMN LANE CONTAINER -->
+  <div class="flow-container">
+
+    <!-- ========================================================================= -->
+    <!-- LANE 1: INISIALISASI & MAIN MENU HUB -->
+    <!-- ========================================================================= -->
+    <div class="column-lane" style="border-top: 6px solid #818CF8;">
+      <div class="lane-header">
+        <div class="lane-icon" style="background: rgba(99, 102, 241, 0.2); color: #818CF8;">🚀</div>
+        <div>
+          <div class="lane-title">1. Autentikasi & Menu Utama</div>
+          <div class="lane-desc">Alur Masuk Siswa & Navigasi Antarmuka</div>
+        </div>
+      </div>
+
+      <!-- Node 1: Start Terminal -->
+      <div id="node-start" class="node node-terminal">
+        <div class="node-title" style="justify-content: center;">🏁 START (MULAI GAME)</div>
+        <div class="node-desc">Siswa membuka Web App Game. Inisialisasi AudioEngine, StorageService, dan Detektor Koneksi Server.</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#818CF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 2: Input Profil Siswa -->
+      <div id="node-auth" class="node theme-core">
+        <div class="node-title">👤 Input Profil & Akun Siswa</div>
+        <div class="node-desc">
+          Siswa memasukkan <b>Nama Lengkap</b> & <b>Kelas / NIS</b>. Sistem memverifikasi sesi login lokal dan menyinkronkan data profil ke server MongoDB.
+        </div>
+        <div class="node-tag">authClient.js • storageService.js</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#818CF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 3: Sambutan Detektif Relo -->
+      <div id="node-greeting" class="node theme-core">
+        <div class="node-title">🦉 Sambutan Maskot Detektif Relo</div>
+        <div class="node-desc">
+          Audio sapaan dinamis diputar otomatis sesuai waktu nyata: <b>Pagi, Siang, Sore, atau Malam</b> via ReloVoiceService.
+        </div>
+        <div class="node-tag">reloVoiceService.js (Scene 1A / 1B)</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#818CF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 4: Main Menu Hub -->
+      <div id="node-menu" class="node theme-core" style="border-width: 3.5px; border-color: #818CF8; background: linear-gradient(145deg, rgba(99, 102, 241, 0.25), rgba(30, 27, 75, 0.75));">
+        <div class="node-title" style="font-size: 24px;">🏠 HUB MENU UTAMA GAME</div>
+        <div class="node-desc">
+          Pusat navigasi siswa memilih mode petualangan matematika:
+          <br>• <b>Cabang A: Chapter Mode</b> (Materi & Penyelidikan Bab 1-5)
+          <br>• <b>Cabang B: Quest Mode</b> (Ujian Waktu 30 Menit - Soal Acak)
+          <br>• <b>Cabang C: Endless Mode</b> (Tantangan Bertahan Hidup - 3 Nyawa)
+          <br>• <b>Fitur Pendukung:</b> Papan Peringkat, Lencana & Pengaturan Audio
+        </div>
+        <div class="node-tag">MainMenu.jsx</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#818CF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 5: Papan Peringkat & Prestasi -->
+      <div id="node-leaderboard" class="node theme-data">
+        <div class="node-title">🏆 Papan Peringkat & Lencana (Badges)</div>
+        <div class="node-desc">
+          Melihat skor tertinggi kelas, peringkat detektif per bab, riwayat ujian quest, serta pencapaian lencana prestasi siswa.
+        </div>
+        <div class="node-tag">LeaderboardModal.jsx • BadgesModal.jsx</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#818CF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 6: Pengaturan Audio -->
+      <div id="node-settings" class="node theme-data">
+        <div class="node-title">⚙️ Pengaturan Suara & Audio</div>
+        <div class="node-desc">
+          Pengaturan volume Musik Latar (BGM), Efek Suara (SFX), dan Sakelar Suara Percakapan Maskot (Relo / Snowy / Ryu).
+        </div>
+        <div class="node-tag">SettingsModal.jsx • audioEngine.js</div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend-card">
+        <div class="legend-item"><div class="legend-dot" style="background:#818CF8;"></div><span>Alur Sistem / Menu</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#34D399;"></div><span>Chapter Mode</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#38BDF8;"></div><span>Quest Mode</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F87171;"></div><span>Endless Mode</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FBBF24;"></div><span>Evaluasi / Keputusan</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#C084FC;"></div><span>Dual Storage Sync</span></div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- LANE 2: CHAPTER MODE (MATERI & LATIHAN) -->
+    <!-- ========================================================================= -->
+    <div class="column-lane" style="border-top: 6px solid #34D399;">
+      <div class="lane-header">
+        <div class="lane-icon" style="background: rgba(16, 185, 129, 0.2); color: #34D399;">🎓</div>
+        <div>
+          <div class="lane-title">2. Chapter Mode (Relo)</div>
+          <div class="lane-desc">Materi Pembelajaran & Syarat Kelulusan Latihan</div>
+        </div>
+      </div>
+
+      <!-- Node 7: Stage Selector -->
+      <div id="node-stage-selector" class="node theme-chapter">
+        <div class="node-title">🗺️ Stage Selector (Chapter 1 s/d 5)</div>
+        <div class="node-desc">
+          Siswa memilih bab materi yang akan dipelajari:
+          <br><b>Bab 1:</b> Konsep & Cara Menyatakan Relasi
+          <br><b>Bab 2:</b> Definisi & Unsur Fungsi (Domain, Kodomain, Range)
+          <br><b>Bab 3:</b> Notasi & Rumus Nilai Fungsi
+          <br><b>Bab 4:</b> Grafik Fungsi Linear & Gradien
+          <br><b>Bab 5:</b> Korespondensi Satu-Satu
+        </div>
+        <div class="node-tag">StageSelector.jsx</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#34D399" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 8: Decision Syarat Buka Chapter -->
+      <div id="node-check-chapter" class="node node-decision">
+        <div class="node-title">🔒 Apakah Chapter Terbuka?</div>
+        <div class="node-desc">
+          • <b>Chapter 1:</b> Terbuka default sejak awal.
+          <br>• <b>Chapter 2 – 5:</b> Terbuka <b>HANYA JIKA</b> Latihan Bab sebelumnya telah tuntas dengan <b>Skor &ge; 85%</b>!
+          <br><i>(Jika skor &lt; 85%, kartu bab menampilkan gembok terkunci)</i>
+        </div>
+        <div class="node-tag">storageService.hasPassedExercise()</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#A7F3D0; border-color:#059669;">Terbuka (Skor Bab Lalu &ge; 85%)</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#34D399" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 9: Sesi Materi Pembelajaran -->
+      <div id="node-learn" class="node theme-chapter">
+        <div class="node-title">📖 Sesi Belajar Materi Interaktif</div>
+        <div class="node-desc">
+          • Video Pembelajaran Berdurasi Ringkas & Menarik
+          <br>• Subtitle Detektif Relo sinkron 100% kata demi kata dengan rekaman suara
+          <br>• Kanvas Interaktif: Diagram Panah, Tabel Relasi & Grafik Koordinat
+          <br>• Kuis Cek Pemahaman Konsep (Audio Feedback Benar/Salah)
+        </div>
+        <div class="node-tag">ChapterLearning.jsx • chapterSubtitles.js</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#34D399" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 10: Selesai Materi & Tombol Lanjut Latihan -->
+      <div id="node-modal-finish-materi" class="node theme-chapter">
+        <div class="node-title">🏁 Modal Selesai Materi Bab</div>
+        <div class="node-desc">
+          Menampilkan pencapaian materi dan tombol aksi langsung <b>"Lanjutkan ke Latihan Soal Chapter"</b>. (Chapter berikutnya tidak otomatis terbuka sebelum latihan tuntas).
+        </div>
+        <div class="node-tag">CompletionModal • Auto-advance 2.2s</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#A7F3D0; border-color:#059669;">Lanjut ke Latihan Bab</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#34D399" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 11: Latihan Soal Chapter -->
+      <div id="node-exercise" class="node theme-chapter" style="border-width: 3.5px; border-color: #34D399; background: linear-gradient(145deg, rgba(16, 185, 129, 0.25), rgba(6, 78, 59, 0.7));">
+        <div class="node-title">📝 Latihan Soal Chapter (10 - 15 Soal)</div>
+        <div class="node-desc">
+          Siswa menyelesaikan soal latihan berbasis kurikulum SMP Kelas 8. Menguji pemahaman konsep matematis secara menyeluruh dengan umpan balik langsung.
+        </div>
+        <div class="node-tag">ChapterExercise.jsx • exerciseChapter*.js</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#FBBF24" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 12: Decision Kelulusan Latihan 85% -->
+      <div id="node-decision-exercise" class="node node-decision">
+        <div class="node-title">🎯 Apakah Skor Latihan &ge; 85%?</div>
+        <div class="node-desc">
+          • <b>YA (&ge; 85%):</b> TUNTAS! Kunci Chapter berikutnya resmi TERBUKA & Badge Bab didapatkan!
+          <br>• <b>TIDAK (&lt; 85%):</b> BELUM TUNTAS. Chapter berikutnya tetap terkunci. Siswa disarankan mengulang latihan hingga tuntas.
+        </div>
+        <div class="node-tag">Standar Kelulusan Kurikulum</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#A7F3D0; border-color:#059669;">LULUS (&ge; 85%)</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#34D399" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 13: Simpan Hasil Latihan -->
+      <div id="node-save-chapter" class="node theme-chapter">
+        <div class="node-title">💾 Rekam Progres & Buka Bab Lanjutan</div>
+        <div class="node-desc">
+          Menyimpan nilai latihan, memperbarui bintang chapter, dan membuka status akses bab selanjutnya di penyimpanan data (Local & Cloud).
+        </div>
+        <div class="node-tag">storageService.recordExerciseResult()</div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- LANE 3: QUEST MODE (UJIAN 30 MENIT TERACAK) -->
+    <!-- ========================================================================= -->
+    <div class="column-lane" style="border-top: 6px solid #38BDF8;">
+      <div class="lane-header">
+        <div class="lane-icon" style="background: rgba(14, 165, 233, 0.2); color: #38BDF8;">⏱️</div>
+        <div>
+          <div class="lane-title">3. Quest Mode (Snowy)</div>
+          <div class="lane-desc">Ujian Waktu 30 Menit dengan Soal Teracak</div>
+        </div>
+      </div>
+
+      <!-- Node 14: Quest Selector -->
+      <div id="node-quest-selector" class="node theme-quest">
+        <div class="node-title">🎯 Quest Selector (Pilih Bab Ujian)</div>
+        <div class="node-desc">
+          Siswa memilih bab yang akan diuji. Bab Quest Mode terbuka bagi bab yang telah dipelajari materinya pada Chapter Mode.
+        </div>
+        <div class="node-tag">QuestModeSelector.jsx</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#38BDF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 15: Briefing & Audio Snowy -->
+      <div id="node-quest-briefing" class="node theme-quest">
+        <div class="node-title">🐻 Layar Persiapan & Briefing Snowy</div>
+        <div class="node-desc">
+          • Memutar audio persiapan secara acak (3 variasi suara baru Snowy)
+          <br>• Balon Obrolan (Speech Bubble) Snowy sinkron teks pesan
+          <br>• Informasi bobot Bloom: C3=50pt, C4=80pt, C5=120pt + Bonus Waktu (+1 pt/detik tersisa)
+          <br>• Maskot interaktif (dapat diklik untuk mendengar suara kembali)
+        </div>
+        <div class="node-tag">quest_before_start • InstructorMascotGuide</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#BAE6FD; border-color:#0284C7;">Klik "Mulai Ujian Quest"</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#38BDF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 16: Generator Pengacakan Soal -->
+      <div id="node-quest-randomizer" class="node theme-quest" style="border-width: 3.5px; border-color: #38BDF8; background: linear-gradient(145deg, rgba(14, 165, 233, 0.25), rgba(12, 74, 110, 0.75));">
+        <div class="node-title" style="font-size: 22px;">🎲 GENERATOR ACAK SOAL (ANTI-NYONTEK)</div>
+        <div class="node-desc">
+          Saat tombol <b>"MULAI UJIAN QUEST"</b> ditekan:
+          <br>1. <b>Acak Urutan Soal (1 s/d 30):</b> Algoritma <i>Fisher-Yates Shuffle</i>. Urutan nomor soal antar siswa berbeda total.
+          <br>2. <b>Acak Opsi Pilihan Ganda (A, B, C, D):</b> Letak kunci jawaban diacak posisinya per butir soal.
+          <br>3. <b>Acak Baris Pasangan:</b> Soal Menjodohkan diacak.
+          <br>4. Re-index nomor soal (1..30) & Mulai Timer 30:00 (1800 detik).
+        </div>
+        <div class="node-tag">questQuestionsService.js • shuffleArray()</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#BAE6FD; border-color:#0284C7;">30 Soal Teracak & Timer 30:00</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#38BDF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 17: Pengerjaan 30 Soal Interaktif -->
+      <div id="node-quest-exam" class="node theme-quest">
+        <div class="node-title">⚔️ Pengerjaan Ujian 30 Soal (5 Format)</div>
+        <div class="node-desc">
+          • Pilihan Ganda (MCQ) & Benar/Salah (True/False)
+          <br>• Kanvas Hubung Diagram Panah (RelationDiagramCanvas)
+          <br>• Kanvas Titik Koordinat Cartesius (RelationCartesianCanvas)
+          <br>• Kotak Pasangan Menjodohkan (Matching Pairs)
+          <br>• Peringatan Suara Snowy saat sisa waktu 1 Menit!
+        </div>
+        <div class="node-tag">QuestModeExam.jsx • 1800 Detik</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#FBBF24" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 18: Decision Selesai / Waktu Habis -->
+      <div id="node-quest-finish-check" class="node node-decision">
+        <div class="node-title">⏱️ Submit Manual atau Waktu Habis?</div>
+        <div class="node-desc">
+          • Siswa mengklik tombol <b>"SELESAIKAN QUEST 🏁"</b>, ATAU
+          <br>• Timer hitung mundur mencapai <b>00:00</b> (Auto-submit otomatis oleh sistem).
+        </div>
+        <div class="node-tag">handleSubmitExam()</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#38BDF8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 19: Evaluasi Hasil Quest -->
+      <div id="node-quest-eval" class="node theme-quest">
+        <div class="node-title">📊 Evaluasi Kelulusan Quest Mode</div>
+        <div class="node-desc">
+          • <b>Skor Skala 100</b> = (Jumlah Benar / 30) &times; 100%
+          <br>• <b>Total Poin Quest</b> = Poin Bloom Soal + Bonus Sisa Detik
+          <br>• <b>Lulus (&ge; 75%):</b> Audio Selebrasi & Apresiasi Snowy
+          <br>• <b>Remedial (&lt; 75%):</b> Audio Penyemangat & Evaluasi Belajar
+        </div>
+        <div class="node-tag">quest_exam_pass / quest_exam_fail</div>
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- LANE 4: ENDLESS MODE & SINKRONISASI SERVER -->
+    <!-- ========================================================================= -->
+    <div class="column-lane" style="border-top: 6px solid #F87171;">
+      <div class="lane-header">
+        <div class="lane-icon" style="background: rgba(239, 68, 68, 0.2); color: #F87171;">🔥</div>
+        <div>
+          <div class="lane-title">4. Endless & Sinkronisasi</div>
+          <div class="lane-desc">Mode Bertahan Hidup & Arsitektur Data Cloud</div>
+        </div>
+      </div>
+
+      <!-- Node 20: Endless Mode Intro -->
+      <div id="node-endless-intro" class="node theme-endless">
+        <div class="node-title">⚔️ Endless Mode (Instruktur Ryu)</div>
+        <div class="node-desc">
+          Tantangan bertarung tanpa henti:
+          <br>• Modal awal <b>3 Nyawa (Hearts)</b>
+          <br>• Soal acak berkelanjutan tanpa batas waktu
+          <br>• Sistem Combo Streak & Pengali Poin
+          <br>• Menjawab salah mengurangi 1 Nyawa
+        </div>
+        <div class="node-tag">EndlessMode.jsx</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#F87171" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 21: Decision Nyawa = 0? -->
+      <div id="node-endless-check" class="node node-decision">
+        <div class="node-title">💔 Apakah Nyawa = 0?</div>
+        <div class="node-desc">
+          • <b>TIDAK (> 0):</b> Sisa nyawa ada -> Lanjut terus ke soal berikutnya, raih rekor combo tertinggi!
+          <br>• <b>YA (0):</b> GAME OVER! Sesi pertarungan berakhir.
+        </div>
+        <div class="node-tag">Sistem Bertahan Hidup</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#FECDD3; border-color:#DC2626;">Nyawa = 0 (Game Over)</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#F87171" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 22: Game Over Endless -->
+      <div id="node-endless-gameover" class="node theme-endless">
+        <div class="node-title">💀 Game Over & Rekor Skor Ryu</div>
+        <div class="node-desc">
+          Audio evaluasi Ryu diputar. Sistem merekap total soal yang berhasil dipecahkan, skor tertinggi, dan streak terpanjang.
+        </div>
+        <div class="node-tag">endless_gameover</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <span class="arrow-label" style="color:#E9D5FF; border-color:#9333EA;">Rekam Skor Akhir</span>
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#C084FC" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 23: Dual Storage Architecture -->
+      <div id="node-dual-storage" class="node theme-data" style="border-width: 3.5px; border-color: #C084FC; background: linear-gradient(145deg, rgba(168, 85, 247, 0.25), rgba(88, 28, 135, 0.75));">
+        <div class="node-title" style="font-size: 22px;">🔄 ARSITEKTUR DUAL STORAGE & SINKRONISASI</div>
+        <div class="node-desc">
+          <b>1. Penyimpanan Lokal (Client LocalStorage):</b>
+          <br>Game 100% playable offline di komputer/HP siswa tanpa kendala sinyal internet.
+          <br><br>
+          <b>2. Sinkronisasi Otomatis (Cloud REST API):</b>
+          <br>Ketika koneksi online terdeteksi, sistem otomatis menyinkronkan seluruh nilai siswa ke database server MongoDB.
+        </div>
+        <div class="node-tag">storageService.js • apiService.js • networkStatusService.js</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#C084FC" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 24: Rekap Nilai Guru -->
+      <div id="node-admin-recap" class="node theme-data">
+        <div class="node-title">📈 Dashboard Evaluasi & Rekap Guru</div>
+        <div class="node-desc">
+          Guru & Peneliti dapat memantau hasil belajar siswa:
+          <br>• Skor Latihan Bab, Skor Ujian Quest, dan Peringkat Siswa
+          <br>• Ekspor Nilai ke Excel/PDF untuk analisis efektivitas media tesis
+        </div>
+        <div class="node-tag">admin.service.ts • Export Rekap Excel</div>
+      </div>
+
+      <div class="lane-arrow-down">
+        <svg viewBox="0 0 24 34"><path d="M12 0 L12 28 M4 20 L12 30 L20 20" stroke="#34D399" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </div>
+
+      <!-- Node 25: End Terminal -->
+      <div id="node-end" class="node node-terminal end">
+        <div class="node-title" style="justify-content: center;">🏆 SELESAI (MISI TERCAPAI)</div>
+        <div class="node-desc">Siswa tuntas menguasai kompetensi Relasi & Fungsi, meraih gelar Detektif Legendaris, dan data hasil belajar terarsip rapi.</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

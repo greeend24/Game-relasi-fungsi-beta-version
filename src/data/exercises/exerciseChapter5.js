@@ -1,7 +1,18 @@
 /**
- * LATIHAN CHAPTER 5: KORESPONDENSI SATU-SATU
- * 30 Soal Interaktif + Variasi Remedial Angka Berbeda
- * Format: MCQ, TRUE_FALSE, MCQ_COMPLEX, MATCHING, ARROWS, CARTESIAN
+ * LATIHAN CHAPTER 5: KORESPONDENSI SATU-SATU (BIJEKSI)
+ * 10 Soal Interaktif Taktil dengan Ragam Mekanik Bervariasi + 10 Remedial Variant
+ * 
+ * Menggunakan bahasa kontekstual yang sederhana dan mudah dipahami siswa SMP:
+ * 1. MCQ : Pengertian Korespondensi Satu-Satu
+ * 2. SLOT_FILL : Menghitung Kemungkinan Susunan (n = 3)
+ * 3. MATCHING : Menjodohkan Siswa dengan Nomor Loker
+ * 4. TABLE_BUILDER : Melengkapi Tabel Nomor Meja Peserta Ujian
+ * 5. HPB_BUILDER : Menyusun Pasangan Siswa dan Nomor Komputer Lab
+ * 6. ARROWS : Diagram Panah Siswa dan Nomor Bangku Kelas
+ * 7. SLOT_FILL : Menghitung Nilai Faktorial 4! (4 × 3 × 2 × 1)
+ * 8. MCQ_COMPLEX : Memilih Himpunan Pasangan yang Memenuhi Syarat 1-ke-1
+ * 9. CARTESIAN : Menandai Titik Koordinat Korespondensi pada Kartesius
+ * 10. DRAG_DROP : Memilah Contoh Dunia Nyata (Korespondensi 1-1 vs Relasi Biasa)
  */
 
 export const EXERCISE_CHAPTER_5 = [
@@ -10,731 +21,382 @@ export const EXERCISE_CHAPTER_5 = [
     chapterId: 5,
     type: "MCQ",
     title: "🔗 Pengertian Korespondensi Satu-Satu",
-    question: "Apakah yang dimaksud dengan korespondensi satu-satu (pemetaan bijektif) antara himpunan A dan himpunan B?",
+    question: "Apakah yang dimaksud dengan korespondensi satu-satu antara himpunan A dan himpunan B?",
     options: [
       "Relasi di mana setiap anggota A berpasangan dengan tepat satu anggota B, dan setiap anggota B berpasangan dengan tepat satu anggota A",
-      "Relasi di mana anggota A boleh memilih lebih dari satu anggota B asalkan semua B terpasang",
+      "Relasi di mana anggota A boleh memiliki lebih dari satu pasangan asalkan semua anggota B terpasang",
       "Fungsi di mana semua anggota A berpasangan ke satu anggota B yang sama",
-      "Relasi yang hanya berlaku untuk himpunan yang anggotanya berupa bilangan genap"
+      "Relasi yang hanya berlaku jika jumlah anggota himpunannya berupa bilangan genap"
     ],
     correct: "Relasi di mana setiap anggota A berpasangan dengan tepat satu anggota B, dan setiap anggota B berpasangan dengan tepat satu anggota A",
-    correctReason: "Tepat sekali! Korespondensi satu-satu adalah pemetaan timbal balik yang sempurna: setiap anggota asal punya tepat 1 kawan, dan setiap anggota kawan juga punya tepat 1 kawan di asal (tidak ada yang kosong dan tidak ada yang bercabang di kedua belah pihak).",
-    wrongExplanation: "Pada korespondensi satu-satu, kedua himpunan saling mengikat secara eksklusif (1-ke-1) tanpa ada anggota yang jomblo ataupun bercabang.",
-    clue: "Ingat prinsip: satu untuk satu, saling setia dan tidak ada yang tersisa di kedua himpunan.",
+    correctReason: "Tepat sekali! Korespondensi satu-satu adalah pemetaan timbal balik yang sempurna: setiap anggota daerah asal memiliki tepat satu kawan, dan sebaliknya setiap anggota daerah kawan juga memiliki tepat satu pasangan (tidak ada yang kosong dan tidak ada yang bercabang).",
+    wrongExplanation: "Korespondensi satu-satu mensyaratkan setiap anggota A berpasangan tepat satu dengan anggota B, dan sebaliknya setiap anggota B berpasangan tepat satu dengan anggota A.",
+    explanation: "Korespondensi satu-satu adalah relasi timbal balik sempurna di mana setiap anggota domain dan kodomain berpasangan tepat satu-satu tanpa sisa dan tanpa cabang.",
+    clue: "Ingat prinsipnya: satu untuk satu, saling setia dan tidak ada yang tersisa di kedua himpunan.",
+    distractorAnalysis: {
+      "Relasi di mana anggota A boleh memiliki lebih dari satu pasangan asalkan semua anggota B terpasang": "Korespondensi 1-1 melarang keras adanya cabang pada himpunan asal.",
+      "Fungsi di mana semua anggota A berpasangan ke satu anggota B yang sama": "Ini adalah fungsi konstan, bukan korespondensi satu-satu.",
+      "Relasi yang hanya berlaku jika jumlah anggota himpunannya berupa bilangan genap": "Korespondensi 1-1 berlaku untuk berapa pun jumlah anggotanya, asalkan n(A) = n(B)."
+    },
     remedialVariant: {
+      type: "MCQ",
+      title: "🔗 Remedial: Ciri Utama Korespondensi 1-1",
       question: "Ciri utama dari relasi korespondensi satu-satu adalah...",
       options: [
         "Setiap anggota domain dan kodomain berpasangan tepat satu secara timbal balik",
         "Domain boleh bercabang ke beberapa anggota kodomain",
-        "Kodomain boleh memiliki anggota yang tidak berpasangan",
-        "Hanya boleh memiliki 2 anggota himpunan"
+        "Kodomain boleh memiliki anggota yang tidak memiliki pasangan",
+        "Hanya boleh memiliki dua anggota himpunan saja"
       ],
       correct: "Setiap anggota domain dan kodomain berpasangan tepat satu secara timbal balik",
-      correctReason: "Benar! Pasangannya tepat satu secara timbal balik antara domain dan kodomain.",
-      wrongExplanation: "Korespondensi satu-satu tidak memperbolehkan cabang maupun anggota sisa di kedua himpunan."
+      correctReason: "Benar! Pasangannya harus tepat satu secara timbal balik antara domain dan kodomain.",
+      wrongExplanation: "Ciri utama: tepat satu secara timbal balik tanpa cabang dan tanpa sisa.",
+      clue: "Satu untuk satu secara timbal balik."
     }
   },
   {
     id: 2,
     chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "⚖️ Syarat Mutlak n(A) = n(B)",
-    question: "Pernyataan: Korespondensi satu-satu hanya mungkin terjadi jika jumlah anggota himpunan A persis sama dengan jumlah anggota himpunan B (n(A) = n(B)).",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Benar! Ini adalah syarat mutlak yang paling fundamental. Jika jumlah anggotanya berbeda, pasti ada anggota yang tidak kebagian pasangan atau ada yang terpaksa bercabang.",
-    wrongExplanation: "Pernyataan ini bernilai Benar. Syarat pertama dan utama korespondensi satu-satu adalah n(A) = n(B).",
-    clue: "Jika jumlah anggota berbeda, tidak mungkin semua berpasangan satu lawan satu secara adil.",
+    type: "SLOT_FILL",
+    title: "🧩 Menghitung Banyak Korespondensi (n = 3)",
+    question: "Diberikan himpunan A = {1, 2, 3} dan B = {a, b, c}. Tentukan banyak kemungkinan susunan korespondensi satu-satu dengan melengkapi langkah perhitungan 3! (3 × 2 × 1)!",
+    subInstruction: "Pasang kartu angka ke dalam kotak perhitungan [ ? ]:",
+    slots: [
+      {
+        id: "s1",
+        label: "Banyak anggota himpunan n(A) = n(B) =",
+        answer: "3"
+      },
+      {
+        id: "s2",
+        label: "Banyak susunan korespondensi (3!) =",
+        answer: "6"
+      }
+    ],
+    tokens: ["2", "3", "4", "6", "9"],
+    correctReason: "Luar biasa! Karena jumlah anggota n = 3, banyak kemungkinan susunan korespondensi satu-satu adalah 3! = 3 × 2 × 1 = 6 kemungkinan.",
+    wrongExplanation: "Rumus banyak korespondensi satu-satu adalah n! = 3 × 2 × 1 = 6.",
+    clue: "Banyak anggota n = 3, lalu hitung 3 × 2 × 1 = 6.",
     remedialVariant: {
-      question: "Pernyataan: Korespondensi satu-satu dapat terbentuk antara himpunan beranggotakan 4 elemen dengan himpunan beranggotakan 5 elemen.",
-      options: ["Benar", "Salah"],
-      correct: "Salah",
-      correctReason: "Tepat! Pernyataan tersebut salah karena n(A) harus sama dengan n(B). Jika 4 dan 5, pasti ada 1 anggota yang tidak memiliki pasangan.",
-      wrongExplanation: "Jumlah anggota harus persis sama agar bisa membentuk korespondensi satu-satu."
+      type: "SLOT_FILL",
+      title: "🧩 Remedial: Menghitung Susunan 2 Elemen (2!)",
+      question: "Diberikan A = {1, 2} dan B = {x, y}. Lengkapi banyak korespondensi satu-satu!",
+      slots: [
+        { id: "s1", label: "Banyak anggota n =", answer: "2" },
+        { id: "s2", label: "Banyak susunan (2!) =", answer: "2" }
+      ],
+      tokens: ["1", "2", "2", "3", "4"],
+      correctReason: "Tepat! 2! = 2 × 1 = 2 susunan.",
+      wrongExplanation: "2! = 2 × 1 = 2.",
+      clue: "2 × 1 = 2."
     }
   },
   {
     id: 3,
     chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Menghitung Banyak Korespondensi (3!)",
-    question: "Diketahui himpunan A = {1, 2, 3} dan B = {a, b, c}. Banyaknya korespondensi satu-satu yang mungkin terbentuk dari A ke B adalah...",
-    options: ["6", "9", "8", "3"],
-    correct: "6",
-    correctReason: "Hebat! Rumus banyak korespondensi satu-satu adalah n! (faktorial). Karena n = 3, maka 3! = 3 × 2 × 1 = 6 kemungkinan.",
-    wrongExplanation: "Rumus korespondensi satu-satu adalah n! = n × (n−1) × ... × 1. Untuk n = 3: 3 × 2 × 1 = 6 (bukan 3² = 9).",
-    clue: "Gunakan perkalian faktorial: 3 × 2 × 1.",
+    type: "MATCHING",
+    title: "🔗 Menjodohkan Siswa dengan Nomor Loker",
+    question: "Tiga siswa meminjam 3 loker di sekolah: Andi menempati Loker 1, Budi menempati Loker 3, dan Citra menempati Loker 2. Jodohkan setiap nama siswa dengan nomor lokernya yang tepat!",
+    labelA: "Nama Siswa",
+    labelB: "Nomor Loker",
+    pairs: [
+      { left: "Andi", right: "Loker 1" },
+      { left: "Budi", right: "Loker 3" },
+      { left: "Citra", right: "Loker 2" }
+    ],
+    rightOptions: ["Loker 1", "Loker 2", "Loker 3", "Loker 4"],
+    correctReason: "Tepat sekali! Setiap siswa memiliki tepat satu loker eksklusif tanpa berebut, dan seluruh loker terisi penuh. Ini adalah contoh korespondensi satu-satu.",
+    wrongExplanation: "Pasangkan: Andi ➔ Loker 1, Budi ➔ Loker 3, dan Citra ➔ Loker 2.",
+    clue: "Andi ke Loker 1, Budi ke Loker 3, Citra ke Loker 2.",
     remedialVariant: {
-      question: "Jika n(A) = n(B) = 3, berapa banyak kemungkinan korespondensi satu-satu yang dapat dibentuk?",
-      options: ["6", "8", "9", "12"],
-      correct: "6",
-      correctReason: "Tepat! 3! = 3 × 2 × 1 = 6 kemungkinan.",
-      wrongExplanation: "Banyak korespondensi = 3! = 6."
+      type: "MATCHING",
+      title: "🔗 Remedial: Pasangan 2 Siswa dan Loker",
+      question: "Jodohkan siswa dengan nomor lokernya!",
+      pairs: [
+        { left: "Deni", right: "Loker A" },
+        { left: "Eka", right: "Loker B" }
+      ],
+      rightOptions: ["Loker A", "Loker B", "Loker C"],
+      correctReason: "Bagus! Hubungan satu-ke-satu terpasang tepat.",
+      wrongExplanation: "Pasangkan Deni ke Loker A dan Eka ke Loker B.",
+      clue: "Deni di Loker A, Eka di Loker B."
     }
   },
   {
     id: 4,
     chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Menghitung Nilai 4!",
-    question: "Berapakah banyak korespondensi satu-satu yang mungkin dari dua himpunan yang masing-masing memiliki 4 anggota (4!)?",
-    options: ["24", "16", "12", "64"],
-    correct: "24",
-    correctReason: "Luar biasa! 4! = 4 × 3 × 2 × 1 = 24 kemungkinan susunan pasangan.",
-    wrongExplanation: "4! = 4 × 3 × 2 × 1 = 24. Jangan keliru dengan 4² = 16 atau 4 × 4 = 16.",
-    clue: "Hitung: 4 × 3 = 12, lalu 12 × 2 = 24, lalu 24 × 1 = 24.",
+    type: "TABLE_BUILDER",
+    title: "📊 Melengkapi Tabel Nomor Meja Peserta Ujian",
+    question: "Empat peserta ujian menempati meja masing-masing tanpa nomor ganda: Dika Meja 1, Eka Meja 3, Fani Meja 2, dan Gina Meja 4. Lengkapi nomor meja pada tabel berikut!",
+    tableTitle: "Tabel Peserta Ujian (Korespondensi 1-ke-1)",
+    subInstruction: "Pindahkan kartu nomor meja ke dalam sel tabel bertanda [ ? ]:",
+    headers: ["Nama Siswa", "Nomor Meja"],
+    rows: [
+      { idX: "r1_x", valX: "Dika", isSlotX: false, idY: "r1_y", valY: null, isSlotY: true },
+      { idX: "r2_x", valX: "Eka", isSlotX: false, idY: "r2_y", valY: null, isSlotY: true },
+      { idX: "r3_x", valX: "Fani", isSlotX: false, idY: "r3_y", valY: null, isSlotY: true },
+      { idX: "r4_x", valX: "Gina", isSlotX: false, idY: "r4_y", valY: null, isSlotY: true }
+    ],
+    tokens: ["Meja 1", "Meja 2", "Meja 3", "Meja 4", "Meja 5"],
+    correctCells: {
+      "r1_y": "Meja 1",
+      "r2_y": "Meja 3",
+      "r3_y": "Meja 2",
+      "r4_y": "Meja 4"
+    },
+    correctReason: "Luar biasa! Tabel terisi sempurna. Setiap siswa menempati tepat satu meja dan setiap meja hanya diisi satu siswa (korespondensi 1-ke-1).",
+    wrongExplanation: "Dika ➔ Meja 1, Eka ➔ Meja 3, Fani ➔ Meja 2, dan Gina ➔ Meja 4.",
+    clue: "Pasang Meja 1 ke Dika, Meja 3 ke Eka, Meja 2 ke Fani, dan Meja 4 ke Gina.",
     remedialVariant: {
-      question: "Berapakah hasil perhitungan dari 4! (4 faktorial)?",
-      options: ["24", "16", "20", "8"],
-      correct: "24",
-      correctReason: "Tepat! 4! = 4 × 3 × 2 × 1 = 24.",
-      wrongExplanation: "4 × 3 × 2 × 1 = 24."
+      type: "TABLE_BUILDER",
+      title: "📊 Remedial: Tabel 2 Peserta Ujian",
+      question: "Lengkapi tabel nomor meja: Rian di Meja A dan Siti di Meja B!",
+      tableTitle: "Tabel Nomor Meja",
+      headers: ["Nama Siswa", "Nomor Meja"],
+      rows: [
+        { idX: "r1_x", valX: "Rian", isSlotX: false, idY: "r1_y", valY: null, isSlotY: true },
+        { idX: "r2_x", valX: "Siti", isSlotX: false, idY: "r2_y", valY: null, isSlotY: true }
+      ],
+      tokens: ["Meja A", "Meja B", "Meja C"],
+      correctCells: { "r1_y": "Meja A", "r2_y": "Meja B" },
+      correctReason: "Tepat! Rian di Meja A dan Siti di Meja B.",
+      wrongExplanation: "Rian ➔ Meja A, Siti ➔ Meja B.",
+      clue: "Pasang Meja A ke Rian dan Meja B ke Siti."
     }
   },
   {
     id: 5,
     chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "🔍 Menguji Pasangan Korespondensi",
-    question: "Pernyataan: Himpunan pasangan berurutan {(1, a), (2, b), (3, a)} merupakan korespondensi satu-satu.",
-    options: ["Benar", "Salah"],
-    correct: "Salah",
-    correctReason: "Tepat! Pernyataan tersebut SALAH karena anggota kodomain 'a' dipasangkan dua kali (dengan 1 dan dengan 3). Pada korespondensi satu-satu, anggota kodomain tidak boleh dipilih berulang.",
-    wrongExplanation: "Meskipun merupakan fungsi yang sah, pasangan ini bukan korespondensi satu-satu karena elemen 'a' menerima dua pasangan.",
-    clue: "Periksa elemen kedua: huruf 'a' muncul dua kali, melanggar syarat satu-ke-satu.",
+    type: "HPB_BUILDER",
+    title: "🧩 Pasangan Siswa dan Nomor Komputer Lab",
+    question: "Tiga siswa menggunakan komputer di lab: Rian menggunakan PC-1, Sinta menggunakan PC-2, dan Tono menggunakan PC-3. Susunlah himpunan pasangan berurutan untuk relasi tersebut!",
+    subInstruction: "Pindahkan nama siswa atau nomor PC ke dalam kurung pasangan berurutan:",
+    setName: "Lab",
+    pairs: [
+      { idX: "p1_x", idY: "p1_y", ansX: "Rian", ansY: "PC-1", fixedX: "Rian", fixedY: null },
+      { idX: "p2_x", idY: "p2_y", ansX: "Sinta", ansY: "PC-2", fixedX: null, fixedY: "PC-2" },
+      { idX: "p3_x", idY: "p3_y", ansX: "Tono", ansY: "PC-3", fixedX: "Tono", fixedY: null }
+    ],
+    tokens: ["PC-1", "Sinta", "PC-3", "Umar", "PC-4"],
+    correctSlots: {
+      "p1_y": "PC-1",
+      "p2_x": "Sinta",
+      "p3_y": "PC-3"
+    },
+    correctReason: "Sangat tepat! Lab = {(Rian, PC-1), (Sinta, PC-2), (Tono, PC-3)}. Setiap siswa menggunakan tepat satu komputer tanpa berebut.",
+    wrongExplanation: "Pasangan lengkap: (Rian, PC-1), (Sinta, PC-2), dan (Tono, PC-3).",
+    clue: "Rian memakai PC-1, yang memakai PC-2 adalah Sinta, dan Tono memakai PC-3.",
     remedialVariant: {
-      question: "Pernyataan: Himpunan pasangan {(1, x), (2, y), (3, z)} merupakan korespondensi satu-satu yang sah.",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Tepat! Semua elemen depan dan belakang berbeda dan berpasangan satu-lawan-satu.",
-      wrongExplanation: "Setiap elemen domain dan kodomain berpasangan unik tepat satu kali."
+      type: "HPB_BUILDER",
+      title: "🧩 Remedial: Komputer 2 Siswa",
+      question: "Susun pasangan berurutan: Ali ke PC-A dan Budi ke PC-B!",
+      setName: "Lab",
+      pairs: [
+        { idX: "p1_x", idY: "p1_y", ansX: "Ali", ansY: "PC-A", fixedX: "Ali", fixedY: null },
+        { idX: "p2_x", idY: "p2_y", ansX: "Budi", ansY: "PC-B", fixedX: null, fixedY: "PC-B" }
+      ],
+      tokens: ["PC-A", "Budi", "PC-C"],
+      correctSlots: { "p1_y": "PC-A", "p2_x": "Budi" },
+      correctReason: "Bagus! Ali ke PC-A dan Budi ke PC-B.",
+      wrongExplanation: "Ali pasangannya PC-A, Budi pasangannya PC-B.",
+      clue: "PC-A untuk Ali dan Budi untuk PC-B."
     }
   },
   {
     id: 6,
     chapterId: 5,
-    type: "MATCHING",
-    title: "🔡 Menjodohkan Nilai Faktorial",
-    question: "Jodohkan lambang faktorial di sebelah kiri dengan nilai perhitungannya yang tepat di kanan!",
-    pairs: [
-      { left: "2!", right: "2" },
-      { left: "3!", right: "6" },
-      { left: "4!", right: "24" }
+    type: "ARROWS",
+    title: "🏹 Diagram Panah: Siswa dan Nomor Bangku Kelas",
+    question: "Hubungkan tali panah korespondensi satu-satu dari 3 siswa ke 3 nomor bangku kelas: Ali ke Bangku 2, Beni ke Bangku 3, dan Caca ke Bangku 1!",
+    labelA: "Nama Siswa",
+    labelB: "Nomor Bangku",
+    setA: ["Ali", "Beni", "Caca"],
+    setB: ["Bangku 1", "Bangku 2", "Bangku 3"],
+    rule: "siswa_bangku",
+    correctPairs: [
+      "Ali->Bangku 2",
+      "Beni->Bangku 3",
+      "Caca->Bangku 1"
     ],
-    rightOptions: ["2", "6", "24", "120"],
-    correctReason: "Sempurna! 2! = 2×1 = 2; 3! = 3×2×1 = 6; 4! = 4×3×2×1 = 24.",
-    wrongExplanation: "Faktorial n! adalah hasil kali semua bilangan bulat positif dari n mundur sampai 1.",
-    clue: "2!=2, 3!=6, 4!=24.",
+    correctReason: "Sempurna! Semua siswa dan nomor bangku terhubung tepat satu-satu tanpa ada bangku yang kosong dan tanpa siswa yang berebut bangku.",
+    wrongExplanation: "Pastikan: Ali ➔ Bangku 2, Beni ➔ Bangku 3, dan Caca ➔ Bangku 1.",
+    clue: "Tarik garis Ali ke Bangku 2, Beni ke Bangku 3, dan Caca ke Bangku 1.",
     remedialVariant: {
-      question: "Jodohkan lambang faktorial dengan hasil perkaliannya!",
-      pairs: [
-        { left: "1!", right: "1" },
-        { left: "3!", right: "6" },
-        { left: "5!", right: "120" }
-      ],
-      rightOptions: ["1", "6", "120", "24"],
-      correctReason: "Tepat! 1! = 1, 3! = 6, dan 5! = 120.",
-      wrongExplanation: "5! = 5 × 4 × 3 × 2 × 1 = 120."
+      type: "ARROWS",
+      title: "🏹 Remedial: Diagram Panah 2 Bangku",
+      question: "Hubungkan Dika ke Bangku A dan Erna ke Bangku B secara 1-ke-1!",
+      labelA: "Siswa",
+      labelB: "Bangku",
+      setA: ["Dika", "Erna"],
+      setB: ["Bangku A", "Bangku B"],
+      correctPairs: ["Dika->Bangku A", "Erna->Bangku B"],
+      correctReason: "Bagus! Hubungan 1-ke-1 terpasang tepat.",
+      wrongExplanation: "Dika ke Bangku A, Erna ke Bangku B.",
+      clue: "Tarik garis Dika ke A dan Erna ke B."
     }
   },
   {
     id: 7,
     chapterId: 5,
-    type: "MCQ",
-    title: "🌍 Contoh Dunia Nyata",
-    question: "Manakah contoh hubungan di dunia nyata yang PALING TEPAT menggambarkan korespondensi satu-satu?",
-    options: [
-      "Setiap negara di dunia dengan lagu kebangsaan resminya",
-      "Siswa dengan hobi olahraga",
-      "Guru dengan murid-murid di kelasnya",
-      "Pengendara motor dengan warna helm yang dipakainya"
+    type: "SLOT_FILL",
+    title: "🔢 Menghitung Nilai Faktorial 4!",
+    question: "Diketahui jumlah anggota n(A) = n(B) = 4. Tentukan banyak seluruh kemungkinan susunan korespondensi satu-satu dengan melengkapi perhitungan 4! (4 × 3 × 2 × 1)!",
+    subInstruction: "Pasang kartu angka hasil perhitungan ke dalam kotak [ ? ]:",
+    slots: [
+      {
+        id: "s1",
+        label: "Jumlah anggota himpunan n =",
+        answer: "4"
+      },
+      {
+        id: "s2",
+        label: "Banyak kemungkinan susunan (4!) =",
+        answer: "24"
+      }
     ],
-    correct: "Setiap negara di dunia dengan lagu kebangsaan resminya",
-    correctReason: "Benar sekali! Setiap negara berdaulat memiliki tepat satu lagu kebangsaan resmi, dan satu lagu kebangsaan resmi hanya dimiliki oleh satu negara tertentu.",
-    wrongExplanation: "Siswa bisa memiliki banyak hobi (bercabang); seorang guru mengajar banyak murid (bercabang). Lagu kebangsaan bersifat eksklusif satu negara satu lagu.",
-    clue: "Cari hubungan eksklusif di mana kedua belah pihak hanya berpasangan tepat satu.",
+    tokens: ["4", "12", "16", "24", "48"],
+    correctReason: "Tepat sekali! 4! = 4 × 3 × 2 × 1 = 24 cara kemungkinan susunan korespondensi satu-satu.",
+    wrongExplanation: "Untuk n = 4, maka 4! = 4 × 3 × 2 × 1 = 24 cara.",
+    clue: "Jumlah anggota = 4, lalu hitung 4 × 3 × 2 × 1 = 24.",
     remedialVariant: {
-      question: "Manakah hubungan berikut yang merupakan korespondensi satu-satu?",
-      options: [
-        "Setiap siswa di kelas dengan nomor kursi ujiannya yang telah ditentukan",
-        "Siswa dengan menu makanan kantin",
-        "Ibu dengan anak-anak kandungnya",
-        "Pembeli dengan barang belanjaan di kasir"
+      type: "SLOT_FILL",
+      title: "🔢 Remedial: Menghitung Faktorial 3!",
+      question: "Hitung banyak korespondensi satu-satu untuk himpunan beranggotakan 3 elemen (n = 3)!",
+      slots: [
+        { id: "s1", label: "Banyak anggota n =", answer: "3" },
+        { id: "s2", label: "Banyak susunan (3!) =", answer: "6" }
       ],
-      correct: "Setiap siswa di kelas dengan nomor kursi ujiannya yang telah ditentukan",
-      correctReason: "Tepat! Satu siswa duduk di satu kursi ujian, dan satu kursi hanya diduduki oleh satu siswa.",
-      wrongExplanation: "Nomor kursi ujian bersifat unik satu siswa satu meja/kursi."
+      tokens: ["3", "6", "9", "12"],
+      correctReason: "Tepat! 3! = 3 × 2 × 1 = 6 susunan.",
+      wrongExplanation: "3! = 3 × 2 × 1 = 6.",
+      clue: "3 × 2 × 1 = 6."
     }
   },
   {
     id: 8,
     chapterId: 5,
     type: "MCQ_COMPLEX",
-    title: "☑️ Ciri-ciri Korespondensi Satu-Satu",
-    question: "Manakah pernyataan yang BENAR mengenai korespondensi satu-satu? (Pilih semua yang benar)",
+    title: "🔍 Analisis Pasangan Korespondensi Satu-Satu",
+    question: "Perhatikan beberapa himpunan pasangan berurutan berikut. Pilih SEMUA himpunan yang memenuhi syarat sebagai korespondensi satu-satu (tidak ada angka depan kembar dan tidak ada huruf belakang kembar)!",
     options: [
-      "Jumlah anggota himpunan asal wajib sama dengan himpunan kawan: n(A) = n(B)",
-      "Daerah hasil (Range) sama persis dengan seluruh Daerah Kawan (Kodomain)",
-      "Dapat dibentuk fungsi kebalikan (fungsi invers) yang juga merupakan fungsi sah",
-      "Anggota daerah kawan boleh ada yang tidak memiliki pasangan"
+      "Himpunan P = {(1, a), (2, b), (3, c)}",
+      "Himpunan Q = {(1, a), (2, a), (3, c)} — (Huruf 'a' muncul dua kali)",
+      "Himpunan R = {(1, b), (2, c), (3, a)}",
+      "Himpunan S = {(1, a), (2, b), (1, c)} — (Angka '1' bercabang dua)"
     ],
     correctMultiple: [
-      "Jumlah anggota himpunan asal wajib sama dengan himpunan kawan: n(A) = n(B)",
-      "Daerah hasil (Range) sama persis dengan seluruh Daerah Kawan (Kodomain)",
-      "Dapat dibentuk fungsi kebalikan (fungsi invers) yang juga merupakan fungsi sah"
+      "Himpunan P = {(1, a), (2, b), (3, c)}",
+      "Himpunan R = {(1, b), (2, c), (3, a)}"
     ],
-    correctReason: "Hebat! Pada korespondensi satu-satu, Range = Kodomain (karena semua anggota kawan terpasang), n(A) = n(B), dan fungsi kebalikannya (invers) dijamin sah menjadi fungsi.",
-    wrongExplanation: "Pernyataan 'anggota kawan boleh ada yang tidak memiliki pasangan' salah, karena pada korespondensi satu-satu semua anggota kawan wajib terpasang.",
-    clue: "Korespondensi satu-satu bersifat sempurna di kedua sisi himpunan.",
+    correctReason: "Luar biasa teliti! Himpunan P dan R sah sebagai korespondensi satu-satu karena seluruh angka depan unik dan seluruh huruf belakang juga unik. Himpunan Q bukan 1-1 karena huruf 'a' kembar, dan Himpunan S bukan 1-1 karena angka '1' bercabang!",
+    wrongExplanation: "Himpunan yang sah adalah P dan R. Pada Q ada huruf kembar (a), pada S ada angka kembar (1).",
+    clue: "Pilihlah himpunan yang tidak memiliki angka depan kembar dan tidak memiliki huruf belakang kembar.",
     remedialVariant: {
-      question: "Manakah syarat dan sifat korespondensi satu-satu? (Pilih semua yang benar)",
+      type: "MCQ_COMPLEX",
+      title: "🔍 Remedial: Pasangan 1-ke-1 yang Sah",
+      question: "Pilihlah pasangan berurutan yang merupakan korespondensi satu-satu!",
       options: [
-        "n(A) harus sama dengan n(B)",
-        "Tidak ada anggota yang bercabang",
-        "Tidak ada anggota yang tertinggal tanpa pasangan",
-        "Jumlah anggota domain harus lebih banyak dari kodomain"
+        "{(1, x), (2, y)}",
+        "{(1, x), (2, x)}",
+        "{(3, a), (4, b)}"
       ],
       correctMultiple: [
-        "n(A) harus sama dengan n(B)",
-        "Tidak ada anggota yang bercabang",
-        "Tidak ada anggota yang tertinggal tanpa pasangan"
+        "{(1, x), (2, y)}",
+        "{(3, a), (4, b)}"
       ],
-      correctReason: "Tepat! n(A)=n(B), tanpa cabang, dan tanpa anggota sisa.",
-      wrongExplanation: "Jumlah anggota kedua himpunan wajib sama persis."
+      correctReason: "Tepat! Pasangan yang tidak memiliki anggota kembar adalah korespondensi satu-satu.",
+      wrongExplanation: "{(1, x), (2, x)} bukan 1-1 karena huruf x muncul dua kali.",
+      clue: "Hindari pilihan yang memiliki huruf kembar."
     }
   },
   {
     id: 9,
     chapterId: 5,
-    type: "ARROWS",
-    title: "🏹 Sambungkan Korespondensi Satu-Satu",
-    question: "Hubungkan setiap elemen himpunan A ke B sehingga membentuk korespondensi satu-satu dengan aturan f(x) = x + 3!",
-    setA: [1, 2, 3],
-    setB: [4, 5, 6],
-    correctPairs: ["1->4", "2->5", "3->6"],
-    correctReason: "Luar biasa! 1➔4, 2➔5, dan 3➔6. Setiap elemen di kedua himpunan memiliki pasangan tepat satu tanpa ada yang tersisa.",
-    wrongExplanation: "1+3 = 4; 2+3 = 5; 3+3 = 6. Hubungkan 1 ke 4, 2 ke 5, dan 3 ke 6.",
-    clue: "Tambahkan 3 pada masing-masing anggota himpunan A.",
+    type: "CARTESIAN",
+    title: "📍 Plot Titik Koordinat Korespondensi Satu-Satu pada Kartesius",
+    question: "Tandai 3 titik koordinat pada bidang Kartesius: (1, 2), (2, 3), dan (3, 1). Perhatikan bahwa pada korespondensi satu-satu, setiap kolom tegak dan setiap baris mendatar hanya memuat TEPAT SATU titik!",
+    minX: 0,
+    maxX: 4,
+    minY: 0,
+    maxY: 4,
+    labelX: "Sumbu X (Domain)",
+    labelY: "Sumbu Y (Kodomain)",
+    targetPoints: [
+      [1, 2],
+      [2, 3],
+      [3, 1]
+    ],
+    correctReason: "Luar biasa! Pada bidang Kartesius, korespondensi satu-satu terlihat jelas: tidak ada dua titik di kolom yang sama (garis vertikal) dan tidak ada dua titik di baris yang sama (garis horizontal).",
+    wrongExplanation: "Tandai titik koordinat: (1, 2), (2, 3), dan (3, 1).",
+    clue: "Klik pada perpotongan garis kisi koordinat (1, 2), (2, 3), dan (3, 1).",
     remedialVariant: {
-      question: "Hubungkan korespondensi satu-satu f(x) = x + 2 dari A = {2, 4, 6} ke B = {4, 6, 8}!",
-      setA: [2, 4, 6],
-      setB: [4, 6, 8],
-      correctPairs: ["2->4", "4->6", "6->8"],
-      correctReason: "Tepat! 2+2=4; 4+2=6; 6+2=8.",
-      wrongExplanation: "Hubungkan 2 ke 4, 4 ke 6, dan 6 ke 8."
+      type: "CARTESIAN",
+      title: "📍 Remedial: Titik Koordinat 1-ke-1",
+      question: "Tandai 3 titik koordinat korespondensi satu-satu: (1, 1), (2, 2), dan (3, 3)!",
+      minX: 0,
+      maxX: 4,
+      minY: 0,
+      maxY: 4,
+      targetPoints: [
+        [1, 1],
+        [2, 2],
+        [3, 3]
+      ],
+      correctReason: "Sempurna! Setiap baris dan kolom hanya memiliki tepat satu titik.",
+      wrongExplanation: "Klik titik (1, 1), (2, 2), dan (3, 3).",
+      clue: "Titik (1, 1), (2, 2), dan (3, 3)."
     }
   },
   {
     id: 10,
     chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Menghitung Nilai 5!",
-    question: "Jika dua himpunan masing-masing memiliki 5 anggota, banyak korespondensi satu-satu yang mungkin adalah...",
-    options: ["120", "25", "60", "24"],
-    correct: "120",
-    correctReason: "Bagus sekali! 5! = 5 × 4 × 3 × 2 × 1 = 120 kemungkinan pasangan.",
-    wrongExplanation: "5! = 5 × 4 × 3 × 2 × 1 = 120 (bukan 5² = 25).",
-    clue: "Kalikan 5 dengan 4! (5 × 24 = 120).",
-    remedialVariant: {
-      question: "Berapakah hasil dari 5! (5 faktorial)?",
-      options: ["120", "25", "100", "720"],
-      correct: "120",
-      correctReason: "Tepat! 5! = 5 × 4 × 3 × 2 × 1 = 120.",
-      wrongExplanation: "5 × 4 × 3 × 2 × 1 = 120."
-    }
-  },
-  {
-    id: 11,
-    chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "🔄 Konsep Fungsi Invers",
-    question: "Pernyataan: Suatu fungsi hanya dapat memiliki fungsi invers (kebalikan) yang sah jika fungsi tersebut merupakan korespondensi satu-satu.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Benar! Jika bukan korespondensi satu-satu, ketika arah panahnya dibalik, akan ada anggota yang bercabang atau tidak memiliki pasangan sehingga gagal menjadi fungsi.",
-    wrongExplanation: "Pernyataan ini adalah teorema penting dalam matematika: hanya fungsi bijektif (korespondensi satu-satu) yang memiliki invers berupa fungsi.",
-    clue: "Ketika panah dibalik, syarat fungsi (tidak boleh kosong dan tidak bercabang) tetap harus terpenuhi.",
-    remedialVariant: {
-      question: "Pernyataan: Fungsi yang memiliki dua anggota domain memanah ke satu anggota kodomain yang sama tetap dapat dibalik menjadi fungsi invers.",
-      options: ["Benar", "Salah"],
-      correct: "Salah",
-      correctReason: "Tepat! Jika dibalik, satu anggota tersebut akan memancarkan dua panah (bercabang), sehingga bukan fungsi.",
-      wrongExplanation: "Cabang saat dibalik menggagalkan syarat fungsi invers."
-    }
-  },
-  {
-    id: 12,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔍 Menentukan Korespondensi dari Pasangan",
-    question: "Di antara himpunan pasangan berurutan berikut, manakah yang merupakan KORESPONDENSI SATU-SATU?",
-    options: [
-      "{(1, p), (2, q), (3, r)}",
-      "{(1, p), (2, p), (3, r)}",
-      "{(1, p), (2, q), (2, r)}",
-      "{(1, p), (3, q)}"
-    ],
-    correct: "{(1, p), (2, q), (3, r)}",
-    correctReason: "Tepat! Elemen asal {1, 2, 3} dan elemen tujuan {p, q, r} semuanya berpasangan tepat satu tanpa ada pengulangan di depan maupun di belakang.",
-    wrongExplanation: "Pada opsi B, huruf 'p' berulang. Pada opsi C, angka 2 berulang (bercabang). Pada opsi D, jumlah anggotanya tidak lengkap.",
-    clue: "Pastikan semua angka depan unik DAN semua huruf belakang juga unik.",
-    remedialVariant: {
-      question: "Manakah himpunan pasangan yang merupakan korespondensi satu-satu?",
-      options: [
-        "{(a, 1), (b, 2), (c, 3)}",
-        "{(a, 1), (b, 1), (c, 3)}",
-        "{(a, 1), (a, 2), (b, 3)}",
-        "{(a, 2), (b, 2)}"
-      ],
-      correct: "{(a, 1), (b, 2), (c, 3)}",
-      correctReason: "Tepat! Semua huruf asal unik dan semua angka tujuan juga unik.",
-      wrongExplanation: "Tidak boleh ada pengulangan di elemen pertama maupun kedua."
-    }
-  },
-  {
-    id: 13,
-    chapterId: 5,
-    type: "MATCHING",
-    title: "🧩 Menjodohkan Pasangan Korespondensi",
-    question: "Relasi dari himpunan A = {Indonesia, Jepang, Perancis} ke B = {Tokyo, Paris, Jakarta} adalah 'ibu kota negara'. Jodohkan dengan tepat!",
-    pairs: [
-      { left: "Indonesia", right: "Jakarta" },
-      { left: "Jepang", right: "Tokyo" },
-      { left: "Perancis", right: "Paris" }
-    ],
-    rightOptions: ["Jakarta", "Tokyo", "Paris", "London"],
-    correctReason: "Luar biasa! Hubungan negara dan ibu kotanya merupakan contoh nyata korespondensi satu-satu yang paling terkenal.",
-    wrongExplanation: "Ibu kota Indonesia adalah Jakarta, Jepang adalah Tokyo, dan Perancis adalah Paris.",
-    clue: "Pasangkan masing-masing negara dengan ibu kota resminya.",
-    remedialVariant: {
-      question: "Jodohkan negara dengan ibu kotanya!",
-      pairs: [
-        { left: "Inggris", right: "London" },
-        { left: "Italia", right: "Roma" },
-        { left: "Jerman", right: "Berlin" }
-      ],
-      rightOptions: ["London", "Roma", "Berlin", "Madrid"],
-      correctReason: "Tepat! Inggris-London, Italia-Roma, Jerman-Berlin.",
-      wrongExplanation: "Pasangkan negara dengan ibu kotanya yang tepat."
-    }
-  },
-  {
-    id: 14,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Mencari n dari Nilai Faktorial",
-    question: "Banyak korespondensi satu-satu yang mungkin dari himpunan P ke Q adalah 720. Berapakah jumlah anggota himpunan P (n(P))?",
-    options: ["6", "5", "7", "8"],
-    correct: "6",
-    correctReason: "Sangat tepat! Karena 6! = 6 × 5 × 4 × 3 × 2 × 1 = 720. Jadi jumlah anggota himpunan P adalah 6.",
-    wrongExplanation: "5! = 120. 6! = 6 × 120 = 720. Jadi nilai n adalah 6.",
-    clue: "Coba kalikan 6 × 5!: 6 × 120 = 720.",
-    remedialVariant: {
-      question: "Jika banyak korespondensi satu-satu dari A ke B adalah 24, berapa banyak anggota himpunan A?",
-      options: ["4", "3", "5", "6"],
-      correct: "4",
-      correctReason: "Tepat! 4! = 24, sehingga n(A) = 4.",
-      wrongExplanation: "4 × 3 × 2 × 1 = 24."
-    }
-  },
-  {
-    id: 15,
-    chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "📌 Diagram Panah Silang",
-    question: "Pernyataan: Pada diagram panah korespondensi satu-satu, garis anak panah boleh saling bersilangan asalkan setiap titik tetap hanya memiliki satu panah.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Benar! Arah panah boleh lurus sejajar maupun menyilang, yang terpenting adalah setiap titik asal memancarkan tepat 1 panah dan setiap titik tujuan menerima tepat 1 panah.",
-    wrongExplanation: "Posisi garis menyilang tidak mempengaruhi keabsahan matematis dari korespondensi satu-satu.",
-    clue: "Yang penting adalah jumlah panah per titik (harus tepat satu), bukan lurus/tidaknya garis panah.",
-    remedialVariant: {
-      question: "Pernyataan: Garis panah pada korespondensi satu-satu harus selalu digambar lurus sejajar horizontal.",
-      options: ["Benar", "Salah"],
-      correct: "Salah",
-      correctReason: "Tepat! Garis panah bebas mengarah ke anggota mana pun, boleh menyilang.",
-      wrongExplanation: "Pasangan elemen bebas dihubungkan ke mana pun selama satu-ke-satu."
-    }
-  },
-  {
-    id: 16,
-    chapterId: 5,
-    type: "MCQ_COMPLEX",
-    title: "☑️ Pasangan yang BUKAN Korespondensi Satu-Satu",
-    question: "Manakah relasi di bawah ini yang BUKAN merupakan korespondensi satu-satu? (Pilih semua yang benar)",
-    options: [
-      "{(1, a), (2, a), (3, a)}",
-      "{(1, a), (2, b), (3, c), (4, d)}",
-      "{(1, x), (2, y), (3, y)}",
-      "{(p, 1), (q, 2)}"
-    ],
-    correctMultiple: [
-      "{(1, a), (2, a), (3, a)}",
-      "{(1, x), (2, y), (3, y)}"
-    ],
-    correctReason: "Hebat! Pada opsi pertama semua elemen memanah ke 'a' (bukan satu-satu). Pada opsi ketiga, elemen 'y' menerima dua panah. Opsi kedua dan keempat adalah korespondensi satu-satu yang sah.",
-    wrongExplanation: "Korespondensi satu-satu tidak memperbolehkan elemen belakang yang berulang.",
-    clue: "Cari opsi yang memiliki huruf/angka di posisi kedua berulang.",
-    remedialVariant: {
-      question: "Manakah himpunan pasangan yang GAGAL menjadi korespondensi satu-satu? (Pilih semua yang benar)",
-      options: [
-        "{(2, 4), (3, 4)}",
-        "{(1, 5), (2, 6)}",
-        "{(a, 1), (b, 1), (c, 1)}",
-        "{(x, y), (z, w)}"
-      ],
-      correctMultiple: [
-        "{(2, 4), (3, 4)}",
-        "{(a, 1), (b, 1), (c, 1)}"
-      ],
-      correctReason: "Tepat! Elemen belakang terulang (tidak satu-satu).",
-      wrongExplanation: "Angka 4 terulang pada opsi pertama dan angka 1 terulang pada opsi ketiga."
-    }
-  },
-  {
-    id: 17,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Perhitungan Faktorial 1!",
-    question: "Berapakah banyak korespondensi satu-satu yang mungkin jika himpunan A dan B masing-masing hanya memiliki 1 anggota?",
-    options: ["1", "0", "2", "Tak terhingga"],
-    correct: "1",
-    correctReason: "Tepat! 1! = 1. Karena hanya ada satu anggota di asal dan satu di tujuan, hanya ada tepat 1 cara untuk memasangkannya.",
-    wrongExplanation: "1! = 1. Hanya ada tepat 1 kemungkinan pasangan tunggal.",
-    clue: "Hanya ada 1 elemen di A dan 1 elemen di B: pasangannya tunggal.",
-    remedialVariant: {
-      question: "Banyak korespondensi satu-satu dari himpunan A = {x} ke B = {y} adalah...",
-      options: ["1", "0", "2", "4"],
-      correct: "1",
-      correctReason: "Tepat! Hanya ada 1 kemungkinan: {(x, y)}.",
-      wrongExplanation: "1! = 1 kemungkinan."
-    }
-  },
-  {
-    id: 18,
-    chapterId: 5,
-    type: "ARROWS",
-    title: "🏹 Sambungkan Korespondensi Invers",
-    question: "Hubungkan panah korespondensi satu-satu dari A = {3, 6, 9} ke B = {1, 2, 3} dengan aturan 'sepertiga dari' (f(x) = x / 3)!",
-    setA: [3, 6, 9],
-    setB: [1, 2, 3],
-    correctPairs: ["3->1", "6->2", "9->3"],
-    correctReason: "Mantap! 3/3 = 1; 6/3 = 2; 9/3 = 3. Setiap elemen terpasang satu-ke-satu dengan sempurna.",
-    wrongExplanation: "3:3 = 1; 6:3 = 2; 9:3 = 3. Pasangkan 3➔1, 6➔2, dan 9➔3.",
-    clue: "Bagi setiap angka di himpunan A dengan 3.",
-    remedialVariant: {
-      question: "Hubungkan fungsi f(x) = x / 2 dari A = {2, 4, 6} ke B = {1, 2, 3}!",
-      setA: [2, 4, 6],
-      setB: [1, 2, 3],
-      correctPairs: ["2->1", "4->2", "6->3"],
-      correctReason: "Tepat! 2/2 = 1; 4/2 = 2; 6/2 = 3.",
-      wrongExplanation: "Bagi setiap elemen di A dengan 2."
-    }
-  },
-  {
-    id: 19,
-    chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "📌 Istilah Pemetaan Bijektif",
-    question: "Pernyataan: Dalam istilah matematika tingkat lanjut, korespondensi satu-satu juga disebut sebagai fungsi atau pemetaan BIJEKTIF.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Benar! Pemetaan bijektif adalah fungsi yang sekaligus bersifat injektif (satu-satu) dan surjektif (pada). Keduanya bergabung menjadi bijektif (korespondensi satu-satu).",
-    wrongExplanation: "Pernyataan ini bernilai benar. Bijektif adalah istilah ilmiah matematika untuk korespondensi satu-satu.",
-    clue: "Injektif + Surjektif = Bijektif.",
-    remedialVariant: {
-      question: "Pernyataan: Fungsi bijektif adalah nama lain dari korespondensi satu-satu.",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Tepat! Istilah bijektif dan korespondensi satu-satu adalah sinonim dalam matematika.",
-      wrongExplanation: "Keduanya merujuk pada konsep matematis yang identik."
-    }
-  },
-  {
-    id: 20,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔍 Syarat Himpunan Pasangan",
-    question: "Manakah syarat yang harus dipenuhi oleh himpunan pasangan berurutan agar menjadi korespondensi satu-satu?",
-    options: [
-      "Tidak ada elemen pertama yang kembar DAN tidak ada elemen kedua yang kembar",
-      "Hanya elemen pertama yang tidak boleh kembar",
-      "Hanya elemen kedua yang tidak boleh kembar",
-      "Elemen pertama dan kedua harus berupa bilangan genap"
-    ],
-    correct: "Tidak ada elemen pertama yang kembar DAN tidak ada elemen kedua yang kembar",
-    correctReason: "Luar biasa! Pada korespondensi satu-satu, keunikan berlaku mutlak di kedua sisi: angka depan (x) tidak boleh berulang dan angka belakang (y) juga tidak boleh berulang.",
-    wrongExplanation: "Jika hanya elemen pertama yang unik, itu baru fungsi biasa. Agar menjadi korespondensi satu-satu, elemen kedua juga wajib unik.",
-    clue: "Kedua posisi koordinat (depan dan belakang) wajib unik tanpa pengulangan.",
-    remedialVariant: {
-      question: "Jika pada himpunan pasangan ada angka kedua yang berulang, apakah masih bisa menjadi korespondensi satu-satu?",
-      options: [
-        "Tidak bisa, karena melanggar syarat satu-ke-satu pada kodomain",
-        "Bisa, asalkan angka depannya beda",
-        "Bisa, jika jumlah pasangannya genap",
-        "Pasti bisa"
-      ],
-      correct: "Tidak bisa, karena melanggar syarat satu-ke-satu pada kodomain",
-      correctReason: "Tepat! Pengulangan angka kedua menggugurkan status korespondensi satu-satu.",
-      wrongExplanation: "Elemen kedua tidak boleh menerima lebih dari satu pasangan."
-    }
-  },
-  {
-    id: 21,
-    chapterId: 5,
-    type: "MATCHING",
-    title: "🧩 Menjodohkan Banyak Pasangan",
-    question: "Jodohkan jumlah anggota himpunan n(A) = n(B) di sebelah kiri dengan banyak kemungkinan korespondensi satu-satu di kanan!",
-    pairs: [
-      { left: "n = 2", right: "2 kemungkinan" },
-      { left: "n = 3", right: "6 kemungkinan" },
-      { left: "n = 4", right: "24 kemungkinan" }
-    ],
-    rightOptions: ["2 kemungkinan", "6 kemungkinan", "24 kemungkinan", "120 kemungkinan"],
-    correctReason: "Hebat! 2! = 2; 3! = 6; 4! = 24.",
-    wrongExplanation: "Gunakan rumus n! untuk masing-masing nilai n.",
-    clue: "2!=2, 3!=6, 4!=24.",
-    remedialVariant: {
-      question: "Jodohkan nilai n dengan banyaknya pemetaan bijektif!",
-      pairs: [
-        { left: "n = 1", right: "1 kemungkinan" },
-        { left: "n = 3", right: "6 kemungkinan" },
-        { left: "n = 5", right: "120 kemungkinan" }
-      ],
-      rightOptions: ["1 kemungkinan", "6 kemungkinan", "120 kemungkinan", "24 kemungkinan"],
-      correctReason: "Tepat! 1! = 1, 3! = 6, 5! = 120.",
-      wrongExplanation: "Hitung nilai faktorial n!."
-    }
-  },
-  {
-    id: 22,
-    chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "📊 Perbandingan Fungsi Biasa vs Korespondensi",
-    question: "Pernyataan: Banyak fungsi biasa dari A ke B selalu lebih banyak atau sama dengan banyak korespondensi satu-satu dari A ke B.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Benar! Untuk n = 3: banyak fungsi biasa adalah 3³ = 27 kemungkinan, sedangkan korespondensi satu-satu hanya 3! = 6 kemungkinan. Korespondensi satu-satu adalah bagian khusus dari seluruh fungsi biasa.",
-    wrongExplanation: "Karena memiliki aturan yang lebih ketat, jumlah kemungkinan korespondensi satu-satu selalu lebih sedikit daripada fungsi biasa.",
-    clue: "Bandingkan 3³ = 27 dengan 3! = 6.",
-    remedialVariant: {
-      question: "Pernyataan: Untuk n(A) = n(B) = 2, banyak fungsi biasa (2² = 4) lebih banyak dari korespondensi satu-satu (2! = 2).",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Tepat! 4 kemungkinan fungsi biasa > 2 kemungkinan korespondensi satu-satu.",
-      wrongExplanation: "Fungsi biasa memiliki kemungkinan lebih banyak dibanding korespondensi satu-satu."
-    }
-  },
-  {
-    id: 23,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Perhitungan Kombinasi 3 Pasangan",
-    question: "Diberikan A = {1, 2} dan B = {x, y}. Himpunan pasangan berurutan yang menunjukkan SEMUA kemungkinan korespondensi satu-satu dari A ke B adalah...",
-    options: [
-      "{(1, x), (2, y)} dan {(1, y), (2, x)}",
-      "{(1, x), (2, x)} dan {(1, y), (2, y)}",
-      "{(1, x), (2, y)} saja",
-      "{(1, x), (1, y)} dan {(2, x), (2, y)}"
-    ],
-    correct: "{(1, x), (2, y)} dan {(1, y), (2, x)}",
-    correctReason: "Sangat tepat! Karena 2! = 2 kemungkinan: kemungkinan pertama adalah 1➔x dan 2➔y, kemungkinan kedua adalah 1➔y dan 2➔x.",
-    wrongExplanation: "Pasangan {(1, x), (2, x)} bukan korespondensi satu-satu karena x dipilih dua kali. Dua susunan yang sah adalah lurus dan bersilangan.",
-    clue: "Ada 2 cara: pasangkan lurus atau pasangkan silang.",
-    remedialVariant: {
-      question: "Ada berapa susunan korespondensi satu-satu dari A = {a, b} ke B = {1, 2}?",
-      options: ["2 susunan", "4 susunan", "1 susunan", "8 susunan"],
-      correct: "2 susunan",
-      correctReason: "Tepat! 2! = 2 susunan: {(a, 1), (b, 2)} dan {(a, 2), (b, 1)}.",
-      wrongExplanation: "Hanya ada 2! = 2 kemungkinan susunan."
-    }
-  },
-  {
-    id: 24,
-    chapterId: 5,
-    type: "MCQ_COMPLEX",
-    title: "☑️ Contoh Korespondensi di Kehidupan Nyata",
-    question: "Manakah contoh relasi yang PASTI merupakan korespondensi satu-satu di dunia nyata? (Pilih semua yang benar)",
-    options: [
-      "Setiap kendaraan bermotor dengan pelat nomor resminya",
-      "Setiap negara anggota PBB dengan benderanya masing-masing",
-      "Setiap siswa dengan teman sebangkunya (di meja berdua)",
-      "Setiap pembeli di supermarket dengan barang yang dibelinya"
-    ],
-    correctMultiple: [
-      "Setiap kendaraan bermotor dengan pelat nomor resminya",
-      "Setiap negara anggota PBB dengan benderanya masing-masing",
-      "Setiap siswa dengan teman sebangkunya (di meja berdua)"
-    ],
-    correctReason: "Hebat! Pelat nomor kendaraan bersifat tunggal dan unik, bendera negara resmi bersifat unik, dan teman sebangku berdua saling berpasangan satu-lawan-satu secara eksklusif.",
-    wrongExplanation: "Satu pembeli bisa membeli puluhan barang sekaligus di kasir (bercabang banyak), sehingga bukan korespondensi satu-satu.",
-    clue: "Pilihlah hubungan yang eksklusif saling satu-lawan-satu.",
-    remedialVariant: {
-      question: "Manakah hubungan yang merupakan korespondensi satu-satu? (Pilih semua yang benar)",
-      options: [
-        "Pengantin pria dengan pengantin wanita pada pernikahan monogami",
-        "Setiap pemain sepak bola di lapangan dengan satu nomor punggung unik di timnya",
-        "Satu dokter dengan seluruh pasien di rumah sakit",
-        "Satu perpustakaan dengan semua buku"
-      ],
-      correctMultiple: [
-        "Pengantin pria dengan pengantin wanita pada pernikahan monogami",
-        "Setiap pemain sepak bola di lapangan dengan satu nomor punggung unik di timnya"
-      ],
-      correctReason: "Tepat! Keduanya merupakan hubungan eksklusif satu-ke-satu.",
-      wrongExplanation: "Dokter dan pasien tidak satu-ke-satu (dokter menangani banyak pasien)."
-    }
-  },
-  {
-    id: 25,
-    chapterId: 5,
-    type: "CARTESIAN",
-    title: "📍 Plot Korespondensi Satu-Satu",
-    question: "Plot titik-titik koordinat korespondensi satu-satu f(x) = 4 − x untuk domain x ∈ {1, 2, 3} pada bidang Cartesius!",
-    minX: 0,
-    maxX: 5,
-    minY: 0,
-    maxY: 5,
-    targetPoints: [[1, 3], [2, 2], [3, 1]],
-    correctReason: "Luar biasa! Titik (1, 3), (2, 2), dan (3, 1) terplot sempurna. Tidak ada nilai x atau y yang berulang.",
-    wrongExplanation: "Saat x=1 ➔ y=3; saat x=2 ➔ y=2; saat x=3 ➔ y=1. Tandai titik (1, 3), (2, 2), dan (3, 1).",
-    clue: "x=1➔y=3, x=2➔y=2, x=3➔y=1.",
-    remedialVariant: {
-      question: "Plot titik korespondensi satu-satu f(x) = x pada domain {1, 2, 3}! (titik (1, 1), (2, 2), (3, 3))",
-      minX: 0,
-      maxX: 5,
-      minY: 0,
-      maxY: 5,
-      targetPoints: [[1, 1], [2, 2], [3, 3]],
-      correctReason: "Tepat! Titik identitas (1, 1), (2, 2), dan (3, 3) terplot dengan tepat.",
-      wrongExplanation: "Tandai koordinat diagonal (1, 1), (2, 2), dan (3, 3)."
-    }
-  },
-  {
-    id: 26,
-    chapterId: 5,
-    type: "TRUE_FALSE",
-    title: "📌 Relasi Bukan Fungsi Tidak Bisa Korespondensi",
-    question: "Pernyataan: Jika suatu relasi bukan fungsi, maka sudah pasti relasi tersebut tidak mungkin merupakan korespondensi satu-satu.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Sangat benar! Karena syarat pertama korespondensi satu-satu adalah harus merupakan FUNGSI terlebih dahulu. Jika syarat fungsi saja tidak lolos, otomatis gugur sebagai korespondensi satu-satu.",
-    wrongExplanation: "Korespondensi satu-satu adalah jenis khusus dari fungsi. Jika bukan fungsi, pasti bukan korespondensi satu-satu.",
-    clue: "Korespondensi satu-satu adalah fungsi khusus.",
-    remedialVariant: {
-      question: "Pernyataan: Semua korespondensi satu-satu sudah pasti merupakan fungsi yang sah.",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Tepat! Korespondensi satu-satu adalah fungsi yang memenuhi syarat tambahan timbal balik.",
-      wrongExplanation: "Setiap korespondensi satu-satu memenuhi semua syarat fungsi."
-    }
-  },
-  {
-    id: 27,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔢 Perhitungan Faktorial 6!",
-    question: "Berapakah hasil dari 6! (6 faktorial) yang merupakan banyak korespondensi satu-satu untuk himpunan beranggotakan 6 elemen?",
-    options: ["720", "120", "36", "480"],
-    correct: "720",
-    correctReason: "Mantap! 6! = 6 × 5! = 6 × 120 = 720 kemungkinan.",
-    wrongExplanation: "6! = 6 × 5 × 4 × 3 × 2 × 1 = 720.",
-    clue: "Kalikan 6 dengan 120.",
-    remedialVariant: {
-      question: "Berapakah nilai dari 6 × 5!?",
-      options: ["720", "120", "600", "360"],
-      correct: "720",
-      correctReason: "Tepat! 6 × 120 = 720.",
-      wrongExplanation: "6 × 120 = 720."
-    }
-  },
-  {
-    id: 28,
-    chapterId: 5,
-    type: "MATCHING",
-    title: "🧩 Menjodohkan Relasi dengan Kategori",
-    question: "Jodohkan contoh relasi di sebelah kiri dengan klasifikasi yang paling tepat di sebelah kanan!",
-    pairs: [
-      { left: "Negara ke Ibu Kota Resminya", right: "Korespondensi Satu-Satu" },
-      { left: "Siswa ke Makanan Kesukaannya", right: "Relasi Biasa (Bukan Fungsi)" },
-      { left: "Siswa ke Tanggal Lahirnya", right: "Fungsi Biasa (Bukan Satu-Satu)" }
-    ],
-    rightOptions: [
+    type: "DRAG_DROP",
+    title: "🎯 Contoh Nyata: Korespondensi 1-ke-1 vs Relasi Biasa",
+    question: "Kelompokkan contoh hubungan sehari-hari berikut ke dalam kotak 'Korespondensi Satu-Satu' atau 'Relasi Biasa (Bisa Bercabang)'!",
+    categories: [
       "Korespondensi Satu-Satu",
-      "Relasi Biasa (Bukan Fungsi)",
-      "Fungsi Biasa (Bukan Satu-Satu)"
+      "Relasi Biasa (Bisa Bercabang)"
     ],
-    correctReason: "Luar biasa! Pemahamanmu membedakan antara Relasi Bebas, Fungsi Biasa (banyak siswa bisa lahir di tanggal sama), dan Korespondensi Satu-Satu (negara & ibu kota) sangat tajam!",
-    wrongExplanation: "Siswa ke tanggal lahir adalah fungsi biasa (setiap siswa punya 1 tanggal lahir, tetapi banyak siswa bisa lahir di tanggal sama). Siswa ke makanan adalah relasi bebas.",
-    clue: "Negara-Ibu kota: 1-ke-1. Siswa-Makanan: cabang banyak. Siswa-Tanggal lahir: kumpul di tanggal sama.",
-    remedialVariant: {
-      question: "Jodohkan relasi dengan jenisnya!",
-      pairs: [
-        { left: "Setiap orang dengan NIK KTP", right: "Korespondensi Satu-Satu" },
-        { left: "Orang dengan nomor sepatu", right: "Fungsi Biasa (Bukan Satu-Satu)" },
-        { left: "Orang dengan hobi", right: "Relasi Biasa (Bukan Fungsi)" }
-      ],
-      rightOptions: ["Korespondensi Satu-Satu", "Fungsi Biasa (Bukan Satu-Satu)", "Relasi Biasa (Bukan Fungsi)"],
-      correctReason: "Tepat! NIK eksklusif 1-ke-1, nomor sepatu bisa sama untuk banyak orang, hobi bisa banyak per orang.",
-      wrongExplanation: "Klasifikasi hubungan tersebut sudah sesuai dengan sifat pemetaannya."
-    }
-  },
-  {
-    id: 29,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🔍 Ciri Khusus Diagram Panah Bijektif",
-    question: "Pada diagram panah korespondensi satu-satu, apa yang terjadi jika kita membalik semua arah anak panahnya dari kanan ke kiri?",
-    options: [
-      "Diagram yang baru tetap merupakan fungsi yang sah (fungsi invers)",
-      "Diagram yang baru menjadi bukan fungsi",
-      "Diagram yang baru menjadi relasi kosong",
-      "Anak panahnya akan saling bertabrakan dan rusak"
+    items: [
+      "Siswa dengan Nomor Induk Siswa Nasional (NISN)",
+      "Warga Negara dengan Nomor KTP (NIK)",
+      "Siswa dengan Makanan Kesukaannya",
+      "Orang dengan Hobi Kegemarannya"
     ],
-    correct: "Diagram yang baru tetap merupakan fungsi yang sah (fungsi invers)",
-    correctReason: "Sangat tepat! Karena setiap titik kanan menerima tepat 1 panah dan tidak ada yang kosong, maka saat dibalik dari kanan ke kiri, setiap titik kanan memancarkan tepat 1 panah. Diagram baru tetap merupakan fungsi yang sah!",
-    wrongExplanation: "Inilah keistimewaan pemetaan bijektif: selalu dapat dibalik arahnya tanpa merusak syarat fungsi.",
-    clue: "Karena semua titik berpasangan tepat 1 timbal balik, arahnya bebas dibalik.",
+    correctMapping: {
+      "Siswa dengan Nomor Induk Siswa Nasional (NISN)": "Korespondensi Satu-Satu",
+      "Warga Negara dengan Nomor KTP (NIK)": "Korespondensi Satu-Satu",
+      "Siswa dengan Makanan Kesukaannya": "Relasi Biasa (Bisa Bercabang)",
+      "Orang dengan Hobi Kegemarannya": "Relasi Biasa (Bisa Bercabang)"
+    },
+    itemExplanations: {
+      "Siswa dengan Nomor Induk Siswa Nasional (NISN)": "Setiap siswa memiliki tepat 1 NISN unik, dan 1 NISN hanya dimiliki 1 siswa (1-ke-1).",
+      "Warga Negara dengan Nomor KTP (NIK)": "Setiap warga negara memiliki tepat 1 NIK unik (1-ke-1).",
+      "Siswa dengan Makanan Kesukaannya": "Satu siswa bisa menyukai lebih dari satu makanan sekaligus (Bisa bercabang).",
+      "Orang dengan Hobi Kegemarannya": "Satu orang bisa memiliki beberapa hobi kegemaran (Bisa bercabang)."
+    },
+    correctReason: "Sangat jeli! Kamu dapat membedakan hubungan unik timbal-balik satu-ke-satu di dunia nyata (seperti NISN dan NIK) dengan relasi bebas sehari-hari (seperti makanan dan hobi).",
+    wrongExplanation: "NISN dan NIK bersifat eksklusif 1-ke-1. Makanan kesukaan dan hobi bisa bercabang banyak.",
+    clue: "NISN dan NIK adalah nomor unik yang tidak mungkin dimiliki bersama.",
     remedialVariant: {
-      question: "Apakah pembalikan arah panah pada korespondensi satu-satu menghasilkan fungsi yang sah?",
-      options: [
-        "Ya, menghasilkan fungsi invers yang sah",
-        "Tidak, pasti gagal menjadi fungsi",
-        "Hanya jika anggotanya sedikit",
-        "Tergantung jenis relasinya"
+      type: "DRAG_DROP",
+      title: "🎯 Remedial: Hubungan 1-ke-1 di Dunia Nyata",
+      question: "Kelompokkan ke kotak Korespondensi 1-ke-1 atau Relasi Biasa!",
+      categories: [
+        "Korespondensi 1-ke-1",
+        "Relasi Biasa"
       ],
-      correct: "Ya, menghasilkan fungsi invers yang sah",
-      correctReason: "Tepat! Pembalikan arah panah korespondensi satu-satu menghasilkan fungsi invers.",
-      wrongExplanation: "Korespondensi satu-satu selalu dapat dibalik menjadi fungsi invers."
-    }
-  },
-  {
-    id: 30,
-    chapterId: 5,
-    type: "MCQ",
-    title: "🏆 Rangkuman Seluruh Materi Relasi & Fungsi",
-    question: "Bagaimanakah urutan hierarki hubungan matematika yang benar dari yang paling umum ke yang paling spesifik?",
-    options: [
-      "Relasi (paling luas) ➔ Fungsi ➔ Korespondensi Satu-Satu (paling spesifik)",
-      "Fungsi ➔ Relasi ➔ Korespondensi Satu-Satu",
-      "Korespondensi Satu-Satu ➔ Fungsi ➔ Relasi",
-      "Semua memiliki kedudukan yang sama tanpa tingkatan"
-    ],
-    correct: "Relasi (paling luas) ➔ Fungsi ➔ Korespondensi Satu-Satu (paling spesifik)",
-    correctReason: "Sempurna! Selamat! Kamu telah menuntaskan seluruh latihan dari Chapter 1 hingga Chapter 5 dengan pemahaman matematika yang sangat utuh dan komprehensif! 🎉🦉🏆",
-    wrongExplanation: "Relasi adalah himpunan aturan paling luas. Fungsi adalah relasi yang lebih khusus (disiplin domain). Korespondensi satu-satu adalah fungsi yang paling khusus (disiplin di kedua domain dan kodomain).",
-    clue: "Relasi adalah payung terluas, di dalamnya ada Fungsi, dan di bagian terdalamnya ada Korespondensi Satu-Satu.",
-    remedialVariant: {
-      question: "Manakah pernyataan yang paling tepat mengenai hierarki Relasi, Fungsi, dan Korespondensi Satu-Satu?",
-      options: [
-        "Semua korespondensi satu-satu adalah fungsi, dan semua fungsi adalah relasi",
-        "Semua relasi adalah korespondensi satu-satu",
-        "Fungsi lebih luas daripada relasi",
-        "Tidak ada keterkaitan antara ketiganya"
+      items: [
+        "Negara dengan Lagu Kebangsaan Resmi",
+        "Siswa dengan Warna Favorit"
       ],
-      correct: "Semua korespondensi satu-satu adalah fungsi, dan semua fungsi adalah relasi",
-      correctReason: "Luar biasa! Pemahamanmu mengenai Relasi & Fungsi sudah mencapai tingkat penguasaan penuh!",
-      wrongExplanation: "Hierarkinya: Korespondensi ⊂ Fungsi ⊂ Relasi."
+      correctMapping: {
+        "Negara dengan Lagu Kebangsaan Resmi": "Korespondensi 1-ke-1",
+        "Siswa dengan Warna Favorit": "Relasi Biasa"
+      },
+      correctReason: "Tepat! Lagu kebangsaan bersifat unik 1-ke-1 untuk tiap negara, sedangkan warna favorit bisa bercabang.",
+      wrongExplanation: "Lagu kebangsaan = 1-ke-1, warna favorit = bisa banyak.",
+      clue: "Lagu kebangsaan unik untuk tiap negara."
     }
   }
 ];

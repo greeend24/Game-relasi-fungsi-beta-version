@@ -5,11 +5,76 @@
  * Chapter 2: Pengertian & Unsur Fungsi (Domain, Kodomain, Range, Syarat Fungsi)
  * Chapter 3: Notasi & Rumus Fungsi (f(x) = ax + b, Hitung Nilai)
  * Chapter 4: Grafik Fungsi Linear (Sumbu X/Y, Gradien m)
- * Chapter 5: Korespondensi Satu-Satu (Fungsi Bijektif, n!)
+ * Chapter 5: Korespondensi Satu-Satu (Fungsi Khusus 1:1, n!)
  *
  * Seluruh kunci jawaban kuis dan remedial retry divariasikan merata (B, C, D, A).
  * Aturan UI: No scroll : semua fit viewport 16:9.
  */
+
+// Saklar Mode Chapter 1:
+// Set false = Versi slide klasik (backup)
+// Set true  = Versi video pembelajaran interaktif & kuis popup
+export const USE_CHAPTER1_VIDEO = true;
+
+export const CHAPTER1_VIDEO_SEGMENTS = [
+  {
+    id: 1,
+    type: 'video',
+    videoKey: '1.1',
+    title: 'Video 1.1: Pengertian Relasi',
+    emoji: '🔍'
+  },
+  {
+    id: 2,
+    type: 'video',
+    videoKey: '1.2',
+    title: 'Video 1.2: Fleksibilitas Relasi',
+    emoji: '🪢'
+  },
+  {
+    id: 3,
+    type: 'video',
+    videoKey: '1.3',
+    title: 'Video 1.3: 4 Cara Menyajikan Relasi',
+    emoji: '📊'
+  }
+];
+
+// Saklar Mode Chapter 2:
+// Set false = Versi slide klasik (backup)
+// Set true  = Versi video pembelajaran interaktif & kuis popup
+export const USE_CHAPTER2_VIDEO = true;
+
+export const CHAPTER2_VIDEO_SEGMENTS = [
+  {
+    id: 1,
+    type: 'video',
+    videoKey: '2.1',
+    title: 'Video 2.1: Pengertian & Syarat Fungsi',
+    emoji: '🎬'
+  },
+  {
+    id: 2,
+    type: 'video',
+    videoKey: '2.2',
+    title: 'Video 2.2: Perbedaan Relasi & Fungsi',
+    emoji: '⚖️'
+  },
+  {
+    id: 3,
+    type: 'video',
+    videoKey: '2.3',
+    title: 'Video 2.3: Domain, Kodomain, & Range',
+    emoji: '🎯'
+  },
+  {
+    id: 4,
+    type: 'video',
+    videoKey: '2.4',
+    title: 'Video 2.4: Ringkasan Materi Fungsi',
+    emoji: '📝'
+  }
+];
 
 // Saklar Mode Chapter 3:
 // Set false = Versi slide klasik (backup sebelum implementation plan untuk semua distribusi)
@@ -28,7 +93,7 @@ export const CHAPTER3_VIDEO_SEGMENTS = [
     id: 2,
     type: 'video',
     videoKey: '3.2',
-    title: 'Video 3.2: Nilai Fungsi Input Negatif',
+    title: 'Video 3.2: Menghitung Nilai Fungsi untuk x Negatif',
     emoji: '➖'
   },
   {
@@ -42,8 +107,69 @@ export const CHAPTER3_VIDEO_SEGMENTS = [
     id: 4,
     type: 'video',
     videoKey: '3.4',
-    title: 'Video 3.4: Bayangan & Prapeta Fungsi',
+    title: 'Video 3.4: Menentukan Bayangan dan Prapeta (Nilai x)',
     emoji: '💡'
+  }
+];
+
+// Saklar Mode Chapter 4:
+export const USE_CHAPTER4_VIDEO = true;
+
+export const CHAPTER4_VIDEO_SEGMENTS = [
+  {
+    id: 1,
+    type: 'video',
+    videoKey: '4.1',
+    title: 'Video 4.1: Pengertian Grafik Fungsi Linear',
+    emoji: '📈'
+  },
+  {
+    id: 2,
+    type: 'video',
+    videoKey: '4.2',
+    title: 'Video 4.2: Titik Potong Sumbu X dan Y',
+    emoji: '🎯'
+  },
+  {
+    id: 3,
+    type: 'video',
+    videoKey: '4.3',
+    title: 'Video 4.3: Gradien & Kemiringan Garis',
+    emoji: '📐'
+  },
+  {
+    id: 4,
+    type: 'video',
+    videoKey: '4.4',
+    title: 'Video 4.4: Menghitung Gradien Melalui 2 Titik',
+    emoji: '📊'
+  }
+];
+
+// Saklar Mode Chapter 5:
+export const USE_CHAPTER5_VIDEO = true;
+
+export const CHAPTER5_VIDEO_SEGMENTS = [
+  {
+    id: 1,
+    type: 'video',
+    videoKey: '5.1',
+    title: 'Video 5.1: Pengertian & Syarat Korespondensi 1:1',
+    emoji: '🔗'
+  },
+  {
+    id: 2,
+    type: 'video',
+    videoKey: '5.2',
+    title: 'Video 5.2: Menghitung Banyak Korespondensi (n!)',
+    emoji: '🔢'
+  },
+  {
+    id: 3,
+    type: 'video',
+    videoKey: '5.3',
+    title: 'Video 5.3: Penerapan Nyata Korespondensi 1:1',
+    emoji: '🌍'
   }
 ];
 
@@ -56,8 +182,8 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
     content: [
       'Fungsi bisa dituliskan dengan **rumus matematika** seperti ini:',
       '**f : A → B** dibaca "fungsi f memetakan himpunan A ke himpunan B".',
-      '**f(x) = y** dibaca "fungsi f memetakan input x menghasilkan output y".',
-      'Contoh: f(x) = 2x + 1\n• Jika input x = 3, maka f(3) = 2(3) + 1 = 7.\n• Artinya: angka 3 dipetakan ke angka 7.'
+      '**f(x) = y** dibaca "fungsi f memetakan nilai x ke bayangan y".',
+      'Contoh: f(x) = 2x + 1\n• Jika nilai x = 3, maka f(3) = 2(3) + 1 = 7.\n• Artinya: nilai x = 3 menghasilkan nilai bayangan f(3) = 7.'
     ],
     visual: {
       type: 'function_machine',
@@ -77,7 +203,7 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
       'Bentuk umum fungsi linear adalah: **f(x) = ax + b**',
       '• **a** = angka pengali dari x (disebut koefisien)',
       '• **b** = angka tetap yang tidak berubah (disebut konstanta)',
-      '• **x** = angka masukan (input) yang bisa diganti-ganti',
+      '• **x** = variabel daerah asal yang dapat diganti dengan bilangan tertentu',
       'Contoh: f(x) = 3x − 5\n→ a = 3, b = −5\n→ f(2) = 3(2) − 5 = 6 − 5 = 1'
     ],
     visual: {
@@ -135,10 +261,10 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
   {
     id: 4,
     type: 'lesson',
-    title: 'Nilai Fungsi untuk Input Negatif',
+    title: 'Menghitung Nilai Fungsi untuk x Negatif',
     emoji: '➖',
     content: [
-      'Bagaimana jika input x bernilai **negatif**?',
+      'Bagaimana jika nilai x yang disubstitusikan bernilai **negatif**?',
       'Contoh: f(x) = 2x + 7\nf(−3) = 2(−3) + 7 = −6 + 7 = **1**',
       '💡 Perhatikan aturan tanda perkalian:\n• Positif × Negatif = Negatif\n• 2 × (−3) = −6',
       'Contoh lagi: g(x) = 5x − 4\ng(−2) = 5(−2) − 4 = −10 − 4 = **−14**'
@@ -227,7 +353,7 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
     emoji: '❓',
     isHots: true,
     hotsLevel: 'C4 Analisis',
-    hotsBadge: 'TANTANGAN HOTS (C4 Analisis)',
+    hotsBadge: '🧠 TANTANGAN ASAH LOGIKA',
     clue: 'Cari laju perubahan (selisih nilai f(x)): 8 - 5 = 3 (ini nilai koefisien a). Lalu uji saat x = 1: 3(1) + b = 5 untuk menemukan nilai konstanta b.',
     question: 'Perhatikan tabel data nilai fungsi di samping.\nRumus fungsi f(x) yang sesuai adalah...',
     visual: {
@@ -249,7 +375,7 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
       'f(x) = 3x − 1'
     ],
     correct: 'f(x) = 3x + 2',
-    explanation: 'Selisih output = 3 (maka a = 3). Saat x = 1: 3(1) + b = 5 → b = 2. Rumus: f(x) = 3x + 2 ✅',
+    explanation: 'Selisih nilai f(x) = 3 (maka a = 3). Saat x = 1: 3(1) + b = 5 → b = 2. Rumus: f(x) = 3x + 2 ✅',
     remedial: {
       content: [
         'Langkah cepat mencari rumus:',
@@ -274,13 +400,13 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
   {
     id: 8,
     type: 'lesson',
-    title: 'Bayangan dan Prapeta',
+    title: 'Bayangan dan Prapeta (Nilai x)',
     emoji: '💡',
     content: [
-      'Dua istilah penting yang sering muncul di soal:',
-      '• **Bayangan** dari x: artinya hasil hitung f(x). Contoh: bayangan dari 3 pada f(x) = 2x adalah f(3) = 6.',
-      '• **Prapeta** dari y: artinya mencari balik nilai x yang menghasilkan y. Contoh: jika f(x) = 10 pada f(x) = 2x, maka x = 5.',
-      '📌 Jadi, "Tentukan bayangan dari 4" artinya sama saja dengan "Hitung f(4)".'
+      'Dua istilah penting yang sering muncul di materi fungsi:',
+      '• **Bayangan (Nilai y atau f(x))** dari x: artinya hasil hitung rumus fungsi f(x). Contoh: bayangan dari x = 3 pada f(x) = 2x adalah f(3) = 6.',
+      '• **Prapeta (Nilai x)** dari y: artinya mencari nilai asal x yang menghasilkan f(x) = y. Contoh: jika f(x) = 10 pada f(x) = 2x, maka x = 5.',
+      '📌 Jadi, "Tentukan bayangan dari 4" sama artinya dengan "Hitung f(4)", dan "Tentukan nilai x jika f(x) = 10" artinya selesaikan 2x = 10.'
     ],
     visual: {
       type: 'function_machine',
@@ -339,7 +465,7 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
     emoji: '🏆',
     isHots: true,
     hotsLevel: 'C5 Evaluasi',
-    hotsBadge: 'TANTANGAN HOTS (C5 Evaluasi)',
+    hotsBadge: '🌟 TANTANGAN MASTER DETEKTIF',
     clue: 'Susun dua persamaan dari pasangan: a(1) + b = 5 dan a(3) + b = 11. Eliminasi konstanta b dengan mengurangkan kedua persamaan: 2a = 6 sehingga a = 3, lalu tentukan nilai b.',
     question: 'Perhatikan himpunan pasangan nilai fungsi f = {(1, 5), (3, 11)} dengan rumus f(x) = ax + b di samping.\nNilai a dan b berturut-turut adalah...',
     visual: {
@@ -350,8 +476,8 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
       pairs: [['1', '5'], ['3', '11']],
       domain: ['1', '3'],
       range: ['5', '11'],
-      domainName: 'Input (x)',
-      rangeName: 'Output f(x)'
+      domainName: 'Daerah Asal (x)',
+      rangeName: 'Nilai Bayangan f(x)'
     },
     options: [
       'a = 3, b = 2',
@@ -384,16 +510,7 @@ export const CHAPTER3_CLASSIC_SEGMENTS = [
   }
 ];
 
-export const CHAPTERS_DATA = {
-  1: {
-    id: 1,
-    key: 'chapter1',
-    title: 'Pengertian & Cara Menyatakan Relasi',
-    subtitle: 'Konsep relasi, benang merah, 4 cara menyatakan relasi',
-    icon: '🪢',
-    color: '#D97706',
-    totalSegments: 12,
-    segments: [
+export const CHAPTER1_CLASSIC_SEGMENTS = [
       {
         id: 1,
         type: 'lesson',
@@ -409,8 +526,8 @@ export const CHAPTERS_DATA = {
           setA: ['Budi', 'Siti', 'Rudi'],
           setB: ['Soto', 'Nasi Goreng', 'Bakso'],
           pairs: [['Budi', 'Soto'], ['Siti', 'Nasi Goreng'], ['Rudi', 'Bakso']],
-          labelA: 'Nama (Domain)',
-          labelB: 'Makanan (Kodomain)',
+          labelA: 'Nama (Himpunan A)',
+          labelB: 'Makanan (Himpunan B)',
           statusBadge: 'Relasi Makanan Kesukaan'
         },
         diagram: {
@@ -449,8 +566,8 @@ export const CHAPTERS_DATA = {
           setA: ['Budi', 'Siti'],
           setB: ['Soto', 'Bakso'],
           pairs: [['Budi', 'Soto'], ['Siti', 'Bakso']],
-          labelA: 'Domain A',
-          labelB: 'Kodomain B',
+          labelA: 'Himpunan A',
+          labelB: 'Himpunan B',
           statusBadge: 'Relasi Makanan',
           isFunction: true
         },
@@ -466,8 +583,8 @@ export const CHAPTERS_DATA = {
           content: [
             'Ingat definisi dasar relasi:',
             '• Relasi = Aturan memasangkan elemen A ke B',
-            '• A = Himpunan Asal (Domain)',
-            '• B = Himpunan Kawan (Kodomain)',
+            '• A = Himpunan Asal',
+            '• B = Himpunan Kawan',
             'Contoh: "Gemar bermain bola", "Ukuran sepatu", "Ibu kota dari"'
           ],
           retryQuestion: {
@@ -499,7 +616,7 @@ export const CHAPTERS_DATA = {
           setA: ['Budi (Cabang)', 'Siti', 'Eka (Kosong)'],
           setB: ['Soto', 'Nasi Goreng', 'Bakso'],
           pairs: [['Budi', 'Soto'], ['Budi', 'Nasi Goreng'], ['Siti', 'Bakso']],
-          labelA: 'Domain Bebas',
+          labelA: 'Himpunan A (Bebas)',
           labelB: 'Pilihan',
           statusBadge: 'Relasi: Boleh Cabang & Kosong'
         },
@@ -510,15 +627,15 @@ export const CHAPTERS_DATA = {
         type: 'interactive_connect',
         title: 'Praktik: Relasi Angka "Faktor Dari"',
         emoji: '🔢',
-        instruction: 'Tarik garis penghubung dari angka di A ke angka di B jika angka di A merupakan "Faktor Dari" (habis membagi) angka di B!',
-        ruleText: 'Aturan: "Faktor Dari" (b habis dibagi a tanpa sisa). Angka 2 membagi 4 dan 6; angka 3 membagi 6; angka 5 tidak membagi keduanya.',
+        instruction: 'Tarik garis penghubung dari angka di A ke angka di B jika angka di A merupakan "Faktor Dari" (faktor pembagi) angka di B!',
+        ruleText: 'Aturan: "Faktor Dari" (angka di A membagi habis angka di B). Angka 2 membagi 4 dan 6; angka 3 membagi 6; angka 5 bukan faktor keduanya.',
         setA: ['2', '3', '5'],
         setB: ['4', '6'],
         labelA: 'Angka A',
         labelB: 'Angka B',
         validPairs: [[0, 0], [0, 1], [1, 1]],
         successMessage: 'Tepat sekali! Angka 2 bercabang ke 4 dan 6, angka 3 ke 6, sedangkan angka 5 tidak punya pasangan. Inilah sifat fleksibel relasi! 🎉',
-        hint: 'Ingat: 4 dan 6 habis dibagi 2 (2 panah). 6 habis dibagi 3 (1 panah). 5 bukan faktor dari 4 maupun 6.'
+        hint: 'Ingat: 2 adalah faktor dari 4 dan 6 (2 panah). 3 adalah faktor dari 6 (1 panah). 5 bukan faktor dari 4 maupun 6.'
       },
       {
         id: 6,
@@ -532,7 +649,7 @@ export const CHAPTERS_DATA = {
           setA: ['Budi', 'Siti'],
           setB: ['Soto', 'Bakso', 'Sate'],
           pairs: [['Budi', 'Soto'], ['Budi', 'Bakso'], ['Siti', 'Sate']],
-          labelA: 'Domain A',
+          labelA: 'Himpunan A',
           labelB: 'Pilihan B',
           statusBadge: 'Boleh Bercabang',
           isFunction: true
@@ -573,8 +690,8 @@ export const CHAPTERS_DATA = {
         content: [
           'Sebuah relasi bisa ditampilkan dalam **4 bentuk yang berbeda tapi isinya sama**:',
           '1️⃣ **Diagram Panah** : lingkaran himpunan dan garis panah.',
-          '2️⃣ **Tabel Relasi** : kolom input X dan kolom output Y.',
-          '3️⃣ **Diagram Cartesius** : titik koordinat (x, y).',
+          '2️⃣ **Tabel Relasi** : kolom nilai x (daerah asal) dan kolom nilai y (daerah kawan).',
+          '3️⃣ **Diagram Kartesius** : titik koordinat (x, y).',
           '4️⃣ **Pasangan Berurutan** : himpunan {(x, y), ...}.',
           '💡 Keempat bentuk ini menyajikan relasi yang sama secara visual!'
         ],
@@ -615,9 +732,9 @@ export const CHAPTERS_DATA = {
       {
         id: 9,
         type: 'interactive_cartesian',
-        title: 'Praktik: Plot Titik Koordinat pada Diagram Cartesius!',
+        title: 'Praktik: Plot Titik Koordinat pada Diagram Kartesius!',
         emoji: '📍',
-        instruction: 'Tandai titik koordinat (x, y) di atas diagram Cartesius sesuai relasi "setengah dari": (1, 2), (2, 4), dan (3, 6)!',
+        instruction: 'Tandai titik koordinat (x, y) di atas diagram Kartesius sesuai relasi "setengah dari": (1, 2), (2, 4), dan (3, 6)!',
         ruleText: 'Klik perpotongan garis untuk memasang/menghapus titik (1, 2), (2, 4), dan (3, 6).',
         minX: 0,
         maxX: 5,
@@ -627,7 +744,7 @@ export const CHAPTERS_DATA = {
         labelY: 'Sumbu Y (Kodomain: 2, 4, 6)',
         targetPoints: [[1, 2], [2, 4], [3, 6]],
         drawLine: false,
-        successMessage: 'Luar biasa! Ketiga titik koordinat (1, 2), (2, 4), dan (3, 6) berhasil terplot dengan akurat di bidang Cartesius! 🎉',
+        successMessage: 'Luar biasa! Ketiga titik koordinat (1, 2), (2, 4), dan (3, 6) berhasil terplot dengan akurat di bidang Kartesius! 🎉',
         hint: 'Klik pada titik perpotongan: x = 1 naik ke y = 2; x = 2 naik ke y = 4; x = 3 naik ke y = 6.'
       },
       {
@@ -637,8 +754,8 @@ export const CHAPTERS_DATA = {
         emoji: '❓',
         isHots: true,
         hotsLevel: 'C4 Analisis',
-        hotsBadge: 'TANTANGAN HOTS (C4 Analisis)',
-        clue: 'Setiap baris tabel [x | y] bersesuaian langsung dengan titik koordinat (x, y) pada diagram Cartesius. Periksa kesesuaian posisi (x, y).',
+        hotsBadge: '🧠 TANTANGAN ASAH LOGIKA',
+        clue: 'Setiap baris tabel [x | y] bersesuaian langsung dengan titik koordinat (x, y) pada diagram Kartesius. Periksa kesesuaian posisi (x, y).',
         question: 'Perhatikan tabel relasi R di samping.\nManakah pernyataan yang BENAR mengenai representasi relasi ini?',
         visual: {
           type: 'relation_table',
@@ -649,24 +766,24 @@ export const CHAPTERS_DATA = {
           layout: 'vertical'
         },
         options: [
-          'Pada diagram Cartesius, titik koordinatnya adalah (1, a), (2, b), dan (3, b)',
+          'Pada diagram Kartesius, titik koordinatnya adalah (1, a), (2, b), dan (3, b)',
           'Relasi ini tidak bisa dibuatkan tabel karena nilai b dipakai dua kali',
           'Pasangan berurutan selalu menaruh himpunan kawan di posisi pertama',
-          'Diagram Cartesius hanya berlaku untuk data yang berupa angka negatif'
+          'Diagram Kartesius hanya berlaku untuk data yang berupa angka negatif'
         ],
-        correct: 'Pada diagram Cartesius, titik koordinatnya adalah (1, a), (2, b), dan (3, b)',
-        explanation: 'Setiap pasangan berurutan (x, y) bersesuaian langsung dengan titik koordinat (x, y) pada diagram Cartesius. ✅',
+        correct: 'Pada diagram Kartesius, titik koordinatnya adalah (1, a), (2, b), dan (3, b)',
+        explanation: 'Setiap pasangan berurutan (x, y) bersesuaian langsung dengan titik koordinat (x, y) pada diagram Kartesius. ✅',
         remedial: {
           content: [
             'Hubungan 4 cara menyatakan relasi:',
             '• Panah x ➔ y',
             '• Pasangan (x, y)',
-            '• Titik Cartesius (x, y)',
+            '• Titik Kartesius (x, y)',
             '• Baris tabel [x | y]',
             'Semuanya menyajikan data pasangan yang persis sama!'
           ],
           retryQuestion: {
-            question: 'Jika relasi disajikan dalam pasangan R = {(2, 4), (3, 6)}, maka pada diagram Cartesius titiknya berada di...',
+            question: 'Jika relasi disajikan dalam pasangan R = {(2, 4), (3, 6)}, maka pada diagram Kartesius titiknya berada di...',
             options: [
               '(4, 2) dan (6, 3)',
               '(2, 4) dan (3, 6)',
@@ -674,7 +791,7 @@ export const CHAPTERS_DATA = {
               '(2, 2) dan (3, 3)'
             ],
             correct: '(2, 4) dan (3, 6)',
-            explanation: 'Titik koordinat Cartesius selalu mengikuti (x, y) yaitu (2, 4) dan (3, 6). ✅'
+            explanation: 'Titik koordinat Kartesius selalu mengikuti (x, y) yaitu (2, 4) dan (3, 6). ✅'
           }
         }
       },
@@ -686,7 +803,7 @@ export const CHAPTERS_DATA = {
         content: [
           '🎯 **Relasi** = aturan yang memasangkan anggota Himpunan Asal ke Himpunan Kawan.',
           '🪢 **Sifat Fleksibel** = anggota asal boleh bercabang ke banyak kawan dan boleh kosong.',
-          '📊 **4 Cara Penyajian** = Diagram Panah, Tabel Relasi, Diagram Cartesius, dan Himpunan Pasangan Berurutan.'
+          '📊 **4 Cara Penyajian** = Diagram Panah, Tabel Relasi, Diagram Kartesius, dan Himpunan Pasangan Berurutan.'
         ],
         visual: {
           type: 'ordered_pairs',
@@ -696,8 +813,8 @@ export const CHAPTERS_DATA = {
           pairs: [['Budi', 'Soto'], ['Budi', 'Bakso'], ['Siti', 'Bakso']],
           domain: ['Budi', 'Siti'],
           range: ['Soto', 'Bakso'],
-          domainName: 'Nama (Domain)',
-          rangeName: 'Menu (Range)'
+          domainName: 'Nama (Himpunan A)',
+          rangeName: 'Menu (Himpunan B)'
         },
         diagram: null
       },
@@ -708,7 +825,7 @@ export const CHAPTERS_DATA = {
         emoji: '🏆',
         isHots: true,
         hotsLevel: 'C4 Analisis',
-        hotsBadge: 'TANTANGAN HOTS (C4 Analisis)',
+        hotsBadge: '🧠 TANTANGAN ASAH LOGIKA',
         clue: 'Uji aturan "setengah dari": angka depan (x) bernilai separuh angka belakang (y). Contoh: 1 adalah setengah dari 2 ➔ (1, 2). Jangan sampai urutan pasangannya terbalik!',
         question: 'Perhatikan tabel relasi "setengah dari" di samping.\nHimpunan pasangan berurutan yang tepat adalah...',
         visual: {
@@ -748,18 +865,9 @@ export const CHAPTERS_DATA = {
           }
         }
       }
-    ]
-  },
+    ];
 
-  2: {
-    id: 2,
-    key: 'chapter2',
-    title: 'Pengertian & Unsur Fungsi',
-    subtitle: 'Apa itu fungsi? Domain, Kodomain, Range',
-    icon: '🎯',
-    color: '#2563EB',
-    totalSegments: 10,
-    segments: [
+export const CHAPTER2_CLASSIC_SEGMENTS = [
       {
         id: 1,
         type: 'lesson',
@@ -767,7 +875,7 @@ export const CHAPTERS_DATA = {
         emoji: '🤔',
         content: [
           '**Fungsi** (atau **pemetaan**) adalah relasi khusus yang menghubungkan **setiap** anggota himpunan asal ke **tepat satu** anggota himpunan kawan.',
-          'Bayangkan mesin minuman otomatis: kamu memasukkan uang koin (input), lalu keluar **satu** jenis minuman (output). Satu koin → satu minuman. Itulah fungsi!',
+          'Bayangkan mesin tiket antrean otomatis: kamu menekan tombol nomor antrean, lalu keluar **satu** lembar tiket yang pasti. Satu orang → tepat satu tiket. Itulah konsep fungsi!',
           '📌 Dua kata kunci FUNGSI: **"Setiap"** elemen asal harus berpasangan, dan **"Tepat Satu"** (tidak boleh bercabang).'
         ],
         visual: {
@@ -938,7 +1046,7 @@ export const CHAPTERS_DATA = {
         title: 'Domain (Daerah Asal)',
         emoji: '📥',
         content: [
-          '**Domain** = himpunan semua anggota yang menjadi **input** (masukan) fungsi.',
+          '**Domain** = himpunan semua anggota yang menjadi **daerah asal** fungsi.',
           'Domain berada di **sisi kiri** diagram panah.',
           'Contoh: Jika f menghubungkan siswa ke nilai ujian:\n• Domain = {Ani, Budi, Cici} (seluruh siswa)',
           '📌 Domain disimbolkan sebagai **Df** atau **daerah asal f**.'
@@ -965,7 +1073,7 @@ export const CHAPTERS_DATA = {
         title: 'Kodomain & Range',
         emoji: '📤',
         content: [
-          '**Kodomain** = himpunan semua anggota yang MUNGKIN menjadi **output**. Kodomain ada di **sisi kanan** diagram.',
+          '**Kodomain** = himpunan semua anggota **daerah kawan**. Kodomain ada di **sisi kanan** diagram.',
           '**Range** = anggota kodomain yang BENAR-BENAR terpasangkan (terkena panah). Range ⊆ Kodomain.',
           'Contoh: Kodomain = {85, 90, 78, 95}\nRange = {85, 90, 78} (yang terkena panah)',
           '💡 Perbedaan: Kodomain = semua pilihan yang ada di kanan. Range = yang benar-benar terpilih.'
@@ -989,7 +1097,7 @@ export const CHAPTERS_DATA = {
         emoji: '❓',
         isHots: true,
         hotsLevel: 'C4 Analisis',
-        hotsBadge: 'TANTANGAN HOTS (C4 Analisis)',
+        hotsBadge: '🧠 TANTANGAN ASAH LOGIKA',
         clue: 'Range HANYA mengambil elemen himpunan kawan (kanan) yang benar-benar tersambung pasangan panah. Elemen kodomain yang tidak tersambung jangan dimasukkan ke Range!',
         question: 'Perhatikan himpunan pasangan berurutan fungsi f di samping: f = {(1, a), (2, b), (3, a)} dengan Kodomain B = {a, b, c}.\nBerapakah Range (daerah hasil) dari fungsi f?',
         visual: {
@@ -1039,8 +1147,8 @@ export const CHAPTERS_DATA = {
         content: [
           '🎯 **Fungsi** = setiap elemen Domain punya TEPAT SATU pasangan di Kodomain.',
           '❌ **Bukan Fungsi** jika: ada yang bercabang ATAU ada yang tidak punya pasangan.',
-          '📥 **Domain** = himpunan input asal (sisi kiri).',
-          '📤 **Kodomain** = seluruh himpunan tujuan kawan (sisi kanan).',
+          '📥 **Domain** = himpunan daerah asal (sisi kiri).',
+          '📤 **Kodomain** = seluruh himpunan tujuan daerah kawan (sisi kanan).',
           '🎯 **Range** = kodomain yang terkena panah pasangan (Range ⊆ Kodomain).'
         ],
         visual: {
@@ -1058,7 +1166,7 @@ export const CHAPTERS_DATA = {
         emoji: '🏆',
         isHots: true,
         hotsLevel: 'C5 Evaluasi',
-        hotsBadge: 'TANTANGAN HOTS (C5 Evaluasi)',
+        hotsBadge: '🌟 TANTANGAN MASTER DETEKTIF',
         clue: 'Evaluasi satu per satu: Domain = seluruh elemen A, Kodomain = seluruh elemen B, Range = elemen B yang punya panah pasangan (periksa apakah elemen s memiliki pasangan atau tidak).',
         question: 'Perhatikan diagram panah relasi di samping.\nDomain, Kodomain, dan Range berturut-turut adalah...',
         visual: {
@@ -1082,8 +1190,8 @@ export const CHAPTERS_DATA = {
         remedial: {
           content: [
             'Langkah-langkah penentuan:',
-            '1️⃣ Domain = seluruh himpunan A (input) = {1, 2, 3, 4}',
-            '2️⃣ Kodomain = seluruh himpunan B (output) = {p, q, r, s}',
+            '1️⃣ Domain = seluruh himpunan daerah asal A = {1, 2, 3, 4}',
+            '2️⃣ Kodomain = seluruh himpunan daerah kawan B = {p, q, r, s}',
             '3️⃣ Range = elemen B yang punya pasangan: p, q, r. (s tidak kena).',
             'Maka Range = {p, q, r}'
           ],
@@ -1101,6 +1209,31 @@ export const CHAPTERS_DATA = {
         }
       }
     ]
+;
+
+export const CHAPTERS_DATA = {
+  1: {
+    id: 1,
+    key: 'chapter1',
+    title: 'Pengertian & Cara Menyatakan Relasi',
+    subtitle: 'Konsep relasi, benang merah, 4 cara menyatakan relasi',
+    icon: '🪢',
+    color: '#D97706',
+    totalSegments: USE_CHAPTER1_VIDEO ? 3 : 12,
+    isVideoChapter: USE_CHAPTER1_VIDEO,
+    segments: USE_CHAPTER1_VIDEO ? CHAPTER1_VIDEO_SEGMENTS : CHAPTER1_CLASSIC_SEGMENTS
+  },
+
+  2: {
+    id: 2,
+    key: 'chapter2',
+    title: 'Pengertian & Unsur Fungsi',
+    subtitle: 'Apa itu fungsi? Domain, Kodomain, Range',
+    icon: '🎯',
+    color: '#2563EB',
+    totalSegments: USE_CHAPTER2_VIDEO ? 4 : 10,
+    isVideoChapter: USE_CHAPTER2_VIDEO,
+    segments: USE_CHAPTER2_VIDEO ? CHAPTER2_VIDEO_SEGMENTS : CHAPTER2_CLASSIC_SEGMENTS
   },
 
   3: {
@@ -1122,16 +1255,17 @@ export const CHAPTERS_DATA = {
     subtitle: 'Menggambar & membaca grafik f(x) = ax + b',
     icon: '📊',
     color: '#0284C7',
-    totalSegments: 10,
-    segments: [
+    totalSegments: USE_CHAPTER4_VIDEO ? 4 : 10,
+    isVideoChapter: USE_CHAPTER4_VIDEO,
+    segments: USE_CHAPTER4_VIDEO ? CHAPTER4_VIDEO_SEGMENTS : [
       {
         id: 1,
         type: 'lesson',
         title: 'Apa itu Grafik Fungsi?',
         emoji: '📈',
         content: [
-          '**Grafik fungsi** adalah gambar titik-titik (x, y) yang memenuhi rumus fungsi di **bidang Cartesius**.',
-          'Bidang Cartesius punya dua garis utama:\n• **Sumbu X** (garis mendatar) → tempat menuliskan nilai input x\n• **Sumbu Y** (garis tegak) → tempat menuliskan nilai output f(x)',
+          '**Grafik fungsi** adalah gambar titik-titik (x, y) yang memenuhi rumus fungsi di **bidang Kartesius**.',
+          'Bidang Kartesius punya dua sumbu utama:\n• **Sumbu X** (garis mendatar / horizontal) → memuat nilai x (daerah asal)\n• **Sumbu Y** (garis tegak / vertikal) → memuat nilai f(x) atau y (daerah kawan/hasil)',
           '💡 Grafik fungsi linear (f(x) = ax + b) selalu berbentuk **garis lurus**!'
         ],
         visual: {
@@ -1149,14 +1283,14 @@ export const CHAPTERS_DATA = {
         type: 'interactive_cartesian',
         title: 'Praktik: Gambar Garis Grafik f(x) = 2x + 1!',
         emoji: '📈',
-        instruction: 'Tandai titik koordinat fungsi linear f(x) = 2x + 1 di bidang Cartesius: titik (0, 1), (1, 3), dan (2, 5) untuk menarik garis grafik!',
+        instruction: 'Tandai titik koordinat fungsi linear f(x) = 2x + 1 di bidang Kartesius: titik (0, 1), (1, 3), dan (2, 5) untuk menarik garis grafik!',
         ruleText: 'Rumus: f(x) = 2x + 1. Titik uji: (0, 1), (1, 3), dan (2, 5). Klik pada grid untuk memasang titik.',
         minX: 0,
         maxX: 4,
         minY: 0,
         maxY: 6,
-        labelX: 'Sumbu X (Input x)',
-        labelY: 'Sumbu Y (Output f(x))',
+        labelX: 'Sumbu X (Nilai x)',
+        labelY: 'Sumbu Y (Nilai f(x))',
         targetPoints: [[0, 1], [1, 3], [2, 5]],
         drawLine: true,
         successMessage: 'Sempurna! Ketiga titik berhasil diplot dan otomatis membentuk garis lurus fungsi linear f(x) = 2x + 1! 🎉',
@@ -1384,7 +1518,7 @@ export const CHAPTERS_DATA = {
         emoji: '❓',
         isHots: true,
         hotsLevel: 'C4 Analisis',
-        hotsBadge: 'TANTANGAN HOTS (C4 Analisis)',
+        hotsBadge: '🧠 TANTANGAN ASAH LOGIKA',
         clue: 'Gunakan rumus gradien m = (y₂ - y₁) / (x₂ - x₁): hitung selisih nilai y (9 - 3), lalu bagi dengan selisih nilai x (3 - 1).',
         question: 'Perhatikan grafik garis melalui titik (1, 3) dan (3, 9) di samping.\nGradien garis tersebut adalah...',
         visual: {
@@ -1435,8 +1569,8 @@ export const CHAPTERS_DATA = {
         emoji: '🏆',
         isHots: true,
         hotsLevel: 'C5 Evaluasi',
-        hotsBadge: 'TANTANGAN HOTS (C5 Evaluasi)',
-        clue: 'Garis memotong sumbu X saat nilai output f(x) = 0. Selesaikan persamaan linear 2x - 4 = 0 untuk memperoleh koordinat (x, 0).',
+        hotsBadge: '🌟 TANTANGAN MASTER DETEKTIF',
+        clue: 'Garis memotong sumbu X saat nilai f(x) = 0. Selesaikan persamaan linear 2x - 4 = 0 untuk memperoleh koordinat (x, 0).',
         question: 'Perhatikan lintasan grafik f(x) = 2x − 4 di samping.\nGrafik memotong sumbu X di titik...',
         visual: {
           type: 'cartesian_graph',
@@ -1486,11 +1620,12 @@ export const CHAPTERS_DATA = {
     id: 5,
     key: 'chapter5',
     title: 'Korespondensi Satu-Satu',
-    subtitle: 'Pemetaan bijektif, syarat & menghitung n!',
+    subtitle: 'Fungsi khusus n(A) = n(B), banyak pemetaan n!',
     icon: '🔗',
     color: '#DC2626',
-    totalSegments: 8,
-    segments: [
+    totalSegments: USE_CHAPTER5_VIDEO ? 3 : 8,
+    isVideoChapter: USE_CHAPTER5_VIDEO,
+    segments: USE_CHAPTER5_VIDEO ? CHAPTER5_VIDEO_SEGMENTS : [
       {
         id: 1,
         type: 'lesson',
@@ -1499,7 +1634,7 @@ export const CHAPTERS_DATA = {
         content: [
           '**Korespondensi satu-satu** adalah fungsi khusus di mana setiap anggota A dipasangkan dengan **tepat satu** anggota B, dan **sebaliknya**.',
           'Artinya:\n✅ Setiap anggota A punya tepat 1 pasangan di B\n✅ Setiap anggota B juga punya tepat 1 pasangan dari A\n✅ Arah panah **BOLEH BERSILANGAN** (pasangan tepat satu BUKAN berarti harus sejajar lurus)!\n✅ Tidak ada yang mendua, tidak ada yang kosong/nganggur',
-          '🎯 Dalam matematika, istilah lainnya adalah **fungsi bijektif** (satu lawan satu sempurna).'
+          '🎯 Dalam matematika, hubungan ini disebut juga **relasi satu-lawan-satu sempurna** (timbal balik).'
         ],
         visual: {
           type: 'one_to_one_board',
@@ -1615,7 +1750,7 @@ export const CHAPTERS_DATA = {
         emoji: '❓',
         isHots: true,
         hotsLevel: 'C4 Analisis',
-        hotsBadge: 'TANTANGAN HOTS (C4 Analisis)',
+        hotsBadge: '🧠 TANTANGAN ASAH LOGIKA',
         clue: 'Gunakan rumus n faktorial: hitung 4! = 4 × 3 × 2 × 1 untuk permutasi 4 pasangan satu-satu.',
         question: 'Perhatikan papan 4 anggota di samping.\nBerapa banyakkah korespondensi satu-satu yang dapat dibentuk dari A ke B?',
         visual: {
@@ -1730,7 +1865,7 @@ export const CHAPTERS_DATA = {
         emoji: '🏆',
         isHots: true,
         hotsLevel: 'C5 Evaluasi',
-        hotsBadge: 'TANTANGAN HOTS (C5 Evaluasi)',
+        hotsBadge: '🌟 TANTANGAN MASTER DETEKTIF',
         clue: 'Terdapat n = 5 anggota himpunan. Hitung nilai faktorial 5! = 5 × 4 × 3 × 2 × 1 cara korespondensi satu-satu.',
         question: 'Perhatikan papan 5 anggota di samping.\nBerapakah banyaknya korespondensi satu-satu yang mungkin dibentuk antara A dan B?',
         visual: {

@@ -402,6 +402,19 @@ class AudioEngine {
     setTimeout(() => this.playNote(80, 'square', 0.15, 0.2), 40);
   }
 
+  playWarning() {
+    if (!this.isSfxOn || this.sfxVol <= 0) return;
+    this.playNote(440, 'sawtooth', 0.15, 0.25);
+    setTimeout(() => this.playNote(330, 'sawtooth', 0.2, 0.25), 120);
+  }
+
+  playPenalty() {
+    if (!this.isSfxOn || this.sfxVol <= 0) return;
+    this.playNote(330, 'sawtooth', 0.2, 0.3);
+    setTimeout(() => this.playNote(260, 'sawtooth', 0.25, 0.3), 150);
+    setTimeout(() => this.playNote(196, 'sawtooth', 0.35, 0.3), 300);
+  }
+
 
   stopAllBgmTracks() {
     this.isPlayingBgm = false;

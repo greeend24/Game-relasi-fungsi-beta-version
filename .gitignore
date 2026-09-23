@@ -9,6 +9,7 @@ backend/dist/
 .env.local
 .DS_Store
 cloudflared.exe
+cloudflared*.exe
 ngrok.exe
 ngrok.yml
 
@@ -19,11 +20,11 @@ DISTRIBUSI_GAME_ALL_PLATFORM/
 *.tar.gz
 
 # Scratch binaries, temporary files & logs
-scratch/*.exe
-scratch/*.log
-scratch/temp_asar/
-scratch/*.wav
-scratch/frames_3_1/
+scratch/
+exports/
+__pycache__/
+*.pyc
+
 
 # Mobile build caches
 android/.gradle/

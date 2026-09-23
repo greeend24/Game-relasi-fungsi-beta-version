@@ -266,8 +266,34 @@ router.post("/reset-all", async (_req: Request, res: Response) => {
 
 
 /**
+ * GET /api/admin/tunnel/status
+ * Return current status of the online tunnel (Cloudflare) and local IP addresses
+ */
+router.get("/tunnel/status", async (_req: Request, res: Response) => {
+  const port = env.PORT || 3001;
+  const localUrl = `http://localhost:${port}`;
+  const allIps = getLocalIpAddresses();
+  const lanIp = allIps.find((ip) => !ip.startsWith("169.254.")) || allIps[0] || "127.0.0.1";
+  const lanUrl = `http://${lanIp}:${port}`;
+
+  const tunnel = await getTunnelStatus();
+  res.json({
+    success: true,
+    data: {
+      isRunning: tunnel.isRunning,
+      publicUrl: tunnel.publicUrl,
+      localUrl,
+      lanIp,
+      lanUrl,
+      allLanIps: allIps,
+      gameUrl: tunnel.publicUrl || lanUrl || localUrl,
+    },
+  });
+});
+
+/**
  * POST /api/admin/launch
- * One-click launch: ensures ngrok tunnel is up and returns ready URLs for the game.
+ * One-click launch: ensures online Cloudflare tunnel is up and returns ready URLs for the game.
  */
 router.post("/launch", async (_req: Request, res: Response) => {
   const port = env.PORT || 3001;

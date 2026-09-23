@@ -1,1040 +1,938 @@
 /**
- * Quest Questions Generator Service : 5 Chapter Relasi & Fungsi SMP Kelas 8
- * Generates 30 curriculum-accurate, progressive Bloom (C3, C4, C5) questions
- * specifically tailored for Chapter 1 through Chapter 5.
- *
- * Types: MULTIPLE_CHOICE, ARROWS, MATCHING, TRUE_FALSE
- * Options are properly rotated/shuffled so correct answers are balanced (A, B, C, D).
- * Includes concrete mathematical visualisations for every question.
+ * QUEST MODE QUESTION GENERATOR ENGINE (DETEKTIF DATA)
+ * Generates exactly 10 curriculum-aligned, high-depth questions per chapter.
+ * 
+ * Karakteristik Khusus Quest Mode (Ujian Tantangan):
+ * - Memiliki volume data/elemen LEBIH BANYAK dan LEBIH MENANTANG dibanding Latihan Biasa
+ *   (misal: 4-5 nama siswa pada HPB/tabel/kartesius, 6-8 kartu pada drag-drop, 4-7 tali panah).
+ * - Tetap setia pada kurikulum masing-masing bab:
+ *   • Bab 1: Murni RELASI kontekstual (fleksibel/bercabang, TANPA rumus fungsi f(x)).
+ *   • Bab 2: UNSUR FUNGSI (Domain, Kodomain, Range, Syarat 1-kawan).
+ *   • Bab 3: NOTASI & RUMUS FUNGSI (Substitusi, bayangan, prapeta, aljabar).
+ *   • Bab 4: GRAFIK FUNGSI LINEAR (Garis lurus, titik potong, gradien).
+ *   • Bab 5: KORESPONDENSI SATU-SATU (Bijeksi timbal balik, n!, kabel brankas).
+ * 
+ * Bloom Distribution per Chapter:
+ * Q1 - Q3: C3 (Aplikasi) - 50 Poin
+ * Q4 - Q7: C4 (Analisis Kasus) - 80 Poin
+ * Q8 - Q10: C5 (Evaluasi & Pemecahan Kode) - 120 Poin
  */
 
-function rotateOptions(opts, correct, targetIdx) {
-  const curIdx = opts.indexOf(correct);
-  if (curIdx === -1) return opts;
-  const target = Math.abs(targetIdx) % opts.length;
-  const newOpts = [...opts];
-  newOpts.splice(curIdx, 1);
-  newOpts.splice(target, 0, correct);
-  return newOpts;
-}
+import { shuffleArray } from '../utils/shuffle.js';
 
 export function generateSubbabQuestions(chapterId) {
   const cid = Number(chapterId) || 1;
   const questions = [];
-  let mcCount = 0;
 
-  for (let i = 0; i < 30; i++) {
-    const qNum = i + 1;
-    const formatType = i % 5; // 0: MULTIPLE_CHOICE, 1: ARROWS, 2: CARTESIAN, 3: MATCHING, 4: TRUE_FALSE
-    const level = i < 10 ? 'C3' : i < 20 ? 'C4' : 'C5';
-    const pts = i < 10 ? 50 : i < 20 ? 80 : 120;
+  // ═════════════════════════════════════════════════════════════════════════
+  // CHAPTER 1: PENGERTIAN & CARA MENYATAKAN RELASI (DATA KAYA & BESAR)
+  // Menampilkan relasi dunia nyata dengan 4-5 siswa, banyak pasangan,
+  // dan sifat fleksibel (boleh bercabang & boleh kosong). TANPA FUNGSI/RUMUS.
+  // ═════════════════════════════════════════════════════════════════════════
+  if (cid === 1) {
+    // Q1: C3 MCQ - Definisi & Sifat Fleksibel Relasi (Peminjaman Buku Perpustakaan)
+    questions.push({
+      id: 1, level: 'C3', pts: 50, type: 'MCQ',
+      question: 'Di perpustakaan sekolah, tercatat data peminjaman buku 5 siswa: Ali meminjam Ensiklopedia dan Novel, Budi meminjam Komik Edukasi, Citra meminjam Atlas Dunia dan Buku Sejarah, Doni meminjam Novel, sedangkan Eka tidak meminjam buku apa pun karena membaca di tempat. Mengapa data peminjaman buku tersebut sah digolongkan sebagai RELASI matematika?',
+      options: [
+        'Karena aturan relasi bersifat fleksibel: anggota asal boleh memiliki lebih dari satu pasangan dan boleh tidak memilih pasangan',
+        'Hanya sah apabila seluruh siswa meminjam judul buku yang sama persis',
+        'Tidak sah sebagai relasi karena ada siswa yang meminjam lebih dari satu buku dan ada yang tidak meminjam',
+        'Hanya sah apabila jumlah siswa di perpustakaan sama banyak dengan jumlah seluruh buku di rak'
+      ],
+      correct: 'Karena aturan relasi bersifat fleksibel: anggota asal boleh memiliki lebih dari satu pasangan dan boleh tidak memilih pasangan',
+      explanation: 'Dalam matematika, aturan relasi antara dua himpunan bersifat sangat fleksibel (tidak kaku): anggota himpunan asal diperbolehkan memiliki lebih dari satu kawan pasangan (bercabang) dan diperbolehkan tidak memiliki pasangan sama sekali (kosong).'
+    });
 
-    // ─────────────────────────────────────────────────────────────
-    // CHAPTER 1: Pengertian & Cara Menyatakan Relasi
-    // ─────────────────────────────────────────────────────────────
-    if (cid === 1) {
-      if (formatType === 0) {
-        const mcList = [
-          {
-            q: 'Pengertian dari relasi himpunan A ke himpunan B adalah...',
-            opts: ['Aturan yang memasangkan anggota himpunan A ke himpunan B', 'Operasi hitung perkalian antara dua himpunan', 'Aturan yang mewajibkan semua elemen berpasangan tepat satu', 'Himpunan bagian dari bilangan cacah'],
-            c: 'Aturan yang memasangkan anggota himpunan A ke himpunan B',
-            visual: { type: 'arrow_diagram', setA: ['A1', 'A2'], setB: ['B1', 'B2'], pairs: [['A1', 'B1'], ['A2', 'B2']], labelA: 'Himpunan A', labelB: 'Himpunan B', statusBadge: 'Aturan Relasi' }
-          },
-          {
-            q: 'Jika A={2, 3} dan B={4, 6} dengan aturan "faktor dari", pasangan berurutannya adalah...',
-            opts: ['{(2, 4), (2, 6), (3, 6)}', '{(2, 4), (3, 6)}', '{(4, 2), (6, 3)}', '{(2, 6), (3, 4)}'],
-            c: '{(2, 4), (2, 6), (3, 6)}',
-            visual: { type: 'relation_table', title: 'Tabel Relasi Faktor Dari', rule: 'Faktor Dari', headers: ['Himpunan A', 'Himpunan B'], pairs: [['2', '4'], ['2', '6'], ['3', '6']] }
-          },
-          {
-            q: 'Manakah di bawah ini yang BUKAN merupakan cara menyatakan relasi?',
-            opts: ['Diagram Venn irisan', 'Diagram Panah', 'Himpunan Pasangan Berurutan', 'Diagram Cartesius'],
-            c: 'Diagram Venn irisan',
-            visual: { type: 'arrow_diagram', setA: ['1', '2'], setB: ['a', 'b'], pairs: [['1', 'a'], ['2', 'b']], labelA: 'Bentuk Relasi', labelB: 'Representasi' }
-          },
-          {
-            q: 'Pada relasi R = {(1, a), (2, b), (1, c)}, apakah anggota himpunan asal boleh bercabang?',
-            opts: ['Boleh, karena relasi tidak membatasi jumlah pasangan', 'Tidak boleh, harus tepat satu', 'Hanya boleh jika elemen berupa huruf', 'Hanya boleh jika jumlahnya genap'],
-            c: 'Boleh, karena relasi tidak membatasi jumlah pasangan',
-            visual: { type: 'ordered_pairs', title: 'Himpunan Pasangan Berurutan R', setName: 'R', pairs: [['1', 'a'], ['2', 'b'], ['1', 'c']] }
-          },
-          {
-            q: 'Pasangan berurutan dari relasi "setengah dari" pada A={1, 2} ke B={2, 4, 6} adalah...',
-            opts: ['{(1, 2), (2, 4)}', '{(2, 1), (4, 2)}', '{(1, 2), (2, 4), (3, 6)}', '{(1, 1), (2, 2)}'],
-            c: '{(1, 2), (2, 4)}',
-            visual: { type: 'relation_table', title: 'Tabel Relasi "Setengah Dari"', rule: 'Setengah Dari', headers: ['Domain x', 'Kodomain y'], pairs: [['1', '2'], ['2', '4']] }
-          },
-          {
-            q: 'Jika A={3, 5} dan B={6, 10} dengan relasi "faktor dari", maka pasangan yang benar adalah...',
-            opts: ['{(3, 6), (5, 10)}', '{(3, 10), (5, 6)}', '{(6, 3), (10, 5)}', '{(3, 5), (6, 10)}'],
-            c: '{(3, 6), (5, 10)}',
-            visual: { type: 'arrow_diagram', setA: ['3', '5'], setB: ['6', '10'], pairs: [['3', '6'], ['5', '10']], labelA: 'Himpunan A', labelB: 'Himpunan B', statusBadge: 'Aturan: Faktor Dari' }
-          },
-          {
-            q: 'Relasi yang menyajikan data dalam bentuk titik-titik sumbu koordinat datar dan tegak disebut...',
-            opts: ['Diagram Cartesius', 'Diagram Panah', 'Tabel Distribusi', 'Diagram Batang'],
-            c: 'Diagram Cartesius',
-            visual: { type: 'ordered_pairs', title: 'Titik Koordinat Relasi', setName: 'Titik (x, y)', pairs: [['1', '2'], ['2', '3']], domainName: 'Sumbu X (Mendatar)', rangeName: 'Sumbu Y (Tegak)' }
-          },
-          {
-            q: 'Pada relasi "dua lebihnya dari", pasangan dari angka 5 ke himpunan tujuan adalah...',
-            opts: ['3', '7', '10', '2'],
-            c: '3',
-            visual: { type: 'relation_table', title: 'Tabel Bukti Relasi', rule: 'Dua Lebihnya Dari', headers: ['Nilai x', 'Nilai y'], pairs: [['5', '3']] }
-          }
-        ];
-        const cur = mcList[Math.floor(i / 5) % mcList.length];
-        const rotated = rotateOptions(cur.opts, cur.c, mcCount++);
-        questions.push({ id: qNum, level, pts, type: 'MULTIPLE_CHOICE', question: `${cur.q}`, options: rotated, correct: cur.c, visual: cur.visual });
-      } else if (formatType === 1) {
-        const offset = (Math.floor(i / 5) % 3) + 1;
-        const setA = [offset, offset + 1];
-        const setB = [offset * 2, (offset + 1) * 2];
-        questions.push({
-          id: qNum, level, pts, type: 'ARROWS',
-          question: `Hubungkan anggota A ke B dengan aturan "setengah dari"!`,
-          setA, setB, rule: 'half_of',
-          correctPairs: setA.map((a, idx) => `${a}->${setB[idx]}`)
-        });
-      } else if (formatType === 2) {
-        const cartesianList = [
-          {
-            q: 'Pasanglah titik-titik koordinat pada diagram Cartesius untuk relasi "setengah dari": (1, 2), (2, 4), dan (3, 6)!',
-            minX: 0, maxX: 4, minY: 0, maxY: 7,
-            targetPoints: [[1, 2], [2, 4], [3, 6]]
-          },
-          {
-            q: 'Tandai titik koordinat relasi faktor dari A={2, 3} ke B={2, 4, 6}: (2, 2), (2, 4), dan (3, 6)!',
-            minX: 0, maxX: 4, minY: 0, maxY: 7,
-            targetPoints: [[2, 2], [2, 4], [3, 6]]
-          },
-          {
-            q: 'Pasanglah titik koordinat relasi "dua lebihnya dari" untuk pasangan: (1, 3), (2, 4), dan (3, 5)!',
-            minX: 0, maxX: 5, minY: 0, maxY: 6,
-            targetPoints: [[1, 3], [2, 4], [3, 5]]
-          },
-          {
-            q: 'Tandai titik koordinat relasi R = {(1, 1), (2, 3), (3, 5)} pada bidang Cartesius!',
-            minX: 0, maxX: 4, minY: 0, maxY: 6,
-            targetPoints: [[1, 1], [2, 3], [3, 5]]
-          },
-          {
-            q: 'Pasanglah titik-titik koordinat pada relasi "kelipatan dari": (2, 4) dan (3, 6)!',
-            minX: 0, maxX: 4, minY: 0, maxY: 7,
-            targetPoints: [[2, 4], [3, 6]]
-          },
-          {
-            q: 'Tandai titik koordinat relasi A={1, 2, 3} ke B={3, 4, 5} dengan aturan "ditambah 2": (1, 3), (2, 4), (3, 5)!',
-            minX: 0, maxX: 4, minY: 0, maxY: 6,
-            targetPoints: [[1, 3], [2, 4], [3, 5]]
-          }
-        ];
-        const curC = cartesianList[Math.floor(i / 5) % cartesianList.length];
-        questions.push({
-          id: qNum, level, pts, type: 'CARTESIAN',
-          question: `${curC.q}`,
-          minX: curC.minX, maxX: curC.maxX, minY: curC.minY, maxY: curC.maxY,
-          targetPoints: curC.targetPoints,
-          hint: 'Klik pada titik persilangan garis untuk memasang atau melepas titik koordinat.'
-        });
-      } else if (formatType === 3) {
-        const matchingList = [
-          [
-            { x: 'Diagram Panah', result: 'Lingkaran himpunan & garis panah' },
-            { x: 'Pasangan Berurutan', result: '{(x, y), ...}' },
-            { x: 'Diagram Cartesius', result: 'Titik koordinat sumbu X dan Y' }
-          ],
-          [
-            { x: 'Relasi Kurang Dari', result: '2 dipasangkan ke 3' },
-            { x: 'Relasi Faktor Dari', result: '2 dipasangkan ke 4' },
-            { x: 'Relasi Dua Kalinya', result: '4 dipasangkan ke 2' }
-          ],
-          [
-            { x: 'Sumbu Mendatar X', result: 'Daerah Asal (Elemen Pertama)' },
-            { x: 'Sumbu Tegak Y', result: 'Daerah Kawan (Elemen Kedua)' },
-            { x: 'Titik Koordinat (x, y)', result: 'Pasangan Relasi' }
-          ]
-        ];
-        const curPairs = matchingList[Math.floor(i / 5) % matchingList.length];
-        questions.push({
-          id: qNum, level, pts, type: 'MATCHING',
-          question: `Jodohkan cara menyatakan relasi dengan formatnya!`,
-          pairs: curPairs
-        });
-      } else {
-        const tfList = [
-          { q: 'Dalam relasi, satu anggota himpunan asal boleh memiliki lebih dari satu pasangan.', a: 'Benar', visual: { type: 'relation_table', title: 'Tabel Relasi Bercabang', headers: ['Domain x', 'Kodomain y'], pairs: [['1', 'a'], ['1', 'b']] } },
-          { q: 'Setiap relasi pasti merupakan fungsi.', a: 'Salah', visual: { type: 'ordered_pairs', title: 'Himpunan Pasangan R', setName: 'R', pairs: [['1', 'a'], ['1', 'b']], rule: 'Cabang (Bukan Fungsi)' } },
-          { q: 'Anggota himpunan asal pada relasi boleh tidak memiliki pasangan sama sekali.', a: 'Benar', visual: { type: 'arrow_diagram', setA: ['1', '2'], setB: ['a'], pairs: [['1', 'a']], statusBadge: 'Boleh Kosong di Relasi' } },
-          { q: 'Himpunan pasangan berurutan ditulis dengan format (kodomain, domain).', a: 'Salah' },
-          { q: 'Diagram panah menggunakan tanda panah dari daerah asal ke daerah kawan.', a: 'Benar' },
-          { q: 'Pada diagram Cartesius, himpunan asal selalu diletakkan pada sumbu mendatar X.', a: 'Benar' },
-          { q: 'Relasi "kelipatan dari" memasangkan 6 ke 2 karena 6 kelipatan dari 2.', a: 'Benar' }
-        ];
-        const cur = tfList[Math.floor(i / 5) % tfList.length];
-        questions.push({ id: qNum, level, pts, type: 'TRUE_FALSE', question: `${cur.q}`, options: ['Benar', 'Salah'], correct: cur.a, visual: cur.visual });
-      }
-    }
+    // Q2: C3 HPB_BUILDER - Cita-Cita & Profesi Impian 4 Siswa (Open-Ended)
+    questions.push({
+      id: 2, level: 'C3', pts: 50, type: 'HPB_BUILDER',
+      isOpenEnded: true,
+      question: '[Soal Terbuka] Pada sesi bimbingan karier kelas, buatlah himpunan pasangan berurutan R untuk relasi "cita-cita profesi impian" antara 4 siswa dan profesi yang mereka minati! Kamu bebas menentukan cita-cita tiap siswa dari kartu yang tersedia.',
+      subInstruction: 'Pindahkan kartu nama siswa dan profesi ke seluruh kotak kurung [ ? ] yang kosong (bebas berkreasi):',
+      setName: 'R',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: 'Andi', ansY: 'Dokter', fixedX: null, fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: 'Budi', ansY: 'Arsitek', fixedX: null, fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: 'Citra', ansY: 'Programmer', fixedX: null, fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: 'Doni', ansY: 'Pilot', fixedX: null, fixedY: null }
+      ],
+      tokens: ['Andi', 'Budi', 'Citra', 'Doni', 'Eka', 'Dokter', 'Arsitek', 'Programmer', 'Pilot', 'Animator', 'Penulis'],
+      openEndedRules: {
+        slots: {
+          'p1_x': { role: 'X', validTokens: ['Andi', 'Budi', 'Citra', 'Doni', 'Eka'] },
+          'p1_y': { role: 'Y', validTokens: ['Dokter', 'Arsitek', 'Programmer', 'Pilot', 'Animator', 'Penulis'] },
+          'p2_x': { role: 'X', validTokens: ['Andi', 'Budi', 'Citra', 'Doni', 'Eka'] },
+          'p2_y': { role: 'Y', validTokens: ['Dokter', 'Arsitek', 'Programmer', 'Pilot', 'Animator', 'Penulis'] },
+          'p3_x': { role: 'X', validTokens: ['Andi', 'Budi', 'Citra', 'Doni', 'Eka'] },
+          'p3_y': { role: 'Y', validTokens: ['Dokter', 'Arsitek', 'Programmer', 'Pilot', 'Animator', 'Penulis'] },
+          'p4_x': { role: 'X', validTokens: ['Andi', 'Budi', 'Citra', 'Doni', 'Eka'] },
+          'p4_y': { role: 'Y', validTokens: ['Dokter', 'Arsitek', 'Programmer', 'Pilot', 'Animator', 'Penulis'] }
+        },
+        distinctX: true,
+        criteriaDescription: 'Bebas menentukan cita-cita asalkan setiap kurung berformat (Nama Siswa, Profesi) dan seluruh kotak terisi.'
+      },
+      correctSlots: {
+        'p1_x': 'Andi', 'p1_y': 'Dokter',
+        'p2_x': 'Budi', 'p2_y': 'Arsitek',
+        'p3_x': 'Citra', 'p3_y': 'Programmer',
+        'p4_x': 'Doni', 'p4_y': 'Pilot'
+      },
+      explanation: 'Luar biasa! Pada soal terbuka (open-ended), kamu bebas memasangkan setiap siswa dengan profesi impian pilihannya.'
+    });
 
-    // ─────────────────────────────────────────────────────────────
-    // CHAPTER 2: Pengertian & Unsur Fungsi
-    // ─────────────────────────────────────────────────────────────
-    else if (cid === 2) {
-      if (formatType === 0) {
-        const mcPool = [
-          // C3 Level
-          {
-            q: 'Manakah syarat utama suatu relasi dikatakan sebagai FUNGSI dari himpunan A ke B?',
-            opts: ['Setiap anggota A memiliki tepat satu pasangan di B', 'Ada anggota A yang boleh memilih lebih dari satu pasangan di B', 'Anggota A boleh tidak memiliki pasangan di B', 'Semua anggota B wajib memiliki pasangan'],
-            c: 'Setiap anggota A memiliki tepat satu pasangan di B',
-            visual: { type: 'arrow_diagram', setA: ['1', '2', '3'], setB: ['p', 'q', 'r'], pairs: [['1', 'p'], ['2', 'q'], ['3', 'r']], labelA: 'Domain', labelB: 'Kodomain', statusBadge: 'Syarat: Tepat 1 Pasangan', isFunction: true }
-          },
-          {
-            q: 'Himpunan pasangan data alat tulis adalah f = {(1, "Pensil"), (2, "Penghapus"), (3, "Penggaris")}. Daerah asal (Domain) dari data tersebut adalah...',
-            opts: ['{1, 2, 3}', '{"Pensil", "Penghapus", "Penggaris"}', '{1, 2}', '{"Pensil", "Penggaris"}'],
-            c: '{1, 2, 3}',
-            visual: { type: 'ordered_pairs', title: 'Data Alat Tulis', setName: 'f', pairs: [['1', 'Pensil'], ['2', 'Penghapus'], ['3', 'Penggaris']], domainName: 'Domain (Nomor)', rangeName: 'Alat Tulis' }
-          },
-          {
-            q: 'Diketahui A={1, 2, 3} dan B={a, b, c}. Jika fungsi f = {(1, a), (2, b), (3, a)}, maka daerah hasil (Range) fungsi f adalah...',
-            opts: ['{a, b}', '{a, b, c}', '{1, 2, 3}', '{a}'],
-            c: '{a, b}',
-            visual: { type: 'arrow_diagram', setA: ['1', '2', '3'], setB: ['a', 'b', 'c'], pairs: [['1', 'a'], ['2', 'b'], ['3', 'a']], labelA: 'Domain A', labelB: 'Kodomain B', highlightRange: ['a', 'b'], statusBadge: 'Range = {a, b}', isFunction: true }
-          },
-          // C4 Level
-          {
-            q: 'Guru memeriksa 4 tugas siswa. Manakah relasi berikut yang SAH sebagai FUNGSI?',
-            opts: ['{(1, "A"), (2, "B"), (3, "C")}', '{(1, "A"), (1, "B"), (2, "C")}', '{(1, "A"), (2, "B"), (2, "C")}', '{(1, "A"), (1, "C"), (3, "B")}'],
-            c: '{(1, "A"), (2, "B"), (3, "C")}',
-            visual: { type: 'relation_table', title: 'Tabel Pemetaan Data', headers: ['Nilai (x)', 'Hasil (y)'], pairs: [['1', 'A'], ['2', 'B'], ['3', 'C']] }
-          },
-          {
-            q: 'Mengapa relasi jadwal siswa R = {(Dani, "Lab"), (Dani, "Perpustakaan"), (Budi, "Kelas")} BUKAN merupakan fungsi?',
-            opts: ['Karena Dani memiliki dua ruangan sekaligus (bercabang)', 'Karena Budi hanya memiliki satu ruangan', 'Karena jumlah pasangannya ada 3', 'Karena ruangan berupa tempat umum'],
-            c: 'Karena Dani memiliki dua ruangan sekaligus (bercabang)',
-            visual: { type: 'relation_table', title: 'Jadwal Siswa', headers: ['Siswa', 'Ruangan'], pairs: [['Dani', 'Lab'], ['Dani', 'Perpustakaan'], ['Budi', 'Kelas']] }
-          },
-          {
-            q: 'Diberikan domain A = {2, 4, 6} dan kodomain B = {1, 2, 3, 4, 5}. Jika fungsi f memasangkan setiap x ke "setengah dari x", maka Range fungsinya adalah...',
-            opts: ['{1, 2, 3}', '{2, 4, 6}', '{1, 2, 3, 4, 5}', '{2, 3, 4}'],
-            c: '{1, 2, 3}',
-            visual: { type: 'relation_table', title: 'Tabel Relasi "Setengah dari x"', rule: 'Setengah Dari', headers: ['Domain x', 'Range y'], pairs: [['2', '1'], ['4', '2'], ['6', '3']] }
-          },
-          // C5 Level
-          {
-            q: 'Simpulan logis tentang hubungan relasi dan fungsi yang PALING TEPAT adalah...',
-            opts: ['Semua fungsi adalah relasi, namun tidak semua relasi adalah fungsi', 'Semua relasi otomatis merupakan fungsi', 'Fungsi dan relasi identik tanpa syarat khusus', 'Relasi selalu memiliki daerah hasil yang sama dengan kodomain'],
-            c: 'Semua fungsi adalah relasi, namun tidak semua relasi adalah fungsi',
-            visual: { type: 'arrow_diagram', setA: ['Domain'], setB: ['Kodomain'], pairs: [['Domain', 'Kodomain']], statusBadge: 'Fungsi ⊆ Relasi', isFunction: true }
-          },
-          {
-            q: 'Pada penugasan 3 detektif {D1, D2, D3} ke ruang interogasi {R1, R2, R3}, manakah pembagian tugas yang VALID sebagai fungsi?',
-            opts: ['D1 ke R1, D2 ke R2, D3 ke R1', 'D1 ke R1 dan R2, D2 ke R3, D3 tidak bertugas', 'D1 ke R2, D2 tidak dapat tugas, D3 ke R3', 'D1 tidak bertugas, D2 ke R1, D3 ke R2'],
-            c: 'D1 ke R1, D2 ke R2, D3 ke R1',
-            visual: { type: 'arrow_diagram', setA: ['D1', 'D2', 'D3'], setB: ['R1', 'R2', 'R3'], pairs: [['D1', 'R1'], ['D2', 'R2'], ['D3', 'R1']], labelA: 'Detektif', labelB: 'Ruang Interogasi', statusBadge: 'Fungsi Sah (Tiap Detektif 1 Tugas)', isFunction: true }
-          }
-        ];
-        const cur = mcPool[Math.floor(i / 5) % mcPool.length];
-        const rotated = rotateOptions(cur.opts, cur.c, mcCount++);
-        questions.push({ id: qNum, level, pts, type: 'MULTIPLE_CHOICE', question: `${cur.q}`, options: rotated, correct: cur.c, visual: cur.visual });
-      } else if (formatType === 1) {
-        const arrowConfigs = [
-          { setA: [1, 2, 3], setB: [2, 3, 4], rule: 'Hubungkan x ke f(x) = x + 1 (Saksi ke Nomor Ruang Interogasi)!', pairFn: a => `${a}->${a + 1}` },
-          { setA: [1, 2, 3], setB: [4, 5, 6], rule: 'Hubungkan x ke f(x) = x + 3 (Nomor Berkas ke Rak Arsip)!', pairFn: a => `${a}->${a + 3}` },
-          { setA: [1, 2, 3], setB: [2, 4, 6], rule: 'Hubungkan x ke f(x) = 2x (Kode Sinyal Detektor Forensik)!', pairFn: a => `${a}->${a * 2}` },
-          { setA: [1, 2, 3], setB: [3, 5, 7], rule: 'Hubungkan x ke f(x) = 2x + 1 (Sandi Dekoder Rahasia Markas)!', pairFn: a => `${a}->${a * 2 + 1}` },
-          { setA: [1, 2, 3], setB: [6, 7, 8], rule: 'Hubungkan x ke f(x) = x + 5 (Barang Bukti ke Loker Segel)!', pairFn: a => `${a}->${a + 5}` },
-          { setA: [1, 2, 3], setB: [2, 5, 8], rule: 'Hubungkan x ke f(x) = 3x - 1 (Penyelidikan Jejak Langkah Tersangka)!', pairFn: a => `${a}->${a * 3 - 1}` },
-          { setA: [1, 2, 3], setB: [4, 6, 8], rule: 'Hubungkan x ke f(x) = 2x + 2 (Sinkronisasi Waktu Kamera CCTV)!', pairFn: a => `${a}->${a * 2 + 2}` },
-          { setA: [1, 2, 3], setB: [3, 6, 9], rule: 'Hubungkan x ke f(x) = 3x (Rotasi Penugasan Tim Patroli)!', pairFn: a => `${a}->${a * 3}` }
-        ];
-        const cfg = arrowConfigs[Math.floor(i / 5) % arrowConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'ARROWS',
-          question: `${cfg.rule}`,
-          setA: cfg.setA, setB: cfg.setB, rule: `ch2_rule_${i}`,
-          correctPairs: cfg.setA.map(cfg.pairFn)
-        });
-      } else if (formatType === 2) {
-        const cartesianList = [
-          {
-            q: 'Tandai titik-titik koordinat fungsi f(x) = x + 1 untuk domain x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 5,
-            targetPoints: [[1, 2], [2, 3], [3, 4]]
-          },
-          {
-            q: 'Pasang titik koordinat untuk fungsi f(x) = 2x pada domain x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 7,
-            targetPoints: [[1, 2], [2, 4], [3, 6]]
-          },
-          {
-            q: 'Pasang titik koordinat fungsi f(x) = 2x - 1 untuk x ∈ {1, 2, 3}!',
-            minX: 0, maxX: 4, minY: 0, maxY: 6,
-            targetPoints: [[1, 1], [2, 3], [3, 5]]
-          },
-          {
-            q: 'Tandai titik koordinat fungsi konstan f(x) = 3 untuk domain x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 5,
-            targetPoints: [[1, 3], [2, 3], [3, 3]]
-          },
-          {
-            q: 'Pasang titik koordinat untuk fungsi f(x) = x + 2 pada domain x = 0, 1, dan 2!',
-            minX: 0, maxX: 4, minY: 0, maxY: 5,
-            targetPoints: [[0, 2], [1, 3], [2, 4]]
-          },
-          {
-            q: 'Tandai titik-titik fungsi f(x) = 3x - 2 untuk domain x = 1 dan x = 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 5,
-            targetPoints: [[1, 1], [2, 4]]
-          }
-        ];
-        const curC = cartesianList[Math.floor(i / 5) % cartesianList.length];
-        questions.push({
-          id: qNum, level, pts, type: 'CARTESIAN',
-          question: `${curC.q}`,
-          minX: curC.minX, maxX: curC.maxX, minY: curC.minY, maxY: curC.maxY,
-          targetPoints: curC.targetPoints,
-          hint: 'Klik pada persilangan kotak untuk memasang atau melepas titik.'
-        });
-      } else if (formatType === 3) {
-        const matchingConfigs = [
-          {
-            q: 'Jodohkan istilah komponen fungsi dengan definisinya yang tepat!',
-            pairs: [
-              { x: 'Domain', result: 'Daerah asal seluruh nilai x' },
-              { x: 'Kodomain', result: 'Daerah kawan seluruh target' },
-              { x: 'Range', result: 'Daerah hasil yang terpilih' }
-            ]
-          },
-          {
-            q: 'Jodohkan relasi di dunia nyata dengan status fungsinya!',
-            pairs: [
-              { x: 'Siswa ke Nomor Induk', result: 'Fungsi (1 anak punya 1 NIS)' },
-              { x: 'Orang ke Makanan Favorit', result: 'Bukan Fungsi (Bisa suka banyak)' },
-              { x: 'Warga ke Golongan Darah', result: 'Fungsi (1 orang 1 gol darah)' }
-            ]
-          },
-          {
-            q: 'Analisis himpunan pasangan berurutan berikut!',
-            pairs: [
-              { x: '{(1,a), (2,b), (3,c)}', result: 'Fungsi Sah' },
-              { x: '{(1,a), (1,b), (2,c)}', result: 'Bukan Fungsi (1 mendua)' },
-              { x: '{(1,a), (2,a), (3,a)}', result: 'Fungsi Sah (Target sama)' }
-            ]
-          },
-          {
-            q: 'Jodohkan himpunan pasangan berurutan dengan Daerah Hasil (Range)!',
-            pairs: [
-              { x: '{(1, 4), (2, 5), (3, 6)}', result: 'Range = {4, 5, 6}' },
-              { x: '{(1, 4), (2, 4), (3, 4)}', result: 'Range = {4}' },
-              { x: '{(1, 5), (2, 6), (3, 5)}', result: 'Range = {5, 6}' }
-            ]
-          },
-          {
-             q: 'Jodohkan peran setiap bagian rumus f(x) = y!',
-            pairs: [
-               { x: 'Huruf x', result: 'Nilai dari daerah asal' },
-               { x: 'Semua kemungkinan y', result: 'Kodomain (daerah kawan)' },
-               { x: 'Nilai f(x) yang terpilih', result: 'Range (daerah hasil)' }
-            ]
-          },
-          {
-             q: 'Periksa cara kerja penyimpanan bukti detektif berikut!',
-            pairs: [
-               { x: 'Saksi ada di 2 lokasi bersamaan', result: 'Alibi Gugur (Bukan Fungsi)' },
-               { x: 'Tiap bukti disimpan di 1 loker', result: 'Cara Kerja Sah (Fungsi)' },
-               { x: '1 loker berisi 2 berkas berbeda', result: 'Boleh Terjadi (Fungsi)' }
-            ]
-          },
-          {
-            q: 'Jodohkan himpunan pasangan dengan deskripsi domain dan range!',
-            pairs: [
-              { x: 'P = {(2, 9), (3, 9), (4, 9)}', result: 'Domain {2,3,4}, Range {9}' },
-              { x: 'Q = {(2, 5), (3, 7), (4, 9)}', result: 'Domain {2,3,4}, Range {5,7,9}' },
-              { x: 'R = {(2, 7), (3, 5), (4, 5)}', result: 'Domain {2,3,4}, Range {5,7}' }
-            ]
-          }
-        ];
-        const mCfg = matchingConfigs[Math.floor(i / 5) % matchingConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'MATCHING',
-          question: `${mCfg.q}`,
-          pairs: mCfg.pairs
-        });
-      } else {
-        const tfPool = [
-          { q: 'Fungsi adalah relasi di mana setiap anggota daerah asal (domain) memiliki tepat satu pasangan di daerah kawan.', a: 'Benar', visual: { type: 'arrow_diagram', setA: ['1', '2'], setB: ['a', 'b'], pairs: [['1', 'a'], ['2', 'b']], statusBadge: 'Definisi Fungsi: Tepat 1', isFunction: true } },
-          { q: 'Pada fungsi, anggota daerah asal (domain) diperbolehkan tidak memiliki pasangan.', a: 'Salah', visual: { type: 'arrow_diagram', setA: ['1', '2 (Kosong)'], setB: ['a'], pairs: [['1', 'a']], statusBadge: 'Domain Kosong = Bukan Fungsi', isFunction: false } },
-          { q: 'Jika ada satu anggota daerah asal yang memiliki dua pasangan (bercabang), maka relasi tersebut BUKAN fungsi.', a: 'Benar', visual: { type: 'ordered_pairs', title: 'Relasi Bercabang', setName: 'R', pairs: [['1', 'a'], ['1', 'b']], rule: 'x=1 bercabang (Bukan Fungsi)' } },
-          { q: 'Range (daerah hasil) suatu fungsi selalu merupakan himpunan bagian dari Kodomain (daerah kawan).', a: 'Benar' },
-          { q: 'Dua anggota domain yang berbeda boleh dipasangkan ke satu anggota kodomain yang sama dalam sebuah fungsi.', a: 'Benar', visual: { type: 'relation_table', title: 'Tabel Pemetaan Sasaran Sama', headers: ['Domain x', 'Kodomain y'], pairs: [['1', 'Target Sama'], ['2', 'Target Sama']] } },
-          { q: 'Daerah kawan (Kodomain) wajib terpasang semuanya dan tidak boleh ada yang tersisa pada fungsi biasa.', a: 'Salah' },
-          { q: 'Jika domain A memiliki 3 anggota dan kodomain B memiliki 2 anggota, kita tetap bisa membuat fungsi dari A ke B.', a: 'Benar' }
-        ];
-        const cur = tfPool[Math.floor(i / 5) % tfPool.length];
-        questions.push({ id: qNum, level, pts, type: 'TRUE_FALSE', question: `${cur.q}`, options: ['Benar', 'Salah'], correct: cur.a, visual: cur.visual });
-      }
-    }
+    // Q3: C3 ARROWS - Moda Transportasi ke Sekolah 4 Siswa
+    questions.push({
+      id: 3, level: 'C3', pts: 50, type: 'ARROWS',
+      question: 'Data survei sarana berangkat sekolah dari 4 siswa kelas 8 mencatat:\n• Ali naik Sepeda dan Jalan Kaki.\n• Budi naik Bus Sekolah dan Sepeda.\n• Cici naik Ojek Online.\n• Dedi naik Sepeda.\nHubungkan tali panah untuk membentuk relasi "Kendaraan ke Sekolah" sesuai data tersebut!',
+      labelA: 'Himpunan A (Siswa)',
+      labelB: 'Himpunan B (Transportasi)',
+      setA: ['Ali', 'Budi', 'Cici', 'Dedi'],
+      setB: ['Sepeda', 'Bus Sekolah', 'Ojek Online', 'Jalan Kaki'],
+      rule: 'transportasi_sekolah',
+      correctPairs: [
+        'Ali->Sepeda', 'Ali->Jalan Kaki',
+        'Budi->Bus Sekolah', 'Budi->Sepeda',
+        'Cici->Ojek Online',
+        'Dedi->Sepeda'
+      ],
+      explanation: 'Tepat sekali! Relasi transportasi terbentuk sesuai data: Ali (Sepeda, Jalan Kaki), Budi (Bus Sekolah, Sepeda), Cici (Ojek Online), dan Dedi (Sepeda).'
+    });
 
-    // ─────────────────────────────────────────────────────────────
-    // CHAPTER 3: Notasi & Rumus Fungsi
-    // ─────────────────────────────────────────────────────────────
-    else if (cid === 3) {
-      if (formatType === 0) {
-        const mcPool = [
-          // C3 Level
-          {
-            q: 'Sebuah rumus fungsi dinyatakan dengan f(x) = 3x + 2. Bayangan dari nilai x = 4 adalah...',
-            opts: ['14', '12', '10', '16'],
-            c: '14',
-            visual: { type: 'function_machine', formula: 'f(x) = 3x + 2', inputVal: '4', processSteps: '3(4) + 2 = 12 + 2', outputVal: '14', machineName: 'Mesin Fungsi Kasus' }
-          },
-          {
-            q: 'Mobil patroli detektif disewa dengan biaya dasar Rp15.000 ditambah Rp3.000 per km: f(x) = 3000x + 15000. Jika mobil menempuh 5 km, total biayanya adalah...',
-            opts: ['Rp30.000', 'Rp25.000', 'Rp35.000', 'Rp20.000'],
-            c: 'Rp30.000',
-            visual: { type: 'function_machine', formula: 'f(x) = 3000x + 15000', inputVal: '5 km', processSteps: '3000(5) + 15000 = 15000 + 15000', outputVal: 'Rp30.000', machineName: 'Tarif Sewa Patroli' }
-          },
-          {
-            q: 'Diketahui rumus fungsi f(x) = 2x - 5. Nilai bayangan dari bilangan negatif f(-3) adalah...',
-            opts: ['-11', '1', '-1', '-16'],
-            c: '-11',
-            visual: { type: 'function_machine', formula: 'f(x) = 2x - 5', inputVal: '-3', processSteps: '2(-3) - 5 = -6 - 5', outputVal: '-11', machineName: 'Dekoder Negatif' }
-          },
-          // C4 Level
-          {
-            q: 'Mesin dekoder sandi rahasia markas menggunakan rumus f(x) = 4x + 3. Jika kode hasil yang diterima adalah 23, berapakah nilai prapeta x?',
-            opts: ['5', '4', '6', '7'],
-            c: '5',
-            visual: { type: 'function_machine', formula: 'f(x) = 4x + 3', inputVal: 'Prapeta x = ?', processSteps: '4x + 3 = 23 ➔ 4x = 20 ➔ x = 5', outputVal: 'Kode 23', machineName: 'Mencari Prapeta x' }
-          },
-          {
-             q: 'Diketahui rumus fungsi f(x) = ax + 5. Jika f(3) = 17, berapakah nilai a?',
-            opts: ['4', '3', '5', '6'],
-            c: '4',
-            visual: { type: 'function_machine', formula: 'f(x) = ax + 5', inputVal: '3', processSteps: '3a + 5 = 17 ➔ 3a = 12 ➔ a = 4', outputVal: '17', machineName: 'Mencari Koefisien a' }
-          },
-          {
-             q: 'Pada rumus f(x) = 5x - 8, berapakah nilai f(2) + f(0)?',
-            opts: ['-6', '2', '-8', '10'],
-            c: '-6',
-            visual: { type: 'function_machine', formula: 'f(x) = 5x - 8', inputVal: '2 & 0', processSteps: 'f(2)=2, f(0)=-8 ➔ 2 + (-8)', outputVal: '-6', machineName: 'Evaluasi Dua Nilai' }
-          },
-          // C5 Level
-          {
-            q: 'Sewa drone pengintai markas memiliki tarif awal Rp20.000 ditambah Rp5.000 per menit terbang. Rumus fungsi total biaya T(x) setelah x menit terbang adalah...',
-            opts: ['T(x) = 5000x + 20000', 'T(x) = 20000x + 5000', 'T(x) = 25000x', 'T(x) = 5000x - 20000'],
-            c: 'T(x) = 5000x + 20000',
-            visual: { type: 'function_machine', formula: 'T(x) = 5000x + 20000', inputVal: 'x menit', processSteps: 'Tarif dasar 20.000 + 5.000/menit', outputVal: 'Total Biaya', machineName: 'Tarif Drone Detektif' }
-          },
-          {
-            q: 'Diketahui rumus f(x) = ax + b. Jika f(2) = 11 dan f(4) = 17, berapakah nilai dari f(6)?',
-            opts: ['23', '21', '25', '19'],
-            c: '23',
-            visual: { type: 'function_machine', formula: 'f(x) = 3x + 5', inputVal: '6', processSteps: '3(6) + 5 = 18 + 5', outputVal: '23', machineName: 'Prediksi Nilai f(6)' }
-          }
-        ];
-        const cur = mcPool[Math.floor(i / 5) % mcPool.length];
-        const rotated = rotateOptions(cur.opts, cur.c, mcCount++);
-        questions.push({ id: qNum, level, pts, type: 'MULTIPLE_CHOICE', question: `${cur.q}`, options: rotated, correct: cur.c, visual: cur.visual });
-      } else if (formatType === 1) {
-        const arrowConfigs = [
-          { setA: [1, 2, 3], setB: [3, 5, 7], rule: 'Hubungkan x ke rumus f(x) = 2x + 1!', pairFn: a => `${a}->${a * 2 + 1}` },
-          { setA: [1, 2, 3], setB: [5, 8, 11], rule: 'Hubungkan x ke rumus f(x) = 3x + 2!', pairFn: a => `${a}->${a * 3 + 2}` },
-          { setA: [1, 2, 3], setB: [7, 8, 9], rule: 'Hubungkan x ke rumus f(x) = x + 6!', pairFn: a => `${a}->${a + 6}` },
-          { setA: [1, 2, 3], setB: [4, 9, 14], rule: 'Hubungkan x ke rumus f(x) = 5x - 1!', pairFn: a => `${a}->${a * 5 - 1}` },
-          { setA: [1, 2, 3], setB: [6, 8, 10], rule: 'Hubungkan x ke rumus f(x) = 2x + 4!', pairFn: a => `${a}->${a * 2 + 4}` },
-          { setA: [1, 2, 3], setB: [6, 10, 14], rule: 'Hubungkan x ke rumus f(x) = 4x + 2!', pairFn: a => `${a}->${a * 4 + 2}` },
-          { setA: [1, 2, 3], setB: [8, 11, 14], rule: 'Hubungkan x ke rumus f(x) = 3x + 5!', pairFn: a => `${a}->${a * 3 + 5}` },
-          { setA: [1, 2, 3], setB: [6, 11, 16], rule: 'Hubungkan x ke rumus f(x) = 5x + 1!', pairFn: a => `${a}->${a * 5 + 1}` }
-        ];
-        const cfg = arrowConfigs[Math.floor(i / 5) % arrowConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'ARROWS',
-          question: `${cfg.rule}`,
-          setA: cfg.setA, setB: cfg.setB, rule: `ch3_rule_${i}`,
-          correctPairs: cfg.setA.map(cfg.pairFn)
-        });
-      } else if (formatType === 2) {
-        const cartesianList = [
-          {
-            q: 'Diketahui rumus f(x) = 2x + 1. Pasanglah titik-titik koordinat untuk nilai x = 0, 1, dan 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 6,
-            targetPoints: [[0, 1], [1, 3], [2, 5]]
-          },
-          {
-            q: 'Pada rumus f(x) = 3x, pasang titik koordinat (x, f(x)) untuk nilai x = 1 dan x = 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 7,
-            targetPoints: [[1, 3], [2, 6]]
-          },
-          {
-            q: 'Diketahui rumus f(x) = 4 - x. Tandai titik koordinat pada diagram Cartesius untuk x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 5,
-            targetPoints: [[1, 3], [2, 2], [3, 1]]
-          },
-          {
-            q: 'Pada rumus f(x) = 2x - 2, pasanglah titik-titik koordinat untuk nilai x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 5,
-            targetPoints: [[1, 0], [2, 2], [3, 4]]
-          },
-          {
-            q: 'Diketahui rumus f(x) = x + 3. Tandai titik koordinat (x, f(x)) untuk x = 0, 1, dan 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 6,
-            targetPoints: [[0, 3], [1, 4], [2, 5]]
-          },
-          {
-            q: 'Pada rumus f(x) = 3x - 1, pasang titik koordinat (x, f(x)) untuk nilai x = 1 dan x = 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 6,
-            targetPoints: [[1, 2], [2, 5]]
-          }
-        ];
-        const curC = cartesianList[Math.floor(i / 5) % cartesianList.length];
-        questions.push({
-          id: qNum, level, pts, type: 'CARTESIAN',
-          question: `${curC.q}`,
-          minX: curC.minX, maxX: curC.maxX, minY: curC.minY, maxY: curC.maxY,
-          targetPoints: curC.targetPoints,
-          hint: 'Klik pada persilangan kotak untuk menandai titik hasil fungsi.'
-        });
-      } else if (formatType === 3) {
-        const matchingConfigs = [
-          {
-            q: 'Jodohkan nilai x dengan hasil rumus fungsi f(x) = 2x + 5!',
-            pairs: [
-              { x: 1, result: 7 },
-              { x: 2, result: 9 },
-              { x: 3, result: 11 }
-            ]
-          },
-          {
-            q: 'Jodohkan nilai x dengan rumus f(x) = 4x - 1!',
-            pairs: [
-              { x: 1, result: 3 },
-              { x: 2, result: 7 },
-              { x: 3, result: 11 }
-            ]
-          },
-          {
-            q: 'Jodohkan fungsi dengan nilai bayangan saat x = 2!',
-            pairs: [
-              { x: 'f(x) = 3x + 1', result: 'f(2) = 7' },
-              { x: 'f(x) = 5x - 2', result: 'f(2) = 8' },
-              { x: 'f(x) = 4x + 3', result: 'f(2) = 11' }
-            ]
-          },
-          {
-            q: 'Jodohkan pola masukan tabel dengan rumus fungsinya!',
-            pairs: [
-              { x: 'x=1 jadi 3, x=2 jadi 5', result: 'f(x) = 2x + 1' },
-              { x: 'x=1 jadi 4, x=2 jadi 7', result: 'f(x) = 3x + 1' },
-              { x: 'x=1 jadi 5, x=2 jadi 6', result: 'f(x) = x + 4' }
-            ]
-          },
-          {
-            q: 'Jodohkan nilai prapeta x saat diketahui output f(x) = 3x + 1!',
-            pairs: [
-              { x: 'Output f(x) = 7', result: 'Prapeta x = 2' },
-              { x: 'Output f(x) = 10', result: 'Prapeta x = 3' },
-              { x: 'Output f(x) = 13', result: 'Prapeta x = 4' }
-            ]
-          },
-          {
-            q: 'Jodohkan dua petunjuk nilai fungsi dengan rumus persamaannya!',
-            pairs: [
-              { x: 'f(0) = 4 dan f(1) = 7', result: 'f(x) = 3x + 4' },
-              { x: 'f(0) = 2 dan f(1) = 6', result: 'f(x) = 4x + 2' },
-              { x: 'f(0) = 5 dan f(1) = 7', result: 'f(x) = 2x + 5' }
-            ]
-          },
-          {
-            q: 'Jodohkan istilah pada bentuk rumus f(x) = ax + b!',
-            pairs: [
-              { x: 'Huruf a', result: 'Koefisien pengali x' },
-              { x: 'Huruf x', result: 'Variabel yang nilainya bisa diganti' },
-              { x: 'Huruf b', result: 'Konstanta suku tetap' }
-            ]
-          }
-        ];
-        const mCfg = matchingConfigs[Math.floor(i / 5) % matchingConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'MATCHING',
-          question: `${mCfg.q}`,
-          pairs: mCfg.pairs
-        });
-      } else {
-        const tfPool = [
-          { q: 'Pada rumus fungsi linear f(x) = ax + b, huruf "a" disebut koefisien dan "b" disebut konstanta.', a: 'Benar' },
-          { q: 'Jika f(x) = 5x - 4, maka nilai f(0) adalah -4.', a: 'Benar', visual: { type: 'function_machine', formula: 'f(x) = 5x - 4', inputVal: '0', processSteps: '5(0) - 4 = 0 - 4', outputVal: '-4', machineName: 'Evaluasi f(0)' } },
-          { q: 'Bayangan dari x = 3 pada f(x) = 4x + 1 adalah 13, dan prapeta dari 13 adalah x = 3.', a: 'Benar', visual: { type: 'function_machine', formula: 'f(x) = 4x + 1', inputVal: '3', processSteps: '4(3) + 1 = 12 + 1', outputVal: '13', machineName: 'Bayangan & Prapeta' } },
-           { q: 'Penulisan f : x -> 2x + 7 artinya sama persis dengan rumus f(x) = 2x + 7.', a: 'Benar' },
-          { q: 'Jika f(x) = 2x - 3, maka bentuk f(a + 1) sama dengan 2a - 1.', a: 'Benar' },
-          { q: 'Pada fungsi konstan f(x) = 7, nilai f(10) bernilai 70.', a: 'Salah', visual: { type: 'function_machine', formula: 'f(x) = 7', inputVal: '10', processSteps: 'Konstan tanpa x', outputVal: '7 (Tetap 7)', machineName: 'Fungsi Konstan' } },
-          { q: 'Jika rumus fungsi f(x) = 3x + b dan f(2) = 10, maka nilai konstanta b adalah 4.', a: 'Benar', visual: { type: 'function_machine', formula: 'f(2) = 3(2) + b = 10', inputVal: '2', processSteps: '6 + b = 10 ➔ b = 4', outputVal: '10', machineName: 'Mencari Nilai b' } }
-        ];
-        const cur = tfPool[Math.floor(i / 5) % tfPool.length];
-        questions.push({ id: qNum, level, pts, type: 'TRUE_FALSE', question: `${cur.q}`, options: ['Benar', 'Salah'], correct: cur.a, visual: cur.visual });
-      }
-    }
+    // Q4: C4 TABLE_BUILDER - Aplikasi Belajar Siswa
+    questions.push({
+      id: 4, level: 'C4', pts: 80, type: 'TABLE_BUILDER',
+      question: 'Lima siswa mencatat aplikasi digital yang digunakan untuk tugas belajar multimedia:\n• Rian menggunakan Canva\n• Siti menggunakan CapCut\n• Doni menggunakan Scratch\n• Putri menggunakan Duolingo\n• Eka menggunakan YouTube Edu\nLengkapi tabel relasi "Aplikasi Belajar Siswa" berikut dengan menaruh kartu ke dalam sel [ ? ] yang tepat!',
+      tableTitle: "Tabel Relasi: 'Aplikasi Belajar 5 Siswa'",
+      subInstruction: 'Pindahkan kartu nama siswa atau aplikasi ke sel tabel [ ? ] yang kosong:',
+      headers: ['Nama Siswa', 'Aplikasi Favorit'],
+      rows: [
+        { idX: 'r1_x', valX: 'Rian', isSlotX: false, idY: 'r1_y', valY: null, isSlotY: true },
+        { idX: 'r2_x', valX: null, isSlotX: true, idY: 'r2_y', valY: 'CapCut', isSlotY: false },
+        { idX: 'r3_x', valX: 'Doni', isSlotX: false, idY: 'r3_y', valY: null, isSlotY: true },
+        { idX: 'r4_x', valX: 'Putri', isSlotX: false, idY: 'r4_y', valY: null, isSlotY: true },
+        { idX: 'r5_x', valX: null, isSlotX: true, idY: 'r5_y', valY: 'YouTube Edu', isSlotY: false }
+      ],
+      tokens: ['Canva', 'Siti', 'Scratch', 'Duolingo', 'Eka', 'Notion', 'Photoshop'],
+      correctCells: {
+        'r1_y': 'Canva',
+        'r2_x': 'Siti',
+        'r3_y': 'Scratch',
+        'r4_y': 'Duolingo',
+        'r5_x': 'Eka'
+      },
+      explanation: 'Tabel relasi aplikasi belajar berhasil dilengkapi dengan tepat: Rian ➔ Canva, Siti ➔ CapCut, Doni ➔ Scratch, Putri ➔ Duolingo, dan Eka ➔ YouTube Edu.'
+    });
 
-    // ─────────────────────────────────────────────────────────────
-    // CHAPTER 4: Grafik Fungsi Linear
-    // ─────────────────────────────────────────────────────────────
-    else if (cid === 4) {
-      if (formatType === 0) {
-        const mcPool = [
-          // C3 Level
-          {
-            q: 'Grafik dari fungsi linear f(x) = ax + b pada bidang koordinat Cartesius selalu berbentuk...',
-            opts: ['Garis lurus', 'Garis lengkung parabola', 'Lingkaran tertutup', 'Garis patah-patah acak'],
-            c: 'Garis lurus',
-            visual: { type: 'cartesian_graph', slope: 1, yIntercept: 0, formula: 'Garis Linear f(x) = x', trend: 'naik' }
-          },
-          {
-            q: 'Grafik fungsi linear f(x) = 3x - 6 memotong sumbu X (saat y = 0) pada titik koordinat...',
-            opts: ['(2, 0)', '(0, -6)', '(-2, 0)', '(6, 0)'],
-            c: '(2, 0)',
-            visual: { type: 'cartesian_graph', slope: 3, yIntercept: -6, xIntercept: 2, formula: 'f(x) = 3x - 6', trend: 'naik' }
-          },
-          {
-            q: 'Manakah titik koordinat berikut yang DILALUI oleh lintasan radar detektif f(x) = 2x + 3?',
-            opts: ['(2, 7)', '(2, 6)', '(1, 4)', '(3, 8)'],
-            c: '(2, 7)',
-            visual: { type: 'cartesian_graph', slope: 2, yIntercept: 3, formula: 'f(x) = 2x + 3', testPoints: [[2, 7]], trend: 'naik' }
-          },
-          // C4 Level
-          {
-            q: 'Radar detektif merekam mobil tersangka bergerak melewati titik (0, 2) dan (2, 8). Berapakah nilai gradien (kemiringan) garis lintasan tersebut?',
-            opts: ['3', '4', '2', '6'],
-            c: '3',
-            visual: { type: 'cartesian_graph', slope: 3, yIntercept: 2, formula: 'Lintasan Mobil (m = 3)', testPoints: [[0, 2], [2, 8]], trend: 'naik' }
-          },
-          {
-            q: 'Grafik posisi patroli detektif f(x) = -2x + 10 menyatakan jarak sisa (km) pada menit ke-x. Patroli akan tiba di TKP (jarak sisa = 0 km) pada menit ke...',
-            opts: ['5', '10', '2', '8'],
-            c: '5',
-            visual: { type: 'cartesian_graph', slope: -2, yIntercept: 10, xIntercept: 5, formula: 'f(x) = -2x + 10 (Jarak Patroli)', trend: 'turun' }
-          },
-          {
-            q: 'Grafik fungsi f(x) = 4x - 8 memotong sumbu Y di titik...',
-            opts: ['(0, -8)', '(2, 0)', '(-8, 0)', '(0, 4)'],
-            c: '(0, -8)',
-            visual: { type: 'cartesian_graph', slope: 4, yIntercept: -8, xIntercept: 2, formula: 'f(x) = 4x - 8', trend: 'naik' }
-          },
-          // C5 Level
-          {
-            q: 'Dua mobil detektif memiliki lintasan f(x) = 2x + 4 dan g(x) = -x + 10. Pada titik manakah kedua mobil patroli tersebut akan berpapasan (berpotongan)?',
-            opts: ['(2, 8)', '(3, 7)', '(1, 6)', '(4, 6)'],
-            c: '(2, 8)',
-            visual: { type: 'cartesian_graph', slope: 2, yIntercept: 4, formula: 'Titik Temu Patroli (2, 8)', testPoints: [[2, 8]], trend: 'naik' }
-          },
-          {
-            q: 'Sebuah garis lintasan melalui titik potong sumbu Y pada (0, 6) dan memiliki gradien m = -2. Persamaan garis dan titik potong sumbu X adalah...',
-            opts: ['f(x) = -2x + 6 dan memotong sumbu X di (3, 0)', 'f(x) = 2x + 6 dan memotong sumbu X di (-3, 0)', 'f(x) = -2x - 6 dan memotong sumbu X di (0, 3)', 'f(x) = 6x - 2 dan memotong sumbu X di (6, 0)'],
-            c: 'f(x) = -2x + 6 dan memotong sumbu X di (3, 0)',
-            visual: { type: 'cartesian_graph', slope: -2, yIntercept: 6, xIntercept: 3, formula: 'f(x) = -2x + 6', trend: 'turun' }
-          }
-        ];
-        const cur = mcPool[Math.floor(i / 5) % mcPool.length];
-        const rotated = rotateOptions(cur.opts, cur.c, mcCount++);
-        questions.push({ id: qNum, level, pts, type: 'MULTIPLE_CHOICE', question: `${cur.q}`, options: rotated, correct: cur.c, visual: cur.visual });
-      } else if (formatType === 1) {
-        const arrowConfigs = [
-          { setA: [0, 1, 2], setB: [1, 2, 3], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = x + 1!', pairFn: a => `${a}->${a + 1}` },
-          { setA: [0, 1, 2], setB: [1, 3, 5], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = 2x + 1!', pairFn: a => `${a}->${a * 2 + 1}` },
-          { setA: [0, 1, 2], setB: [3, 5, 7], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = 2x + 3!', pairFn: a => `${a}->${a * 2 + 3}` },
-          { setA: [0, 1, 2], setB: [1, 4, 7], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = 3x + 1!', pairFn: a => `${a}->${a * 3 + 1}` },
-          { setA: [1, 2, 3], setB: [4, 8, 12], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = 4x!', pairFn: a => `${a}->${a * 4}` },
-          { setA: [0, 1, 2], setB: [4, 6, 8], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = 2x + 4!', pairFn: a => `${a}->${a * 2 + 4}` },
-          { setA: [0, 1, 2], setB: [3, 6, 9], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = 3x + 3!', pairFn: a => `${a}->${a * 3 + 3}` },
-          { setA: [0, 1, 2], setB: [5, 6, 7], rule: 'Hubungkan nilai x ke nilai y pada garis f(x) = x + 5!', pairFn: a => `${a}->${a + 5}` }
-        ];
-        const cfg = arrowConfigs[Math.floor(i / 5) % arrowConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'ARROWS',
-          question: `${cfg.rule}`,
-          setA: cfg.setA, setB: cfg.setB, rule: `ch4_rule_${i}`,
-          correctPairs: cfg.setA.map(cfg.pairFn)
-        });
-      } else if (formatType === 2) {
-        const cartesianList = [
-          {
-            q: 'Pasang titik koordinat untuk menggambar grafik garis f(x) = 2x pada domain x = 0, 1, dan 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 5,
-            targetPoints: [[0, 0], [1, 2], [2, 4]],
-            drawLine: true
-          },
-          {
-            q: 'Pasang titik koordinat garis linear f(x) = x + 2 pada nilai x = 0, 1, dan 2!',
-            minX: 0, maxX: 3, minY: 0, maxY: 5,
-            targetPoints: [[0, 2], [1, 3], [2, 4]],
-            drawLine: true
-          },
-          {
-            q: 'Tandai titik potong sumbu Y (0, 1) dan titik koordinat (1, 3) serta (2, 5) untuk garis f(x) = 2x + 1!',
-            minX: 0, maxX: 3, minY: 0, maxY: 6,
-            targetPoints: [[0, 1], [1, 3], [2, 5]],
-            drawLine: true
-          },
-          {
-            q: 'Pasang titik koordinat lintasan radar f(x) = 2x - 1 untuk domain x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 6,
-            targetPoints: [[1, 1], [2, 3], [3, 5]],
-            drawLine: true
-          },
-          {
-            q: 'Tandai titik koordinat garis turun f(x) = 5 - x untuk nilai x = 1, 2, dan 3!',
-            minX: 0, maxX: 4, minY: 0, maxY: 5,
-            targetPoints: [[1, 4], [2, 3], [3, 2]],
-            drawLine: true
-          },
-          {
-            q: 'Pasang titik potong sumbu Y (0, 3) dan satu titik lain (1, 5) pada lintasan f(x) = 2x + 3!',
-            minX: 0, maxX: 3, minY: 0, maxY: 6,
-            targetPoints: [[0, 3], [1, 5]],
-            drawLine: true
-          }
-        ];
-        const curC = cartesianList[Math.floor(i / 5) % cartesianList.length];
-        questions.push({
-          id: qNum, level, pts, type: 'CARTESIAN',
-          question: `${curC.q}`,
-          minX: curC.minX, maxX: curC.maxX, minY: curC.minY, maxY: curC.maxY,
-          targetPoints: curC.targetPoints,
-          drawLine: curC.drawLine,
-          hint: 'Klik persilangan kotak untuk menandai titik garis linear.'
-        });
-      } else if (formatType === 3) {
-        const matchingConfigs = [
-          {
-            q: 'Jodohkan fungsi linear dengan titik potong sumbu Y (saat x = 0)!',
-            pairs: [
-              { x: 'f(x) = 2x + 5', result: 'Titik potong (0, 5)' },
-              { x: 'f(x) = 3x - 4', result: 'Titik potong (0, -4)' },
-              { x: 'f(x) = 4x + 1', result: 'Titik potong (0, 1)' }
-            ]
-          },
-          {
-            q: 'Jodohkan fungsi linear dengan nilai gradien (kemiringan) garisnya!',
-            pairs: [
-              { x: 'f(x) = 3x + 2', result: 'Gradien m = 3' },
-              { x: 'f(x) = -2x + 7', result: 'Gradien m = -2' },
-              { x: 'f(x) = 5x - 1', result: 'Gradien m = 5' }
-            ]
-          },
-          {
-            q: 'Jodohkan sifat nilai gradien dengan arah kemiringan grafiknya!',
-            pairs: [
-              { x: 'Gradien m positif', result: 'Garis naik miring ke kanan' },
-              { x: 'Gradien m negatif', result: 'Garis turun miring ke kanan' },
-              { x: 'Gradien m sama dengan nol', result: 'Garis mendatar (horizontal)' }
-            ]
-          },
-          {
-            q: 'Jodohkan fungsi dengan titik potong sumbu X (saat y = 0)!',
-            pairs: [
-              { x: 'f(x) = 2x - 8', result: 'Potong X di (4, 0)' },
-              { x: 'f(x) = 3x - 9', result: 'Potong X di (3, 0)' },
-              { x: 'f(x) = x - 5', result: 'Potong X di (5, 0)' }
-            ]
-          },
-          {
-            q: 'Jodohkan pasangan titik uji dengan rumus garis yang dilaluinya!',
-            pairs: [
-              { x: 'Titik (0, 3) dan (1, 5)', result: 'Garis f(x) = 2x + 3' },
-              { x: 'Titik (0, 1) dan (1, 4)', result: 'Garis f(x) = 3x + 1' },
-              { x: 'Titik (0, 4) dan (1, 5)', result: 'Garis f(x) = x + 4' }
-            ]
-          },
-          {
-            q: 'Jodohkan hubungan dua garis radar detektif dengan sifat pertemuannya!',
-            pairs: [
-              { x: 'y = 3x + 2 dan y = 3x - 5', result: 'Dua garis sejajar (tidak bertemu)' },
-              { x: 'y = 2x + 1 dan y = 4x + 1', result: 'Berpotongan di sumbu Y pada (0, 1)' },
-              { x: 'y = 5 (fungsi konstan)', result: 'Garis mendatar sempurna' }
-            ]
-          },
-          {
-            q: 'Jodohkan nilai x dengan titik koordinat pada lintasan f(x) = 2x + 1!',
-            pairs: [
-              { x: 'Nilai x = 3', result: 'Koordinat titik (3, 7)' },
-              { x: 'Nilai x = 4', result: 'Koordinat titik (4, 9)' },
-              { x: 'Nilai x = 5', result: 'Koordinat titik (5, 11)' }
-            ]
-          }
-        ];
-        const mCfg = matchingConfigs[Math.floor(i / 5) % matchingConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'MATCHING',
-          question: `${mCfg.q}`,
-          pairs: mCfg.pairs
-        });
-      } else {
-        const tfPool = [
-          { q: 'Titik potong sebuah garis grafik dengan sumbu Y selalu memiliki nilai koordinat x = 0.', a: 'Benar', visual: { type: 'cartesian_graph', slope: 2, yIntercept: 4, formula: 'Titik Potong Sumbu Y (0, 4)', trend: 'naik' } },
-          { q: 'Jika nilai gradien suatu garis bernilai positif (m > 0), maka grafik garis tersebut miring naik ke kanan.', a: 'Benar', visual: { type: 'cartesian_graph', slope: 2, yIntercept: 1, formula: 'Gradien Positif m = 2', trend: 'naik' } },
-          { q: 'Garis dengan persamaan f(x) = 2x + 1 dan g(x) = 2x + 8 saling sejajar karena memiliki gradien yang sama.', a: 'Benar', visual: { type: 'cartesian_graph', slope: 2, yIntercept: 1, formula: 'Dua Garis Sejajar (m = 2)', trend: 'naik' } },
-          { q: 'Grafik f(x) = -3x + 9 memotong sumbu Y di titik (0, 9) dan memotong sumbu X di titik (3, 0).', a: 'Benar', visual: { type: 'cartesian_graph', slope: -3, yIntercept: 9, xIntercept: 3, formula: 'f(x) = -3x + 9', trend: 'turun' } },
-          { q: 'Semakin besar nilai gradien positif suatu garis, maka garis tersebut akan tampak semakin landai mendatar.', a: 'Salah' },
-          { q: 'Dua garis lurus yang memiliki gradien berbeda pasti akan berpotongan di tepat satu titik pada bidang koordinat.', a: 'Benar' },
-          { q: 'Garis yang memiliki rumus f(x) = 4x pasti melewati titik pusat koordinat (0, 0).', a: 'Benar', visual: { type: 'cartesian_graph', slope: 4, yIntercept: 0, xIntercept: 0, formula: 'f(x) = 4x melalui (0, 0)', trend: 'naik' } }
-        ];
-        const cur = tfPool[Math.floor(i / 5) % tfPool.length];
-        questions.push({ id: qNum, level, pts, type: 'TRUE_FALSE', question: `${cur.q}`, options: ['Benar', 'Salah'], correct: cur.a, visual: cur.visual });
-      }
-    }
+    // Q5: C4 CARTESIAN - Jadwal Piket Kebersihan Kelas 4 Siswa
+    questions.push({
+      id: 5, level: 'C4', pts: 80, type: 'CARTESIAN',
+      question: 'Empat siswa terjadwal piket kebersihan kelas sebagai berikut:\n• Andi piket hari Senin dan Rabu.\n• Budi piket hari Selasa.\n• Citra piket hari Senin dan Kamis.\n• Doni piket hari Selasa dan Rabu.\nTandai seluruh pasangan titik jadwal piket siswa tersebut pada diagram Kartesius!',
+      labelX: 'Nama Siswa',
+      labelY: 'Hari Piket',
+      xLabels: { 1: 'Andi', 2: 'Budi', 3: 'Citra', 4: 'Doni' },
+      yLabels: { 1: 'Senin', 2: 'Selasa', 3: 'Rabu', 4: 'Kamis' },
+      minX: 0, maxX: 4, minY: 0, maxY: 4,
+      targetPoints: [
+        [1, 1], [1, 3],
+        [2, 2],
+        [3, 1], [3, 4],
+        [4, 2], [4, 3]
+      ],
+      hint: 'Pasang titik piket: Andi (Senin, Rabu), Budi (Selasa), Citra (Senin, Kamis), Doni (Selasa, Rabu).',
+      explanation: 'Titik koordinat jadwal piket kelas berhasil kamu pasang tepat: Andi (Senin, Rabu), Budi (Selasa), Citra (Senin, Kamis), dan Doni (Selasa, Rabu).'
+    });
 
-    // ─────────────────────────────────────────────────────────────
-    // CHAPTER 5: Korespondensi Satu-Satu
-    // ─────────────────────────────────────────────────────────────
-    else if (cid === 5) {
-      if (formatType === 0) {
-        const mcPool = [
-          // C3 Level
-          {
-            q: 'Syarat MUTLAK agar dua himpunan A dan B dapat membentuk korespondensi satu-satu adalah...',
-            opts: ['Banyak anggota kedua himpunan harus sama [n(A) = n(B)]', 'Himpunan A harus lebih banyak anggotanya dari B', 'Anggota himpunan B harus berupa angka genap', 'Himpunan B harus merupakan himpunan kosong'],
-            c: 'Banyak anggota kedua himpunan harus sama [n(A) = n(B)]',
-            visual: { type: 'one_to_one_board', setA: ['A1', 'A2', 'A3'], setB: ['B1', 'B2', 'B3'], pairs: [['A1', 'B1'], ['A2', 'B2'], ['A3', 'B3']], sizeN: 3, permutations: 6, title: 'Syarat n(A) = n(B)' }
-          },
-          {
-            q: 'Jika n(A) = 3 dan n(B) = 3, banyak korespondensi satu-satu yang dapat dibentuk dari A ke B adalah...',
-            opts: ['6 cara', '9 cara', '3 cara', '12 cara'],
-            c: '6 cara',
-            visual: { type: 'one_to_one_board', setA: ['1', '2', '3'], setB: ['x', 'y', 'z'], pairs: [['1', 'x'], ['2', 'y'], ['3', 'z']], sizeN: 3, permutations: 6, title: 'Banyak Susunan: 3! = 6' }
-          },
-          {
-            q: 'Manakah contoh di dunia nyata yang merupakan KORESPONDENSI SATU-SATU yang sempurna?',
-            opts: ['Negara berdaulat dengan Ibu Kota negaranya', 'Siswa dengan warna baju kesukaannya', 'Guru dengan mata pelajaran yang diajarkannya', 'Pengemudi dengan jenis merk kendaraannya'],
-            c: 'Negara berdaulat dengan Ibu Kota negaranya',
-            visual: { type: 'one_to_one_board', setA: ['Indonesia', 'Jepang', 'Inggris'], setB: ['Jakarta', 'Tokyo', 'London'], pairs: [['Indonesia', 'Jakarta'], ['Jepang', 'Tokyo'], ['Inggris', 'London']], sizeN: 3, permutations: 6, title: 'Negara ➔ Ibu Kota' }
-          },
-          // C4 Level
-          {
-            q: 'Markas detektif menugaskan 4 agen rahasia ke 4 distrik kota berbeda (1 agen memegang 1 distrik unik). Ada berapa banyak variasi penugasan yang mungkin?',
-            opts: ['24 cara', '16 cara', '8 cara', '64 cara'],
-            c: '24 cara',
-            visual: { type: 'one_to_one_board', setA: ['Agen 1', 'Agen 2', 'Agen 3', 'Agen 4'], setB: ['Distrik 1', 'Distrik 2', 'Distrik 3', 'Distrik 4'], pairs: [['Agen 1', 'Distrik 1'], ['Agen 2', 'Distrik 2'], ['Agen 3', 'Distrik 3'], ['Agen 4', 'Distrik 4']], sizeN: 4, permutations: 24, title: 'Penugasan Agen: 4! = 24' }
-          },
-          {
-            q: 'Diberikan A = {faktor dari 6} dan B = {bilangan prima kurang dari 8}. Apakah himpunan A dan B dapat membentuk korespondensi satu-satu?',
-            opts: ['Dapat, karena n(A) = n(B) = 4 (ada 24 susunan)', 'Tidak dapat, karena faktor dari 6 lebih sedikit', 'Tidak dapat, karena anggotanya berbeda jenis', 'Dapat, tetapi hanya ada 4 susunan'],
-            c: 'Dapat, karena n(A) = n(B) = 4 (ada 24 susunan)',
-            visual: { type: 'one_to_one_board', setA: ['1', '2', '3', '6'], setB: ['2', '3', '5', '7'], pairs: [['1', '2'], ['2', '3'], ['3', '5'], ['6', '7']], sizeN: 4, permutations: 24, title: 'n(A) = 4, n(B) = 4 (24 Cara)' }
-          },
-          {
-            q: 'Manakah himpunan pasangan berurutan yang merupakan korespondensi satu-satu?',
-            opts: ['{(1, "p"), (2, "q"), (3, "r")}', '{(1, "p"), (2, "p"), (3, "q")}', '{(1, "p"), (2, "q"), (2, "r")}', '{(1, "p"), (2, "q")} pada domain {1,2,3}'],
-            c: '{(1, "p"), (2, "q"), (3, "r")}',
-            visual: { type: 'one_to_one_board', setA: ['1', '2', '3'], setB: ['p', 'q', 'r'], pairs: [['1', 'p'], ['2', 'q'], ['3', 'r']], sizeN: 3, permutations: 6, title: 'Pasangan 1-ke-1 Bijektif' }
-          },
-          // C5 Level
-          {
-            q: 'Sebuah brankas berkas rahasia memiliki 5 kabel pengaman berbeda yang harus dipasangkan ke 5 terminal unik. Banyak susunan kombinasi pasangan kabel adalah...',
-            opts: ['120 susunan', '25 susunan', '60 susunan', '24 susunan'],
-            c: '120 susunan',
-            visual: { type: 'one_to_one_board', setA: ['Kabel 1', 'Kabel 2', 'Kabel 3', 'Kabel 4', 'Kabel 5'], setB: ['Term 1', 'Term 2', 'Term 3', 'Term 4', 'Term 5'], pairs: [['Kabel 1', 'Term 1'], ['Kabel 2', 'Term 2'], ['Kabel 3', 'Term 3'], ['Kabel 4', 'Term 4'], ['Kabel 5', 'Term 5']], sizeN: 5, permutations: 120, title: 'Brankas: 5! = 120 Susunan' }
-          },
-          {
-            q: 'Tim kepolisian menyimpulkan: Hubungan antara "Siswa" dengan "Nomor Kartu Pelajar" adalah korespondensi satu-satu, KARENA...',
-            opts: ['Setiap siswa memiliki tepat 1 kartu pelajar, dan setiap kartu pelajar dimiliki tepat 1 siswa', 'Satu siswa diperbolehkan memiliki beberapa kartu pelajar', 'Satu nomor kartu pelajar dapat digunakan bergantian oleh banyak siswa', 'Kartu pelajar tidak memiliki kode pengenal'],
-            c: 'Setiap siswa memiliki tepat 1 kartu pelajar, dan setiap kartu pelajar dimiliki tepat 1 siswa',
-            visual: { type: 'one_to_one_board', setA: ['Siswa A', 'Siswa B', 'Siswa C'], setB: ['Kartu 01', 'Kartu 02', 'Kartu 03'], pairs: [['Siswa A', 'Kartu 01'], ['Siswa B', 'Kartu 02'], ['Siswa C', 'Kartu 03']], sizeN: 3, permutations: 6, title: '1 Siswa ➔ 1 Kartu Pelajar Unik' }
-          }
-        ];
-        const cur = mcPool[Math.floor(i / 5) % mcPool.length];
-        const rotated = rotateOptions(cur.opts, cur.c, mcCount++);
-        questions.push({ id: qNum, level, pts, type: 'MULTIPLE_CHOICE', question: `${cur.q}`, options: rotated, correct: cur.c, visual: cur.visual });
-      } else if (formatType === 1) {
-        // Crossed & permuted pairs (not straight lines) to satisfy bijection requirements
-        const arrowConfigs = [
-          {
-            setA: ['Detektif A', 'Detektif B', 'Detektif C'],
-            setB: ['Pos 1', 'Pos 2', 'Pos 3'],
-            rule: 'Pasangkan 3 Detektif ke 3 Pos Jaga secara korespondensi satu-satu: Detektif A ke Pos 2, Detektif B ke Pos 3, dan Detektif C ke Pos 1!',
-            correctPairs: ['Detektif A->Pos 2', 'Detektif B->Pos 3', 'Detektif C->Pos 1']
-          },
-          {
-            setA: ['Saksi 1', 'Saksi 2', 'Saksi 3'],
-            setB: ['Ruang A', 'Ruang B', 'Ruang C'],
-            rule: 'Pasangkan 3 Saksi ke 3 Ruang Sidang: Saksi 1 ke Ruang B, Saksi 2 ke Ruang C, dan Saksi 3 ke Ruang A!',
-            correctPairs: ['Saksi 1->Ruang B', 'Saksi 2->Ruang C', 'Saksi 3->Ruang A']
-          },
-          {
-            setA: ['Sidik Jari', 'Kamera CCTV', 'Pesan Suara'],
-            setB: ['Kotak 1', 'Kotak 2', 'Kotak 3'],
-            rule: 'Pasangkan 3 Bukti: Sidik Jari ke Kotak 3, CCTV ke Kotak 1, dan Pesan Suara ke Kotak 2!',
-            correctPairs: ['Sidik Jari->Kotak 3', 'Kamera CCTV->Kotak 1', 'Pesan Suara->Kotak 2']
-          },
-          {
-            setA: ['Agen Alpha', 'Agen Beta', 'Agen Gamma'],
-            setB: ['Distrik 1', 'Distrik 2', 'Distrik 3'],
-            rule: 'Tugaskan 3 Agen Intelijen: Agen Alpha ke Distrik 3, Agen Beta ke Distrik 1, dan Agen Gamma ke Distrik 2!',
-            correctPairs: ['Agen Alpha->Distrik 3', 'Agen Beta->Distrik 1', 'Agen Gamma->Distrik 2']
-          },
-          {
-            setA: ['Loker 101', 'Loker 102', 'Loker 103'],
-            setB: ['Kunci Merah', 'Kunci Biru', 'Kunci Kuning'],
-            rule: 'Pasangkan Lemari ke Kunci: Loker 101 ke Kunci Biru, Loker 102 ke Kunci Kuning, Loker 103 ke Kunci Merah!',
-            correctPairs: ['Loker 101->Kunci Biru', 'Loker 102->Kunci Kuning', 'Loker 103->Kunci Merah']
-          },
-          {
-            setA: ['Mobil Patroli', 'Mobil Laboratorium', 'Mobil Radar'],
-            setB: ['Parkir A', 'Parkir B', 'Parkir C'],
-            rule: 'Parkirkan Mobil Dinas: Mobil Patroli ke Parkir B, Mobil Lab ke Parkir C, dan Mobil Radar ke Parkir A!',
-            correctPairs: ['Mobil Patroli->Parkir B', 'Mobil Laboratorium->Parkir C', 'Mobil Radar->Parkir A']
-          },
-          {
-            setA: ['Laptop 1', 'Laptop 2', 'Laptop 3'],
-            setB: ['Teknisi Andi', 'Teknisi Budi', 'Teknisi Citra'],
-            rule: 'Pasangkan Laptop: Laptop 1 ke Teknisi Budi, Laptop 2 ke Teknisi Citra, dan Laptop 3 ke Teknisi Andi!',
-            correctPairs: ['Laptop 1->Teknisi Budi', 'Laptop 2->Teknisi Citra', 'Laptop 3->Teknisi Andi']
-          },
-          {
-            setA: ['Sandi Alpha', 'Sandi Beta', 'Sandi Omega'],
-            setB: ['Arsip 1', 'Arsip 2', 'Arsip 3'],
-            rule: 'Pasangkan Sandi: Sandi Alpha ke Arsip 2, Sandi Beta ke Arsip 3, dan Sandi Omega ke Arsip 1!',
-            correctPairs: ['Sandi Alpha->Arsip 2', 'Sandi Beta->Arsip 3', 'Sandi Omega->Arsip 1']
-          }
-        ];
-        const cfg = arrowConfigs[Math.floor(i / 5) % arrowConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'ARROWS',
-          question: `${cfg.rule}`,
-          setA: cfg.setA, setB: cfg.setB, rule: `ch5_rule_${i}`,
-          correctPairs: cfg.correctPairs
-        });
-      } else if (formatType === 2) {
-        const cartesianList = [
-          {
-            q: 'Tandai 3 titik koordinat korespondensi satu-satu: (1, 3), (2, 1), dan (3, 2) pada diagram Cartesius!',
-            minX: 0, maxX: 4, minY: 0, maxY: 4,
-            targetPoints: [[1, 3], [2, 1], [3, 2]]
-          },
-          {
-            q: 'Pasang titik koordinat untuk korespondensi satu-satu f(x) = 4 - x pada domain {1, 2, 3}!',
-            minX: 0, maxX: 4, minY: 0, maxY: 4,
-            targetPoints: [[1, 3], [2, 2], [3, 1]]
-          },
-          {
-            q: 'Tandai titik koordinat korespondensi satu-satu identitas: (1, 1), (2, 2), dan (3, 3)!',
-            minX: 0, maxX: 4, minY: 0, maxY: 4,
-            targetPoints: [[1, 1], [2, 2], [3, 3]]
-          },
-          {
-            q: 'Pasang titik-titik korespondensi satu-satu untuk pasangan {(1, 2), (2, 3), (3, 1)}!',
-            minX: 0, maxX: 4, minY: 0, maxY: 4,
-            targetPoints: [[1, 2], [2, 3], [3, 1]]
-          },
-          {
-            q: 'Tandai titik koordinat fungsi korespondensi satu-satu f(x) = 2x - 1 untuk x ∈ {1, 2, 3}!',
-            minX: 0, maxX: 4, minY: 0, maxY: 6,
-            targetPoints: [[1, 1], [2, 3], [3, 5]]
-          },
-          {
-            q: 'Pasang titik koordinat korespondensi satu-satu untuk pasangan {(1, 2), (2, 1), (3, 3)}!',
-            minX: 0, maxX: 4, minY: 0, maxY: 4,
-            targetPoints: [[1, 2], [2, 1], [3, 3]]
-          }
-        ];
-        const curC = cartesianList[Math.floor(i / 5) % cartesianList.length];
-        questions.push({
-          id: qNum, level, pts, type: 'CARTESIAN',
-          question: `${curC.q}`,
-          minX: curC.minX, maxX: curC.maxX, minY: curC.minY, maxY: curC.maxY,
-          targetPoints: curC.targetPoints,
-          hint: 'Ingat: tiap nilai x dan y hanya boleh memiliki 1 titik (korespondensi satu-satu)!'
-        });
-      } else if (formatType === 3) {
-        const matchingConfigs = [
-          {
-            q: 'Jodohkan contoh hubungan nyata dengan jenis relasi matematisnya!',
-            pairs: [
-              { x: 'Siswa ke Nomor Induk', result: 'Korespondensi Satu-Satu' },
-              { x: 'Siswa ke Makanan Favorit', result: 'Relasi Biasa (Boleh banyak)' },
-              { x: 'Siswa ke Tanggal Lahir', result: 'Fungsi Biasa (Bisa sama)' }
-            ]
-          },
-          {
-            q: 'Jodohkan jumlah anggota n dengan hasil faktorial n! banyaknya susunan!',
-            pairs: [
-              { x: 'n = 2 anggota', result: '2! = 2 susunan' },
-              { x: 'n = 3 anggota', result: '3! = 6 susunan' },
-              { x: 'n = 4 anggota', result: '4! = 24 susunan' }
-            ]
-          },
-          {
-            q: 'Tentukan status korespondensi satu-satu himpunan pasangan berurutan!',
-            pairs: [
-              { x: '{(1, a), (2, b), (3, c)}', result: 'Korespondensi Satu-Satu (Sah)' },
-              { x: '{(1, a), (2, a), (3, b)}', result: 'Bukan (Elemen kodomain terpasang dua)' },
-              { x: '{(1, a), (2, b)} di domain {1,2,3}', result: 'Bukan (Ada domain tidak terpasang)' }
-            ]
-          },
-          {
-            q: 'Jodohkan ukuran himpunan n(A) dan n(B) dengan kemungkinannya!',
-            pairs: [
-              { x: 'n(A) = 5 dan n(B) = 5', result: 'Dapat dibuat (5! = 120 cara)' },
-              { x: 'n(A) = 4 dan n(B) = 3', result: 'Mustahil (Ukuran himpunan beda)' },
-              { x: 'n(A) = 1 dan n(B) = 1', result: 'Dapat dibuat (1 susunan)' }
-            ]
-          },
-          {
-            q: 'Jodohkan konsep hierarki relasi dalam matematika!',
-            pairs: [
-              { x: 'Relasi', result: 'Aturan memasangkan anggota dua himpunan' },
-              { x: 'Fungsi', result: 'Setiap anggota domain tepat punya 1 pasangan' },
-              { x: 'Korespondensi Satu-Satu', result: 'Tepat 1 pasangan timbal balik & n(A)=n(B)' }
-            ]
-          },
-          {
-            q: 'Evaluasi kasus pembagian tugas di ruang sidang pengadilan!',
-            pairs: [
-              { x: '4 Hakim ke 4 Kursi Khusus', result: 'Korespondensi Satu-Satu (24 cara)' },
-              { x: '4 Pengacara bela 1 Terdakwa', result: 'Fungsi Banyak ke Satu' },
-              { x: '1 Saksi beri 2 alibi beda', result: 'Bukan Fungsi (Bercabang)' }
-            ]
-          },
-          {
-            q: 'Evaluasi relasi fungsi f dari A={1,2} ke B={a,b}!',
-            pairs: [
-              { x: 'f = {(1, b), (2, a)}', result: 'Korespondensi Satu-Satu Sah' },
-              { x: 'f = {(1, a), (2, a)}', result: 'Fungsi Biasa (Bukan 1-1)' },
-              { x: 'f = {(1, a)}', result: 'Bukan Fungsi (Domain sisa)' }
-            ]
-          }
-        ];
-        const mCfg = matchingConfigs[Math.floor(i / 5) % matchingConfigs.length];
-        questions.push({
-          id: qNum, level, pts, type: 'MATCHING',
-          question: `${mCfg.q}`,
-          pairs: mCfg.pairs
-        });
-      } else {
-        const tfPool = [
-          { q: 'Setiap korespondensi satu-satu pasti merupakan fungsi, dan juga pasti merupakan relasi.', a: 'Benar', visual: { type: 'one_to_one_board', setA: ['1', '2'], setB: ['a', 'b'], pairs: [['1', 'a'], ['2', 'b']], sizeN: 2, permutations: 2, title: 'Fungsi Bijektif 1:1' } },
-          { q: 'Jika himpunan A memiliki 3 anggota dan himpunan B memiliki 4 anggota, maka DAPAT dibentuk korespondensi satu-satu.', a: 'Salah', visual: { type: 'one_to_one_board', setA: ['1', '2', '3'], setB: ['a', 'b', 'c', 'd'], pairs: [['1', 'a'], ['2', 'b']], sizeN: 3, permutations: 0, title: 'n(A) ≠ n(B) (Mustahil 1:1)' } },
-          { q: 'Pada korespondensi satu-satu, daerah kawan (Kodomain) dan daerah hasil (Range) selalu sama persis tanpa ada sisa.', a: 'Benar', visual: { type: 'one_to_one_board', setA: ['1', '2', '3'], setB: ['a', 'b', 'c'], pairs: [['1', 'a'], ['2', 'b'], ['3', 'c']], sizeN: 3, permutations: 6, title: 'Kodomain = Range Sempurna' } },
-          { q: 'Istilah matematis lain untuk korespondensi satu-satu adalah fungsi bijektif (injektif sekaligus surjektif).', a: 'Benar' },
-          { q: 'Setiap nomor plat kendaraan bermotor yang terdaftar resmi adalah contoh korespondensi satu-satu dengan kendaraan tersebut.', a: 'Benar' },
-          { q: 'Jika banyak korespondensi satu-satu dari A ke B adalah 720 cara, maka banyaknya anggota n(A) adalah 6.', a: 'Benar', visual: { type: 'one_to_one_board', setA: ['1..6'], setB: ['a..f'], pairs: [['1..6', 'a..f']], sizeN: 6, permutations: 720, title: '6! = 6×5×4×3×2×1 = 720' } },
-          { q: 'Rumus untuk menghitung banyak korespondensi satu-satu jika n(A) = n(B) = n adalah n pangkat n (n^n).', a: 'Salah' }
-        ];
-        const cur = tfPool[Math.floor(i / 5) % tfPool.length];
-        questions.push({ id: qNum, level, pts, type: 'TRUE_FALSE', question: `${cur.q}`, options: ['Benar', 'Salah'], correct: cur.a, visual: cur.visual });
-      }
-    }
+    // Q6: C4 DRAG_DROP - Klasifikasi Pasangan Berurutan Berdasarkan Aturan Relasi
+    questions.push({
+      id: 6, level: 'C4', pts: 80, type: 'DRAG_DROP',
+      question: 'Diberikan enam pasangan berurutan (x, y). Analisislah aturan relasi dari x ke y, lalu kelompokkan setiap pasangan ke dalam kotak Relasi "Setengah Dari" atau Relasi "Dua Kali Dari"!',
+      subInstruction: "Pindahkan setiap pasangan (x, y) ke kotak aturan relasi yang tepat:",
+      categories: ['Relasi "Setengah Dari"', 'Relasi "Dua Kali Dari"'],
+      items: [
+        '(2, 4)',
+        '(3, 6)',
+        '(5, 10)',
+        '(4, 2)',
+        '(6, 3)',
+        '(10, 5)'
+      ],
+      correctMapping: {
+        '(2, 4)': 'Relasi "Setengah Dari"',
+        '(3, 6)': 'Relasi "Setengah Dari"',
+        '(5, 10)': 'Relasi "Setengah Dari"',
+        '(4, 2)': 'Relasi "Dua Kali Dari"',
+        '(6, 3)': 'Relasi "Dua Kali Dari"',
+        '(10, 5)': 'Relasi "Dua Kali Dari"'
+      },
+      explanation: 'Relasi "Setengah Dari" (x = ½y): (2, 4), (3, 6), dan (5, 10) karena 2 = ½(4), 3 = ½(6), dan 5 = ½(10).\nRelasi "Dua Kali Dari" (x = 2y): (4, 2), (6, 3), dan (10, 5) karena 4 = 2(2), 6 = 2(3), dan 10 = 2(5).'
+    });
 
-    // Fallback: default to Chapter 1 questions
-    else {
-      questions.push({
-        id: qNum, level, pts, type: 'MULTIPLE_CHOICE',
-        question: `Syarat utama suatu relasi menjadi fungsi adalah...`,
-        options: ['Ada elemen domain yang boleh kosong', 'Setiap elemen domain punya tepat 1 pasangan di kodomain', 'Semua elemen kodomain harus terpasang', 'Tidak ada syarat khusus'],
-        correct: 'Setiap elemen domain punya tepat 1 pasangan di kodomain'
-      });
-    }
+    // Q7: C4 HPB_BUILDER - Kota Kelahiran 4 Siswa
+    questions.push({
+      id: 7, level: 'C4', pts: 80, type: 'HPB_BUILDER',
+      question: 'Empat siswa mencatat kota tempat kelahiran mereka:\n• Fajar lahir di Bandung\n• Gita lahir di Surabaya\n• Hadi lahir di Jakarta\n• Indah lahir di Yogyakarta\nLengkapi himpunan pasangan berurutan untuk relasi "Kota Kelahiran" tersebut!',
+      subInstruction: 'Pindahkan kartu nama siswa atau kota ke dalam kotak kurung [ ? ] yang tepat:',
+      setName: 'R',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: 'Fajar', ansY: 'Bandung', fixedX: 'Fajar', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: 'Gita', ansY: 'Surabaya', fixedX: null, fixedY: 'Surabaya' },
+        { idX: 'p3_x', idY: 'p3_y', ansX: 'Hadi', ansY: 'Jakarta', fixedX: 'Hadi', fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: 'Indah', ansY: 'Yogyakarta', fixedX: null, fixedY: null }
+      ],
+      tokens: ['Bandung', 'Gita', 'Jakarta', 'Indah', 'Yogyakarta', 'Semarang', 'Medan', 'Denpasar'],
+      correctSlots: {
+        'p1_y': 'Bandung',
+        'p2_x': 'Gita',
+        'p3_y': 'Jakarta',
+        'p4_x': 'Indah',
+        'p4_y': 'Yogyakarta'
+      },
+      explanation: 'Himpunan pasangan berurutan yang tepat: R = { (Fajar, Bandung), (Gita, Surabaya), (Hadi, Jakarta), (Indah, Yogyakarta) }.'
+    });
+
+    // Q8: C5 ARROWS - Peminjaman Buku Perpustakaan 4 Siswa
+    questions.push({
+      id: 8, level: 'C5', pts: 120, type: 'ARROWS',
+      question: 'Data peminjaman buku perpustakaan sekolah pada hari Senin mencatat:\n• Rani meminjam Ensiklopedia Sains dan Novel Petualangan.\n• Tono meminjam Komik Edukasi dan Buku Sejarah.\n• Umar meminjam Novel Petualangan.\n• Vina meminjam Ensiklopedia Sains dan Komik Edukasi.\nHubungkan tali panah untuk membentuk diagram panah relasi "Buku yang Dipinjam" sesuai catatan tersebut!',
+      labelA: 'Himpunan A (Siswa)',
+      labelB: 'Himpunan B (Buku Perpustakaan)',
+      setA: ['Rani', 'Tono', 'Umar', 'Vina'],
+      setB: ['Ensiklopedia Sains', 'Novel Petualangan', 'Komik Edukasi', 'Buku Sejarah'],
+      rule: 'buku_perpustakaan_kompleks',
+      correctPairs: [
+        'Rani->Ensiklopedia Sains', 'Rani->Novel Petualangan',
+        'Tono->Komik Edukasi', 'Tono->Buku Sejarah',
+        'Umar->Novel Petualangan',
+        'Vina->Ensiklopedia Sains', 'Vina->Komik Edukasi'
+      ],
+      explanation: 'Tepat sekali! Relasi peminjaman buku perpustakaan terhubung sesuai data: Rani (Ensiklopedia Sains, Novel Petualangan), Tono (Komik Edukasi, Buku Sejarah), Umar (Novel Petualangan), dan Vina (Ensiklopedia Sains, Komik Edukasi).'
+    });
+
+    // Q9: C5 TABLE_BUILDER - Jabatan Pengurus Kelas 5 Siswa (Open-Ended)
+    questions.push({
+      id: 9, level: 'C5', pts: 120, type: 'TABLE_BUILDER',
+      isOpenEnded: true,
+      question: '[Soal Terbuka] Lengkapi tabel relasi "Jabatan Pengurus Kelas" untuk 5 siswa! Kamu bebas menentukan siapa memegang amanah tugas apa dari kartu yang tersedia.',
+      tableTitle: "Tabel Relasi: 'Pengurus Kelas 5 Siswa'",
+      subInstruction: 'Pindahkan kartu nama siswa dan jabatan ke seluruh sel tabel [ ? ] yang kosong (bebas berkreasi):',
+      headers: ['Nama Siswa', 'Jabatan Kelas'],
+      rows: [
+        { idX: 'r1_x', isSlotX: true, valX: null, idY: 'r1_y', isSlotY: true, valY: null },
+        { idX: 'r2_x', isSlotX: true, valX: null, idY: 'r2_y', isSlotY: true, valY: null },
+        { idX: 'r3_x', isSlotX: true, valX: null, idY: 'r3_y', isSlotY: true, valY: null },
+        { idX: 'r4_x', isSlotX: true, valX: null, idY: 'r4_y', isSlotY: true, valY: null },
+        { idX: 'r5_x', isSlotX: true, valX: null, idY: 'r5_y', isSlotY: true, valY: null }
+      ],
+      tokens: ['Bayu', 'Laras', 'Dimas', 'Siska', 'Taufik', 'Rian', 'Ketua Kelas', 'Sekretaris', 'Bendahara', 'Seksi Kebersihan', 'Seksi Mading', 'Seksi IT', 'Seksi Disiplin'],
+      openEndedRules: {
+        cells: {
+          'r1_x': { role: 'X', validTokens: ['Bayu', 'Laras', 'Dimas', 'Siska', 'Taufik', 'Rian'] },
+          'r1_y': { role: 'Y', validTokens: ['Ketua Kelas', 'Sekretaris', 'Bendahara', 'Seksi Kebersihan', 'Seksi Mading', 'Seksi IT', 'Seksi Disiplin'] },
+          'r2_x': { role: 'X', validTokens: ['Bayu', 'Laras', 'Dimas', 'Siska', 'Taufik', 'Rian'] },
+          'r2_y': { role: 'Y', validTokens: ['Ketua Kelas', 'Sekretaris', 'Bendahara', 'Seksi Kebersihan', 'Seksi Mading', 'Seksi IT', 'Seksi Disiplin'] },
+          'r3_x': { role: 'X', validTokens: ['Bayu', 'Laras', 'Dimas', 'Siska', 'Taufik', 'Rian'] },
+          'r3_y': { role: 'Y', validTokens: ['Ketua Kelas', 'Sekretaris', 'Bendahara', 'Seksi Kebersihan', 'Seksi Mading', 'Seksi IT', 'Seksi Disiplin'] },
+          'r4_x': { role: 'X', validTokens: ['Bayu', 'Laras', 'Dimas', 'Siska', 'Taufik', 'Rian'] },
+          'r4_y': { role: 'Y', validTokens: ['Ketua Kelas', 'Sekretaris', 'Bendahara', 'Seksi Kebersihan', 'Seksi Mading', 'Seksi IT', 'Seksi Disiplin'] },
+          'r5_x': { role: 'X', validTokens: ['Bayu', 'Laras', 'Dimas', 'Siska', 'Taufik', 'Rian'] },
+          'r5_y': { role: 'Y', validTokens: ['Ketua Kelas', 'Sekretaris', 'Bendahara', 'Seksi Kebersihan', 'Seksi Mading', 'Seksi IT', 'Seksi Disiplin'] }
+        },
+        distinctX: true,
+        criteriaDescription: 'Bebas menentukan jabatan asalkan kolom Nama diisi siswa dan kolom Jabatan diisi nama tugas jabatan.'
+      },
+      correctCells: {
+        'r1_x': 'Bayu', 'r1_y': 'Ketua Kelas',
+        'r2_x': 'Laras', 'r2_y': 'Sekretaris',
+        'r3_x': 'Dimas', 'r3_y': 'Bendahara',
+        'r4_x': 'Siska', 'r4_y': 'Seksi Kebersihan',
+        'r5_x': 'Taufik', 'r5_y': 'Seksi Mading'
+      },
+      explanation: 'Tabel relasi kepengurusan kelas berhasil kamu buat sesuai kreasimu!'
+    });
+
+    // Q10: C5 CARTESIAN - Peminjaman Alat Praktikum IPA 4 Siswa
+    questions.push({
+      id: 10, level: 'C5', pts: 120, type: 'CARTESIAN',
+      question: 'Pada kegiatan laboratorium IPA, tercatat peminjaman alat praktikum oleh 4 siswa:\n• Fajar meminjam Mikroskop dan Tabung Reaksi.\n• Gita meminjam Gelas Ukur.\n• Hadi meminjam Mikroskop dan Termometer.\n• Irfan meminjam Tabung Reaksi dan Gelas Ukur.\nTandai seluruh pasangan titik alat praktikum yang mereka pinjam pada diagram Kartesius!',
+      labelX: 'Nama Siswa',
+      labelY: 'Alat Praktikum IPA',
+      xLabels: { 1: 'Fajar', 2: 'Gita', 3: 'Hadi', 4: 'Irfan' },
+      yLabels: { 1: 'Mikroskop', 2: 'Tabung Reaksi', 3: 'Gelas Ukur', 4: 'Termometer' },
+      minX: 0, maxX: 4, minY: 0, maxY: 4,
+      targetPoints: [
+        [1, 1], [1, 2],
+        [2, 3],
+        [3, 1], [3, 4],
+        [4, 2], [4, 3]
+      ],
+      hint: 'Pasang titik alat yang dipinjam: Fajar (Mikroskop, Tabung Reaksi), Gita (Gelas Ukur), Hadi (Mikroskop, Termometer), Irfan (Tabung Reaksi, Gelas Ukur).',
+      explanation: 'Pasangan titik koordinat peminjaman alat praktikum IPA berhasil kamu tandai tepat sesuai catatan laboratorium!'
+    });
   }
 
-  return questions;
+  // ═════════════════════════════════════════════════════════════════════════
+  // CHAPTER 2: PENGERTIAN & UNSUR FUNGSI (DOMAIN, KODOMAIN, RANGE)
+  // Menekankan syarat sah fungsi: setiap domain wajib tepat satu pasangan.
+  // Volume data diperbanyak: 4-5 elemen domain, 8 kartu drag-drop, 3 slot isian.
+  // ═════════════════════════════════════════════════════════════════════════
+  else if (cid === 2) {
+    // Q1: C3 MCQ - Syarat Utama Fungsi
+    questions.push({
+      id: 1, level: 'C3', pts: 50, type: 'MCQ',
+      question: 'Diberikan empat buah relasi pemetaan dari himpunan A ke B. Manakah syarat mutlak yang harus dipenuhi agar relasi tersebut sah digolongkan sebagai FUNGSI?',
+      options: [
+        'Setiap anggota himpunan asal A wajib berpasangan dan pasangannya harus tepat satu di himpunan B',
+        'Setiap anggota himpunan kawan B harus memiliki pasangan di himpunan asal A',
+        'Anggota himpunan asal A diperbolehkan memilih lebih dari satu kawan di B asalkan semuanya terpasang',
+        'Jumlah anggota himpunan asal A harus selalu sama banyak dengan jumlah anggota himpunan kawan B'
+      ],
+      correct: 'Setiap anggota himpunan asal A wajib berpasangan dan pasangannya harus tepat satu di himpunan B',
+      explanation: 'Syarat mutlak fungsi adalah setiap anggota daerah asal (domain) wajib memiliki pasangan, dan pasangannya harus tepat satu (tidak bercabang dan tidak boleh kosong).'
+    });
+
+    // Q2: C3 ARROWS - Membentuk Fungsi Sah (Open-Ended)
+    questions.push({
+      id: 2, level: 'C3', pts: 50, type: 'ARROWS',
+      isOpenEnded: true,
+      question: '[Soal Terbuka] Buatlah diagram panah yang merupakan FUNGSI SAH dari Domain A = {1, 2, 3, 4} ke Kodomain B = {2, 3, 4, 5, 6}! Kamu bebas mengarahkan panah ke angka mana saja di B, asalkan memenuhi syarat mutlak fungsi: setiap anggota Domain A wajib memiliki tepat satu kawan di B.',
+      labelA: 'Domain A',
+      labelB: 'Kodomain B',
+      setA: [1, 2, 3, 4],
+      setB: [2, 3, 4, 5, 6],
+      rule: 'fungsi_sah_bebas',
+      openEndedRules: {
+        requireFunction: true,
+        criteriaDescription: 'Setiap anggota Domain A wajib memiliki tepat 1 panah pasangan ke Kodomain B.'
+      },
+      correctPairs: ['1->2', '2->3', '3->4', '4->5'],
+      explanation: 'Hebat! Relasi yang kamu buat sah sebagai fungsi karena setiap anggota daerah asal A memiliki tepat satu pasangan di B.'
+    });
+
+    // Q3: C3 SLOT_FILL - Tentukan Domain, Kodomain, dan Range (5 Pasangan)
+    questions.push({
+      id: 3, level: 'C3', pts: 50, type: 'SLOT_FILL',
+      question: 'Diketahui fungsi f = {(1, a), (2, b), (3, b), (4, c), (5, c)} dari himpunan asal A ke himpunan kawan B = {a, b, c, d, e}. Pasang kartu himpunan yang tepat untuk Domain, Kodomain, dan Range!',
+      subInstruction: 'Pasang kartu himpunan yang tepat ke dalam setiap kotak [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Himpunan Domain (Daerah Asal):', answer: '{1, 2, 3, 4, 5}' },
+        { id: 's2', label: 'Himpunan Kodomain (Daerah Kawan):', answer: '{a, b, c, d, e}' },
+        { id: 's3', label: 'Himpunan Range (Daerah Hasil):', answer: '{a, b, c}' }
+      ],
+      tokens: ['{1, 2, 3, 4, 5}', '{a, b, c, d, e}', '{a, b, c}', '{1, 2, 3, 4}', '{b, c, d}'],
+      explanation: 'Domain = {1, 2, 3, 4, 5}, Kodomain = {a, b, c, d, e}, dan Range yang terpasang = {a, b, c}.'
+    });
+
+    // Q4: C4 DRAG_DROP - Domain vs Range (8 Kartu Angka)
+    questions.push({
+      id: 4, level: 'C4', pts: 80, type: 'DRAG_DROP',
+      question: 'Diketahui fungsi f = {(2, 10), (3, 15), (4, 20), (5, 25)}. Kelompokkan seluruh 8 angka ke dalam kotak "Domain (Daerah Asal / x)" atau "Range (Daerah Hasil / y)"!',
+      subInstruction: 'Pindahkan angka depan (x) ke kotak Domain dan angka belakang (y) ke kotak Range:',
+      categories: ['Domain (Daerah Asal / x)', 'Range (Daerah Hasil / y)'],
+      items: ['2', '3', '4', '5', '10', '15', '20', '25'],
+      correctMapping: {
+        '2': 'Domain (Daerah Asal / x)',
+        '3': 'Domain (Daerah Asal / x)',
+        '4': 'Domain (Daerah Asal / x)',
+        '5': 'Domain (Daerah Asal / x)',
+        '10': 'Range (Daerah Hasil / y)',
+        '15': 'Range (Daerah Hasil / y)',
+        '20': 'Range (Daerah Hasil / y)',
+        '25': 'Range (Daerah Hasil / y)'
+      },
+      explanation: 'Nilai depan x adalah Domain {2, 3, 4, 5}, nilai belakang y adalah Range {10, 15, 20, 25}.'
+    });
+
+    // Q5: C4 CARTESIAN - Plot Titik Pasangan Fungsi (4 Titik)
+    questions.push({
+      id: 5, level: 'C4', pts: 80, type: 'CARTESIAN',
+      question: 'Diketahui pasangan titik fungsi: (1, 2), (2, 3), (3, 4), dan (4, 5) dengan daerah asal {1, 2, 3, 4}. Tandai keempat titik koordinat (x, y) tersebut pada diagram Kartesius!',
+      minX: 0, maxX: 5, minY: 0, maxY: 6,
+      targetPoints: [[1, 2], [2, 3], [3, 4], [4, 5]],
+      drawLine: true,
+      hint: 'Tandai titik (1, 2), (2, 3), (3, 4), dan (4, 5). Setiap garis tegak hanya memuat 1 titik.',
+      explanation: 'Titik koordinat fungsi adalah (1, 2), (2, 3), (3, 4), dan (4, 5).'
+    });
+
+    // Q6: C4 ARROWS - Relasi Fungsi 'Dua Kali Dari'
+    questions.push({
+      id: 6, level: 'C4', pts: 80, type: 'ARROWS',
+      question: 'Diberikan fungsi dengan aturan "Dua Kali Dari" dari Domain A = {1, 2, 3, 4} ke Kodomain B = {2, 4, 6, 8, 10}. Hubungkan tali panah untuk membentuk diagram panah fungsi tersebut!',
+      labelA: 'Domain A',
+      labelB: 'Kodomain B',
+      setA: [1, 2, 3, 4],
+      setB: [2, 4, 6, 8, 10],
+      rule: 'dua_kali_dari',
+      correctPairs: ['1->2', '2->4', '3->6', '4->8'],
+      explanation: 'Sangat tepat! Setiap elemen Domain A dipasangkan dengan tepat dua kali nilainya di Kodomain B: 1➔2, 2➔4, 3➔6, dan 4➔8.'
+    });
+
+    // Q7: C4 DRAG_DROP - Fungsi Sah vs Bukan Fungsi (6 Relasi)
+    questions.push({
+      id: 7, level: 'C4', pts: 80, type: 'DRAG_DROP',
+      question: 'Uji syarat sah fungsi: kelompokkan setiap relasi pasangan berurutan ke dalam kategori "Fungsi Sah" atau "Bukan Fungsi (Bercabang/Kosong)"!',
+      subInstruction: "Pindahkan kartu ke kelompok yang sesuai:",
+      categories: ['Fungsi Sah', 'Bukan Fungsi (Bercabang/Kosong)'],
+      items: [
+        '{(1, a), (2, b), (3, c), (4, d)}',
+        '{(1, a), (1, b), (2, c), (3, d)}',
+        '{(1, x), (2, x), (3, x), (4, x)}',
+        '{(2, y), (2, z), (3, w), (4, w)}',
+        '{(a, 1), (b, 2), (c, 3), (d, 4)}',
+        '{(a, 1), (b, 2), (b, 3), (c, 4)}'
+      ],
+      correctMapping: {
+        '{(1, a), (2, b), (3, c), (4, d)}': 'Fungsi Sah',
+        '{(1, a), (1, b), (2, c), (3, d)}': 'Bukan Fungsi (Bercabang/Kosong)',
+        '{(1, x), (2, x), (3, x), (4, x)}': 'Fungsi Sah',
+        '{(2, y), (2, z), (3, w), (4, w)}': 'Bukan Fungsi (Bercabang/Kosong)',
+        '{(a, 1), (b, 2), (c, 3), (d, 4)}': 'Fungsi Sah',
+        '{(a, 1), (b, 2), (b, 3), (c, 4)}': 'Bukan Fungsi (Bercabang/Kosong)'
+      },
+      explanation: 'Relasi yang memiliki elemen x bercabang ke lebih dari satu pasangan otomatis digolongkan Bukan Fungsi.'
+    });
+
+    // Q8: C5 SLOT_FILL - Analisis Unsur Domain, Kodomain, dan Range (3 Slot)
+    questions.push({
+      id: 8, level: 'C5', pts: 120, type: 'SLOT_FILL',
+      question: 'Diberikan fungsi dari daerah asal A = {1, 2, 3, 4, 5} ke daerah kawan B = {a, b, c, d, e, f} dengan pasangan {(1, a), (2, b), (3, b), (4, c), (5, c)}. Lengkapi analisis jumlah unsur fungsi berikut!',
+      subInstruction: 'Pasang kartu angka hasil analisis ke kotak [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Banyak anggota Domain n(A) =', answer: '5' },
+        { id: 's2', label: 'Banyak anggota Kodomain n(B) =', answer: '6' },
+        { id: 's3', label: 'Banyak anggota Range (daerah hasil terpasang) =', answer: '3' }
+      ],
+      tokens: ['3', '4', '5', '6', '7'],
+      explanation: 'n(A) = 5, n(B) = 6, dan anggota Range yang terhubung hanya {a, b, c} sehingga banyaknya = 3.'
+    });
+
+    // Q9: C5 HPB_BUILDER - Pasangan Berurutan Fungsi (Open-Ended)
+    questions.push({
+      id: 9, level: 'C5', pts: 120, type: 'HPB_BUILDER',
+      isOpenEnded: true,
+      question: '[Soal Terbuka] Susunlah pasangan berurutan yang merupakan FUNGSI dari Domain A = {1, 2, 3, 4} ke Kodomain B = {a, b, c, d}! Kamu bebas memilih pasangan bayangan untuk setiap angka dari kartu yang tersedia.',
+      subInstruction: 'Pasang huruf hasil pemetaan ke dalam kurung pasangan berurutan (bebas berkreasi):',
+      setName: 'f',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: '1', ansY: null, fixedX: '1', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: '2', ansY: null, fixedX: '2', fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: '3', ansY: null, fixedX: '3', fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: '4', ansY: null, fixedX: '4', fixedY: null }
+      ],
+      tokens: ['a', 'b', 'c', 'd', 'a', 'b', 'c', 'd'],
+      openEndedRules: {
+        slots: {
+          'p1_y': { role: 'Y', validTokens: ['a', 'b', 'c', 'd'] },
+          'p2_y': { role: 'Y', validTokens: ['a', 'b', 'c', 'd'] },
+          'p3_y': { role: 'Y', validTokens: ['a', 'b', 'c', 'd'] },
+          'p4_y': { role: 'Y', validTokens: ['a', 'b', 'c', 'd'] }
+        },
+        criteriaDescription: 'Bebas memilih pasangan bayangan asalkan seluruh domain 1, 2, 3, 4 terisi huruf kodomain.'
+      },
+      correctSlots: { 'p1_y': 'a', 'p2_y': 'b', 'p3_y': 'a', 'p4_y': 'c' },
+      explanation: 'Sempurna! Himpunan pasangan berurutan yang kamu buat sah sebagai fungsi karena setiap elemen domain 1, 2, 3, 4 memiliki tepat satu bayangan.'
+    });
+
+    // Q10: C5 TABLE_BUILDER - Tabel Pemetaan Daerah Hasil (4 Baris)
+    questions.push({
+      id: 10, level: 'C5', pts: 120, type: 'TABLE_BUILDER',
+      question: 'Lengkapi tabel pemetaan fungsi dengan aturan "Ditambah Dua" dari domain A = {1, 2, 3, 4} untuk melengkapi seluruh nilai daerah hasil (range)!',
+      tableTitle: 'Tabel Pemetaan Fungsi: Ditambah Dua',
+      subInstruction: 'Pindahkan kartu angka dari kotak pilihan ke sel daerah hasil (range) yang kosong:',
+      headers: ['Domain (Asal)', 'Range (Hasil)'],
+      rows: [
+        { idX: 'r1_x', valX: '1', isSlotX: false, idY: 'r1_y', valY: null, isSlotY: true },
+        { idX: 'r2_x', valX: '2', isSlotX: false, idY: 'r2_y', valY: null, isSlotY: true },
+        { idX: 'r3_x', valX: '3', isSlotX: false, idY: 'r3_y', valY: null, isSlotY: true },
+        { idX: 'r4_x', valX: '4', isSlotX: false, idY: 'r4_y', valY: null, isSlotY: true }
+      ],
+      tokens: ['3', '4', '5', '6', '7', '8'],
+      correctCells: { 'r1_y': '3', 'r2_y': '4', 'r3_y': '5', 'r4_y': '6' },
+      explanation: 'Daerah hasil (range) yang diperoleh: 1+2=3, 2+2=4, 3+2=5, dan 4+2=6.'
+    });
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // CHAPTER 3: NOTASI, NILAI, DAN RUMUS FUNGSI (DATA KAYA & MULTI-STEP)
+  // Notasi f(x) = ax + b, substitusi nilai, prapeta, penentuan nilai a & b
+  // ═════════════════════════════════════════════════════════════════════════
+  else if (cid === 3) {
+    // Q1: C3 SLOT_FILL - Hitung Nilai Bayangan f(4) dan f(5) pada f(x) = 3x + 5
+    questions.push({
+      id: 1, level: 'C3', pts: 50, type: 'SLOT_FILL',
+      question: 'Sebuah fungsi bekerja dengan rumus f(x) = 3x + 5. Lengkapi langkah perhitungan nilai bayangan f(4) dan bayangan f(5)!',
+      subInstruction: 'Pasang kartu angka hasil perhitungan ke kotak [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Nilai perkalian suku 3(4) =', answer: '12' },
+        { id: 's2', label: 'Nilai bayangan akhir f(4) =', answer: '17' },
+        { id: 's3', label: 'Nilai bayangan akhir f(5) =', answer: '20' }
+      ],
+      tokens: ['12', '15', '17', '20', '23'],
+      explanation: 'f(4) = 3(4) + 5 = 12 + 5 = 17. Dan f(5) = 3(5) + 5 = 15 + 5 = 20.'
+    });
+
+    // Q2: C3 SLOT_FILL - Nilai x Negatif: Hitung f(-3) dan f(-4) pada f(x) = 2x - 7
+    questions.push({
+      id: 2, level: 'C3', pts: 50, type: 'SLOT_FILL',
+      question: 'Diketahui rumus fungsi f(x) = 2x − 7. Lengkapi langkah perhitungan nilai bayangan f(−3) dan f(−4) dengan teliti!',
+      subInstruction: 'Pasang kartu angka ke kotak perhitungan [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Nilai suku 2(−3) =', answer: '-6' },
+        { id: 's2', label: 'Nilai bayangan akhir f(−3) =', answer: '-13' },
+        { id: 's3', label: 'Nilai bayangan akhir f(−4) =', answer: '-15' }
+      ],
+      tokens: ['-6', '-8', '-13', '-15', '13', '15'],
+      explanation: 'f(-3) = 2(-3) - 7 = -6 - 7 = -13. Dan f(-4) = 2(-4) - 7 = -8 - 7 = -15.'
+    });
+
+    // Q3: C3 HPB_BUILDER - Pasangan Nilai f(x) = 2x + 3 untuk 4 Domain
+    questions.push({
+      id: 3, level: 'C3', pts: 50, type: 'HPB_BUILDER',
+      question: 'Susun himpunan pasangan nilai fungsi f(x) = 2x + 3 untuk domain x = {1, 2, 3, 4} ke dalam kurung aljabar!',
+      subInstruction: 'Pasang nilai bayangan ke dalam kurung pasangan berurutan:',
+      setName: 'f',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: '1', ansY: '5', fixedX: '1', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: '2', ansY: '7', fixedX: '2', fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: '3', ansY: '9', fixedX: '3', fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: '4', ansY: '11', fixedX: '4', fixedY: null }
+      ],
+      tokens: ['5', '7', '9', '11', '13'],
+      correctSlots: { 'p1_y': '5', 'p2_y': '7', 'p3_y': '9', 'p4_y': '11' },
+      explanation: 'f(1)=5, f(2)=7, f(3)=9, f(4)=11. Himpunan pasangan nilai: {(1, 5), (2, 7), (3, 9), (4, 11)}.'
+    });
+
+    // Q4: C4 SLOT_FILL - Menentukan Prapeta (Nilai x)
+    questions.push({
+      id: 4, level: 'C4', pts: 80, type: 'SLOT_FILL',
+      question: 'Diketahui rumus fungsi f(x) = 5x − 3. Jika nilai bayangan f(a) = 17 dan f(b) = 32, lengkapi langkah aljabar untuk menemukan prapeta a dan b!',
+      subInstruction: 'Pindahkan kartu angka ke kotak persamaan [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Persamaan 5a − 3 = 17 ➔ 5a =', answer: '20' },
+        { id: 's2', label: 'Nilai prapeta a =', answer: '4' },
+        { id: 's3', label: 'Nilai prapeta b (dari 5b = 35) =', answer: '7' }
+      ],
+      tokens: ['4', '7', '14', '20', '35'],
+      explanation: '5a = 20 ➔ a = 4. Serta 5b - 3 = 32 ➔ 5b = 35 ➔ b = 7.'
+    });
+
+    // Q5: C4 ARROWS - Sambungkan Nilai Fungsi 4 Elemen
+    questions.push({
+      id: 5, level: 'C4', pts: 80, type: 'ARROWS',
+      question: 'Tarik panah dari daerah asal A = {1, 2, 3, 4} ke daerah kawan B = {1, 4, 7, 10, 13} yang memenuhi rumus f(x) = 3x − 2!',
+      labelA: 'Domain A',
+      labelB: 'Bayangan f(x)',
+      setA: [1, 2, 3, 4],
+      setB: [1, 4, 7, 10, 13],
+      rule: 'tiga_x_kurang_dua_empat',
+      correctPairs: ['1->1', '2->4', '3->7', '4->10'],
+      explanation: '3(1)-2 = 1, 3(2)-2 = 4, 3(3)-2 = 7, 3(4)-2 = 10.'
+    });
+
+    // Q6: C4 DRAG_DROP - Sortir 6 Nilai Fungsi: Positif vs Negatif
+    questions.push({
+      id: 6, level: 'C4', pts: 80, type: 'DRAG_DROP',
+      question: 'Diberikan rumus fungsi f(x) = 2x − 6. Pindahkan seluruh 6 kartu nilai fungsi ke dalam kelompok tanda hasil yang sesuai!',
+      subInstruction: "Pindahkan kartu ke kotak 'Hasil Positif (f(x) > 0)' atau 'Hasil Negatif (f(x) < 0)':",
+      categories: ['Hasil Positif (f(x) > 0)', 'Hasil Negatif (f(x) < 0)'],
+      items: ['f(5)', 'f(1)', 'f(4)', 'f(2)', 'f(6)', 'f(0)'],
+      correctMapping: {
+        'f(5)': 'Hasil Positif (f(x) > 0)',
+        'f(1)': 'Hasil Negatif (f(x) < 0)',
+        'f(4)': 'Hasil Positif (f(x) > 0)',
+        'f(2)': 'Hasil Negatif (f(x) < 0)',
+        'f(6)': 'Hasil Positif (f(x) > 0)',
+        'f(0)': 'Hasil Negatif (f(x) < 0)'
+      },
+      explanation: 'Hasil Positif: f(4)=2, f(5)=4, f(6)=6. Hasil Negatif: f(0)=-6, f(1)=-4, f(2)=-2.'
+    });
+
+    // Q7: C4 TABLE_BUILDER - Tabel Mesin Fungsi 4 Baris
+    questions.push({
+      id: 7, level: 'C4', pts: 80, type: 'TABLE_BUILDER',
+      question: 'Lengkapi tabel mesin fungsi f(x) = 4x + 1 untuk nilai x = {0, 1, 2, 3}!',
+      tableTitle: 'Mesin Fungsi: f(x) = 4x + 1',
+      subInstruction: 'Pindahkan kartu angka dari kotak pilihan ke seluruh sel nilai f(x):',
+      headers: ['Nilai x', 'Nilai f(x)'],
+      rows: [
+        { idX: 'r1_x', valX: '0', isSlotX: false, idY: 'r1_y', valY: null, isSlotY: true },
+        { idX: 'r2_x', valX: '1', isSlotX: false, idY: 'r2_y', valY: null, isSlotY: true },
+        { idX: 'r3_x', valX: '2', isSlotX: false, idY: 'r3_y', valY: null, isSlotY: true },
+        { idX: 'r4_x', valX: '3', isSlotX: false, idY: 'r4_y', valY: null, isSlotY: true }
+      ],
+      tokens: ['1', '5', '9', '13', '17'],
+      correctCells: { 'r1_y': '1', 'r2_y': '5', 'r3_y': '9', 'r4_y': '13' },
+      explanation: 'f(0) = 4(0)+1 = 1; f(1) = 4(1)+1 = 5; f(2) = 4(2)+1 = 9; f(3) = 4(3)+1 = 13.'
+    });
+
+    // Q8: C5 SLOT_FILL - Menentukan Rumus f(x) = ax + b dan Nilai f(5)
+    questions.push({
+      id: 8, level: 'C5', pts: 120, type: 'SLOT_FILL',
+      question: 'Diketahui fungsi f(x) = ax + b memiliki nilai f(1) = 5 dan f(3) = 11. Tentukan nilai a, b, dan nilai bayangan baru f(5)!',
+      subInstruction: 'Pasang nilai a, b, dan f(5) yang diperoleh ke kotak [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Nilai koefisien a =', answer: '3' },
+        { id: 's2', label: 'Nilai konstanta b =', answer: '2' },
+        { id: 's3', label: 'Nilai bayangan f(5) =', answer: '17' }
+      ],
+      tokens: ['2', '3', '4', '15', '17'],
+      explanation: 'a = (11 - 5) ÷ (3 - 1) = 3. Lalu b = 5 - 3(1) = 2. Maka f(5) = 3(5) + 2 = 17.'
+    });
+
+    // Q9: C5 HPB_BUILDER - Pasangan Nilai f(x) = 5 - 2x (4 Pasangan)
+    questions.push({
+      id: 9, level: 'C5', pts: 120, type: 'HPB_BUILDER',
+      question: 'Susunlah himpunan pasangan nilai fungsi f(x) = 5 − 2x untuk x = {0, 1, 2, 3}!',
+      subInstruction: 'Pasang angka hasil ke kurung pasangan berurutan:',
+      setName: 'f',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: '0', ansY: '5', fixedX: '0', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: '1', ansY: '3', fixedX: '1', fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: '2', ansY: '1', fixedX: '2', fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: '3', ansY: '-1', fixedX: '3', fixedY: null }
+      ],
+      tokens: ['5', '3', '1', '-1', '-3'],
+      correctSlots: { 'p1_y': '5', 'p2_y': '3', 'p3_y': '1', 'p4_y': '-1' },
+      explanation: 'f(0)=5, f(1)=3, f(2)=1, f(3)=-1. Himpunan pasangan nilai: {(0, 5), (1, 3), (2, 1), (3, -1)}.'
+    });
+
+    // Q10: C5 CARTESIAN - Plot 4 Titik Koordinat Fungsi Linear
+    questions.push({
+      id: 10, level: 'C5', pts: 120, type: 'CARTESIAN',
+      question: 'Tandai 4 titik koordinat pasangan (x, f(x)) untuk fungsi linear f(x) = 2x + 1: (0, 1), (1, 3), (2, 5), dan (3, 7) pada bidang Kartesius!',
+      minX: 0, maxX: 4, minY: 0, maxY: 8,
+      targetPoints: [[0, 1], [1, 3], [2, 5], [3, 7]],
+      drawLine: true,
+      hint: 'Tandai titik (0, 1), (1, 3), (2, 5), dan (3, 7). Seluruh titik membentuk satu garis lurus.',
+      explanation: 'Titik koordinat (0, 1), (1, 3), (2, 5), dan (3, 7) membentuk garis linear f(x) = 2x + 1.'
+    });
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // CHAPTER 4: GRAFIK FUNGSI LINEAR PADA BIDANG KARTESIUS (DATA BESAR)
+  // Bentuk garis lurus, titik potong sumbu X & Y, gradien kemiringan garis
+  // ═════════════════════════════════════════════════════════════════════════
+  else if (cid === 4) {
+    // Q1: C3 MCQ - Karakteristik Grafik Fungsi Linear
+    questions.push({
+      id: 1, level: 'C3', pts: 50, type: 'MCQ',
+      question: 'Bagaimanakah bentuk visual grafik dari fungsi linear f(x) = ax + b pada bidang koordinat Kartesius?',
+      options: [
+        'Selalu berupa garis lurus',
+        'Berupa kurva parabola melengkung',
+        'Berupa lingkaran tertutup',
+        'Berupa garis gelombang naik-turun'
+      ],
+      correct: 'Selalu berupa garis lurus',
+      explanation: 'Karena variabel x berpangkat satu (linear), grafik fungsi linear selalu membentuk garis lurus sempurna.'
+    });
+
+    // Q2: C3 CARTESIAN - Plot 4 Titik Garis f(x) = 2x
+    questions.push({
+      id: 2, level: 'C3', pts: 50, type: 'CARTESIAN',
+      question: 'Tandai 4 titik koordinat pada bidang Kartesius yang dilalui oleh grafik fungsi linear f(x) = 2x: (0, 0), (1, 2), (2, 4), dan (3, 6)!',
+      minX: 0, maxX: 4, minY: 0, maxY: 7,
+      targetPoints: [[0, 0], [1, 2], [2, 4], [3, 6]],
+      drawLine: true,
+      hint: 'Tandai titik (0, 0), (1, 2), (2, 4), dan (3, 6).',
+      explanation: 'Garis f(x) = 2x melewati titik pangkal (0, 0), (1, 2), (2, 4), dan (3, 6).'
+    });
+
+    // Q3: C3 SLOT_FILL - Menghitung Titik Potong Dua Garis Linear
+    questions.push({
+      id: 3, level: 'C3', pts: 50, type: 'SLOT_FILL',
+      question: 'Diberikan fungsi f(x) = 3x − 6 dan g(x) = 2x − 8. Lengkapi nilai koordinat titik potong sumbu berikut!',
+      subInstruction: 'Pasang kartu angka ke kotak koordinat [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Titik potong sumbu Y garis f(x) (saat x = 0) ➔ (0, [ ? ]):', answer: '-6' },
+        { id: 's2', label: 'Titik potong sumbu X garis f(x) (saat y = 0) ➔ ([ ? ], 0):', answer: '2' },
+        { id: 's3', label: 'Titik potong sumbu X garis g(x) (saat y = 0) ➔ ([ ? ], 0):', answer: '4' }
+      ],
+      tokens: ['-6', '2', '4', '6', '8'],
+      explanation: 'f(x): x=0 ➔ y=-6; y=0 ➔ 3x=6 ➔ x=2. g(x): y=0 ➔ 2x=8 ➔ x=4.'
+    });
+
+    // Q4: C4 SLOT_FILL - Menghitung Gradien (Kemiringan Garis)
+    questions.push({
+      id: 4, level: 'C4', pts: 80, type: 'SLOT_FILL',
+      question: 'Garis melewati dua titik (1, 3) dan (3, 7). Lengkapi langkah penghitungan gradien kemiringan garis m = Δy ÷ Δx pada kotak [ ? ]!',
+      subInstruction: 'Pasang kartu angka nilai ke kotak perhitungan gradien:',
+      slots: [
+        { id: 's1', label: 'Perubahan nilai tegak (Δy = 7 − 3) =', answer: '4' },
+        { id: 's2', label: 'Perubahan nilai mendatar (Δx = 3 − 1) =', answer: '2' },
+        { id: 's3', label: 'Nilai kemiringan garis m (Δy ÷ Δx) =', answer: '2' }
+      ],
+      tokens: ['2', '2', '4', '6', '8'],
+      explanation: 'Δy = 7-3 = 4; Δx = 3-1 = 2; Gradien m = 4 ÷ 2 = 2.'
+    });
+
+    // Q5: C4 CARTESIAN - Plot 4 Titik Segaris y = x + 2
+    questions.push({
+      id: 5, level: 'C4', pts: 80, type: 'CARTESIAN',
+      question: 'Tandai 4 titik koordinat segaris fungsi linear y = x + 2: (0, 2), (1, 3), (2, 4), dan (3, 5) pada bidang Kartesius!',
+      minX: 0, maxX: 4, minY: 0, maxY: 6,
+      targetPoints: [[0, 2], [1, 3], [2, 4], [3, 5]],
+      drawLine: true,
+      hint: 'Tandai titik (0, 2), (1, 3), (2, 4), dan (3, 5).',
+      explanation: 'Titik-titik koordinat segaris y = x + 2 adalah (0, 2), (1, 3), (2, 4), dan (3, 5).'
+    });
+
+    // Q6: C4 DRAG_DROP - Kelompokkan 6 Garis Linear Berdasarkan Gradien
+    questions.push({
+      id: 6, level: 'C4', pts: 80, type: 'DRAG_DROP',
+      question: 'Kelompokkan 6 fungsi linear berikut berdasarkan tanda gradien (koefisien x) kemiringan garisnya!',
+      subInstruction: "Pindahkan ke kotak 'Gradien Positif (Naik)' atau 'Gradien Negatif (Turun)':",
+      categories: ['Gradien Positif (Naik)', 'Gradien Negatif (Turun)'],
+      items: ['y = 3x - 2', 'y = -2x + 5', 'y = 4x + 1', 'y = -x + 7', 'y = 5x - 3', 'y = -4x + 2'],
+      correctMapping: {
+        'y = 3x - 2': 'Gradien Positif (Naik)',
+        'y = -2x + 5': 'Gradien Negatif (Turun)',
+        'y = 4x + 1': 'Gradien Positif (Naik)',
+        'y = -x + 7': 'Gradien Negatif (Turun)',
+        'y = 5x - 3': 'Gradien Positif (Naik)',
+        'y = -4x + 2': 'Gradien Negatif (Turun)'
+      },
+      explanation: 'Gradien positif (garis menanjak): y = 3x-2, y = 4x+1, y = 5x-3. Gradien negatif (garis menurun): y = -2x+5, y = -x+7, y = -4x+2.'
+    });
+
+    // Q7: C4 TABLE_BUILDER - Tabel Koordinat Titik Garis Menurun y = -2x + 8 (4 Baris)
+    questions.push({
+      id: 7, level: 'C4', pts: 80, type: 'TABLE_BUILDER',
+      question: 'Lengkapi tabel koordinat titik grafik garis menurun y = −2x + 8 untuk x = {1, 2, 3, 4}!',
+      tableTitle: 'Grafik Menurun: y = -2x + 8',
+      subInstruction: 'Pindahkan kartu angka untuk mengisi seluruh nilai y:',
+      headers: ['Nilai x', 'Nilai y'],
+      rows: [
+        { idX: 'r1_x', valX: '1', isSlotX: false, idY: 'r1_y', valY: null, isSlotY: true },
+        { idX: 'r2_x', valX: '2', isSlotX: false, idY: 'r2_y', valY: null, isSlotY: true },
+        { idX: 'r3_x', valX: '3', isSlotX: false, idY: 'r3_y', valY: null, isSlotY: true },
+        { idX: 'r4_x', valX: '4', isSlotX: false, idY: 'r4_y', valY: null, isSlotY: true }
+      ],
+      tokens: ['6', '4', '2', '0', '-2'],
+      correctCells: { 'r1_y': '6', 'r2_y': '4', 'r3_y': '2', 'r4_y': '0' },
+      explanation: 'Untuk x=1 ➔ y=6; x=2 ➔ y=4; x=3 ➔ y=2; x=4 ➔ y=0.'
+    });
+
+    // Q8: C5 DRAG_DROP - Arah Kemiringan 6 Grafik Linear
+    questions.push({
+      id: 8, level: 'C5', pts: 120, type: 'DRAG_DROP',
+      question: 'Kelompokkan 6 fungsi linear berikut berdasarkan arah kemiringan grafiknya (m > 0 menanjak, m < 0 menurun)!',
+      categories: ['Garis Menanjak (m > 0)', 'Garis Menurun (m < 0)'],
+      items: ['y = 2x + 1', 'y = -3x + 4', 'y = 5x - 2', 'y = -x + 6', 'y = 3x', 'y = -5x + 1'],
+      correctMapping: {
+        'y = 2x + 1': 'Garis Menanjak (m > 0)',
+        'y = -3x + 4': 'Garis Menurun (m < 0)',
+        'y = 5x - 2': 'Garis Menanjak (m > 0)',
+        'y = -x + 6': 'Garis Menurun (m < 0)',
+        'y = 3x': 'Garis Menanjak (m > 0)',
+        'y = -5x + 1': 'Garis Menurun (m < 0)'
+      },
+      explanation: 'Garis menanjak (m > 0): y = 2x + 1, y = 5x - 2, y = 3x. Garis menurun (m < 0): y = -3x + 4, y = -x + 6, y = -5x + 1.'
+    });
+
+    // Q9: C5 HPB_BUILDER - Koordinat Segaris y = 3x - 1 (3 Pasangan Lengkap)
+    questions.push({
+      id: 9, level: 'C5', pts: 120, type: 'HPB_BUILDER',
+      question: 'Susun pasangan koordinat segaris untuk fungsi linear y = 3x − 1 pada x = {1, 2, 3}!',
+      subInstruction: 'Pasang angka ke dalam kurung pasangan berurutan:',
+      setName: 'Titik',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: '1', ansY: '2', fixedX: '1', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: '2', ansY: '5', fixedX: '2', fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: '3', ansY: '8', fixedX: '3', fixedY: null }
+      ],
+      tokens: ['2', '5', '8', '11'],
+      correctSlots: { 'p1_y': '2', 'p2_y': '5', 'p3_y': '8' },
+      explanation: 'x=1 ➔ y=2 ➔ (1, 2); x=2 ➔ y=5 ➔ (2, 5); x=3 ➔ y=8 ➔ (3, 8).'
+    });
+
+    // Q10: C5 CARTESIAN - Titik Potong Sumbu X dan Y Dua Garis Linear
+    questions.push({
+      id: 10, level: 'C5', pts: 120, type: 'CARTESIAN',
+      question: 'Tandai titik potong sumbu X (4, 0) dan sumbu Y (0, 4) untuk garis y = −x + 4, serta titik potong sumbu X (2, 0) untuk garis y = 2x − 4 pada bidang Kartesius!',
+      minX: 0, maxX: 5, minY: 0, maxY: 5,
+      targetPoints: [[4, 0], [0, 4], [2, 0]],
+      drawLine: true,
+      hint: 'Tandai ketiga titik: (4, 0), (0, 4), dan (2, 0).',
+      explanation: 'Titik potong sumbu yang terbentuk adalah (4, 0), (0, 4), dan (2, 0).'
+    });
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // CHAPTER 5: KORESPONDENSI SATU-SATU (BIJEKTIF) (DATA BESAR & KAYA)
+  // Syarat n(A) = n(B), pemetaan timbal balik 1-1, rumus faktorial n!
+  // ═════════════════════════════════════════════════════════════════════════
+  else if (cid === 5) {
+    // Q1: C3 MCQ - Analisis Kasus Korespondensi Satu-Satu
+    questions.push({
+      id: 1, level: 'C3', pts: 50, type: 'MCQ',
+      question: 'Di sebuah laboratorium komputer, terdapat 5 orang siswa dan 5 unit komputer bernomor 1 sampai 5. Setiap siswa wajib menggunakan tepat satu unit komputer yang berbeda, dan tidak boleh ada komputer yang dipakai bersamaan atau dibiarkan kosong. Hubungan ini merupakan contoh korespondensi satu-satu. Manakah pernyataan yang paling tepat mengenai pengertian korespondensi satu-satu?',
+      options: [
+        'Relasi di mana setiap anggota daerah asal berpasangan dengan tepat satu anggota kawan, dan setiap anggota kawan berpasangan dengan tepat satu anggota asal secara timbal balik',
+        'Relasi di mana satu siswa diperbolehkan menggunakan beberapa komputer sekaligus asalkan semua komputer menyala',
+        'Fungsi di mana seluruh siswa berkumpul menggunakan satu komputer yang sama secara bergantian',
+        'Relasi yang hanya sah apabila anggotanya berupa bilangan genap saja'
+      ],
+      correct: 'Relasi di mana setiap anggota daerah asal berpasangan dengan tepat satu anggota kawan, dan setiap anggota kawan berpasangan dengan tepat satu anggota asal secara timbal balik',
+      explanation: 'Korespondensi satu-satu adalah pemetaan timbal balik yang sempurna: setiap anggota asal berpasangan tepat satu dengan kawan, dan sebaliknya (syarat mutlak: n(A) = n(B)).'
+    });
+
+    // Q2: C3 SLOT_FILL - Menghitung Banyak Korespondensi n = 3, n = 4, n = 5 (3 Slot)
+    questions.push({
+      id: 2, level: 'C3', pts: 50, type: 'SLOT_FILL',
+      question: 'Hitung banyak kemungkinan susunan korespondensi satu-satu yang dapat dibentuk untuk nilai n = 3, n = 4, dan n = 5!',
+      subInstruction: 'Pasang kartu angka hasil perhitungan faktorial (n!) ke kotak [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Banyak korespondensi untuk n = 3, (3!) =', answer: '6' },
+        { id: 's2', label: 'Banyak korespondensi untuk n = 4, (4!) =', answer: '24' },
+        { id: 's3', label: 'Banyak korespondensi untuk n = 5, (5!) =', answer: '120' }
+      ],
+      tokens: ['6', '24', '60', '120', '720'],
+      explanation: '3! = 3×2×1 = 6; 4! = 4×3×2×1 = 24; 5! = 5×4×3×2×1 = 120.'
+    });
+
+    // Q3: C3 SLOT_FILL - Pemetaan Biasa vs Korespondensi 1-1
+    questions.push({
+      id: 3, level: 'C3', pts: 50, type: 'SLOT_FILL',
+      question: 'Diberikan himpunan A = {1, 2, 3} dan B = {a, b, c}. Hitung banyak seluruh pemetaan biasa (b^a) dan banyak korespondensi satu-satu (n!)!',
+      subInstruction: 'Pasang kartu angka hasil perhitungan ke kotak [ ? ]:',
+      slots: [
+        { id: 's1', label: 'Banyak anggota n(A) = n(B) =', answer: '3' },
+        { id: 's2', label: 'Banyak pemetaan biasa yang mungkin (3³) =', answer: '27' },
+        { id: 's3', label: 'Banyak korespondensi satu-satu (3!) =', answer: '6' }
+      ],
+      tokens: ['3', '6', '9', '27', '81'],
+      explanation: 'Banyak fungsi biasa dari A ke B = 3³ = 27. Sedangkan banyak korespondensi satu-satu = 3! = 6.'
+    });
+
+    // Q4: C4 DRAG_DROP - Uji Syarat n(A) = n(B) (6 Pasangan Himpunan)
+    questions.push({
+      id: 4, level: 'C4', pts: 80, type: 'DRAG_DROP',
+      question: 'Uji syarat korespondensi satu-satu (n(A) harus sama dengan n(B))! Kelompokkan 6 pasangan himpunan berikut:',
+      subInstruction: 'Pindahkan ke kotak "Bisa Korespondensi 1-1" atau "Tidak Bisa":',
+      categories: ['Bisa Korespondensi 1-1 (n(A) = n(B))', 'Tidak Bisa (n(A) ≠ n(B))'],
+      items: [
+        'A={1, 2, 3, 4} & B={a, b, c, d}',
+        'P={1, 2, 3} & Q={p, q, r, s}',
+        'K={Senin, Selasa, Rabu} & L={Pagi, Siang, Sore}',
+        'M={1, 2} & N={x, y, z}',
+        'X={Merah, Kuning, Hijau, Biru} & Y={1, 2, 3, 4}',
+        'E={a, b, c} & F={1, 2}'
+      ],
+      correctMapping: {
+        'A={1, 2, 3, 4} & B={a, b, c, d}': 'Bisa Korespondensi 1-1 (n(A) = n(B))',
+        'P={1, 2, 3} & Q={p, q, r, s}': 'Tidak Bisa (n(A) ≠ n(B))',
+        'K={Senin, Selasa, Rabu} & L={Pagi, Siang, Sore}': 'Bisa Korespondensi 1-1 (n(A) = n(B))',
+        'M={1, 2} & N={x, y, z}': 'Tidak Bisa (n(A) ≠ n(B))',
+        'X={Merah, Kuning, Hijau, Biru} & Y={1, 2, 3, 4}': 'Bisa Korespondensi 1-1 (n(A) = n(B))',
+        'E={a, b, c} & F={1, 2}': 'Tidak Bisa (n(A) ≠ n(B))'
+      },
+      explanation: 'Bisa jika n(A) = n(B): 4 & 4, 3 & 3, 4 & 4. Tidak bisa jika jumlah anggota berbeda.'
+    });
+
+    // Q5: C4 ARROWS - Diagram Panah Korespondensi 1-1 (4 Elemen)
+    questions.push({
+      id: 5, level: 'C4', pts: 80, type: 'ARROWS',
+      question: 'Tarik garis korespondensi satu-satu dari A = {1, 2, 3, 4} ke B = {W, X, Y, Z}: 1 ke X, 2 ke Z, 3 ke W, dan 4 ke Y (setiap anggota unik timbal balik)!',
+      labelA: 'Himpunan A',
+      labelB: 'Himpunan B',
+      setA: [1, 2, 3, 4],
+      setB: ['W', 'X', 'Y', 'Z'],
+      rule: 'korespondensi_empat',
+      correctPairs: ['1->X', '2->Z', '3->W', '4->Y'],
+      explanation: 'Korespondensi satu-satu terpasang sempurna 1-ke-1 tanpa cabang dan tanpa ada yang kosong.'
+    });
+
+    // Q6: C4 HPB_BUILDER - Susun Pasangan Korespondensi 1-1 (4 Elemen)
+    questions.push({
+      id: 6, level: 'C4', pts: 80, type: 'HPB_BUILDER',
+      question: 'Susun pasangan korespondensi satu-satu dari A = {1, 2, 3, 4} ke B = {A, B, C, D}: 1 ke B, 2 ke D, 3 ke A, dan 4 ke C!',
+      subInstruction: 'Pasang huruf unik ke setiap kurung tanpa rangkap:',
+      setName: 'K',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: '1', ansY: 'B', fixedX: '1', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: '2', ansY: 'D', fixedX: '2', fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: '3', ansY: 'A', fixedX: '3', fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: '4', ansY: 'C', fixedX: '4', fixedY: null }
+      ],
+      tokens: ['A', 'B', 'C', 'D', 'E'],
+      correctSlots: { 'p1_y': 'B', 'p2_y': 'D', 'p3_y': 'A', 'p4_y': 'C' },
+      explanation: 'K = {(1, B), (2, D), (3, A), (4, C)}. Seluruh anggota terpasang 1-ke-1 secara unik.'
+    });
+
+    // Q7: C4 TABLE_BUILDER - Tabel Penomoran Meja 1-1 (4 Siswa)
+    questions.push({
+      id: 7, level: 'C4', pts: 80, type: 'TABLE_BUILDER',
+      question: 'Lengkapi tabel penomoran peserta ujian 1-ke-1 tanpa nomor ganda: Andi Meja 1, Budi Meja 2, Cici Meja 3, Doni Meja 4!',
+      tableTitle: 'Jadwal Peserta Ujian 1-1',
+      subInstruction: 'Pindahkan kartu nomor ujian ke seluruh sel tabel:',
+      headers: ['Nama Siswa', 'Nomor Meja'],
+      rows: [
+        { idX: 'r1_x', valX: 'Andi', isSlotX: false, idY: 'r1_y', valY: null, isSlotY: true },
+        { idX: 'r2_x', valX: 'Budi', isSlotX: false, idY: 'r2_y', valY: null, isSlotY: true },
+        { idX: 'r3_x', valX: 'Cici', isSlotX: false, idY: 'r3_y', valY: null, isSlotY: true },
+        { idX: 'r4_x', valX: 'Doni', isSlotX: false, idY: 'r4_y', valY: null, isSlotY: true }
+      ],
+      tokens: ['Meja 1', 'Meja 2', 'Meja 3', 'Meja 4', 'Meja 5'],
+      correctCells: { 'r1_y': 'Meja 1', 'r2_y': 'Meja 2', 'r3_y': 'Meja 3', 'r4_y': 'Meja 4' },
+      explanation: 'Andi ➔ Meja 1, Budi ➔ Meja 2, Cici ➔ Meja 3, Doni ➔ Meja 4.'
+    });
+
+    // Q8: C5 HPB_BUILDER - Pos Jaga 4 Detektif Unik
+    questions.push({
+      id: 8, level: 'C5', pts: 120, type: 'HPB_BUILDER',
+      question: 'Susunlah penugasan 4 detektif ke 4 pos jaga unik (korespondensi satu-satu): (D1, P3), (D2, P1), (D3, P4), (D4, P2)!',
+      subInstruction: 'Pasang kode pos jaga ke dalam pasangan berurutan:',
+      setName: 'Pos',
+      pairs: [
+        { idX: 'p1_x', idY: 'p1_y', ansX: 'D1', ansY: 'P3', fixedX: 'D1', fixedY: null },
+        { idX: 'p2_x', idY: 'p2_y', ansX: 'D2', ansY: 'P1', fixedX: 'D2', fixedY: null },
+        { idX: 'p3_x', idY: 'p3_y', ansX: 'D3', ansY: 'P4', fixedX: 'D3', fixedY: null },
+        { idX: 'p4_x', idY: 'p4_y', ansX: 'D4', ansY: 'P2', fixedX: 'D4', fixedY: null }
+      ],
+      tokens: ['P1', 'P2', 'P3', 'P4', 'P5'],
+      correctSlots: { 'p1_y': 'P3', 'p2_y': 'P1', 'p3_y': 'P4', 'p4_y': 'P2' },
+      explanation: 'Penugasan pos jaga detektif: Pos = {(D1, P3), (D2, P1), (D3, P4), (D4, P2)}.'
+    });
+
+    // Q9: C5 ARROWS - Misi 5 Kabel Brankas 1-ke-1
+    questions.push({
+      id: 9, level: 'C5', pts: 120, type: 'ARROWS',
+      question: 'Misi Kode 5 Kabel Brankas (Korespondensi 1-1): Pasangkan Merah ke Pin 3, Biru ke Pin 1, Hijau ke Pin 5, Kuning ke Pin 2, dan Putih ke Pin 4!',
+      labelA: 'Warna Kabel',
+      labelB: 'Nomor Pin',
+      setA: ['Merah', 'Biru', 'Hijau', 'Kuning', 'Putih'],
+      setB: ['Pin 1', 'Pin 2', 'Pin 3', 'Pin 4', 'Pin 5'],
+      rule: 'brankas_lima_kabel',
+      correctPairs: [
+        'Merah->Pin 3',
+        'Biru->Pin 1',
+        'Hijau->Pin 5',
+        'Kuning->Pin 2',
+        'Putih->Pin 4'
+      ],
+      explanation: 'Kelima kabel brankas tersambung tepat 1-ke-1: Merah->Pin 3, Biru->Pin 1, Hijau->Pin 5, Kuning->Pin 2, Putih->Pin 4.'
+    });
+
+    // Q10: C5 CARTESIAN - Titik Koordinat Korespondensi 1-1 (5 Titik pada Kisi 5x5)
+    questions.push({
+      id: 10, level: 'C5', pts: 120, type: 'CARTESIAN',
+      question: 'Tandai 5 titik koordinat korespondensi satu-satu pada bidang Kartesius: (1, 3), (2, 5), (3, 1), (4, 4), dan (5, 2)! Perhatikan bahwa setiap baris mendatar dan setiap kolom tegak hanya memuat tepat satu titik.',
+      minX: 0, maxX: 5, minY: 0, maxY: 5,
+      targetPoints: [[1, 3], [2, 5], [3, 1], [4, 4], [5, 2]],
+      hint: 'Pastikan setiap baris mendatar (y) dan kolom tegak (x) hanya memiliki tepat satu titik.',
+      explanation: 'Ciri utama korespondensi 1-1 pada diagram Kartesius adalah setiap garis tegak (nilai x) dan setiap garis mendatar (nilai y) hanya ditembus oleh tepat satu titik.'
+    });
+  }
+
+  return questions.map(q => {
+    const res = { ...q };
+    if (res.options && Array.isArray(res.options) && res.type !== 'TRUE_FALSE') {
+      res.options = shuffleArray(res.options);
+    }
+    if (res.tokens && Array.isArray(res.tokens)) {
+      res.tokens = shuffleArray(res.tokens);
+    }
+    return res;
+  });
 }

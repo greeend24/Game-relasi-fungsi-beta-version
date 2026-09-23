@@ -9,7 +9,7 @@ import { CheckCircle2, CheckCheck, Scan } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function Subbab3PengertianFungsi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
-  const stageConfig = SUBBABS_DATA[3].stages[stageNum - 1];
+  const stageConfig = SUBBABS_DATA[2]?.stages?.[stageNum - 1] || SUBBABS_DATA[2]?.stages?.[0];
 
   const [selectedMachineIds, setSelectedMachineIds] = useState([]);
   const [errorDetails, setErrorDetails] = useState(null);

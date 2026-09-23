@@ -1,6 +1,6 @@
 import React from 'react';
 import { Lottie } from 'lottie-react';
-import loadingAnimation from '../../public/assets/loading/loading_animation.json';
+import loadingAnimation from '../assets/loading/loading_animation.json';
 
 export default function LottieLoader({ text = 'Memuat...', size = 'md', className = '' }) {
   const sizeClasses = {

@@ -1447,7 +1447,7 @@
               <span id="modalChaptersCompleted">-</span> / 5 Bab
             </div>
             <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; margin-top: 3px;">
-              <span id="modalStagesCompleted">-</span> / 44 Segmen Materi
+              <span id="modalStagesCompleted">-</span> / 18 Segmen Materi
             </div>
           </div>
 
@@ -1520,7 +1520,7 @@
               <span id="badgeTunnelStatus" class="badge-status-online">🟢 ONLINE</span>
             </div>
             <div style="margin: 6px 0;">
-              <input type="text" id="inputPublicUrl" readonly value="https://scooter-thickness-stony.ngrok-free.dev"
+              <input type="text" id="inputPublicUrl" readonly value="" placeholder="Menghubungkan ke server online Cloudflare..."
                 style="width: 100%; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; background: #FFFFFF; border: 2px solid #86EFAC; border-radius: 10px; color: #166534;" />
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
@@ -1579,7 +1579,7 @@
         <!-- Control buttons -->
         <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1.5px solid #E2E8F0; flex-wrap: wrap; gap: 10px;">
           <button id="btnStopTunnel" class="btn-action btn-logout" onclick="stopOnlineTunnel()" style="font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-            ⏹️ Matikan Koneksi Internet (Stop Ngrok)
+            ⏹️ Matikan Koneksi Internet (Stop Cloudflare)
           </button>
           <button class="btn-action" onclick="closeLaunchModal()" style="font-weight: 800;">
             ✓ Selesai & Kembali ke Rekap Nilai
@@ -1637,10 +1637,10 @@
         <p>Dashboard Rekapitulasi Kemajuan Belajar, Akun, & Nilai Ujian Siswa (Game Relasi & Fungsi)</p>
       </div>
       <div class="header-actions">
-        <button id="btnLaunchGame" class="btn-launch" onclick="launchGame()" title="Klik 1 kali untuk langsung mengaktifkan server internet Ngrok & kontrol link siswa">
+        <button id="btnLaunchGame" class="btn-launch" onclick="launchGame()" title="Klik 1 kali untuk langsung mengaktifkan server internet Cloudflare & kontrol link siswa">
           <span class="btn-launch-icon">🌐</span>
-          <span id="btnLaunchText">Deploy / Aktifkan Ngrok</span>
-          <span id="launchDot" class="status-indicator-dot dot-offline" title="Status Server Online Ngrok"></span>
+          <span id="btnLaunchText">Deploy / Aktifkan Cloudflare</span>
+          <span id="launchDot" class="status-indicator-dot dot-offline" title="Status Server Online Cloudflare"></span>
         </button>
         <button class="btn-action" onclick="loadAllData()">🔄 Refresh</button>
         <button class="btn-export" onclick="downloadCsv()">
@@ -1680,10 +1680,10 @@
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
             <h2 style="font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
               <span>📱 Link Akses Siswa & QR Code</span>
-              <span id="qrActiveBadge" class="badge-status-student-online">🌐 Online (Ngrok)</span>
+              <span id="qrActiveBadge" class="badge-status-student-online">🌐 Online (Cloudflare)</span>
             </h2>
             <div class="qr-tabs">
-              <button class="qr-tab-btn active" id="tabPublic" onclick="switchQrSource('public')">🌐 Online (Ngrok)</button>
+              <button class="qr-tab-btn active" id="tabPublic" onclick="switchQrSource('public')">🌐 Online (Cloudflare)</button>
               <button class="qr-tab-btn" id="tabLan" onclick="switchQrSource('lan')">📶 Wi-Fi Kelas / LAN</button>
               <button class="qr-tab-btn" id="tabLocal" onclick="switchQrSource('local')">💻 Lokal</button>
             </div>
@@ -1698,8 +1698,8 @@
             type="text"
             id="activeAccessUrlInput"
             class="qr-url-input"
-            value="https://scooter-thickness-stony.ngrok-free.dev"
-            placeholder="https://scooter-thickness-stony.ngrok-free.dev"
+            value=""
+            placeholder="Memuat link server online Cloudflare..."
             oninput="handleManualQrInput(event)"
           />
           <button class="btn-export" onclick="copyActiveAccessUrl()" style="padding: 10px 18px; font-size: 14px;">
@@ -1770,25 +1770,25 @@
               <th style="width: 50px; text-align: center;">Status</th>
               <th>Nama Siswa & Role</th>
               <th>Lama Main</th>
-              <th title="Bab 1: Pengertian & Cara Menyatakan Relasi (12 Segmen)">
+              <th title="Bab 1: Pengertian & Cara Menyatakan Relasi (3 Video Segmen)">
                 <div>Bab 1</div>
-                <span class="th-sub">Relasi (12 Seg)</span>
+                <span class="th-sub">Relasi (3 Seg)</span>
               </th>
-              <th title="Bab 2: Pengertian & Unsur Fungsi (10 Segmen)">
+              <th title="Bab 2: Pengertian & Unsur Fungsi (4 Video Segmen)">
                 <div>Bab 2</div>
-                <span class="th-sub">Fungsi (10 Seg)</span>
+                <span class="th-sub">Fungsi (4 Seg)</span>
               </th>
-              <th title="Bab 3: Notasi & Rumus Fungsi (4 Segmen)">
+              <th title="Bab 3: Notasi & Rumus Fungsi (4 Video Segmen)">
                 <div>Bab 3</div>
                 <span class="th-sub">Rumus f(x) (4 Seg)</span>
               </th>
-              <th title="Bab 4: Grafik Fungsi Linear (10 Segmen)">
+              <th title="Bab 4: Grafik Fungsi Linear (4 Video Segmen)">
                 <div>Bab 4</div>
-                <span class="th-sub">Grafik (10 Seg)</span>
+                <span class="th-sub">Grafik (4 Seg)</span>
               </th>
-              <th title="Bab 5: Korespondensi Satu-Satu (8 Segmen)">
+              <th title="Bab 5: Korespondensi Satu-Satu (3 Video Segmen)">
                 <div>Bab 5</div>
-                <span class="th-sub">Bijektif (8 Seg)</span>
+                <span class="th-sub">Bijektif (3 Seg)</span>
               </th>
               <th>Endless</th>
               <th>Total Skor</th>
@@ -1977,7 +1977,7 @@
       tbody.innerHTML = students.map((s, idx) => {
         const renderSubbab = (subId) => {
           const ch = s.chaptersProgress ? s.chaptersProgress[subId] : null;
-          const info = CHAPTER_INFO[subId] || { totalSegs: 10 };
+          const info = CHAPTER_INFO[subId] || { totalSegs: 4 };
           const maxSeg = info.totalSegs;
           if (!ch) return `<div class="subbab-cell"><span class="badge-quest empty">0/${maxSeg}</span><span class="badge-quest empty">No Ujian</span></div>`;
 
@@ -2057,7 +2057,7 @@
         id: 1,
         title: "Bab 1: Relasi & Cara Menyatakan",
         sub: "Konsep, Benang Merah, 4 Bentuk Relasi",
-        totalSegs: 12,
+        totalSegs: 3,
         icon: "🪢",
         color: "#D97706"
       },
@@ -2065,7 +2065,7 @@
         id: 2,
         title: "Bab 2: Pengertian & Unsur Fungsi",
         sub: "Syarat Fungsi, Domain, Kodomain, Range",
-        totalSegs: 10,
+        totalSegs: 4,
         icon: "📦",
         color: "#2563EB"
       },
@@ -2081,7 +2081,7 @@
         id: 4,
         title: "Bab 4: Grafik Fungsi Linear",
         sub: "Titik Koordinat & Gradien Garis (m)",
-        totalSegs: 10,
+        totalSegs: 4,
         icon: "📈",
         color: "#059669"
       },
@@ -2089,7 +2089,7 @@
         id: 5,
         title: "Bab 5: Korespondensi Satu-Satu",
         sub: "Fungsi Bijektif & Faktorial n!",
-        totalSegs: 8,
+        totalSegs: 3,
         icon: "🔗",
         color: "#DC2626"
       }
@@ -2366,14 +2366,14 @@
     // ── Tunnel & QR Access State ──
     let currentTunnelStatus = {
       isRunning: false,
-      publicUrl: 'https://scooter-thickness-stony.ngrok-free.dev',
+      publicUrl: '',
       localUrl: 'http://localhost:3001',
       lanUrl: 'http://localhost:3001',
       lanIp: '',
     };
 
     let activeQrSource = 'public'; // 'public' | 'lan' | 'local' | 'custom'
-    let currentQrUrl = 'https://scooter-thickness-stony.ngrok-free.dev';
+    let currentQrUrl = '';
     let qrMainInstance = null;
     let qrProjectorInstance = null;
     let qrModalInstance = null;
@@ -2462,12 +2462,12 @@
         }
         if (tip) tip.innerHTML = 'Untuk kelas tatap muka, gunakan <strong>Wi-Fi Kelas</strong> agar siswa terkoneksi super cepat & tanpa kuota internet!';
       } else if (type === 'public') {
-        targetUrl = currentTunnelStatus.publicUrl || 'https://scooter-thickness-stony.ngrok-free.dev';
+        targetUrl = currentTunnelStatus.publicUrl || '';
         if (badge) {
           badge.className = 'badge-status-student-online';
-          badge.textContent = currentTunnelStatus.isRunning ? '🟢 Online (Ngrok Aktif)' : '🌐 Online (Ngrok)';
+          badge.textContent = currentTunnelStatus.isRunning ? '🟢 Online (Cloudflare Aktif)' : '🌐 Online (Cloudflare)';
         }
-        if (tip) tip.innerHTML = 'Link <strong>Online (Ngrok)</strong> siap digunakan siswa untuk langsung bermain tanpa instalasi dari HP / tablet / laptop.';
+        if (tip) tip.innerHTML = 'Link <strong>Online (Cloudflare)</strong> siap digunakan siswa untuk langsung bermain tanpa instalasi dari HP / tablet / laptop.';
       } else if (type === 'local') {
         targetUrl = currentTunnelStatus.localUrl || 'http://127.0.0.1:3001';
         if (badge) {
@@ -2575,7 +2575,7 @@
       if (dot) {
         if (isRunning) {
           dot.className = 'status-indicator-dot dot-online';
-          dot.title = 'Server Online Ngrok Aktif';
+          dot.title = 'Server Online Cloudflare Aktif';
         } else {
           dot.className = 'status-indicator-dot dot-offline';
           dot.title = 'Server Online Belum Aktif';
@@ -2598,7 +2598,7 @@
 
       const btnText = document.getElementById('btnLaunchText');
       if (btnText) {
-        btnText.textContent = isRunning ? '🟢 Ngrok Online (Aktif)' : '🌐 Deploy / Aktifkan Ngrok';
+        btnText.textContent = isRunning ? '🟢 Cloudflare Online (Aktif)' : '🌐 Deploy / Aktifkan Cloudflare';
       }
     }
 
@@ -2629,7 +2629,7 @@
 
         if (res.ok && data.success) {
           const gameUrl = data.localUrl || '/';
-          const publicUrl = data.publicUrl || 'https://scooter-thickness-stony.ngrok-free.dev';
+          const publicUrl = data.publicUrl || '';
 
           // Update state & UI
           currentTunnelStatus.isRunning = Boolean(data.isTunnelRunning);
@@ -2701,7 +2701,7 @@
     }
 
     async function stopOnlineTunnel() {
-      if (!confirm('Yakin ingin mematikan koneksi internet Ngrok? Siswa di rumah tidak akan bisa mengakses game setelah koneksi dimatikan.')) {
+      if (!confirm('Yakin ingin mematikan koneksi internet Cloudflare? Siswa di rumah tidak akan bisa mengakses game setelah koneksi dimatikan.')) {
         return;
       }
       try {

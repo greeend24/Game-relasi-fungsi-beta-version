@@ -5,7 +5,7 @@ import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
 import InstructorMascotGuide from './InstructorMascotGuide';
 
-export default function SecurityLockoutModal({ isLocked, remainingSeconds, onUnlocked }) {
+export default function SecurityLockoutModal({ isLocked, remainingSeconds, currentUser, onUnlocked }) {
   const [timeLeft, setTimeLeft] = useState(remainingSeconds || 300);
   const [ryuText, setRyuText] = useState('');
 
@@ -105,6 +105,19 @@ export default function SecurityLockoutModal({ isLocked, remainingSeconds, onUnl
           <span className="text-xs sm:text-sm font-bold text-[#78350F]">
             Game akan otomatis terbuka kembali setelah waktu tunggu selesai.
           </span>
+
+          {securityLockoutService.isAdmin(currentUser) && (
+            <button
+              onClick={() => {
+                securityLockoutService.clearLockout();
+                try { audioEngine.playClick(); } catch {}
+                if (onUnlocked) onUnlocked();
+              }}
+              className="mt-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm rounded-xl border-2 border-[#1B4332] shadow-[2px_3px_0px_#1B4332] cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center space-x-1.5"
+            >
+              <span>🔓 Buka Kunci Cepat (Admin)</span>
+            </button>
+          )}
         </div>
 
         {/* BOTTOM INTEGRITY NOTICE */}

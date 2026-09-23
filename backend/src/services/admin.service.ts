@@ -3,11 +3,11 @@ import { user, userStats, userSubbabProgress, questScores, userBadges, session, 
 import { eq, desc } from "drizzle-orm";
 
 export const CHAPTER_TOTAL_SEGS: Record<number, number> = {
-  1: 12,
-  2: 10,
+  1: 3,
+  2: 4,
   3: 4,
-  4: 10,
-  5: 8,
+  4: 4,
+  5: 3,
 };
 
 export interface StudentSummary {
@@ -111,7 +111,7 @@ export async function getAllStudentsData(): Promise<StudentSummary[]> {
     for (let subId = 1; subId <= 5; subId++) {
       const prog = uProgress.find((p) => p.subbabId === subId);
       const quest = uQuests.find((q) => q.subbabId === subId);
-      const maxSeg = CHAPTER_TOTAL_SEGS[subId] || 10;
+      const maxSeg = CHAPTER_TOTAL_SEGS[subId] || 4;
 
       let starsCount = 0;
       let isStage21Completed = false;
@@ -247,16 +247,16 @@ export async function generateStudentsCsv(): Promise<string> {
     "Total Detik Bermain",
     "Email",
     "Total Bab Tamat (0-5)",
-    "Total Segmen Selesai (0-44)",
-    "Bab 1: Relasi & Cara Menyatakan (12 Segmen)",
+    "Total Segmen Selesai (0-18)",
+    "Bab 1: Relasi & Cara Menyatakan (3 Segmen)",
     "Bab 1: Nilai Ujian Quest (0-100)",
-    "Bab 2: Pengertian & Unsur Fungsi (10 Segmen)",
+    "Bab 2: Pengertian & Unsur Fungsi (4 Segmen)",
     "Bab 2: Nilai Ujian Quest (0-100)",
     "Bab 3: Notasi & Rumus Fungsi (4 Segmen)",
     "Bab 3: Nilai Ujian Quest (0-100)",
-    "Bab 4: Grafik Fungsi Linear (10 Segmen)",
+    "Bab 4: Grafik Fungsi Linear (4 Segmen)",
     "Bab 4: Nilai Ujian Quest (0-100)",
-    "Bab 5: Korespondensi Satu-Satu (8 Segmen)",
+    "Bab 5: Korespondensi Satu-Satu (3 Segmen)",
     "Bab 5: Nilai Ujian Quest (0-100)",
     "High Score Endless Mode",
     "Total Skor Game",
@@ -271,7 +271,7 @@ export async function generateStudentsCsv(): Promise<string> {
 
     const formatBabProgress = (subId: number) => {
       const ch = c[subId];
-      const maxSeg = CHAPTER_TOTAL_SEGS[subId] || 10;
+      const maxSeg = CHAPTER_TOTAL_SEGS[subId] || 4;
       if (!ch || (!ch.starsCount && !ch.isStage21Completed)) return `0/${maxSeg} Segmen (Belum)`;
       if (ch.isStage21Completed || ch.starsCount >= maxSeg) return `Tamat (${maxSeg}/${maxSeg} Segmen)`;
       return `${ch.starsCount}/${maxSeg} Segmen`;

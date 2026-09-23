@@ -11,11 +11,13 @@ try {
   ];
   for (const c of candidates) {
     if (fs.existsSync(c)) {
-      const raw = fs.readFileSync(c, 'utf-8').trim();
-      if (raw && !raw.startsWith('#')) {
-        preconfiguredServerUrl = (raw.startsWith('http://') || raw.startsWith('https://'))
-          ? raw
-          : `http://${raw}`;
+      const raw = fs.readFileSync(c, 'utf-8');
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const validUrlLine = lines.find(l => !l.startsWith('#'));
+      if (validUrlLine) {
+        preconfiguredServerUrl = (validUrlLine.startsWith('http://') || validUrlLine.startsWith('https://'))
+          ? validUrlLine
+          : `http://${validUrlLine}`;
         break;
       }
     }

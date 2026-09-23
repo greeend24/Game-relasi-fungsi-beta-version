@@ -83,19 +83,22 @@ class SecurityLockoutService {
   isAdmin(userOrUsername) {
     if (!userOrUsername) return false;
     let username = '';
+    let fullname = '';
     if (typeof userOrUsername === 'string') {
       username = userOrUsername;
     } else if (typeof userOrUsername === 'object') {
       if (userOrUsername.isAdmin) return true;
-      username = userOrUsername.username || userOrUsername.name || userOrUsername.fullname || '';
+      if (userOrUsername.role === 'admin') return true;
+      username = userOrUsername.username || userOrUsername.name || '';
+      fullname = userOrUsername.fullname || '';
     }
-    const clean = username.toLowerCase().trim();
-    return clean === 'fikran02' || clean === 'fikran' || clean === 'admin';
+    const clean = String(username).toLowerCase().trim();
+    const cleanFull = String(fullname).toLowerCase().trim();
+    return clean === 'fikran02' || clean === 'fikran' || clean === 'admin' || cleanFull === 'admin';
   }
 
   checkStatus(userOrUsername = null) {
-    if (this.isAdmin(userOrUsername)) {
-      this.clearLockout();
+    if (userOrUsername && this.isAdmin(userOrUsername)) {
       return {
         isLocked: false,
         remainingSeconds: 0,
@@ -148,7 +151,8 @@ class SecurityLockoutService {
   }
 
   recordViolation(userOrUsername = null) {
-    if (this.isAdmin(userOrUsername)) {
+    // Admin is completely exempt from cheat/tab-switch violation penalties
+    if (userOrUsername && this.isAdmin(userOrUsername)) {
       return {
         isLocked: false,
         remainingSeconds: 0,

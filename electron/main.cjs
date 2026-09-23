@@ -98,18 +98,24 @@ function getRemoteServerUrl() {
     const candidates = [
       path.join(process.cwd(), 'server_url.txt'),
       path.join(path.dirname(process.execPath), 'server_url.txt'),
+      path.join(getResourcesPath(), 'server_url.txt'),
+      path.join(getUserDataPath(), 'server_url.txt'),
       path.join(__dirname, '..', 'server_url.txt'),
     ];
     for (const c of candidates) {
       if (fs.existsSync(c)) {
-        const raw = fs.readFileSync(c, 'utf-8').trim();
-        if (raw && !raw.startsWith('#')) {
-          return (raw.startsWith('http://') || raw.startsWith('https://')) ? raw.replace(/\/+$/, '') : `http://${raw}`.replace(/\/+$/, '');
+        const raw = fs.readFileSync(c, 'utf-8');
+        const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        const validUrlLine = lines.find(l => !l.startsWith('#'));
+        if (validUrlLine) {
+          return (validUrlLine.startsWith('http://') || validUrlLine.startsWith('https://'))
+            ? validUrlLine.replace(/\/+$/, '')
+            : `http://${validUrlLine}`.replace(/\/+$/, '');
         }
       }
     }
   } catch {}
-  return ONLINE_GAME_URL.replace(/\/+$/, '');
+  return 'http://127.0.0.1:3001';
 }
 
 /**

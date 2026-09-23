@@ -58,10 +58,9 @@ atau file zip: Detektif data (Android Version).zip
 
 A. CARA 1: INSTALASI INSTAN SEBAGAI WEB APP / PWA (PALING MUDAH & CEPAT)
    Siswa TIDAK PERLU download file APK besar! Cukup pasang shortcut instan:
-   1. Pastikan server internet game menyala di komputer (JALANKAN_SERVER_INTERNET.bat).
+   1. Pastikan server internet game menyala di komputer (JALANKAN_SERVER_CLOUDFLARE.bat atau shortcut Desktop "Deploy Server Cloudflare").
    2. Buka browser Google Chrome di HP Android.
-   3. Ketik alamat URL game:
-      https://scooter-thickness-stony.ngrok-free.dev
+   3. Ketik alamat URL publik Cloudflare yang muncul di layar CMD (misal: https://xxxxx.trycloudflare.com).
    4. Tekan tombol Titik Tiga (menu Chrome di kanan atas layar).
    5. Pilih menu: "Tambahkan ke Layar Utama" (Add to Home Screen)
       atau "Install Aplikasi".

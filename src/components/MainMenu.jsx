@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Lock } from 'lucide-react';
 import DetektifRelo from './DetektifRelo';
 import InstructorMascotGuide from './InstructorMascotGuide';
 import ConfirmExitModal from './ConfirmExitModal';
@@ -27,6 +28,25 @@ export default function MainMenu({
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isEndlessModalOpen, setIsEndlessModalOpen] = useState(false);
   const isAnyModalActive = isAnyModalOpen || isLogoutModalOpen || isExitModalOpen || isEndlessModalOpen;
+
+  const isAdmin = Boolean(
+    currentUser?.isAdmin ||
+    (currentUser?.username || '').toLowerCase() === 'fikran02' ||
+    (currentUser?.fullname || '').toLowerCase() === 'admin'
+  );
+
+  const isEndlessUnlocked = Boolean(
+    isAdmin || (() => {
+      const p = currentUser?.progress;
+      if (!p) return false;
+      for (let i = 1; i <= 5; i++) {
+        const ch = p[`chapter${i}`] || p[`subbab${i}`];
+        const isDone = Boolean(ch?.completed || (ch?.completedSegments && ch?.completedSegments >= 4));
+        if (!isDone) return false;
+      }
+      return true;
+    })()
+  );
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
@@ -109,6 +129,11 @@ export default function MainMenu({
         audioEngine.playClick();
         onStartQuest();
       } else if (key === 'e') {
+        if (!isEndlessUnlocked) {
+          audioEngine.playError();
+          setReloText("🔒 Endless Mode Masih Terkunci! Selesaikan semua 5 Chapter materi terlebih dahulu sebelum memulai tantangan tanpa henti!");
+          return;
+        }
         audioEngine.playClick();
         reloVoiceService.stopVoice();
         setIsEndlessModalOpen(true);
@@ -232,36 +257,36 @@ export default function MainMenu({
         <div className="absolute top-[calc(100%+8px)] sm:top-[calc(100%+12px)] md:top-[calc(100%+14px)] right-3 sm:right-6 md:right-8 z-50 flex items-center pointer-events-auto">
           {isMenuOpen ? (
             <div className="flex items-center animate-fade-in">
-              {/* Collapse Arrow Button - Digeser nempel pas ke ujung kiri board (Ukuran 2x Lipat) */}
-              <button
-                onClick={() => { audioEngine.playMenuClose(); setIsMenuOpen(false); }}
-                onMouseEnter={() => audioEngine.playHover()}
-                className="clean-icon-btn rounded-full overflow-hidden cursor-pointer z-20 hover:scale-105 active:scale-95 transition-transform -mr-4 sm:-mr-5 flex-shrink-0"
-                title="Tutup Menu"
-              >
-                <img
-                  src="/assets/tampilan di lobby/Asset/close_button_settings_highscore_exit_button@4x.png"
-                  alt="Tutup Menu"
-                  className="h-16 sm:h-[76px] md:h-[84px] w-auto object-contain rounded-full drop-shadow-md"
-                />
-              </button>
-
               {/* Wooden Plank Container - 2x Lipat Ukuran, Berada di Bawah Bar Atas */}
               <div
-                className="flex items-center justify-center pl-12 sm:pl-14 md:pl-16 pr-5 sm:pr-6 py-2 h-[72px] sm:h-[84px] md:h-[92px] select-none pointer-events-auto drop-shadow-xl"
+                className="relative flex items-center justify-center pl-16 sm:pl-20 md:pl-24 pr-5 sm:pr-6 py-2 h-[72px] sm:h-[84px] md:h-[92px] select-none pointer-events-auto drop-shadow-xl"
                 style={{
                   backgroundImage: `url('/assets/tampilan di lobby/Asset/board_settings_highscore_exit_buutton@4x.png')`,
                   backgroundSize: '100% 100%',
                   backgroundRepeat: 'no-repeat'
                 }}
               >
+                {/* Collapse Arrow Button - Menduduki ruang kosong / soket kayu di sebelah kiri board */}
+                <button
+                  onClick={() => { audioEngine.playMenuClose(); setIsMenuOpen(false); }}
+                  onMouseEnter={() => audioEngine.playHover()}
+                  className="menu-stone-btn absolute left-1 sm:left-1.5 top-0 bottom-0 my-auto cursor-pointer z-20"
+                  title="Tutup Menu"
+                >
+                  <img
+                    src="/assets/tampilan di lobby/Asset/close_button_settings_highscore_exit_button@4x.png"
+                    alt="Tutup Menu"
+                    className="h-[64px] sm:h-[76px] md:h-[84px] w-auto object-contain drop-shadow-md"
+                  />
+                </button>
+
                 <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
                   {/* 1. Rank Button */}
                   <button
                     onClick={() => { audioEngine.playClick(); onOpenRank ? onOpenRank() : onOpenLeaderboard(); }}
                     onMouseEnter={() => audioEngine.playHover()}
                     title="Rank"
-                    className="clean-icon-btn cursor-pointer hover:scale-110 active:scale-95 transition-transform p-1"
+                    className="rank-shield-btn cursor-pointer hover:scale-110 active:scale-95 transition-transform"
                   >
                     <img
                       src="/assets/tampilan di lobby/Asset/Rank_Button@4x.png"
@@ -337,13 +362,13 @@ export default function MainMenu({
             <button
               onClick={() => { audioEngine.playMenuOpen(); setIsMenuOpen(true); }}
               onMouseEnter={() => audioEngine.playHover()}
-              className="clean-icon-btn rounded-full overflow-hidden cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+              className="menu-stone-btn cursor-pointer"
               title="Buka Menu"
             >
               <img
                 src="/assets/tampilan di lobby/Asset/open_button_settings_highscore_exit_button@4x.png"
                 alt="Buka Menu"
-                className="h-16 sm:h-[76px] md:h-[84px] w-auto object-contain rounded-full drop-shadow-lg"
+                className="h-16 sm:h-[76px] md:h-[84px] w-auto object-contain drop-shadow-lg"
               />
             </button>
           )}
@@ -438,7 +463,16 @@ export default function MainMenu({
           className={`mode-card island-group relative flex flex-col items-center justify-center select-none pointer-events-auto transition-transform duration-200 ${hoveredCard === 'endless' ? 'is-hovered -translate-y-2' : ''}`}
         >
           <button
-            onClick={() => { audioEngine.playClick(); reloVoiceService.stopVoice(); setIsEndlessModalOpen(true); }}
+            onClick={() => {
+              if (!isEndlessUnlocked) {
+                audioEngine.playError();
+                setReloText("🔒 Endless Mode Masih Terkunci! Selesaikan semua 5 Chapter materi terlebih dahulu sebelum memulai tantangan tanpa henti!");
+                return;
+              }
+              audioEngine.playClick();
+              reloVoiceService.stopVoice();
+              setIsEndlessModalOpen(true);
+            }}
             onMouseEnter={() => handleModeMouseEnter('endless')}
             onMouseLeave={handleModeMouseLeave}
             onTouchStart={() => handleModeMouseEnter('endless')}
@@ -448,7 +482,9 @@ export default function MainMenu({
           >
             {/* Ryu Mascot on Endless Board */}
             <div
-              className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[45%] select-none pointer-events-none z-30"
+              className={`absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[45%] select-none pointer-events-none z-30 transition-all duration-500 ${
+                !isEndlessUnlocked ? 'grayscale contrast-95 opacity-80' : ''
+              }`}
             >
               <DetektifRelo
                 character="ryu"
@@ -466,8 +502,22 @@ export default function MainMenu({
             <img
               src="/assets/tampilan di lobby/Asset/endless mode button@4x.png"
               alt="Endless Mode"
-              className={`mode-btn-img mode-board-img endless-island-img w-[clamp(145px,17.5cqw,240px)] max-h-[38cqh] h-auto object-contain pointer-events-auto transition-all duration-200 drop-shadow-md ${hoveredCard === 'endless' ? 'is-hovered' : ''}`}
+              className={`mode-btn-img mode-board-img endless-island-img w-[clamp(145px,17.5cqw,240px)] max-h-[38cqh] h-auto object-contain pointer-events-auto transition-all duration-500 drop-shadow-md ${
+                hoveredCard === 'endless' ? 'is-hovered' : ''
+              } ${!isEndlessUnlocked ? 'grayscale contrast-95 opacity-80' : ''}`}
             />
+
+            {/* Lock Badge Overlay if Endless Mode is locked */}
+            {!isEndlessUnlocked && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-40 translate-y-3">
+                <div className="p-2 sm:p-2.5 rounded-full bg-[#2D241E]/90 border-2 border-amber-400 text-amber-300 shadow-xl">
+                  <Lock className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <span className="mt-1 text-[10px] sm:text-xs font-black text-amber-200 bg-[#2D241E]/95 px-2.5 py-0.5 rounded-full border border-amber-500/50 shadow-md">
+                  Selesaikan Bab 1–5
+                </span>
+              </div>
+            )}
           </button>
         </div>
 

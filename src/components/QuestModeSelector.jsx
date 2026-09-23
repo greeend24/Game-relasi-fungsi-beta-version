@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Lock, Trophy } from 'lucide-react';
+import { ArrowLeft, Clock, Lock, Trophy, CheckCircle2 } from 'lucide-react';
 import { CHAPTERS_DATA } from '../data/chapterLearningData';
 import InstructorMascotGuide from './InstructorMascotGuide';
 import NetworkStatusBadge from './NetworkStatusBadge';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
 import { fetchUserQuestScores } from '../services/apiService';
+import { storageService } from '../services/storageService';
 
 /**
  * QuestModeSelector
- * Displays 4 chapters in a grid menu.
+ * Displays 5 chapters in a grid menu.
  * Unlocks Quest Mode for a chapter if all segments of that chapter are completed.
- * Shows last exam score badge per chapter (color-coded by grade).
+ * Shows 'Sudah Dikerjakan' badge with score when completed, or 'Belum Dikerjakan'.
  */
 export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQuestSubbab, currentUser }) {
   const [reloText, setReloText] = useState('');
-  const [questScores, setQuestScores] = useState({}); // { subbabId: { score, correctCount, ... } }
+  const [questScores, setQuestScores] = useState(() => {
+    const fromUser = currentUser?.questScores || {};
+    const fromStorage = storageService.getCurrentUser()?.questScores || {};
+    return { ...fromStorage, ...fromUser };
+  });
 
   useEffect(() => {
     // Auto-play mascot speech immediately upon entering quest mode
@@ -26,20 +31,61 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
       }
     }, 150);
 
-    // Fetch quest scores from backend (non-blocking)
-    if (currentUser && !currentUser._isGuest) {
+    // Fetch quest scores from backend (non-blocking) and merge
+    const activeUser = currentUser || storageService.getCurrentUser();
+    if (activeUser && !activeUser._isGuest) {
       fetchUserQuestScores().then(result => {
-        if (result.success && result.data) {
+        if (result && result.success && result.data) {
           const scores = {};
-          const list = Array.isArray(result.data) ? result.data : (result.data.scores || []);
-          list.forEach(s => {
-            scores[s.subbabId || s.subbab_id] = {
-              score: s.score,
-              correctCount: s.correctCount || s.correct_count,
-              totalQuestions: s.totalQuestions || s.total_questions || 30,
-            };
+          // Format 1: { subbabs: { 1: { ... }, 2: { ... } } }
+          if (result.data.subbabs && typeof result.data.subbabs === 'object') {
+            Object.entries(result.data.subbabs).forEach(([sId, val]) => {
+              if (val) {
+                scores[Number(sId)] = {
+                  score: val.score,
+                  correctCount: val.correctCount ?? val.correct_count,
+                  totalQuestions: val.totalQuestions ?? val.total_questions ?? 10,
+                };
+              }
+            });
+          }
+          // Format 2: { rows: [ { subbabId, score, ... } ] }
+          if (Array.isArray(result.data.rows)) {
+            result.data.rows.forEach(s => {
+              scores[Number(s.subbabId || s.subbab_id)] = {
+                score: s.score,
+                correctCount: s.correctCount ?? s.correct_count,
+                totalQuestions: s.totalQuestions ?? s.total_questions ?? 10,
+              };
+            });
+          }
+          // Format 3: Array of items [ { subbabId, score, ... } ]
+          if (Array.isArray(result.data)) {
+            result.data.forEach(s => {
+              scores[Number(s.subbabId || s.subbab_id)] = {
+                score: s.score,
+                correctCount: s.correctCount ?? s.correct_count,
+                totalQuestions: s.totalQuestions ?? s.total_questions ?? 10,
+              };
+            });
+          }
+          setQuestScores(prev => {
+            const merged = { ...prev };
+            Object.entries(scores).forEach(([sId, sData]) => {
+              const prevData = merged[sId] || merged[Number(sId)] || {};
+              const bestScore = Math.max(prevData.score || 0, sData.score || 0);
+              const bestCorrect = Math.max(prevData.correctCount || 0, sData.correctCount || 0);
+              const combined = {
+                ...prevData,
+                ...sData,
+                score: bestScore,
+                correctCount: bestCorrect,
+              };
+              merged[sId] = combined;
+              merged[Number(sId)] = combined;
+            });
+            return merged;
           });
-          setQuestScores(scores);
         }
       }).catch(() => {});
     }
@@ -124,7 +170,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
 
       {/* CHAPTER GRID (5 CHAPTERS, FIXED ZERO SCROLL) */}
       <div className="flex-1 min-h-0 flex flex-col justify-start pt-1 sm:pt-2 md:pt-3 relative z-10 overflow-hidden">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-pencil w-full max-w-6xl mx-auto px-2 sm:px-4">
+        <div className="grid grid-cols-5 gap-3.5 font-pencil w-full max-w-6xl mx-auto px-2 sm:px-4">
           {Object.values(CHAPTERS_DATA).map((ch) => {
             const chProgress = userProgress?.[ch.key] || userProgress?.[`subbab${ch.id}`];
             const completedSegs = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
@@ -134,7 +180,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
               (currentUser?.fullname || '').toLowerCase() === 'admin'
             );
             const isUnlocked = isAdmin || ch.id === 1 || completedSegs >= ch.totalSegments || Boolean(chProgress?.completed);
-            const chScore = questScores[ch.id];
+            const chScore = questScores[ch.id] || questScores[String(ch.id)] || currentUser?.questScores?.[ch.id] || currentUser?.questScores?.[String(ch.id)] || storageService.getCurrentUser()?.questScores?.[ch.id] || storageService.getCurrentUser()?.questScores?.[String(ch.id)];
 
             return (
               <button
@@ -150,10 +196,10 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
                   }
                 }}
                 onMouseEnter={() => { if (isUnlocked) audioEngine.playHover(); }}
-                className={`pencil-btn p-3 sm:p-3.5 md:p-4 rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex flex-col justify-between h-[180px] sm:h-[195px] md:h-[215px] max-h-[225px] min-h-[175px] transition-all text-left group relative overflow-hidden cursor-pointer ${
+                className={`pencil-btn p-3 sm:p-3.5 rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex flex-col justify-between h-[205px] min-h-[205px] transition-all text-left group relative overflow-hidden cursor-pointer ${
                   isUnlocked
                     ? 'glass-card border-white/80 hover:scale-[1.02]'
-                    : 'glass-panel-subtle border-white/40 text-[#78716C] cursor-not-allowed opacity-75'
+                    : 'glass-panel-subtle border-stone-300/50 text-[#78716C] cursor-not-allowed opacity-75 grayscale contrast-95'
                 }`}
               >
                 {/* Header Row: UJIAN BAB Box */}
@@ -183,16 +229,16 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
                   </h3>
                 </div>
 
-                {/* Score Badge (bottom) */}
+                {/* Score Badge (bottom): 'Sudah Dikerjakan' vs 'Belum Dikerjakan' */}
                 {isUnlocked && (
                   <div className="w-full flex-shrink-0 mt-1 relative z-10">
                     {chScore ? (
-                      <div className={`flex items-center justify-between px-2.5 py-1 rounded-xl border-2 text-xs sm:text-sm font-black font-pencil ${getScoreBadgeStyle(chScore.score)}`}>
+                      <div className={`flex items-center justify-between px-2.5 py-1 rounded-xl border-2 text-xs sm:text-sm font-black font-pencil shadow-xs ${getScoreBadgeStyle(chScore.score)}`}>
                         <div className="flex items-center space-x-1">
-                          <Trophy className="w-3.5 h-3.5" />
-                          <span>Nilai:</span>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                          <span className="text-[11px] sm:text-xs">Sudah Dikerjakan</span>
                         </div>
-                        <span>{chScore.score}/100 {getScoreEmoji(chScore.score)}</span>
+                        <span className="font-mono text-xs sm:text-sm flex-shrink-0">{chScore.score}/100 {getScoreEmoji(chScore.score)}</span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center px-2.5 py-1 rounded-xl border border-white/60 bg-white/40 text-xs font-bold text-[#78350F] italic font-pencil">

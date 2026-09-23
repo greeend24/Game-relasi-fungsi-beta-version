@@ -2,7 +2,7 @@
  * CHAPTER 3 VIDEO LEARNING DATA & SUBTITLES
  * Transcribed verbatim from original narration:
  * - chapter 3.1.mp4 (Notasi & Rumus Fungsi)
- * - chapter 3.2.mp4 (Nilai Fungsi Input Negatif)
+ * - chapter 3.2.mp4 (Nilai Fungsi untuk x Negatif)
  * - chapter 3.3.mp4 (Menentukan Rumus dari Tabel)
  * - chapter 3.4.mp4 (Bayangan & Prapeta)
  */
@@ -30,7 +30,7 @@ export const CHAPTER3_VIDEOS = {
       { start: 88, end: 96, text: '2 dikali 3 adalah 6, ditambah 1 diperoleh lah hasilnya 7!' },
       { start: 96, end: 104, text: 'Artinya: angka 3 dipetakan kepada angka 7. Selanjutnya kita akan belajar fungsi linear.' },
       { start: 104, end: 112, text: 'Apa sih fungsi linear itu? Fungsi linear adalah fungsi matematika yang variabelnya memiliki pangkat tertinggi 1...' },
-      { start: 112, end: 120, text: 'dan grafiknya berupa garis lurus pada bidang Cartesius. Bentuk umum dari fungsi linear itu sendiri adalah...' },
+      { start: 112, end: 120, text: 'dan grafiknya berupa garis lurus pada bidang Kartesius. Bentuk umum dari fungsi linear itu sendiri adalah...' },
       { start: 120, end: 128, text: 'f(x) = ax + b, dengan a adalah koefisien dari x, dan x adalah variabel yang nilainya dapat diganti atau berubah...' },
       { start: 128, end: 136, text: 'dan b adalah konstanta, yaitu bilangan yang nilainya tetap.' },
       { start: 136, end: 144, text: 'Contohnya: f(x) = 3x − 5. Nilai a adalah 3, dan nilai b adalah −5.' },
@@ -64,7 +64,7 @@ export const CHAPTER3_VIDEOS = {
   '3.2': {
     id: '3.2',
     chapterId: 3,
-    title: 'Nilai Fungsi Input Negatif',
+    title: 'Nilai Fungsi untuk x Negatif',
     subtitle: 'Aturan tanda perkalian dan substitusi bilangan negatif',
     videoSrc: '/materi/chapter 3/chapter 3.2.mp4',
     duration: 112.30,
@@ -86,7 +86,7 @@ export const CHAPTER3_VIDEOS = {
     ],
     quiz: {
       id: 'quiz-3.2',
-      title: 'Kuis Kasus 3.2: Nilai Fungsi Input Negatif',
+      title: 'Kuis Kasus 3.2: Nilai Fungsi untuk x Negatif',
       emoji: '➖',
       question: 'Diketahui rumus fungsi f(x) = 4x − 1.\nBerapakah nilai dari f(−2)?',
       clue: 'Hitung perkalian 4 dikali (-2) terlebih dahulu yang menghasilkan -8. Lalu kurangi dengan 1.',
@@ -111,7 +111,7 @@ export const CHAPTER3_VIDEOS = {
     id: '3.3',
     chapterId: 3,
     title: 'Menentukan Rumus dari Tabel',
-    subtitle: 'Menganalisis selisih output untuk mencari koefisien a dan konstanta b',
+    subtitle: 'Menganalisis selisih nilai fungsi f(x) untuk mencari koefisien a dan konstanta b',
     videoSrc: '/materi/chapter 3/chapter 3.3.mp4',
     duration: 135.29,
     subtitles: [
@@ -143,10 +143,10 @@ export const CHAPTER3_VIDEOS = {
       },
       subQuestion: 'Rumus fungsi f(x) yang tepat adalah...',
       question: 'Diberikan tabel nilai fungsi:\nx = 1 ➔ f(x) = 5\nx = 2 ➔ f(x) = 8\nx = 3 ➔ f(x) = 11\nRumus fungsi f(x) yang tepat adalah...',
-      clue: 'Perhatikan selisih nilai output: 8 - 5 = 3 (nilai a = 3). Lalu uji saat x = 1: 3(1) + b = 5 untuk menemukan b.',
+      clue: 'Perhatikan selisih nilai fungsi f(x): 8 - 5 = 3 (nilai a = 3). Lalu uji saat x = 1: 3(1) + b = 5 untuk menemukan b.',
       options: ['f(x) = 2x + 3', 'f(x) = 3x + 2', 'f(x) = 4x + 1', 'f(x) = 3x − 1'],
       correct: 'f(x) = 3x + 2',
-      explanation: 'Selisih output = 3 (nilai a = 3)\nSaat x = 1:\n3(1) + b = 5\n➔ 3 + b = 5\n➔ b = 2\nRumus fungsi: f(x) = 3x + 2 ✅',
+      explanation: 'Selisih nilai f(x) = 3 (nilai a = 3)\nSaat x = 1:\n3(1) + b = 5\n➔ 3 + b = 5\n➔ b = 2\nRumus fungsi: f(x) = 3x + 2 ✅',
       retryQuestion: {
         prompt: 'Diberikan tabel nilai fungsi baru berikut:',
         table: {
@@ -154,10 +154,10 @@ export const CHAPTER3_VIDEOS = {
           fx: [7, 11, 15]
         },
         subQuestion: 'Rumus fungsi f(x) yang tepat adalah...',
-        clue: 'Perhatikan selisih output: 11 - 7 = 4 (nilai a = 4). Saat x = 1: 4(1) + b = 7 untuk mencari b.',
+        clue: 'Perhatikan selisih nilai fungsi f(x): 11 - 7 = 4 (nilai a = 4). Saat x = 1: 4(1) + b = 7 untuk mencari b.',
         options: ['f(x) = 4x + 3', 'f(x) = 3x + 4', 'f(x) = 4x − 3', 'f(x) = 5x + 2'],
         correct: 'f(x) = 4x + 3',
-        explanation: 'Selisih output = 4 (nilai a = 4)\nSaat x = 1:\n4(1) + b = 7\n➔ 4 + b = 7\n➔ b = 3\nRumus fungsi: f(x) = 4x + 3 ✅'
+        explanation: 'Selisih nilai f(x) = 4 (nilai a = 4)\nSaat x = 1:\n4(1) + b = 7\n➔ 4 + b = 7\n➔ b = 3\nRumus fungsi: f(x) = 4x + 3 ✅'
       },
       audioBenar: "/materi/chapter 3/Benar/3.3 benar, karena selisih hasil dari f(1) dan f(2) yaitu 5 dan 8 selisihnya adalah 3.wav",
       audioSalah: "/materi/chapter 3/Salah/3.3 yaaa kamu masih belum benar, perhatikan selisih hasil dari f(1) dan f(2) maka itu merupakan nilai dari a nya.wav",

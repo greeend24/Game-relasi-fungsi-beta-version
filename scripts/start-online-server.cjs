@@ -34,6 +34,16 @@ function cleanStaleProcesses() {
   } catch {}
 }
 
+function killProcessTree(proc) {
+  if (!proc) return;
+  try {
+    if (proc.pid) {
+      execSync(`taskkill /F /T /PID ${proc.pid}`, { stdio: 'ignore' });
+    }
+  } catch {}
+  try { proc.kill(); } catch {}
+}
+
 cleanStaleProcesses();
 
 console.clear();
@@ -116,6 +126,7 @@ function waitForBackend(maxAttempts = 50) {
       attempts++;
       process.stdout.write('.');
       const req = http.get('http://127.0.0.1:3001/api/health', (res) => {
+        res.resume();
         if (res.statusCode === 200) {
           clearInterval(interval);
           console.log(' \x1b[32mOK!\x1b[0m');
@@ -151,16 +162,34 @@ function verifyNgrokPublicUrl() {
       `${PUBLIC_URL}/api/health`,
       {
         headers: { 'ngrok-skip-browser-warning': '1' },
-        timeout: 6000,
+        timeout: 7000,
       },
       (res) => {
-        resolve(res.statusCode === 200);
+        let body = '';
+        res.on('data', (c) => { body += c; });
+        res.on('end', () => {
+          if (res.statusCode === 200) {
+            resolve({ success: true });
+          } else if (body.includes('ERR_NGROK_725') || body.includes('bandwidth limit')) {
+            resolve({
+              success: false,
+              code: 'ERR_NGROK_725',
+              message: 'Kuota Bandwidth Bulanan Akun Ngrok Habis (Limit 1 GB/bulan tercapai).'
+            });
+          } else {
+            resolve({
+              success: false,
+              code: `HTTP_${res.statusCode}`,
+              message: `Server merespons dengan status code ${res.statusCode}`
+            });
+          }
+        });
       }
     );
-    req.on('error', () => resolve(false));
+    req.on('error', (err) => resolve({ success: false, code: 'CONN_ERROR', message: err.message }));
     req.on('timeout', () => {
       req.destroy();
-      resolve(false);
+      resolve({ success: false, code: 'TIMEOUT', message: 'Waktu tunggu koneksi habis (timeout)' });
     });
   });
 }
@@ -172,7 +201,7 @@ async function main() {
 
     if (!fs.existsSync(ngrokExe)) {
       console.error('\n\x1b[31m[ERROR] File ngrok.exe tidak ditemukan di folder:\x1b[0m', ngrokExe);
-      backendProcess.kill();
+      killProcessTree(backendProcess);
       process.exit(1);
     }
 
@@ -212,14 +241,33 @@ async function main() {
         copyToClipboard(PUBLIC_URL);
 
         // Verifikasi ping live ke internet
-        const isLive = await verifyNgrokPublicUrl();
+        const checkRes = await verifyNgrokPublicUrl();
 
         console.log('\n====================================================================');
-        console.log('  🎉 SERVER ONLINE PERMANEN AKTIF! (DATA GAME SIAP DIGUNAKAN)');
+        if (checkRes.success) {
+          console.log('  🎉 SERVER ONLINE PERMANEN AKTIF! (DATA GAME SIAP DIGUNAKAN)');
+        } else {
+          console.log('  ⚠️  PERINGATAN: SERVER LOKAL AKTIF, TETAPI JALUR ONLINE NGROK BERKENDALA!');
+        }
         console.log('====================================================================\n');
         console.log('  🌐 ALAMAT SERVER TETAP (UNTUK SISWA DI HP / LAPTOP DI RUMAH):');
         console.log(`  👉 \x1b[32m\x1b[1m${PUBLIC_URL}\x1b[0m`);
-        console.log(`  📡 Status Internet : ${isLive ? '\x1b[32m\x1b[1m🟢 ONLINE & TERVERIFIKASI AKTIF\x1b[0m' : '\x1b[33m🟡 SEDANG MENSTABILKAN KONEKSI...\x1b[0m'}\n`);
+
+        if (checkRes.success) {
+          console.log('  📡 Status Internet : \x1b[32m\x1b[1m🟢 ONLINE & TERVERIFIKASI AKTIF\x1b[0m\n');
+        } else if (checkRes.code === 'ERR_NGROK_725') {
+          console.log('  📡 Status Internet : \x1b[31m\x1b[1m🔴 DIBLOKIR NGROK (KUOTA BANDWIDTH BULANAN HABIS)\x1b[0m');
+          console.log('  ⚠️  \x1b[31mDetail Kendala:\x1b[0m Akun Ngrok Anda telah mencapai batas bandwidth bulanan (Limit 1 GB/bulan).');
+          console.log('     Meskipun sinyal laptop Anda bagus, server Ngrok memblokir request masuk (ERR_NGROK_725).\n');
+          console.log('  💡 SOLUSI REKOMENDASI:');
+          console.log('     1. [TERBAIK DI LAB/KELAS] Gunakan file "JALANKAN_SERVER_ADMIN.bat"');
+          console.log('        Cukup hubungkan laptop siswa & laptop guru ke 1 Wi-Fi / Hotspot yang sama.');
+          console.log('        100% Bebas Kuota, Tanpa Ngrok, & Kecepatan Maksimal!');
+          console.log('     2. Daftar akun Ngrok baru gratis di https://dashboard.ngrok.com untuk mendapatkan token baru.');
+          console.log('     3. Atau gunakan Cloudflare Tunnel (gratis tanpa limit kuota bandwidth).\n');
+        } else {
+          console.log(`  📡 Status Internet : \x1b[33m🟡 ${checkRes.message || 'SEDANG MENSTABILKAN KONEKSI...'}\x1b[0m\n`);
+        }
 
         console.log('  📊 LINK DASHBOARD ADMIN (Untuk Rekap Nilai Siswa / Download Excel):');
         console.log(`  👉 \x1b[36m\x1b[1mhttp://localhost:3001/admin\x1b[0m (Akses Cepat Lokal Laptop Guru)`);
@@ -251,14 +299,14 @@ async function main() {
       if (!isReady) {
         console.log('💡 Ngrok gagal tersambung. Pastikan laptop terhubung ke internet dan token Ngrok valid.\n');
       }
-      try { backendProcess.kill(); } catch {}
+      killProcessTree(backendProcess);
       process.exit(code || 0);
     });
 
     const cleanup = () => {
       console.log('\nMematikan server dan tunnel...');
-      try { tunnelProcess.kill(); } catch {}
-      try { backendProcess.kill(); } catch {}
+      killProcessTree(tunnelProcess);
+      killProcessTree(backendProcess);
       process.exit(0);
     };
 
@@ -266,7 +314,7 @@ async function main() {
     process.on('SIGTERM', cleanup);
   } catch (err) {
     console.error('\n\x1b[31m[Gagal Menjalankan Server]:\x1b[0m', err.message);
-    try { backendProcess.kill(); } catch {}
+    killProcessTree(backendProcess);
     process.exit(1);
   }
 }

@@ -26,16 +26,16 @@ iPhone, atau laptop mereka masing-masing melalui internet:
 
 1. Buka folder utama game di komputermu (folder tempat file tutorial ini berada)
 2. Klik dua kali (double-click) file:
-   "JALANKAN_SERVER_INTERNET.bat"
+   "JALANKAN_SERVER_CLOUDFLARE.bat" (atau shortcut Desktop: "Deploy Server Cloudflare (Detektif Data)")
 3. Jendela hitam Command Prompt (CMD) akan terbuka. 
    Tunggu sekitar 5-10 detik hingga muncul pesan:
    --------------------------------------------------------------------
-   🦉 DETEKTIF DATA - SERVER ONLINE GAME (PERMANENT STATIC DOMAIN)
-   Backend Running on: http://localhost:3001
-   PUBLIC URL (INTERNET): https://scooter-thickness-stony.ngrok-free.dev
+   🦉 DETEKTIF DATA - SERVER ONLINE CLOUDFLARE (100% BEBAS KUOTA)
+   ALAMAT GAME ONLINE (UNTUK SISWA): https://xxxxx.trycloudflare.com
+   (Telah disalin otomatis ke Clipboard laptop guru!)
    --------------------------------------------------------------------
-4. Bagikan link tersebut kepada siswa:
-   Link Game: https://scooter-thickness-stony.ngrok-free.dev
+4. Bagikan link hijau tersebut kepada siswa (cukup paste ke WhatsApp grup).
+   Bebas kuota 100% UNLIMITED tanpa batasan bandwidth!
 5. PENTING:
    Biarkan jendela hitam CMD tersebut tetap terbuka selama siswa bermain. 
    Boleh kamu minimize ke taskbar, asalkan JANGAN DITUTUP (jangan di-close). 

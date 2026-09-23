@@ -31,14 +31,16 @@ router.post("/submit", async (req: Request, res: Response) => {
     const userId = req.user!.id;
     const { subbabId, score, correctCount, totalQuestions, pointsEarned, timeRemainingSeconds } = req.body;
 
+    const sId = Number(subbabId);
+    const numScore = Number(score);
+    const numCorrect = Number(correctCount);
+    const numPoints = Number(pointsEarned);
+
     if (
-      typeof subbabId !== "number" ||
-      subbabId < 1 ||
-      subbabId > 5 ||
-      typeof score !== "number" ||
-      score < 0 ||
-      typeof correctCount !== "number" ||
-      typeof pointsEarned !== "number"
+      isNaN(sId) || sId < 1 || sId > 5 ||
+      isNaN(numScore) || numScore < 0 ||
+      isNaN(numCorrect) ||
+      isNaN(numPoints)
     ) {
       res.status(400).json({
         success: false,
@@ -47,12 +49,12 @@ router.post("/submit", async (req: Request, res: Response) => {
       return;
     }
 
-    const result = await recordQuestExamScore(userId, subbabId, {
-      score: Math.min(100, Math.max(0, Math.round(score))),
-      correctCount,
-      totalQuestions: totalQuestions || 30,
-      pointsEarned,
-      timeRemainingSeconds: timeRemainingSeconds || 0,
+    const result = await recordQuestExamScore(userId, sId, {
+      score: Math.min(100, Math.max(0, Math.round(numScore))),
+      correctCount: numCorrect,
+      totalQuestions: Number(totalQuestions) || 10,
+      pointsEarned: numPoints,
+      timeRemainingSeconds: Number(timeRemainingSeconds) || 0,
     });
 
     res.json({

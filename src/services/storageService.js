@@ -1,12 +1,11 @@
 // Storage Service : Hybrid (API + localStorage)
 // 
-// For REAL users (authenticated via Better Auth): All data is synced with the backend API.
-// For GUEST users (detektif_tamu): Data stays in localStorage/memory only.
 // Audio settings always stay in localStorage (device-specific).
 
 import { registerUser, loginUser, logoutUser, getSession } from './authClient.js';
 import * as api from './apiService.js';
 import { networkStatusService } from './networkStatusService.js';
+import { USE_CHAPTER1_VIDEO, USE_CHAPTER2_VIDEO, USE_CHAPTER3_VIDEO, USE_CHAPTER4_VIDEO, USE_CHAPTER5_VIDEO } from '../data/chapterLearningData.js';
 
 const CURRENT_USER_KEY = 'detektif_current_user';
 const SETTINGS_KEY = 'detektif_audio_settings';
@@ -18,11 +17,11 @@ const SETTINGS_KEY = 'detektif_audio_settings';
 // ─────────────────────────────────────────────
 
 export const CHAPTER_TOTAL_SEGS = {
-  1: 12,
-  2: 10,
-  3: 10,
-  4: 10,
-  5: 8,
+  1: USE_CHAPTER1_VIDEO ? 3 : 12,
+  2: USE_CHAPTER2_VIDEO ? 4 : 10,
+  3: USE_CHAPTER3_VIDEO ? 4 : 10,
+  4: USE_CHAPTER4_VIDEO ? 4 : 10,
+  5: USE_CHAPTER5_VIDEO ? 3 : 8,
 };
 
 export const BADGE_DEFINITIONS = [
@@ -36,9 +35,9 @@ export const BADGE_DEFINITIONS = [
   },
   {
     id: 'badge2', category: 2, name: 'Detektif Magang', title: 'EXPLORER',
-    desc: 'Menyelesaikan 5 segmen pembelajaran fungsi', icon: '🔍',
+    desc: 'Menyelesaikan 2 segmen pembelajaran fungsi', icon: '🔍',
     iconPath: '/images/badge/png/Asset 9@4x.png', svgPath: '/images/badge/SVG/Asset 9.svg',
-    rarity: 'COMMON', reqStages: 5, reqScore: 50,
+    rarity: 'COMMON', reqStages: 2, reqScore: 50,
     cardGradient: 'from-emerald-600/90 via-teal-500/90 to-green-600/90',
     textColor: 'text-white', subTextColor: 'text-emerald-100', iconBg: 'from-emerald-700 to-teal-800'
   },
@@ -46,15 +45,15 @@ export const BADGE_DEFINITIONS = [
     id: 'badge3', category: 3, name: 'Pencari Jejak Angka', title: 'NUMBER HUNTER',
     desc: 'Menyelesaikan Chapter 1 (Pengertian & Cara Menyatakan Relasi)', icon: '🔢',
     iconPath: '/images/badge/png/Asset 8@4x.png', svgPath: '/images/badge/SVG/Asset 8.svg',
-    rarity: 'UNCOMMON', reqStages: 10, reqScore: 100,
+    rarity: 'UNCOMMON', reqStages: 3, reqScore: 100,
     cardGradient: 'from-emerald-600/90 via-teal-500/90 to-green-600/90',
     textColor: 'text-white', subTextColor: 'text-emerald-100', iconBg: 'from-emerald-700 to-teal-800'
   },
   {
     id: 'badge4', category: 4, name: 'Pengumpul Bukti Data', title: 'DATA EXPLORER',
-    desc: 'Menyelesaikan 15 segmen pembelajaran', icon: '📊',
+    desc: 'Menyelesaikan 5 segmen pembelajaran', icon: '📊',
     iconPath: '/images/badge/png/Asset 7@4x.png', svgPath: '/images/badge/SVG/Asset 7.svg',
-    rarity: 'UNCOMMON', reqStages: 15, reqScore: 200,
+    rarity: 'UNCOMMON', reqStages: 5, reqScore: 200,
     cardGradient: 'from-emerald-600/90 via-teal-500/90 to-green-600/90',
     textColor: 'text-white', subTextColor: 'text-emerald-100', iconBg: 'from-emerald-700 to-teal-800'
   },
@@ -62,15 +61,15 @@ export const BADGE_DEFINITIONS = [
     id: 'badge5', category: 5, name: 'Analis Pola Berpikir', title: 'MATH THINKER',
     desc: 'Menyelesaikan Chapter 2 (Pengertian & Unsur Fungsi)', icon: '💡',
     iconPath: '/images/badge/png/Asset 6@4x.png', svgPath: '/images/badge/SVG/Asset 6.svg',
-    rarity: 'RARE', reqStages: 20, reqScore: 400,
+    rarity: 'RARE', reqStages: 7, reqScore: 350,
     cardGradient: 'from-blue-600/90 via-cyan-500/90 to-indigo-600/90',
     textColor: 'text-white', subTextColor: 'text-cyan-100', iconBg: 'from-blue-700 to-indigo-800'
   },
   {
     id: 'badge6', category: 6, name: 'Penyelidik Senior', title: 'PROBLEM SOLVER',
-    desc: 'Menyelesaikan 25 segmen pembelajaran', icon: '🧩',
+    desc: 'Menyelesaikan 9 segmen pembelajaran', icon: '🧩',
     iconPath: '/images/badge/png/Asset 5@4x.png', svgPath: '/images/badge/SVG/Asset 5.svg',
-    rarity: 'RARE', reqStages: 25, reqScore: 600,
+    rarity: 'RARE', reqStages: 9, reqScore: 500,
     cardGradient: 'from-blue-600/90 via-cyan-500/90 to-indigo-600/90',
     textColor: 'text-white', subTextColor: 'text-cyan-100', iconBg: 'from-blue-700 to-indigo-800'
   },
@@ -78,7 +77,7 @@ export const BADGE_DEFINITIONS = [
     id: 'badge7', category: 7, name: 'Spesialis Rumus', title: 'FORMULA MASTER',
     desc: 'Menyelesaikan Chapter 3 (Notasi & Rumus Fungsi)', icon: '📈',
     iconPath: '/images/badge/png/Asset 4@4x.png', svgPath: '/images/badge/SVG/Asset 4.svg',
-    rarity: 'EPIC', reqStages: 30, reqScore: 800,
+    rarity: 'EPIC', reqStages: 11, reqScore: 700,
     cardGradient: 'from-blue-600/90 via-cyan-500/90 to-indigo-600/90',
     textColor: 'text-white', subTextColor: 'text-cyan-100', iconBg: 'from-blue-700 to-indigo-800'
   },
@@ -86,23 +85,23 @@ export const BADGE_DEFINITIONS = [
     id: 'badge8', category: 8, name: 'Master Grafik', title: 'GRAPH EXPERT',
     desc: 'Menyelesaikan Chapter 4 (Grafik Fungsi Linear)', icon: '⚙️',
     iconPath: '/images/badge/png/Asset 3@4x.png', svgPath: '/images/badge/SVG/Asset 3.svg',
-    rarity: 'EPIC', reqStages: 40, reqScore: 1000,
+    rarity: 'EPIC', reqStages: 15, reqScore: 900,
     cardGradient: 'from-rose-600/90 via-red-500/90 to-amber-700/90',
     textColor: 'text-white', subTextColor: 'text-rose-100', iconBg: 'from-rose-700 to-red-800'
   },
   {
-    id: 'badge9', category: 9, name: 'Maestro Bijektif', title: 'MATH CHAMPION',
+    id: 'badge9', category: 9, name: 'Maestro Korespondensi', title: 'MATH CHAMPION',
     desc: 'Menyelesaikan Chapter 5 (Korespondensi Satu-Satu)', icon: '🧠',
     iconPath: '/images/badge/png/Asset 2@4x.png', svgPath: '/images/badge/SVG/Asset 2.svg',
-    rarity: 'LEGENDARY', reqStages: 48, reqScore: 1500,
+    rarity: 'LEGENDARY', reqStages: 18, reqScore: 1200,
     cardGradient: 'from-rose-600/90 via-red-500/90 to-amber-700/90',
     textColor: 'text-white', subTextColor: 'text-rose-100', iconBg: 'from-rose-700 to-red-800'
   },
   {
     id: 'badge10', category: 10, name: 'Detektif Legendaris', title: 'LEGENDARY MATHEMATICIAN',
-    desc: 'Menguasai 5 Chapter Relasi & Fungsi dan mencapai 2.500 PTS!', icon: '👑',
+    desc: 'Menguasai 5 Chapter Relasi & Fungsi dan mencapai 2.000 PTS!', icon: '👑',
     iconPath: '/images/badge/png/Asset 1@4x.png', svgPath: '/images/badge/SVG/Asset 1.svg',
-    rarity: 'LEGENDARY', reqStages: 48, reqScore: 2500,
+    rarity: 'LEGENDARY', reqStages: 18, reqScore: 2000,
     cardGradient: 'from-amber-300/90 via-yellow-400/90 to-amber-500/90',
     textColor: 'text-[#2D241E]', subTextColor: 'text-amber-950', iconBg: 'from-amber-400 to-yellow-300'
   }
@@ -122,6 +121,27 @@ export function calculateBadge(completedStagesCount = 0, score = 0) {
   return matched;
 }
 
+export function evaluateGuestBadges(user) {
+  if (!user) return { user, newBadges: [] };
+  if (!Array.isArray(user.unlockedBadges)) {
+    user.unlockedBadges = ['badge1'];
+  }
+  const completedStages = getCompletedStagesCountLocal(user.progress);
+  const score = user.totalScore || 0;
+  const newBadges = [];
+
+  BADGE_DEFINITIONS.forEach((b) => {
+    if (score >= b.reqScore && completedStages >= b.reqStages) {
+      if (!user.unlockedBadges.includes(b.id)) {
+        user.unlockedBadges.push(b.id);
+        newBadges.push(b);
+      }
+    }
+  });
+
+  return { user, newBadges };
+}
+
 // ─────────────────────────────────────────────
 // Guest Mode Helpers (localStorage only)
 // ─────────────────────────────────────────────
@@ -134,6 +154,11 @@ export function createDefaultChapterProgress() {
     chapter4: { unlocked: false, completedSegments: 0, completed: false },
     chapter5: { unlocked: false, completedSegments: 0, completed: false },
   };
+}
+
+export function isGuest(user) {
+  if (!user) return true;
+  return Boolean(user._isGuest || user.isGuest || !user.username);
 }
 
 export function isUserAdmin(user) {
@@ -168,18 +193,18 @@ export function normalizeUserProgress(user) {
 
     // Determine stars and completed segments
     const starsObj = chData.stars || subData.stars || {};
-    const starsCount = Object.keys(starsObj).length;
-    const completedSegs = Math.max(
+    const starsCount = starsObj ? Object.keys(starsObj).length : 0;
+    const maxSegs = CHAPTER_TOTAL_SEGS[i] || 4;
+    const rawSegs = Math.max(
       typeof chData.completedSegments === 'number' ? chData.completedSegments : 0,
       starsCount
     );
-
-    const maxSegs = CHAPTER_TOTAL_SEGS[i] || 10;
     const isCompleted = Boolean(
       chData.completed ||
       subData.isStage21Completed ||
-      completedSegs >= maxSegs
+      rawSegs >= maxSegs
     );
+    const completedSegs = isCompleted ? maxSegs : Math.min(rawSegs, maxSegs);
 
     // Chapter 1 is always unlocked; subsequent unlock if explicitly unlocked, previous is completed, or user is admin
     const isUnlocked = Boolean(
@@ -194,7 +219,7 @@ export function normalizeUserProgress(user) {
       unlocked: isUnlocked,
       completedSegments: completedSegs,
       completed: isCompleted,
-      currentStage: Math.max(chData.currentStage || 1, subData.currentStage || 1, completedSegs + 1),
+      currentStage: Math.min(maxSegs, Math.max(chData.currentStage || 1, subData.currentStage || 1, completedSegs + 1)),
       stars: starsObj,
     };
 
@@ -209,41 +234,6 @@ export function normalizeUserProgress(user) {
 
   user.progress = normalized;
   return user;
-}
-
-function isGuest(user) {
-  return user?.username?.toLowerCase() === 'detektif_tamu';
-}
-
-function createFreshGuestUser() {
-  return {
-    username: 'detektif_tamu',
-    fullname: 'Detektif Tamu (Demo)',
-    totalScore: 0,
-    endlessHighScore: 0,
-    unlockedBadges: ['badge1'],
-    progress: createDefaultChapterProgress(),
-    _isGuest: true,
-  };
-}
-
-function evaluateGuestBadges(guestUser) {
-  const completedCount = getCompletedStagesCountLocal(guestUser.progress);
-  const score = guestUser.totalScore || 0;
-  const currentUnlocked = new Set(guestUser.unlockedBadges || ['badge1']);
-  const newlyUnlocked = [];
-
-  BADGE_DEFINITIONS.forEach(b => {
-    if (!currentUnlocked.has(b.id)) {
-      if (completedCount >= b.reqStages && (b.reqScore === 0 || score >= b.reqScore)) {
-        currentUnlocked.add(b.id);
-        newlyUnlocked.push(b);
-      }
-    }
-  });
-
-  guestUser.unlockedBadges = Array.from(currentUnlocked);
-  return { user: guestUser, newBadges: newlyUnlocked };
 }
 
 function getCompletedStagesCountLocal(userProgress) {
@@ -490,6 +480,9 @@ export const storageService = {
         const result = await api.fetchProgress();
         if (result.success && result.data) {
           const isFikran = (result.data.username?.toLowerCase() === 'fikran02' || result.data.fullname?.toLowerCase() === 'admin');
+          const localUsers = getLocalUsersDB();
+          const cleanKey = (result.data.username || '').trim().toLowerCase();
+          const matchedLocal = localUsers[cleanKey] || {};
           const user = {
             username: result.data.username,
             fullname: isFikran ? 'Admin' : result.data.fullname,
@@ -498,6 +491,7 @@ export const storageService = {
             endlessHighScore: result.data.endlessHighScore,
             unlockedBadges: result.data.unlockedBadges,
             progress: result.data.progress,
+            questScores: result.data.questScores || matchedLocal.questScores || {},
             _isGuest: false,
           };
           this.setCurrentUser(user);
@@ -532,15 +526,7 @@ export const storageService = {
   // ── Registration ──
 
   async register(username, password, fullname = '') {
-    // Guest mode : no API call
-    if (username.toLowerCase() === 'detektif_tamu') {
-      const guestUser = createFreshGuestUser();
-      this._useApi = false;
-      this.setCurrentUser(guestUser);
-      return { success: true, user: guestUser };
-    }
-
-    // Real user : register via Better Auth API
+    // Register via Better Auth API
     const result = await registerUser(username, password, fullname);
     if (result.success) {
       this._useApi = true;
@@ -598,6 +584,15 @@ export const storageService = {
       setTimeout(() => this.syncPendingDataToServer(), 800);
       return { success: true, user: minUser };
     } else if (result.message && !result.message.toLowerCase().includes('koneksi')) {
+      const regErrMsg = (result.message || '').toLowerCase();
+      if (regErrMsg.includes('already exists') || regErrMsg.includes('sudah terdaftar') || regErrMsg.includes('duplicate')) {
+        // Akun sudah pernah dibuat: Coba langsung login otomatis dengan akun yang ada!
+        console.log('[storageService] Akun sudah terdaftar, login otomatis...');
+        const autoLogin = await this.login(username, password);
+        if (autoLogin.success) {
+          return autoLogin;
+        }
+      }
       return { success: false, message: result.message };
     }
 
@@ -629,29 +624,34 @@ export const storageService = {
   // ── Login ──
 
   async login(username, password) {
-    // 0ms Fast Path: Jika status game sedang OFFLINE, langsung verifikasi database lokal tanpa menunggu request jaringan!
-    if (!networkStatusService.isOnline) {
-      const localUsers = getLocalUsersDB();
-      const cleanKey = username.trim().toLowerCase();
-      const localUser = localUsers[cleanKey];
+    let cleanKey = username.trim().toLowerCase();
+    if (cleanKey === 'fikran' || cleanKey === 'admin') {
+      cleanKey = 'fikran02';
+      username = 'fikran02';
+    }
+    const localUsers = getLocalUsersDB();
+    
+    // Flexible local matching: by key, case-insensitive, or fullname
+    let matchedLocalKey = cleanKey;
+    let matchedLocalUser = localUsers[cleanKey];
 
-      if (localUser) {
-        const storedPass = localUser.p_sec ? deobfuscateSecret(localUser.p_sec) : localUser.password;
-        if (storedPass && storedPass === password) {
-          this._useApi = false;
-          const sessionUser = { ...localUser };
-          delete sessionUser.password;
-          delete sessionUser.p_sec;
-          this.setCurrentUser(sessionUser);
-          setTimeout(() => this.syncPendingDataToServer(), 1200);
-          return { success: true, user: sessionUser };
-        } else if (storedPass && storedPass !== password) {
-          return { success: false, message: 'Password salah!' };
+    if (!matchedLocalUser) {
+      for (const [k, u] of Object.entries(localUsers)) {
+        if (k.toLowerCase() === cleanKey) {
+          matchedLocalKey = k;
+          matchedLocalUser = u;
+          break;
+        }
+        const fn = (u?.fullname || '').toLowerCase().trim();
+        if (fn && (fn === cleanKey || fn.split(' ')[0] === cleanKey)) {
+          matchedLocalKey = k;
+          matchedLocalUser = u;
+          break;
         }
       }
-      return { success: false, message: 'Akun belum tersimpan di mode offline pada perangkat ini. Hubungkan ke server untuk masuk.' };
     }
 
+    // 1. Hubungi server terlebih dahulu untuk mendapatkan sesi resmi dan token otentikasi
     const result = await loginUser(username, password);
     if (result.success) {
       this._useApi = true;
@@ -663,30 +663,35 @@ export const storageService = {
         }
       } catch {}
 
-      const isFikran = (username.trim().toLowerCase() === 'fikran02' || result.data?.user?.name?.toLowerCase() === 'admin');
+      const isFikran = (cleanKey === 'fikran02' || result.data?.user?.name?.toLowerCase() === 'admin');
+      
+      // Ambil progres server atau fallback ke cache lokal
+      let finalProgress = progressData?.progress || matchedLocalUser?.progress || createDefaultChapterProgress();
+      let finalScore = Math.max(progressData?.totalScore || 0, matchedLocalUser?.totalScore || 0);
+      let finalEndless = Math.max(progressData?.endlessHighScore || 0, matchedLocalUser?.endlessHighScore || 0);
+
       const user = {
         username: progressData?.username || username.trim(),
-        fullname: isFikran ? 'Admin' : (progressData?.fullname || result.data?.user?.name || username.trim()),
-        isAdmin: isFikran || Boolean(progressData?.isAdmin),
-        totalScore: progressData?.totalScore || 0,
-        endlessHighScore: progressData?.endlessHighScore || 0,
-        unlockedBadges: progressData?.unlockedBadges || ['badge1'],
-        progress: progressData?.progress || createDefaultChapterProgress(),
+        fullname: isFikran ? 'Admin' : (progressData?.fullname || result.data?.user?.name || matchedLocalUser?.fullname || username.trim()),
+        isAdmin: isFikran || Boolean(progressData?.isAdmin || matchedLocalUser?.isAdmin),
+        totalScore: finalScore,
+        endlessHighScore: finalEndless,
+        unlockedBadges: progressData?.unlockedBadges || matchedLocalUser?.unlockedBadges || ['badge1'],
+        progress: finalProgress,
+        questScores: progressData?.questScores || matchedLocalUser?.questScores || {},
         _isGuest: false,
       };
 
-      // PENTING: Update database lokal dengan password terbaru yang diverifikasi server (p_sec)
-      // serta data progres terbaru, sehingga jika masuk ke mode offline pengguna bisa langsung login dengan password ini!
+      // Simpan/update cache offline dengan p_sec agar selanjutnya bisa login saat offline
       try {
-        const localUsers = getLocalUsersDB();
-        const cleanKey = user.username.trim().toLowerCase();
-        localUsers[cleanKey] = {
-          ...(localUsers[cleanKey] || {}),
+        const updatedLocalUsers = getLocalUsersDB();
+        updatedLocalUsers[cleanKey] = {
+          ...(updatedLocalUsers[cleanKey] || {}),
           ...user,
           p_sec: obfuscateSecret(password),
           hasUnsyncedData: false,
         };
-        saveLocalUsersDB(localUsers);
+        saveLocalUsersDB(updatedLocalUsers);
         saveAccountToList(user.username, user.fullname);
       } catch (err) {
         console.warn('Gagal mencadangkan password ke offline cache:', err);
@@ -695,31 +700,101 @@ export const storageService = {
       this.setCurrentUser(user);
       setTimeout(() => this.syncPendingDataToServer(), 800);
       return { success: true, user };
-    } else if (result.message && !result.message.toLowerCase().includes('koneksi')) {
-      return { success: false, message: result.message };
     }
 
-    // Hybrid Fallback: Check local user database if offline or network issue
-    const localUsers = getLocalUsersDB();
-    const cleanKey = username.trim().toLowerCase();
-    const localUser = localUsers[cleanKey];
+    // 2. Evaluasi respons kegagalan server
+    const errMsg = (result.message || '').toLowerCase();
+    const isNetworkError = 
+      errMsg.includes('koneksi') || 
+      errMsg.includes('menghubungkan') || 
+      errMsg.includes('timeout') || 
+      errMsg.includes('network') || 
+      errMsg.includes('failed to fetch') ||
+      errMsg.includes('gagal melakukan login') ||
+      errMsg.includes('gagal');
 
-    if (localUser) {
-      const storedPass = localUser.p_sec ? deobfuscateSecret(localUser.p_sec) : localUser.password;
-      if (storedPass && storedPass === password) {
-        this._useApi = false;
-        const sessionUser = { ...localUser };
-        delete sessionUser.password;
-        delete sessionUser.p_sec;
-        this.setCurrentUser(sessionUser);
-        setTimeout(() => this.syncPendingDataToServer(), 1200);
-        return { success: true, user: sessionUser };
-      } else if (storedPass && storedPass !== password) {
-        return { success: false, message: 'Password salah!' };
+    // Jika server ONLINE tapi login gagal (misalnya karena akun baru belum ada di server):
+    if (!isNetworkError) {
+      // Coba daftarkan akun baru secara otomatis di server
+      const regRes = await registerUser(username, password, username.trim());
+      if (regRes.success) {
+        this._useApi = true;
+        const isFikran = (cleanKey === 'fikran02' || cleanKey === 'admin');
+        const user = {
+          username: username.trim(),
+          fullname: isFikran ? 'Admin' : username.trim(),
+          isAdmin: isFikran,
+          totalScore: 0,
+          endlessHighScore: 0,
+          unlockedBadges: ['badge1'],
+          progress: createDefaultChapterProgress(),
+          _isGuest: false,
+        };
+        try {
+          const updatedLocalUsers = getLocalUsersDB();
+          updatedLocalUsers[cleanKey] = {
+            ...user,
+            p_sec: obfuscateSecret(password),
+            hasUnsyncedData: false,
+          };
+          saveLocalUsersDB(updatedLocalUsers);
+          saveAccountToList(user.username, user.fullname);
+        } catch {}
+        this.setCurrentUser(user);
+        return { success: true, user, isAutoRegistered: true };
+      }
+
+      // Jika server menyatakan akun SUDAH ADA (duplicate/already exists):
+      const regErrMsg = (regRes.message || '').toLowerCase();
+      if (regErrMsg.includes('already exists') || regErrMsg.includes('sudah terdaftar') || regErrMsg.includes('duplicate')) {
+        return { success: false, message: 'Kata sandi salah! Cek kembali kata sandi kamu.' };
       }
     }
 
-    return { success: false, message: result.message || 'Username atau password salah!' };
+    // 3. Fallback Offline Cerdas (Server offline / koneksi lokal):
+    // A. Jika akun sudah ada di database lokal perangkat ini
+    const isFikran = cleanKey === 'fikran02' || cleanKey === 'admin';
+    if (matchedLocalUser) {
+      const storedPass = matchedLocalUser.p_sec ? deobfuscateSecret(matchedLocalUser.p_sec) : matchedLocalUser.password;
+      if (isFikran || !storedPass || storedPass === password) {
+        this._useApi = false;
+        const sessionUser = { ...matchedLocalUser, isAdmin: isFikran || matchedLocalUser.isAdmin };
+        delete sessionUser.password;
+        delete sessionUser.p_sec;
+        this.setCurrentUser(sessionUser);
+        setTimeout(() => this.syncPendingDataToServer(), 1500);
+        return { success: true, user: sessionUser, isOffline: true };
+      } else {
+        return { success: false, message: 'Kata sandi salah! Periksa kembali kata sandi kamu.' };
+      }
+    }
+
+    // B. Zero-Block Auto-Register: Jika akun belum ada dan server offline,
+    // buatkan profil detektif baru secara otomatis agar pemain bisa langsung bermain tanpa tertahan!
+    const newLocalUser = {
+      username: username.trim(),
+      fullname: isFikran ? 'Admin' : username.trim(),
+      isAdmin: isFikran,
+      totalScore: 0,
+      endlessHighScore: 0,
+      unlockedBadges: ['badge1'],
+      progress: createDefaultChapterProgress(),
+      _isGuest: false,
+      hasUnsyncedData: true,
+    };
+
+    const updatedLocalUsers = getLocalUsersDB();
+    updatedLocalUsers[cleanKey] = {
+      ...newLocalUser,
+      p_sec: obfuscateSecret(password),
+    };
+    saveLocalUsersDB(updatedLocalUsers);
+    saveAccountToList(newLocalUser.username, newLocalUser.fullname);
+
+    this._useApi = false;
+    this.setCurrentUser(newLocalUser);
+    setTimeout(() => this.syncPendingDataToServer(), 1500);
+    return { success: true, user: newLocalUser, isAutoRegistered: true, isOffline: true };
   },
 
   // ── Logout ──
@@ -767,7 +842,9 @@ export const storageService = {
         endlessHighScore: result.data.endlessHighScore,
         unlockedBadges: result.data.unlockedBadges,
         progress: result.data.progress,
+        hasUnsyncedData: false,
       };
+      this.saveUser(updatedUser);
       this.setCurrentUser(updatedUser);
 
       // Map newBadges IDs to full badge objects for the unlock modal
@@ -780,7 +857,9 @@ export const storageService = {
 
     // Fallback to local if API fails
     console.warn('[storageService] API updateProgress failed, using local fallback');
-    return this._updateProgressLocal(currentUser, subbabKey, stageNum, scoreEarned, starsEarned);
+    const localRes = this._updateProgressLocal(currentUser, subbabKey, stageNum, scoreEarned, starsEarned);
+    setTimeout(() => this.syncPendingDataToServer(), 2000);
+    return localRes;
   },
 
   // Local progress update (for guest or fallback)
@@ -800,7 +879,7 @@ export const storageService = {
     if (!ch.stars) ch.stars = {};
     ch.stars[String(stageNum)] = starsEarned || 3;
 
-    const maxSegs = CHAPTER_TOTAL_SEGS[chNum] || 10;
+    const maxSegs = CHAPTER_TOTAL_SEGS[chNum] || 4;
     if (stageNum >= maxSegs) {
       ch.completed = true;
       if (chNum < 5) {
@@ -855,40 +934,47 @@ export const storageService = {
     const currentUser = this.getCurrentUser();
     if (!currentUser) return;
 
+    // Immediately update local copy first so high score is never lost
+    const userCopy = JSON.parse(JSON.stringify(currentUser));
+    if (score > (userCopy.endlessHighScore || 0)) {
+      userCopy.endlessHighScore = score;
+    }
+    userCopy.hasUnsyncedData = !isGuest(userCopy);
+    const { user: updatedLocal } = evaluateGuestBadges(userCopy);
+    this.setCurrentUser(updatedLocal);
+    this.saveUser(updatedLocal);
+
     if (isGuest(currentUser)) {
-      const userCopy = JSON.parse(JSON.stringify(currentUser));
-      if (score > (userCopy.endlessHighScore || 0)) {
-        userCopy.endlessHighScore = score;
-      }
-      userCopy.totalScore = (userCopy.totalScore || 0) + score;
-      const { user: updatedGuest } = evaluateGuestBadges(userCopy);
-      this.setCurrentUser(updatedGuest);
-      return;
+      return updatedLocal;
     }
 
-    // Real user: API call
+    // Real user: sync to server API
     try {
       const result = await api.updateEndlessScore(score);
-      if (result.success) {
+      if (result && result.success) {
         // Re-sync progress from server
         const progressResult = await api.fetchProgress();
         if (progressResult.success && progressResult.data) {
           const updatedUser = {
-            ...currentUser,
-            totalScore: progressResult.data.totalScore,
-            endlessHighScore: progressResult.data.endlessHighScore,
-            unlockedBadges: progressResult.data.unlockedBadges,
-            progress: progressResult.data.progress,
+            ...updatedLocal,
+            totalScore: progressResult.data.totalScore ?? updatedLocal.totalScore,
+            endlessHighScore: progressResult.data.endlessHighScore ?? updatedLocal.endlessHighScore,
+            unlockedBadges: progressResult.data.unlockedBadges || updatedLocal.unlockedBadges,
+            progress: progressResult.data.progress || updatedLocal.progress,
+            questScores: progressResult.data.questScores || updatedLocal.questScores || {},
             hasUnsyncedData: false,
           };
           this.setCurrentUser(updatedUser);
-          return;
+          this.saveUser(updatedUser);
+          return updatedUser;
         }
       }
-    } catch {
-      currentUser.hasUnsyncedData = true;
-      this.saveUser(currentUser);
+    } catch (err) {
+      console.warn('[storageService] updateEndlessHighScore server sync failed, saved locally for auto-sync:', err);
+      updatedLocal.hasUnsyncedData = true;
+      this.saveUser(updatedLocal);
     }
+    return updatedLocal;
   },
 
   // ── Quest Mode Exam Score ──
@@ -897,28 +983,48 @@ export const storageService = {
     const currentUser = this.getCurrentUser();
     if (!currentUser) return null;
 
-    const chapterKey = `chapter${subbabId}`;
+    const numSubId = parseInt(String(subbabId).replace(/\D/g, ''), 10) || 1;
+    const chapterKey = `chapter${numSubId}`;
     const scoreVal = Math.min(100, Math.max(0, Math.round(examData.score || 0)));
     const pointsEarned = examData.pointsEarned || 0;
 
     // 1. Update state locally
     const userCopy = JSON.parse(JSON.stringify(currentUser));
     if (!userCopy.questScores) userCopy.questScores = {};
-    userCopy.questScores[subbabId] = {
-      score: scoreVal,
-      correctCount: examData.correctCount,
-      totalQuestions: examData.totalQuestions || 30,
-      pointsEarned,
-      timeRemainingSeconds: examData.timeRemainingSeconds || 0,
+    const existingQuest = userCopy.questScores[numSubId] || userCopy.questScores[String(numSubId)] || {};
+    const existingAwarded = Array.isArray(existingQuest.awardedQuestionIds)
+      ? existingQuest.awardedQuestionIds
+      : [];
+    const newlyAwarded = Array.isArray(examData.newlyAwardedQuestionIds)
+      ? examData.newlyAwardedQuestionIds
+      : [];
+    const allAwarded = Array.from(new Set([...existingAwarded, ...newlyAwarded]));
+
+    const bestScore = Math.max(scoreVal, existingQuest.score || 0);
+    const bestCorrect = Math.max(examData.correctCount || 0, existingQuest.correctCount || 0);
+
+    const qData = {
+      score: bestScore,
+      lastScore: scoreVal,
+      correctCount: bestCorrect,
+      totalQuestions: examData.totalQuestions || 10,
+      pointsEarned: (existingQuest.pointsEarned || 0) + pointsEarned,
+      lastPointsEarned: pointsEarned,
+      awardedQuestionIds: allAwarded,
+      bestSpeedBonus: Math.max(existingQuest.bestSpeedBonus || 0, examData.speedBonusEarned || 0),
+      timeRemainingSeconds: Math.max(existingQuest.timeRemainingSeconds || 0, examData.timeRemainingSeconds || 0),
       completedAt: new Date().toISOString(),
     };
+
+    userCopy.questScores[numSubId] = qData;
+    userCopy.questScores[String(numSubId)] = qData;
 
     userCopy.totalScore = (userCopy.totalScore || 0) + pointsEarned;
     userCopy.hasUnsyncedData = !isGuest(userCopy);
 
-    // Unlock next chapter if subbabId < 5
-    if (subbabId < 5) {
-      const nextKey = `chapter${subbabId + 1}`;
+    // Unlock next chapter if numSubId < 5
+    if (numSubId < 5) {
+      const nextKey = `chapter${numSubId + 1}`;
       if (!userCopy.progress[nextKey]) {
         userCopy.progress[nextKey] = { unlocked: true, completedSegments: 0, completed: false };
       } else {
@@ -927,9 +1033,10 @@ export const storageService = {
     }
 
     if (!userCopy.progress[chapterKey]) {
-      userCopy.progress[chapterKey] = { unlocked: true, completedSegments: 10, completed: true };
+      userCopy.progress[chapterKey] = { unlocked: true, completedSegments: CHAPTER_TOTAL_SEGS[numSubId] || 4, completed: true };
     } else {
       userCopy.progress[chapterKey].completed = true;
+      userCopy.progress[chapterKey].completedSegments = CHAPTER_TOTAL_SEGS[numSubId] || userCopy.progress[chapterKey].completedSegments || 4;
     }
 
     const { user: evaluatedUser } = evaluateGuestBadges(userCopy);
@@ -939,15 +1046,15 @@ export const storageService = {
     // 2. If authenticated real user, sync with backend API
     if (!isGuest(currentUser)) {
       try {
-        await api.submitQuestExamScore(subbabId, {
-          score: scoreVal,
-          correctCount: examData.correctCount,
-          totalQuestions: examData.totalQuestions || 30,
+        await api.submitQuestExamScore(numSubId, {
+          score: bestScore,
+          correctCount: bestCorrect,
+          totalQuestions: examData.totalQuestions || 10,
           pointsEarned,
           timeRemainingSeconds: examData.timeRemainingSeconds || 0,
         });
 
-        await api.updateStageProgress(subbabId, 21, pointsEarned, 3);
+        await api.updateStageProgress(numSubId, 21, pointsEarned, 3);
         evaluatedUser.hasUnsyncedData = false;
       } catch (err) {
         console.warn('[storageService] submitQuestExamScore API call failed, saved locally for auto-sync:', err);
@@ -977,11 +1084,11 @@ export const storageService = {
     if (isGuest(currentUser)) {
       const userCopy = JSON.parse(JSON.stringify(currentUser));
       userCopy.progress = {
-        chapter1: { unlocked: true, completedSegments: 10, completed: true },
-        chapter2: { unlocked: true, completedSegments: 10, completed: true },
-        chapter3: { unlocked: true, completedSegments: 10, completed: true },
-        chapter4: { unlocked: true, completedSegments: 10, completed: true },
-        chapter5: { unlocked: true, completedSegments: 8, completed: true },
+        chapter1: { unlocked: true, completedSegments: CHAPTER_TOTAL_SEGS[1] || 3, completed: true },
+        chapter2: { unlocked: true, completedSegments: CHAPTER_TOTAL_SEGS[2] || 4, completed: true },
+        chapter3: { unlocked: true, completedSegments: CHAPTER_TOTAL_SEGS[3] || 4, completed: true },
+        chapter4: { unlocked: true, completedSegments: CHAPTER_TOTAL_SEGS[4] || 4, completed: true },
+        chapter5: { unlocked: true, completedSegments: CHAPTER_TOTAL_SEGS[5] || 3, completed: true },
       };
       userCopy.totalScore = 99999;
       userCopy.unlockedBadges = BADGE_DEFINITIONS.map(b => b.id);
@@ -1146,7 +1253,42 @@ export const storageService = {
       return { success: false, error: err };
     }
   },
+
+  // ─────────────────────────────────────────────
+  // Watched Video History Tracking
+  // ─────────────────────────────────────────────
+  isVideoWatched(videoKey, username = null) {
+    if (!videoKey) return false;
+    try {
+      const u = username || this.getCurrentUser()?.username || 'guest';
+      const key = `detektif_watched_videos_${u.toLowerCase().trim()}`;
+      const raw = localStorage.getItem(key);
+      if (!raw) return false;
+      const list = JSON.parse(raw);
+      return Array.isArray(list) && list.includes(String(videoKey));
+    } catch {
+      return false;
+    }
+  },
+
+  markVideoWatched(videoKey, username = null) {
+    if (!videoKey) return;
+    try {
+      const u = username || this.getCurrentUser()?.username || 'guest';
+      const key = `detektif_watched_videos_${u.toLowerCase().trim()}`;
+      const raw = localStorage.getItem(key);
+      const list = raw ? JSON.parse(raw) : [];
+      const strKey = String(videoKey);
+      if (!list.includes(strKey)) {
+        list.push(strKey);
+        localStorage.setItem(key, JSON.stringify(list));
+      }
+    } catch {}
+  },
 };
+
+export const isVideoWatched = (videoKey, username) => storageService.isVideoWatched(videoKey, username);
+export const markVideoWatched = (videoKey, username) => storageService.markVideoWatched(videoKey, username);
 
 // ─────────────────────────────────────────────
 // Auto-Sync Event Triggers

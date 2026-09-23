@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowLeft, CheckCircle2, XCircle, RotateCcw, Trophy, ChevronLeft, ChevronRight, Lightbulb, AlertTriangle } from 'lucide-react';
 import { CHAPTERS_DATA } from '../data/chapterLearningData';
 import RelationDiagramCanvas from './RelationDiagramCanvas';
@@ -11,21 +11,28 @@ import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
 import confetti from 'canvas-confetti';
 import ChapterVideoPlayer from './ChapterVideoPlayer';
+import { CHAPTER1_VIDEOS } from '../data/chapter1Subtitles';
+import { CHAPTER2_VIDEOS } from '../data/chapter2Subtitles';
 import { CHAPTER3_VIDEOS } from '../data/chapter3Subtitles';
+import { CHAPTER4_VIDEOS } from '../data/chapter4Subtitles';
+import { CHAPTER5_VIDEOS } from '../data/chapter5Subtitles';
+import { shuffleArray } from '../utils/shuffle.js';
+import { isVideoWatched, markVideoWatched } from '../services/storageService';
 
 /**
  * ChapterLearning : Interactive Learning Controller
  * Fixed viewport, no scroll. Lesson slides + interactive cable/string connect + Cartesian grid + table + adaptive quizzes.
  * Enhanced with modern Glassmorphism aesthetics and persistent progression.
  */
-export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, onChapterComplete, onSegmentComplete, currentUser }) {
+export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, onChapterComplete, onSegmentComplete, onStartExercise, currentUser }) {
   const chapter = CHAPTERS_DATA[chapterId];
   const segments = chapter?.segments || [];
   const totalSegs = segments.length;
 
   const chProgress = currentUser?.progress?.[`chapter${chapterId}`] || currentUser?.progress?.[`subbab${chapterId}`];
-  const savedCompletedCount = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
-  const isAlreadyFinished = Boolean(chProgress?.completed || savedCompletedCount >= totalSegs);
+  const rawSaved = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
+  const isAlreadyFinished = Boolean(chProgress?.completed || rawSaved >= totalSegs);
+  const savedCompletedCount = isAlreadyFinished ? totalSegs : Math.min(totalSegs, rawSaved);
 
   const isAdmin = Boolean(
     currentUser?.isAdmin ||
@@ -45,6 +52,8 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
   const [quizState, setQuizState] = useState('unanswered'); // 'unanswered' | 'correct' | 'wrong' | 'remedial' | 'retry'
   const [selectedOption, setSelectedOption] = useState(null);
+  const [shuffledQuizOptions, setShuffledQuizOptions] = useState([]);
+  const [shuffledRetryOptions, setShuffledRetryOptions] = useState([]);
 
   // State for Interactive Red String / Pin Connecting segments
   const [userConnections, setUserConnections] = useState([]);
@@ -68,6 +77,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
   // State for Chapter 3 Video Subtitles & Audio Lip-sync
   const [videoSubtitle, setVideoSubtitle] = useState('');
   const [videoSpeaking, setVideoSpeaking] = useState(false);
+  const autoAdvanceTimerRef = useRef(null);
 
   // Pre-fill completedSegments set from saved progress (if already finished, mark all completed)
   const [completedSegments, setCompletedSegments] = useState(() => {
@@ -169,6 +179,16 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
     setCartesianError(null);
     setTableError(null);
     setShowClue(false);
+    if (seg?.type === 'quiz' && seg.options && seg.options.length > 0) {
+      setShuffledQuizOptions(shuffleArray(seg.options));
+    } else {
+      setShuffledQuizOptions([]);
+    }
+    if (seg?.remedial?.retryQuestion?.options && seg.remedial.retryQuestion.options.length > 0) {
+      setShuffledRetryOptions(shuffleArray(seg.remedial.retryQuestion.options));
+    } else {
+      setShuffledRetryOptions([]);
+    }
 
     // Setup interactive connect
     if (seg?.type === 'interactive_connect') {
@@ -239,14 +259,20 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
     }
   }, [seg, quizState, connectVerified, connectError, cartesianVerified, cartesianError, tableVerified, tableError]);
 
-  // Clean up any playing mascot voice when navigating away or unmounting
+  // Clean up any playing mascot voice & auto-advance timer when navigating away or unmounting
   useEffect(() => {
     return () => {
       try { reloVoiceService.stopVoice(); } catch {}
+      if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
     };
   }, []);
 
   const handleNext = useCallback(() => {
+    if (autoAdvanceTimerRef.current) {
+      clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+
     const completedSegNum = currentSegIdx + 1;
     setCompletedSegments(prev => new Set([...prev, currentSegIdx]));
 
@@ -469,12 +495,26 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
       audioEngine.playSuccess?.();
       try { reloVoiceService.playScene('case_correct'); } catch {}
+
+      // Jika soal terakhir: jadwalkan auto-advance ke modal penyelesaian setelah 2 detik
+      if (isLastSeg) {
+        if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+        autoAdvanceTimerRef.current = setTimeout(() => {
+          handleNext();
+        }, 2200);
+      }
     } else {
       if (quizState === 'retry') {
         // Second attempt wrong : just show correct answer and let them proceed
         setQuizState('correct');
         audioEngine.playError?.();
         try { reloVoiceService.playScene('case_wrong'); } catch {}
+        if (isLastSeg) {
+          if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+          autoAdvanceTimerRef.current = setTimeout(() => {
+            handleNext();
+          }, 2500);
+        }
       } else {
         setQuizState('wrong');
         audioEngine.playError?.();
@@ -516,7 +556,9 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
   // CHAPTER COMPLETE SCREEN (GLASSMORPHISM)
   // ═══════════════════════════════════════
   if (showComplete) {
-    const totalQuizzes = segments.filter(s => s.type === 'quiz').length;
+    const totalQuizzes = segments.filter(s => s.type === 'quiz' || s.type === 'video').length || segments.length || 1;
+    const finalScore = Math.max(quizScore, completedSegments.size);
+    const displayQuizScore = Math.min(finalScore, totalQuizzes);
     const totalChapters = Object.keys(CHAPTERS_DATA).length;
     const isLastChapter = chapterId >= totalChapters;
 
@@ -540,43 +582,39 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
           <div className="flex items-center justify-center gap-3 text-base sm:text-lg glass-panel-subtle p-3 rounded-2xl border border-amber-400/50 shadow-[0_4px_16px_rgba(217,119,6,0.12)]">
             <Trophy className="w-6 h-6 text-[#D97706]" />
             <span className="font-black text-[#2D241E]">
-              Kuis Berhasil: {quizScore}/{totalQuizzes}
+              Kuis Berhasil: {displayQuizScore}/{totalQuizzes}
             </span>
           </div>
 
           <p className="text-xs sm:text-sm text-[#78350F] font-bold">
             {isLastChapter 
               ? 'Hebat sekali, Detektif! Kamu telah menuntaskan seluruh Chapter Relasi & Fungsi!' 
-              : `Chapter ${chapterId + 1} sekarang telah terbuka dan siap kamu pelajari!`}
+              : `Selesaikan Latihan Soal Chapter ${chapterId} dengan nilai minimal 85% untuk membuka Chapter ${chapterId + 1}!`}
           </p>
 
-          {/* Action Buttons: Lanjut Chapter Berikutnya & Menu Awal */}
+          {/* Action Buttons: Latihan Chapter Ini & Navigasi */}
           <div className="flex flex-col gap-2.5 pt-2">
-            {!isLastChapter ? (
-              <button
-                onClick={() => {
-                  try { audioEngine.playClick?.(); } catch {}
-                  setShowComplete(false);
-                  onChapterComplete?.(chapterId, true);
-                }}
-                className="glass-btn glass-btn-amber w-full py-3.5 px-5 rounded-2xl text-amber-950 font-black shadow-[0_10px_28px_rgba(245,158,11,0.30)] hover:scale-[1.02] active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer backdrop-blur-xl"
-              >
-                <span>Lanjut ke Chapter {chapterId + 1}</span>
-                <span>➔</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  try { audioEngine.playClick?.(); } catch {}
-                  if (onBackToMenu) onBackToMenu();
-                  else onBack();
-                }}
-                className="glass-btn glass-btn-emerald w-full py-3.5 px-5 rounded-2xl text-emerald-950 font-black shadow-[0_10px_28px_rgba(16,185,129,0.30)] hover:scale-[1.02] active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer backdrop-blur-xl"
-              >
-                <span>🏆 Kembali ke Menu Utama</span>
-              </button>
-            )}
+            {/* 1. TOMBOL UTAMA: Lanjutkan ke Latihan Soal Chapter Ini */}
+            <button
+              onClick={() => {
+                try { audioEngine.playClick?.(); } catch {}
+                try { reloVoiceService.stopVoice(); } catch {}
+                setShowComplete(false);
+                onChapterComplete?.(chapterId, false);
+                if (onStartExercise) {
+                  onStartExercise(chapterId);
+                } else {
+                  onBack();
+                }
+              }}
+              className="glass-btn glass-btn-emerald w-full py-3.5 px-5 rounded-2xl text-white font-black shadow-[0_10px_28px_rgba(16,185,129,0.35)] hover:scale-[1.02] active:scale-95 transition-all text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer backdrop-blur-xl animate-pulse"
+            >
+              <span className="text-lg">🎯</span>
+              <span>Lanjutkan ke Latihan Chapter {chapterId}</span>
+              <span className="text-lg">➔</span>
+            </button>
 
+            {/* 3. TOMBOL NAVIGASI: Menu Awal & Pilih Chapter */}
             <div className="flex gap-2.5">
               <button
                 onClick={() => {
@@ -586,7 +624,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                   if (onBackToMenu) onBackToMenu();
                   else onBack();
                 }}
-                className="flex-1 py-3 px-3 rounded-xl glass-btn text-[#2D241E] font-black text-xs sm:text-sm border border-[#2D241E]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 py-2.5 px-3 rounded-xl glass-btn text-[#2D241E] font-black text-xs sm:text-sm border border-[#2D241E]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>🏠</span>
                 <span>Menu Awal</span>
@@ -599,9 +637,9 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                   onChapterComplete?.(chapterId, false);
                   onBack();
                 }}
-                className="flex-1 py-3 px-3 rounded-xl glass-btn text-[#78350F] font-bold text-xs sm:text-sm border border-[#2D241E]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 py-2.5 px-3 rounded-xl glass-btn text-[#78350F] font-bold text-xs sm:text-sm border border-[#2D241E]/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>📖</span>
+                <span>📋</span>
                 <span>Pilih Chapter</span>
               </button>
             </div>
@@ -704,8 +742,8 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
           character="relo"
           pose={seg?.type === 'video' ? 'standing' : reloPose}
           emotion={seg?.type === 'video' ? 'happy' : reloEmotion}
-          title={seg?.type === 'video' ? 'SUBTITLE MATERI' : reloTitle}
-          icon={seg?.type === 'video' ? '🎬' : '🕵️‍♂️'}
+          title="DETEKTIF RELO"
+          icon="🦉"
           message={seg?.type === 'video' ? (videoSubtitle || '') : reloText}
           isSpeaking={seg?.type === 'video' ? videoSpeaking : undefined}
           canSpeak={seg?.type !== 'video'}
@@ -737,11 +775,29 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
           {seg?.type === 'video' && (
             <div className="w-full h-full flex flex-col justify-center animate-fade-in overflow-hidden">
               <ChapterVideoPlayer
-                videoData={CHAPTER3_VIDEOS[seg.videoKey] || CHAPTER3_VIDEOS['3.1']}
+                videoData={
+                  (chapterId === 1 ? CHAPTER1_VIDEOS[seg.videoKey] :
+                   chapterId === 2 ? CHAPTER2_VIDEOS[seg.videoKey] :
+                   chapterId === 3 ? CHAPTER3_VIDEOS[seg.videoKey] :
+                   chapterId === 4 ? CHAPTER4_VIDEOS[seg.videoKey] :
+                   CHAPTER5_VIDEOS[seg.videoKey]) ||
+                  CHAPTER1_VIDEOS[seg.videoKey] ||
+                  CHAPTER2_VIDEOS[seg.videoKey] ||
+                  CHAPTER3_VIDEOS[seg.videoKey] ||
+                  CHAPTER4_VIDEOS[seg.videoKey] ||
+                  CHAPTER5_VIDEOS[seg.videoKey] ||
+                  CHAPTER1_VIDEOS['1.1']
+                }
+                isAlreadyWatched={
+                  isAlreadyFinished ||
+                  completedSegments.has(currentSegIdx) ||
+                  isVideoWatched(seg.videoKey, currentUser?.username)
+                }
                 onQuizPassed={(videoId) => {
                   setCompletedSegments(prev => new Set([...prev, currentSegIdx]));
                   setQuizScore(prev => prev + 1);
                   onSegmentComplete?.(chapterId, currentSegIdx + 1, 10);
+                  markVideoWatched(seg.videoKey, currentUser?.username);
                 }}
                 onNextSegment={handleNext}
                 onPrevSegment={handlePrev}
@@ -750,6 +806,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                 isFirstSegment={currentSegIdx === 0}
                 isLastSegment={isLastSeg}
                 isAdmin={isAdmin}
+                currentUser={currentUser}
               />
             </div>
           )}
@@ -765,42 +822,42 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                 </h2>
               </div>
 
-              {/* Content */}
-              <div className="flex-1 min-h-0 flex flex-col justify-start overflow-y-auto drag-scroller space-y-2 pr-1">
+              {/* Content & Visualizer (No Cut-Off) */}
+              <div className="flex-1 min-h-0 flex flex-col justify-start overflow-y-auto no-scrollbar space-y-2 pr-1">
                 {seg.content.map((text, i) => (
-                  <p key={i} className="text-base sm:text-lg leading-relaxed text-[#2D241E]">
+                  <p key={i} className="text-sm sm:text-base lg:text-lg leading-relaxed text-[#2D241E]">
                     {renderText(text)}
                   </p>
                 ))}
+
+                {/* Visualizer (if visual is defined) */}
+                {seg.visual && (
+                  <div className="pt-2 flex-shrink-0 w-full flex justify-center">
+                    <MathVisualizer visual={seg.visual} compact={true} />
+                  </div>
+                )}
+
+                {/* Diagram fallback (renders authentic detective red rope diagram) */}
+                {!seg.visual && seg.diagram && (
+                  <div className="pt-2 flex-shrink-0 w-full flex flex-col items-center">
+                    <MathVisualizer
+                      visual={{
+                        type: 'arrow_diagram',
+                        setA: seg.diagram.setA || [],
+                        setB: seg.diagram.setB || [],
+                        pairs: seg.diagram.arrows || [],
+                        labelA: seg.diagram.labelA || 'Himpunan A',
+                        labelB: seg.diagram.labelB || 'Himpunan B',
+                        statusBadge: seg.diagram.title || ''
+                      }}
+                      compact={true}
+                    />
+                    {seg.diagram.caption && (
+                      <p className="text-xs text-[#78350F] mt-1 text-center italic font-bold">{seg.diagram.caption}</p>
+                    )}
+                  </div>
+                )}
               </div>
-
-              {/* Visualizer (if visual is defined) */}
-              {seg.visual && (
-                <div className="mt-2 flex-shrink-0">
-                  <MathVisualizer visual={seg.visual} compact={true} />
-                </div>
-              )}
-
-              {/* Diagram fallback (renders authentic detective red rope diagram) */}
-              {!seg.visual && seg.diagram && (
-                <div className="mt-2 flex-shrink-0">
-                  <MathVisualizer
-                    visual={{
-                      type: 'arrow_diagram',
-                      setA: seg.diagram.setA || [],
-                      setB: seg.diagram.setB || [],
-                      pairs: seg.diagram.arrows || [],
-                      labelA: seg.diagram.labelA || 'Himpunan A',
-                      labelB: seg.diagram.labelB || 'Himpunan B',
-                      statusBadge: seg.diagram.title || ''
-                    }}
-                    compact={true}
-                  />
-                  {seg.diagram.caption && (
-                    <p className="text-xs text-[#78350F] mt-1 text-center italic font-bold">{seg.diagram.caption}</p>
-                  )}
-                </div>
-              )}
             </div>
           )}
 
@@ -880,14 +937,21 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
                 <button
                   type="button"
-                  onClick={handleVerifyConnect}
+                  onClick={connectVerified ? handleNext : handleVerifyConnect}
                   className={`glass-btn px-6 sm:px-8 py-2.5 rounded-2xl border text-sm sm:text-base font-black transition-all duration-300 cursor-pointer flex items-center gap-2 backdrop-blur-xl ${
                     connectVerified
-                      ? 'glass-btn-emerald ring-2 ring-emerald-400/50'
-                      : 'glass-btn-amber hover:scale-105 active:scale-95'
+                      ? 'glass-btn-emerald ring-2 ring-emerald-400/50 hover:scale-105 active:scale-95 text-white animate-pulse shadow-md'
+                      : 'glass-btn-amber hover:scale-105 active:scale-95 text-amber-950 shadow-md'
                   }`}
                 >
-                  <span>{connectVerified ? '✓ Sudah Tepat' : 'Periksa Sambungan'}</span>
+                  {connectVerified ? (
+                    <>
+                      <span>Lanjut ke Materi Berikutnya</span>
+                      <ChevronRight className="w-5 h-5" />
+                    </>
+                  ) : (
+                    <span>Periksa Sambungan</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -895,9 +959,9 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
           {/* ═══ INTERACTIVE CARTESIAN (COORDINATE GRID CANVAS) ═══ */}
           {seg.type === 'interactive_cartesian' && (
-            <div className="glass-panel glass-sheen rounded-2xl sm:rounded-3xl p-3 sm:p-5 animate-fade-in flex flex-col h-full max-h-full justify-between overflow-hidden">
+            <div className="glass-panel glass-sheen rounded-2xl sm:rounded-3xl p-2.5 sm:p-4 animate-fade-in flex flex-col h-full max-h-full justify-between overflow-hidden gap-2">
               {/* Header banner */}
-              <div className="flex items-center justify-between gap-2 flex-shrink-0 mb-1">
+              <div className="flex items-center justify-between gap-2 flex-shrink-0 mb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xl sm:text-2xl">{seg.emoji || '📍'}</span>
                   <h2 className="text-base sm:text-lg lg:text-xl font-black text-[#2D241E] font-pencil">
@@ -920,7 +984,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
               </div>
 
               {/* Live Cartesian Canvas */}
-              <div className="flex-1 min-h-0 flex flex-col justify-center py-1 overflow-hidden">
+              <div className="flex-1 min-h-0 flex flex-col items-center justify-center py-0.5">
                 <RelationCartesianCanvas
                   minX={seg.minX ?? 0}
                   maxX={seg.maxX ?? 5}
@@ -938,14 +1002,14 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
               {/* Feedback Alert */}
               {cartesianError && (
-                <div className="p-1.5 rounded-xl bg-rose-50 border border-rose-400 text-xs text-rose-800 font-bold flex items-center gap-1.5 flex-shrink-0 animate-fade-in">
+                <div className="p-2 rounded-xl bg-rose-50 border border-rose-400 text-xs sm:text-sm text-rose-800 font-bold flex items-center gap-2 flex-shrink-0 animate-fade-in shadow-xs my-0.5">
                   <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                   <span>{cartesianError}</span>
                 </div>
               )}
 
               {cartesianVerified && (
-                <div className="p-1.5 rounded-xl bg-emerald-50 border border-emerald-400 text-xs text-emerald-800 font-bold flex items-center gap-1.5 flex-shrink-0 animate-fade-in">
+                <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-400 text-xs sm:text-sm text-emerald-800 font-bold flex items-center gap-2 flex-shrink-0 animate-fade-in shadow-xs my-0.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>{seg.successMessage || 'Titik koordinat berhasil diplot dengan tepat!'}</span>
                 </div>
@@ -969,14 +1033,21 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
                 <button
                   type="button"
-                  onClick={handleVerifyCartesian}
+                  onClick={cartesianVerified ? handleNext : handleVerifyCartesian}
                   className={`glass-btn px-6 sm:px-8 py-2.5 rounded-2xl border text-sm sm:text-base font-black transition-all duration-300 cursor-pointer flex items-center gap-2 backdrop-blur-xl ${
                     cartesianVerified
-                      ? 'glass-btn-emerald ring-2 ring-emerald-400/50'
-                      : 'glass-btn-amber hover:scale-105 active:scale-95'
+                      ? 'glass-btn-emerald ring-2 ring-emerald-400/50 hover:scale-105 active:scale-95 text-white animate-pulse shadow-md'
+                      : 'glass-btn-amber hover:scale-105 active:scale-95 text-amber-950 shadow-md'
                   }`}
                 >
-                  <span>{cartesianVerified ? '✓ Sudah Tepat' : 'Periksa Koordinat'}</span>
+                  {cartesianVerified ? (
+                    <>
+                      <span>Lanjut ke Materi Berikutnya</span>
+                      <ChevronRight className="w-5 h-5" />
+                    </>
+                  ) : (
+                    <span>Periksa Koordinat</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -1009,7 +1080,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
               </div>
 
               {/* Live Table Area */}
-              <div className="flex-1 min-h-0 flex flex-col justify-center py-1 overflow-auto">
+              <div className="flex-1 min-h-0 flex flex-col justify-center py-1 overflow-hidden">
                 <RelationTableCanvas
                   columns={seg.columns}
                   rows={seg.rows}
@@ -1054,14 +1125,21 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
                 <button
                   type="button"
-                  onClick={handleVerifyTable}
+                  onClick={tableVerified ? handleNext : handleVerifyTable}
                   className={`glass-btn px-6 sm:px-8 py-2.5 rounded-2xl border text-sm sm:text-base font-black transition-all duration-300 cursor-pointer flex items-center gap-2 backdrop-blur-xl ${
                     tableVerified
-                      ? 'glass-btn-emerald ring-2 ring-emerald-400/50'
-                      : 'glass-btn-amber hover:scale-105 active:scale-95'
+                      ? 'glass-btn-emerald ring-2 ring-emerald-400/50 hover:scale-105 active:scale-95 text-white animate-pulse shadow-md'
+                      : 'glass-btn-amber hover:scale-105 active:scale-95 text-amber-950 shadow-md'
                   }`}
                 >
-                  <span>{tableVerified ? '✓ Sudah Tepat' : 'Periksa Tabel'}</span>
+                  {tableVerified ? (
+                    <>
+                      <span>Lanjut ke Materi Berikutnya</span>
+                      <ChevronRight className="w-5 h-5" />
+                    </>
+                  ) : (
+                    <span>Periksa Tabel</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -1077,7 +1155,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                   <h2 className="text-base sm:text-lg font-black text-[#2D241E] font-pencil truncate leading-tight">{seg.title}</h2>
                   {seg.isHots && (
                     <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 via-rose-500 to-amber-600 text-white text-[10px] sm:text-xs font-black shadow-xs tracking-wide animate-pulse flex-shrink-0">
-                      🔥 {seg.hotsBadge || 'TANTANGAN HOTS'}
+                      {seg.hotsBadge || '🧠 TANTANGAN ASAH LOGIKA'}
                     </span>
                   )}
                 </div>
@@ -1120,28 +1198,47 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
               {/* ─── UNANSWERED STATE ─── */}
               {quizState === 'unanswered' && (
-                <div className="flex-1 min-h-0 flex flex-col justify-start gap-2.5 overflow-y-auto drag-scroller pr-1 pt-0.5">
-                  <div className="px-4 py-2.5 sm:py-3 rounded-2xl glass-panel-subtle border border-[#D97706]/50 shadow-[0_4px_16px_rgba(217,119,6,0.12),inset_0_1px_2px_rgba(255,255,255,0.85)] flex-shrink-0 flex items-center justify-center text-center">
+                <div className="flex-1 min-h-0 flex flex-col justify-start gap-2 sm:gap-2.5 overflow-y-auto no-scrollbar pr-1 pt-0.5">
+                  <div className="px-3.5 py-2 sm:py-2.5 rounded-2xl glass-panel-subtle border border-[#D97706]/50 shadow-[0_4px_16px_rgba(217,119,6,0.12),inset_0_1px_2px_rgba(255,255,255,0.85)] flex-shrink-0 flex items-center justify-center text-center">
                     <p className="text-sm sm:text-base lg:text-lg font-black font-pencil text-[#2D241E] leading-snug whitespace-pre-line">
                       {seg.question}
                     </p>
                   </div>
 
                   {(() => {
-                    const isShortOptions = seg.options && seg.options.every(opt => opt.length <= 22);
-                    return (
-                      <div className={seg.visual 
-                        ? 'flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 items-center gap-4 lg:gap-6 py-0.5 w-full' 
-                        : 'flex-1 min-h-0 flex flex-col justify-center py-0.5 w-full max-w-4xl mx-auto'}>
-                        {seg.visual && (
-                          <div className="w-full h-full flex items-center justify-center min-w-0">
-                            <MathVisualizer visual={seg.visual} compact={false} className="w-full" />
-                          </div>
-                        )}
-                        <div className={`w-full flex flex-col justify-center gap-2 sm:gap-2.5 ${
-                          !seg.visual ? 'grid grid-cols-1 sm:grid-cols-2' : ''
+                    const displayedQuizOptions = (shuffledQuizOptions && shuffledQuizOptions.length > 0) ? shuffledQuizOptions : (seg.options || []);
+                    const isShortOptions = displayedQuizOptions.every(opt => opt.length <= 22);
+                    return seg.visual ? (
+                      <div className="flex-1 min-h-0 flex flex-col justify-between items-center gap-2 sm:gap-2.5 py-0.5 w-full max-w-2xl mx-auto">
+                        {/* Visual at top / center */}
+                        <div className="w-full flex-1 min-h-0 flex items-center justify-center min-w-0">
+                          <MathVisualizer visual={seg.visual} compact={false} className="w-full max-w-lg" />
+                        </div>
+                        {/* ABCD options below visual with compact buttons */}
+                        <div className={`w-full ${
+                          isShortOptions
+                            ? 'grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5'
+                            : 'grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5'
                         }`}>
-                          {seg.options.map((opt, i) => (
+                          {displayedQuizOptions.map((opt, i) => (
+                            <button
+                              key={i}
+                              onClick={() => handleQuizAnswer(opt)}
+                              onMouseEnter={() => audioEngine.playHover?.()}
+                              className="w-full py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl glass-btn text-left text-xs sm:text-sm font-bold text-[#2D241E] cursor-pointer flex items-center leading-snug transition-all hover:scale-[1.02] active:scale-95 shadow-xs"
+                            >
+                              <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-amber-100/90 text-[#D97706] font-black text-xs sm:text-sm flex items-center justify-center mr-2 flex-shrink-0 border border-amber-300/80 shadow-xs">
+                                {String.fromCharCode(65 + i)}
+                              </span>
+                              <span className="flex-1 min-w-0 break-words font-pencil font-bold">{opt}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex-1 min-h-0 flex flex-col justify-center py-0.5 w-full max-w-4xl mx-auto">
+                        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                          {displayedQuizOptions.map((opt, i) => (
                             <button
                               key={i}
                               onClick={() => handleQuizAnswer(opt)}
@@ -1161,21 +1258,47 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
               {/* ─── CORRECT STATE ─── */}
               {quizState === 'correct' && (
-                <div className="flex-1 min-h-0 flex flex-col justify-center space-y-3">
-                  <div className="flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-emerald-100/90 backdrop-blur-md border-2 border-emerald-600 shadow-sm">
+                <div className="flex-1 min-h-0 flex flex-col justify-start sm:justify-center items-center space-y-2.5 max-w-xl mx-auto w-full animate-fade-in overflow-y-auto no-scrollbar p-1">
+                  <div className="flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl bg-emerald-100/95 backdrop-blur-md border-2 border-emerald-600 shadow-md w-full flex-shrink-0">
                     <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-base sm:text-lg font-black text-emerald-900">Benar! 🎉</p>
-                      <p className="text-sm sm:text-base text-emerald-800 whitespace-pre-line">{seg.explanation}</p>
+                      <p className="text-xs sm:text-sm md:text-base text-emerald-800 whitespace-pre-line leading-relaxed">{seg.explanation}</p>
                     </div>
                   </div>
+
+                  {/* Tombol Aksi Langsung (Tidak perlu mencari tombol kecil di pinggir) */}
+                  <button
+                    onClick={() => {
+                      audioEngine.playClick?.();
+                      handleNext();
+                    }}
+                    className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer backdrop-blur-xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex-shrink-0 ${
+                      isLastSeg
+                        ? 'glass-btn glass-btn-emerald text-white ring-2 ring-emerald-400 shadow-[0_10px_28px_rgba(16,185,129,0.35)] animate-pulse'
+                        : 'glass-btn glass-btn-amber text-amber-950 shadow-[0_6px_20px_rgba(245,158,11,0.2)]'
+                    }`}
+                  >
+                    {isLastSeg ? (
+                      <>
+                        <span className="text-lg">🎯</span>
+                        <span>Selesaikan Chapter & Lanjut ke Latihan</span>
+                        <span className="text-lg">➔</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Lanjut ke Materi Berikutnya</span>
+                        <span className="text-lg">➔</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
 
               {/* ─── WRONG STATE ─── */}
               {quizState === 'wrong' && (
-                <div className="flex-1 min-h-0 flex flex-col justify-center space-y-3">
-                  <div className="flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-rose-100/90 backdrop-blur-md border-2 border-rose-500 shadow-sm">
+                <div className="flex-1 min-h-0 flex flex-col justify-start sm:justify-center space-y-2.5 overflow-y-auto no-scrollbar p-1">
+                  <div className="flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-rose-100/90 backdrop-blur-md border-2 border-rose-500 shadow-sm flex-shrink-0">
                     <XCircle className="w-6 h-6 text-rose-500 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-base sm:text-lg font-black text-rose-900">Belum Tepat 😅</p>
@@ -1187,7 +1310,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                   </div>
                   <button
                     onClick={handleShowRemedial}
-                    className="py-3 px-4 rounded-xl glass-btn text-[#78350F] font-bold flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer"
+                    className="py-3 px-4 rounded-xl glass-btn text-[#78350F] font-bold flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer flex-shrink-0"
                   >
                     <Lightbulb className="w-5 h-5 text-[#D97706]" />
                     Lihat Penjelasan Sederhana
@@ -1197,8 +1320,8 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
 
               {/* ─── REMEDIAL STATE ─── */}
               {quizState === 'remedial' && seg.remedial && (
-                <div className="flex-1 min-h-0 flex flex-col justify-center space-y-3">
-                  <div className="p-3 sm:p-4 rounded-xl glass-panel-subtle shadow-sm">
+                <div className="flex-1 min-h-0 flex flex-col justify-start sm:justify-center space-y-2.5 overflow-y-auto no-scrollbar p-1">
+                  <div className="p-3 sm:p-4 rounded-xl glass-panel-subtle shadow-sm flex-shrink-0">
                     <p className="text-base sm:text-lg font-black text-[#78350F] mb-2 flex items-center gap-2">
                       <Lightbulb className="w-5 h-5 text-[#D97706]" /> Penjelasan Sederhana:
                     </p>
@@ -1213,7 +1336,7 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
                   {seg.remedial.retryQuestion && (
                     <button
                       onClick={handleRetry}
-                      className="glass-btn glass-btn-amber py-3 px-5 rounded-2xl text-amber-950 font-black shadow-[0_8px_24px_rgba(245,158,11,0.25)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer backdrop-blur-xl"
+                      className="glass-btn glass-btn-amber py-3 px-5 rounded-2xl text-amber-950 font-black shadow-[0_8px_24px_rgba(245,158,11,0.25)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 text-base sm:text-lg cursor-pointer backdrop-blur-xl flex-shrink-0"
                     >
                       <RotateCcw className="w-5 h-5" />
                       Coba Soal Serupa
@@ -1223,26 +1346,29 @@ export default function ChapterLearning({ chapterId = 1, onBack, onBackToMenu, o
               )}
 
               {/* ─── RETRY STATE ─── */}
-              {quizState === 'retry' && seg.remedial?.retryQuestion && (
-                <div className="flex-1 min-h-0 flex flex-col justify-center space-y-3">
-                  <p className="text-base sm:text-lg font-bold text-[#2D241E] whitespace-pre-line leading-relaxed">
-                    {seg.remedial.retryQuestion.question}
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                    {seg.remedial.retryQuestion.options.map((opt, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleQuizAnswer(opt)}
-                        onMouseEnter={() => audioEngine.playHover?.()}
-                        className="p-3 sm:p-3.5 rounded-xl glass-btn text-left text-base sm:text-lg font-bold text-[#2D241E] cursor-pointer"
-                      >
-                        <span className="text-[#D97706] mr-2">{String.fromCharCode(65 + i)}.</span>
-                        {opt}
-                      </button>
-                    ))}
+              {quizState === 'retry' && seg.remedial?.retryQuestion && (() => {
+                const displayedRetryOptions = (shuffledRetryOptions && shuffledRetryOptions.length > 0) ? shuffledRetryOptions : (seg.remedial.retryQuestion.options || []);
+                return (
+                  <div className="flex-1 min-h-0 flex flex-col justify-start sm:justify-center space-y-2.5 overflow-y-auto no-scrollbar p-1">
+                    <p className="text-base sm:text-lg font-bold text-[#2D241E] whitespace-pre-line leading-relaxed">
+                      {seg.remedial.retryQuestion.question}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                      {displayedRetryOptions.map((opt, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleQuizAnswer(opt)}
+                          onMouseEnter={() => audioEngine.playHover?.()}
+                          className="p-3 sm:p-3.5 rounded-xl glass-btn text-left text-base sm:text-lg font-bold text-[#2D241E] cursor-pointer"
+                        >
+                          <span className="text-[#D97706] mr-2">{String.fromCharCode(65 + i)}.</span>
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           )}
         </div>

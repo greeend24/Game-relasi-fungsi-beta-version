@@ -3,11 +3,11 @@ import { BookOpen, FileText, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { audioEngine } from '../services/audioEngine';
 
 const CHAPTER_MATH_SYMBOLS = {
-  1: '• R: A → B : Aturan relasi yang memasangkan himpunan A ke B\n• Bebas Cabang : Elemen asal boleh bercabang ke banyak kawan atau kosong\n• 4 Cara Menyatakan : Diagram Panah, Pasangan Berurutan {(x, y)}, Cartesius, dan Tabel',
-  2: '• f: A → B : Fungsi dari himpunan A ke B (relasi khusus)\n• Domain (Df) : Daerah asal input A (wajib tepat satu kawan)\n• Kodomain (Kf) : Seluruh daerah kawan tujuan B\n• Range (Rf) : Daerah hasil (anggota B yang terkena panah)',
-  3: '• f(x) = ax + b : Bentuk umum rumus fungsi linear\n• x : Variabel input daerah asal\n• f(x) : Nilai fungsi / bayangan peta (output y)\n• a : Koefisien pengali x\n• b : Konstanta fungsi',
-  4: '• (x, y) = (x, f(x)) : Titik koordinat pada bidang Cartesius\n• Titik Potong Sumbu Y : Terjadi saat x = 0 → (0, b)\n• Titik Potong Sumbu X : Terjadi saat f(x) = 0\n• Gradien (m) : Nilai kemiringan garis m = a atau m = (y₂−y₁)/(x₂−x₁)',
-  5: '• n(A) = n(B) : Syarat mutlak korespondensi satu-satu (Bijektif)\n• n! (n Faktorial) : n × (n−1) × ... × 2 × 1 = Banyak kemungkinan korespondensi\n• Satu Lawan Satu : Setiap elemen punya tepat 1 pasangan unik timbal balik'
+  1: '• R: A → B : Aturan relasi yang memasangkan himpunan A ke B\n• Bebas Cabang : Elemen asal boleh bercabang ke banyak kawan atau kosong\n• 4 Cara Menyatakan : Diagram Panah, Pasangan Berurutan {(x, y)}, Kartesius, dan Tabel',
+  2: '• f: A → B : Fungsi dari himpunan A ke B (relasi khusus)\n• Domain (Df) : Seluruh anggota daerah asal A (wajib tepat satu kawan)\n• Kodomain (Kf) : Seluruh anggota daerah kawan B\n• Range (Rf) : Daerah hasil (anggota B yang memiliki kawan)',
+  3: '• f(x) = ax + b : Bentuk umum rumus fungsi linear\n• x : Variabel anggota daerah asal\n• f(x) : Nilai fungsi / bayangan hasil pemetaan\n• a : Koefisien pengali x\n• b : Konstanta fungsi',
+  4: '• (x, y) = (x, f(x)) : Titik koordinat pada bidang Kartesius\n• Titik Potong Sumbu Y : Terjadi saat x = 0 → (0, b)\n• Titik Potong Sumbu X : Terjadi saat f(x) = 0\n• Gradien (m) : Nilai kemiringan garis m = a atau m = (y₂−y₁)/(x₂−x₁)',
+  5: '• n(A) = n(B) : Syarat mutlak korespondensi satu-satu\n• n! (n Faktorial) : n × (n−1) × ... × 2 × 1 = Banyak kemungkinan korespondensi\n• Satu Lawan Satu : Setiap elemen punya tepat 1 pasangan unik timbal balik'
 };
 
 export default function SubbabInfoModal({ isOpen, onClose, subbabData }) {
@@ -26,7 +26,7 @@ export default function SubbabInfoModal({ isOpen, onClose, subbabData }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-hand">
-      <div className="relative w-full max-w-3xl p-4 sm:p-6 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] space-y-3 overflow-hidden select-none"
+      <div className="relative w-full max-w-3xl max-h-[92dvh] p-4 sm:p-5 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] space-y-2.5 overflow-y-auto no-scrollbar select-none"
         style={{ backgroundImage: "url('/assets/tampilan di setting/Asset/board_of_settings@4x.png')" }}>
         
         {/* Top Header */}

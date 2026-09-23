@@ -9,7 +9,7 @@ import { Layers, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
-  const stageConfig = SUBBABS_DATA[4].stages[stageNum - 1];
+  const stageConfig = SUBBABS_DATA[2]?.stages?.[stageNum - 1] || SUBBABS_DATA[2]?.stages?.[0];
 
   const [answers, setAnswers] = useState({});
   const [errorDetails, setErrorDetails] = useState(null);
@@ -48,7 +48,7 @@ export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackTo
       setErrorDetails({
         title: 'KUIS BELUM LENGKAP',
         reasons: ['Harap jawab seluruh pertanyaan audit unsur fungsi sebelum memverifikasi!'],
-        hint: stageConfig.conceptDef || 'Konsep: Pahami beda Domain (asal A), Kodomain (seluruh B), dan Range (elemen B yang kena panah).'
+        hint: stageConfig.conceptDef || 'Konsep: Pahami beda Domain (asal A), Kodomain (seluruh B), dan Range (anggota B yang kena panah).'
       });
       audioEngine.playError();
       return;
@@ -92,7 +92,7 @@ export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackTo
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || `Domain = Himpunan A, Kodomain = Himpunan B, Range = Elemen B yang menerima panah.`}
+        hintText={stageConfig.conceptDef || `Domain = Himpunan A, Kodomain = Himpunan B, Range = Anggota B yang menerima panah.`}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -103,7 +103,7 @@ export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackTo
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText="Domain adalah seluruh himpunan asal A, Kodomain adalah seluruh himpunan kawan B, dan Range adalah himpunan hasil elemen B yang menerima panah."
+        explanationText="Domain adalah seluruh himpunan asal A, Kodomain adalah seluruh himpunan kawan B, dan Range adalah himpunan hasil anggota B yang menerima panah."
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}
@@ -136,7 +136,7 @@ export default function Subbab4UnsurFungsi({ stageNum, onStageComplete, onBackTo
                   <span>PENENTUAN UNSUR FUNGSI: DOMAIN, KODOMAIN & RANGE</span>
                 </div>
                 <p className="text-base sm:text-lg lg:text-[20px] text-[#2D241E] font-bold leading-snug">
-                  Kelompokkan elemen ke kategori Domain (Daerah Asal), Kodomain (Daerah Kawan), dan Range (Daerah Hasil)!
+                  Kelompokkan anggota ke kategori Domain (Daerah Asal), Kodomain (Daerah Kawan), dan Range (Daerah Hasil)!
                 </p>
               </div>
             </div>

@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { DIAGRAM_ROPE_PALETTES, getDiagramRopePalette } from '../utils/diagramPalettes';
 
 /**
  * RelationDiagramCanvas
@@ -58,6 +59,7 @@ export default function RelationDiagramCanvas({
     const { scaleX, scaleY, containerRect } = getContainerScale();
     if (!containerRect) return;
 
+    const aCounts = {};
     const newCoords = connections.map(([idxA, idxB]) => {
       const elA = dotRefsA.current[idxA];
       const elB = dotRefsB.current[idxB];
@@ -75,7 +77,11 @@ export default function RelationDiagramCanvas({
       const x2 = (rectB.left + rectB.width / 2 - containerRect.left) / scaleX;
       const y2 = (rectB.top + rectB.height / 2 - containerRect.top) / scaleY;
 
-      return { x1, y1, x2, y2, idxA, idxB };
+      const branch = aCounts[idxA] || 0;
+      aCounts[idxA] = branch + 1;
+      const palette = getDiagramRopePalette(idxA, branch);
+
+      return { x1, y1, x2, y2, idxA, idxB, palette };
     }).filter(Boolean);
 
     setCoords(newCoords);
@@ -246,7 +252,7 @@ export default function RelationDiagramCanvas({
     const x1 = (rectA.left + rectA.width / 2 - containerRect.left) / scaleX;
     const y1 = (rectA.top + rectA.height / 2 - containerRect.top) / scaleY;
 
-    return { x1, y1, x2: dragMousePos.x, y2: dragMousePos.y };
+    return { x1, y1, x2: dragMousePos.x, y2: dragMousePos.y, idxA: draggingA };
   };
 
   const dragLine = getDragLineCoords();
@@ -282,11 +288,27 @@ export default function RelationDiagramCanvas({
     <div
       ref={containerRef}
       style={{ touchAction: 'none' }}
-      className={`relative w-full max-w-lg mx-auto p-2.5 sm:p-3.5 rounded-3xl glass-card border border-white/60 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)] select-none font-hand touch-none ${compact ? 'text-xs' : 'text-sm'} ${className}`}
+      className={`relative w-full max-w-lg mx-auto ${compact ? 'p-2 sm:p-2.5 rounded-2xl' : 'p-2.5 sm:p-3.5 rounded-3xl'} glass-card border border-white/60 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)] select-none font-hand touch-none ${compact ? 'text-xs' : 'text-sm'} ${className}`}
     >
       {/* SVG Lively Curved Arrow Thread Overlay */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
         <defs>
+          {/* Multi-Colored Arrow Markers for each palette */}
+          {DIAGRAM_ROPE_PALETTES.map((pal) => (
+            <marker
+              key={pal.id}
+              id={`pencilArrow-${pal.id}`}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="8"
+              markerHeight="8"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1 L 10 5 L 0 9 z" fill={pal.stroke} stroke="#2D241E" strokeWidth="1.5" />
+            </marker>
+          ))}
+          {/* Default fallback marker */}
           <marker
             id="pencilArrow"
             viewBox="0 0 10 10"
@@ -305,6 +327,7 @@ export default function RelationDiagramCanvas({
           const dx = (c.x2 - c.x1) * 0.45;
           const curveOffset = ((i % 2 === 0 ? 1 : -1) * 14);
           const pathD = `M ${c.x1} ${c.y1} C ${c.x1 + dx} ${c.y1 + curveOffset}, ${c.x2 - dx} ${c.y2 - curveOffset}, ${c.x2} ${c.y2}`;
+          const pal = c.palette || getDiagramRopePalette(c.idxA, 0);
 
           return (
             <g key={i} className="group pointer-events-auto">
@@ -323,61 +346,75 @@ export default function RelationDiagramCanvas({
                 d={pathD}
                 fill="none"
                 stroke="#2D241E"
-                strokeWidth={compact ? "4" : "5"}
+                strokeWidth={compact ? "4.5" : "5.5"}
                 strokeLinecap="round"
                 className="pointer-events-none"
               />
-              {/* Red Thread / Rope */}
+              {/* Vibrant Colored Thread / Rope */}
               <path
                 d={pathD}
                 fill="none"
-                stroke="#E11D48"
+                stroke={pal.stroke}
                 strokeWidth={compact ? "3.5" : "4.5"}
                 strokeLinecap="round"
-                markerEnd="url(#pencilArrow)"
-                className="pointer-events-none filter drop-shadow-[0_2px_4px_rgba(225,29,72,0.4)]"
+                markerEnd={`url(#pencilArrow-${pal.id})`}
+                style={{ filter: `drop-shadow(0 2px 5px ${pal.shadow})` }}
+                className="pointer-events-none transition-all duration-200"
+              />
+              {/* 3D Core Highlight Sheen for Tactile Rope Texture */}
+              <path
+                d={pathD}
+                fill="none"
+                stroke={pal.sheen}
+                strokeWidth={compact ? "1.0" : "1.4"}
+                strokeLinecap="round"
+                opacity="0.8"
+                className="pointer-events-none"
               />
             </g>
           );
         })}
 
         {/* Live Dragging Thread Line Preview */}
-        {dragLine && (
-          <g className="pointer-events-none">
-            <line
-              x1={dragLine.x1}
-              y1={dragLine.y1}
-              x2={dragLine.x2}
-              y2={dragLine.y2}
-              stroke="#2D241E"
-              strokeWidth="5.5"
-              strokeLinecap="round"
-            />
-            <line
-              x1={dragLine.x1}
-              y1={dragLine.y1}
-              x2={dragLine.x2}
-              y2={dragLine.y2}
-              stroke="#F59E0B"
-              strokeWidth="4"
-              strokeDasharray="6 4"
-              strokeLinecap="round"
-              markerEnd="url(#pencilArrow)"
-            />
-          </g>
-        )}
+        {dragLine && (() => {
+          const activeDragPal = getDiagramRopePalette(dragLine.idxA, 0);
+          return (
+            <g className="pointer-events-none">
+              <line
+                x1={dragLine.x1}
+                y1={dragLine.y1}
+                x2={dragLine.x2}
+                y2={dragLine.y2}
+                stroke="#2D241E"
+                strokeWidth="5.5"
+                strokeLinecap="round"
+              />
+              <line
+                x1={dragLine.x1}
+                y1={dragLine.y1}
+                x2={dragLine.x2}
+                y2={dragLine.y2}
+                stroke={activeDragPal.stroke}
+                strokeWidth="4"
+                strokeDasharray="6 4"
+                strokeLinecap="round"
+                markerEnd={`url(#pencilArrow-${activeDragPal.id})`}
+              />
+            </g>
+          );
+        })()}
       </svg>
 
       {/* Two Columns Grid for Himpunan A and B */}
       <div className={`grid grid-cols-2 ${compact ? 'gap-2 sm:gap-3' : 'gap-3 sm:gap-5'} relative z-10`}>
         
         {/* HIMPUNAN A */}
-        <div className={`${compact ? 'space-y-1.5' : 'space-y-2'} text-center flex flex-col items-center w-full`}>
-          <div className={`${compact ? 'py-1 px-3 text-xs sm:text-sm' : 'py-2 px-4 text-lg sm:text-xl lg:text-[22px]'} rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#78350F] font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center`}>
+        <div className={`${compact ? 'space-y-1' : 'space-y-2'} text-center flex flex-col items-center w-full`}>
+          <div className={`${compact ? 'py-0.5 px-2 text-[11px] sm:text-xs font-black' : 'py-2 px-4 text-lg sm:text-xl lg:text-[22px] font-black'} rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#78350F] shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center`}>
             {labelA}
           </div>
           
-          <div className={`${compact ? 'space-y-1.5' : 'space-y-2.5'} w-full`}>
+          <div className={`${compact ? 'space-y-1' : 'space-y-2.5'} w-full`}>
             {setA.map((item, idx) => {
               const isSelected = selectedA === idx || draggingA === idx;
               return (
@@ -387,31 +424,31 @@ export default function RelationDiagramCanvas({
                   style={{ touchAction: 'none' }}
                   onPointerDown={(e) => handlePointerDownA(idx, e)}
                   onClick={(e) => handleNodeClickA(idx, e)}
-                  className={`${compact ? 'p-2 sm:p-2.5 rounded-xl' : 'p-3 sm:p-3.5 rounded-2xl'} border font-bold transition-all duration-150 flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
+                  className={`${compact ? 'p-1.5 px-2 rounded-xl min-h-[34px]' : 'p-3 sm:p-3.5 rounded-2xl'} border font-bold transition-all duration-150 flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
                     readOnly
                       ? 'glass-card border-white/60 text-[#2D241E]'
                       : isSelected
-                      ? 'bg-[#FDE68A] border-[#2D241E] text-[#2D241E] ring-4 ring-[#F59E0B] scale-102 font-extrabold shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                      ? 'bg-[#FDE68A] border-[#2D241E] text-[#2D241E] ring-3 ring-[#F59E0B] scale-102 font-extrabold shadow-[0_0_12px_rgba(245,158,11,0.5)]'
                       : 'glass-card border-white/60 text-[#2D241E] active:scale-98'
                   }`}
                 >
-                  <span className={`pr-2 font-pencil font-bold ${compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl lg:text-[24px]'} whitespace-normal break-words text-left leading-tight`}>
+                  <span className={`pr-1.5 font-pencil font-bold ${compact ? 'text-xs sm:text-[13px]' : 'text-lg sm:text-xl lg:text-[24px]'} whitespace-normal break-words text-left leading-tight`}>
                     {item}
                   </span>
                   {/* Brass Push-Pin Head Element for Detective Red String Anchor */}
                   <div 
                     ref={(el) => (dotRefsA.current[idx] = el)}
                     title={`Paku Pin ${item}`}
-                    className={`${compact ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-7 h-7 sm:w-8 sm:h-8'} rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_3px_6px_rgba(0,0,0,0.25)] ${
+                    className={`${compact ? 'w-4 h-4 sm:w-5 sm:h-5' : 'w-7 h-7 sm:w-8 sm:h-8'} rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.25)] ${
                       isSelected 
-                        ? 'bg-gradient-to-br from-red-400 via-red-600 to-red-800 scale-125 ring-3 ring-red-400 shadow-[0_0_12px_rgba(225,29,72,0.7)]' 
+                        ? 'bg-gradient-to-br from-red-400 via-red-600 to-red-800 scale-125 ring-2 ring-red-400 shadow-[0_0_10px_rgba(225,29,72,0.7)]' 
                         : connections.some(([a]) => a === idx)
                         ? 'bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 ring-2 ring-amber-300'
                         : 'bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 hover:scale-110'
                     }`} 
                   >
                     {/* Metallic Pin Core Specular Highlight */}
-                    <div className="w-2 h-2 rounded-full bg-white/70 shadow-xs pointer-events-none" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/70 shadow-xs pointer-events-none" />
                   </div>
                 </div>
               );
@@ -420,12 +457,12 @@ export default function RelationDiagramCanvas({
         </div>
 
         {/* HIMPUNAN B */}
-        <div className={`${compact ? 'space-y-1.5' : 'space-y-2'} text-center flex flex-col items-center w-full`}>
-          <div className={`${compact ? 'py-1 px-3 text-xs sm:text-sm' : 'py-2 px-4 text-lg sm:text-xl lg:text-[22px]'} rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#1E40AF] font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center`}>
+        <div className={`${compact ? 'space-y-1' : 'space-y-2'} text-center flex flex-col items-center w-full`}>
+          <div className={`${compact ? 'py-0.5 px-2 text-[11px] sm:text-xs font-black' : 'py-2 px-4 text-lg sm:text-xl lg:text-[22px] font-black'} rounded-xl glass-panel-subtle border border-[#2D241E]/40 text-[#1E40AF] shadow-[0_2px_8px_rgba(0,0,0,0.06)] self-center`}>
             {labelB}
           </div>
 
-          <div className={`${compact ? 'space-y-1.5' : 'space-y-2.5'} w-full`}>
+          <div className={`${compact ? 'space-y-1' : 'space-y-2.5'} w-full`}>
             {setB.map((item, idx) => {
               const inRange = isRangeNode(idx);
               const isConnected = connections.some(([, b]) => b === idx);
@@ -438,13 +475,13 @@ export default function RelationDiagramCanvas({
                   style={{ touchAction: 'none' }}
                   onClick={(e) => handleNodeClickB(idx, e)}
                   title={!readOnly && isConnected && selectedA === null ? `Klik untuk memotong hubungan ${item}` : undefined}
-                  className={`${compact ? 'p-2 sm:p-2.5 rounded-xl space-x-2' : 'p-3 sm:p-3.5 rounded-2xl space-x-3'} border font-bold transition-all duration-150 flex items-center justify-start shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
+                  className={`${compact ? 'p-1.5 px-2 rounded-xl min-h-[34px] space-x-1.5' : 'p-3 sm:p-3.5 rounded-2xl space-x-3'} border font-bold transition-all duration-150 flex items-center justify-start shadow-[0_4px_12px_rgba(0,0,0,0.08)] cursor-pointer touch-none select-none ${
                     readOnly
                       ? inRange
                         ? 'bg-[#D1FAE5] border-[#2D241E] text-[#065F46]'
                         : 'glass-card border-white/60 text-[#2D241E]'
                       : isTargetHovered
-                      ? 'bg-[#E0F2FE] border-[#2D241E] text-[#0369A1] ring-4 ring-[#38BDF8] scale-104 shadow-[0_0_15px_rgba(56,189,248,0.6)]'
+                      ? 'bg-[#E0F2FE] border-[#2D241E] text-[#0369A1] ring-3 ring-[#38BDF8] scale-104 shadow-[0_0_12px_rgba(56,189,248,0.6)]'
                       : 'glass-card border-white/60 text-[#2D241E] active:scale-98'
                   }`}
                 >
@@ -452,18 +489,18 @@ export default function RelationDiagramCanvas({
                   <div 
                     ref={(el) => (dotRefsB.current[idx] = el)}
                     title={!readOnly && isConnected && selectedA === null ? `Klik untuk memotong tali ${item}` : `Paku Pin ${item}`}
-                    className={`${compact ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-7 h-7 sm:w-8 sm:h-8'} rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_3px_6px_rgba(0,0,0,0.25)] ${
+                    className={`${compact ? 'w-4 h-4 sm:w-5 sm:h-5' : 'w-7 h-7 sm:w-8 sm:h-8'} rounded-full border-2 border-[#2D241E] flex-shrink-0 transition-transform duration-150 relative flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.25)] ${
                       inRange || isConnected 
                         ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-800 ring-2 ring-red-300' 
                         : isTargetHovered 
-                        ? 'bg-gradient-to-br from-sky-400 via-sky-500 to-sky-700 scale-125 ring-3 ring-cyan-400 shadow-[0_0_14px_rgba(56,189,248,0.8)]' 
+                        ? 'bg-gradient-to-br from-sky-400 via-sky-500 to-sky-700 scale-125 ring-2 ring-cyan-400 shadow-[0_0_10px_rgba(56,189,248,0.8)]' 
                         : 'bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 hover:scale-110'
                     }`} 
                   >
                     {/* Metallic Pin Core Specular Highlight */}
-                    <div className="w-2 h-2 rounded-full bg-white/70 shadow-xs pointer-events-none" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/70 shadow-xs pointer-events-none" />
                   </div>
-                  <span className={`pl-2 font-pencil font-bold ${compact ? 'text-sm sm:text-base' : 'text-lg sm:text-xl lg:text-[24px]'} whitespace-normal break-words text-left leading-tight`}>
+                  <span className={`pl-1.5 font-pencil font-bold ${compact ? 'text-xs sm:text-[13px]' : 'text-lg sm:text-xl lg:text-[24px]'} whitespace-normal break-words text-left leading-tight`}>
                     {item}
                   </span>
                 </div>
@@ -475,7 +512,7 @@ export default function RelationDiagramCanvas({
       </div>
 
       {/* Helpful Touch & Mouse Instruction Indicator */}
-      {!readOnly && (
+      {!readOnly && !compact && (
         <div className="mt-2 text-center text-xs sm:text-sm font-bold text-[#78350F]/90 bg-amber-100/60 rounded-xl py-1 px-2 border border-amber-300/60">
           💡 Hubungkan: Klik pin A lalu klik pin B (atau tarik benang). Putus: Klik langsung pin B yang sudah terpasang, atau klik tali merahnya.
         </div>

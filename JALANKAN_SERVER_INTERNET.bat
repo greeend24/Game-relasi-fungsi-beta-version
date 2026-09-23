@@ -15,17 +15,17 @@ if %errorlevel% neq 0 (
 )
 
 echo ================================================================
-echo   DETEKTIF DATA - SERVER ONLINE INTERNET (NGROK 1-KLIK)
+echo   DETEKTIF DATA - SERVER ONLINE INTERNET
 echo ================================================================
 echo.
-echo Sedang menyiapkan server data dan menghubungkan ke internet (Ngrok)...
+echo Sedang menyiapkan server data dan menghubungkan ke jalur internet online...
 echo.
 
-node scripts\start-online-server.cjs
+node scripts\start-cloudflare-server.cjs
 
 echo.
 echo ================================================================
-echo   Server Data & Ngrok telah dinonaktifkan / terhenti.
+echo   Server Cloudflare telah dinonaktifkan / terhenti.
 echo ================================================================
 echo.
 pause

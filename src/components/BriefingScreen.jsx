@@ -20,7 +20,7 @@ export default function BriefingScreen({ subbabData, onStartStages, onBackToStag
         </button>
 
         <span className="text-xs font-mono font-bold text-cyan-400 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30">
-          SUBBAB {subbabData.id} / 7
+          SUBBAB {subbabData.id} / 5
         </span>
       </div>
 

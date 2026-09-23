@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { 
   User, UserPlus, LogIn, CheckCircle, 
-  Eye, EyeOff 
+  Eye, EyeOff, Play
 } from 'lucide-react';
 import { Lottie } from 'lottie-react';
 import NetworkStatusBadge from './NetworkStatusBadge';
 import { storageService } from '../services/storageService';
 import { audioEngine } from '../services/audioEngine';
-import successAnimation from '../../public/assets/loading/success_animation.json';
+import successAnimation from '../assets/loading/success_animation.json';
 
 export default function AuthScreen({ onLoginSuccess }) {
   // activeModal: null (menu 2 tombol), 'REGISTER' (modal buat akun), 'LOGIN' (modal pilih/masuk akun)
@@ -99,14 +99,19 @@ export default function AuthScreen({ onLoginSuccess }) {
         if (res.success && res.user) {
           try { audioEngine.playStageClear(); } catch {}
           try { audioEngine.toggleBgm(true); } catch {}
+          setActiveModal(null);
           setRegSuccessUser(res.user);
           setTimeout(() => {
             onLoginSuccess(res.user);
-          }, 2200);
+          }, 1000);
         } else {
           try { audioEngine.playError(); } catch {}
           setErrorMsg(res.message || 'Gagal mendaftarkan akun!');
         }
+      } catch (err) {
+        console.error('Register error:', err);
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Terjadi kendala sistem pendaftaran. Silakan coba lagi.');
       } finally {
         setIsSubmitting(false);
       }
@@ -131,11 +136,16 @@ export default function AuthScreen({ onLoginSuccess }) {
         if (res.success && res.user) {
           try { audioEngine.playCorrect(); } catch {}
           try { audioEngine.toggleBgm(true); } catch {}
+          setActiveModal(null);
           onLoginSuccess(res.user);
         } else {
           try { audioEngine.playError(); } catch {}
           setErrorMsg(res.message || 'Username atau password salah!');
         }
+      } catch (err) {
+        console.error('Login error:', err);
+        try { audioEngine.playError(); } catch {}
+        setErrorMsg('Terjadi kendala sistem saat masuk. Silakan coba lagi.');
       } finally {
         setIsSubmitting(false);
       }
@@ -145,9 +155,9 @@ export default function AuthScreen({ onLoginSuccess }) {
   return (
     <div className="h-full w-full flex flex-col justify-between font-pencil relative z-10 overflow-hidden bg-transparent select-none animate-fade-in">
       
-      {/* Network Status Badge (Online/Offline with Label) */}
+      {/* Network Status Lamp Indicator */}
       <div className="absolute top-2.5 right-3 sm:top-4 sm:right-6 z-40 pointer-events-auto">
-        <NetworkStatusBadge showLabel={true} size="md" />
+        <NetworkStatusBadge size="md" />
       </div>
 
       {/* 1. BOTTOM LANDSCAPE BACKGROUND ASSET */}
@@ -215,7 +225,7 @@ export default function AuthScreen({ onLoginSuccess }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in font-pencil overflow-hidden">
           
           <div 
-            className="relative w-full max-w-[min(92vw,460px)] rounded-3xl bg-[length:100%_100%] bg-no-repeat border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] flex flex-col select-none overflow-hidden my-auto p-4 sm:p-6"
+            className="relative w-full max-w-[min(92vw,460px)] max-h-[92dvh] rounded-3xl bg-[length:100%_100%] bg-no-repeat border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] flex flex-col select-none overflow-y-auto no-scrollbar my-auto p-4 sm:p-5"
             style={{ backgroundImage: `url('/assets/tampilan sebelum masuk lobby/Asset/board_buat_akun_pilih_akun@4x.png')` }}
           >
             {/* CLOSE BUTTON - TOP RIGHT */}
@@ -366,11 +376,14 @@ export default function AuthScreen({ onLoginSuccess }) {
                   className="w-full py-2 sm:py-2.5 mt-1.5 font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#047857] bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <span className="animate-pulse">Mendaftarkan Akun...</span>
+                    <span className="animate-pulse flex items-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      <span>Mendaftarkan Akun...</span>
+                    </span>
                   ) : (
                     <>
                       <UserPlus className="w-4 h-4" />
-                      <span>BUAT AKUN DETEKTIF</span>
+                      <span>BUAT AKUN & MULAI MAIN</span>
                     </>
                   )}
                 </button>
@@ -425,19 +438,22 @@ export default function AuthScreen({ onLoginSuccess }) {
                   </div>
                 </div>
 
-                {/* 3. TOMBOL MASUK */}
+                {/* 3. TOMBOL MULAI PETUALANGAN */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   onMouseEnter={() => audioEngine.playHover()}
-                  className="w-full py-2.5 sm:py-3 mt-1.5 font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-[0_3px_6px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#B45309] bg-gradient-to-r from-[#F59E0B] to-[#D97706] hover:from-[#D97706] hover:to-[#B45309] text-[#2D241E] transition-all disabled:opacity-50"
+                  className="w-full py-2.5 sm:py-3 mt-1.5 font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-[0_4px_10px_rgba(0,0,0,0.35)] hover:scale-[1.02] active:scale-95 cursor-pointer rounded-xl border-2 border-[#B45309] bg-gradient-to-r from-[#F59E0B] via-[#EAB308] to-[#D97706] hover:from-[#D97706] hover:to-[#B45309] text-[#2D241E] transition-all disabled:opacity-50 tracking-wide"
                 >
                   {isSubmitting ? (
-                    <span className="animate-pulse">Memverifikasi Akun...</span>
+                    <span className="animate-pulse flex items-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      <span>Menyiapkan Petualangan...</span>
+                    </span>
                   ) : (
                     <>
-                      <LogIn className="w-4 h-4" />
-                      <span>MASUK SEBAGAI DETEKTIF</span>
+                      <Play className="w-4 h-4 fill-[#2D241E]" />
+                      <span>MULAI PETUALANGAN</span>
                     </>
                   )}
                 </button>

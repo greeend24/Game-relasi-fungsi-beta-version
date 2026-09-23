@@ -21,10 +21,10 @@ A. CARA 1: DARI KOMPUTER SERVER (OTOMATIS 1 KLIK)
       URL: http://127.0.0.1:3001/admin
 
 B. CARA 2: DARI HP ATAU LAPTOP LAIN LEWAT INTERNET (MONITOR JARAK JAUH)
-   1. Pastikan server internet menyala (lewat "JALANKAN_SERVER_INTERNET.bat").
+   1. Pastikan server internet menyala (lewat "JALANKAN_SERVER_CLOUDFLARE.bat" atau shortcut Desktop "Deploy Server Cloudflare").
    2. Buka browser di HP atau laptop mana saja (tidak harus di komputer server).
    3. Masukkan URL:
-      https://scooter-thickness-stony.ngrok-free.dev/admin
+      https://[url-kamu].trycloudflare.com/admin
    4. Halaman login panel admin akan langsung tampil di layarmu.
 
 --------------------------------------------------------------------------------

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Video Frame Extractor</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #fff; padding: 20px; }
+    .video-section { margin-bottom: 40px; }
+    h2 { color: #f59e0b; }
+    .frames { display: flex; flex-wrap: wrap; gap: 10px; }
+    .frame-card { background: #222; padding: 5px; border-radius: 6px; }
+    .frame-card span { display: block; font-size: 12px; margin-bottom: 4px; color: #aaa; }
+    canvas { width: 320px; height: 180px; background: #000; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Ekstraksi Visual Materi Chapter 1</h1>
+  <div id="container"></div>
+
+  <script>
+    const videos = [
+      { name: "Chapter 1_1", src: "/materi/chapter 1/Chapter 1_1.mp4", times: [5, 15, 30, 45, 60, 75] },
+      { name: "Chapter 1_2", src: "/materi/chapter 1/Chapter 1_2.mp4", times: [5, 12, 20, 28] },
+      { name: "Chapter 1_3", src: "/materi/chapter 1/Chapter 1_3.mp4", times: [5, 15, 30, 45, 60] }
+    ];
+
+    async function extractFrames() {
+      const container = document.getElementById('container');
+      
+      for (const vInfo of videos) {
+        const sec = document.createElement('div');
+        sec.className = 'video-section';
+        sec.innerHTML = `<h2>${vInfo.name} (${vInfo.src})</h2><div class="frames" id="frames-${vInfo.name}"></div>`;
+        container.appendChild(sec);
+        const framesDiv = document.getElementById(`frames-${vInfo.name}`);
+
+        const video = document.createElement('video');
+        video.src = vInfo.src;
+        video.crossOrigin = 'anonymous';
+        video.muted = true;
+        await new Promise(r => { video.onloadedmetadata = r; });
+
+        for (const t of vInfo.times) {
+          video.currentTime = Math.min(t, video.duration - 0.5);
+          await new Promise(r => { video.onseeked = r; });
+          
+          const card = document.createElement('div');
+          card.className = 'frame-card';
+          card.innerHTML = `<span>Waktu: ${t} detik</span>`;
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 360;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          card.appendChild(canvas);
+          framesDiv.appendChild(card);
+        }
+      }
+      console.log('ALL_FRAMES_LOADED');
+      window.framesReady = true;
+    }
+
+    extractFrames().catch(e => console.error(e));
+  </script>
+</body>
+</html>

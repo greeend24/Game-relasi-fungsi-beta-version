@@ -5,44 +5,18 @@ const { execSync } = require('child_process');
 const rootDir = path.resolve(__dirname, '..');
 const targetSiapMain = 'D:\\File Penting\\File S2\\Thesis Project\\Game Relasi Fungsi siap main';
 const baseDist = fs.existsSync(targetSiapMain) ? targetSiapMain : path.join(rootDir, 'DISTRIBUSI_GAME_ALL_PLATFORM');
-const distWinFolder = path.join(baseDist, '1_WINDOWS_ELECTRON', 'Detektif_Data_Windows_Game');
-const distWinRes = path.join(distWinFolder, 'resources');
 
 const srcDist = path.join(rootDir, 'dist');
 const srcBackendDist = path.join(rootDir, 'backend', 'dist');
+const srcDb = path.join(rootDir, 'backend', 'detektif_data.db');
 
-// 1. Sync directly into DISTRIBUSI_GAME_ALL_PLATFORM/1_WINDOWS_ELECTRON/Detektif_Data_Windows_Game
-if (fs.existsSync(distWinRes)) {
-  console.log('📦 Syncing frontend dist into DISTRIBUSI_GAME_ALL_PLATFORM...');
-  const distAssets = path.join(distWinRes, 'frontend', 'dist', 'assets');
-  if (fs.existsSync(distAssets)) fs.rmSync(distAssets, { recursive: true, force: true });
-  fs.cpSync(srcDist, path.join(distWinRes, 'frontend', 'dist'), { recursive: true, force: true });
+// All Electron targets
+const electronTargets = [
+  path.join(baseDist, 'Detektif data (Windows Version)', 'Detektif_Data_Windows_Game'),
+  path.join(rootDir, 'dist-electron', 'win-unpacked'),
+];
 
-  console.log('📦 Syncing backend dist into DISTRIBUSI_GAME_ALL_PLATFORM...');
-  fs.cpSync(srcBackendDist, path.join(distWinRes, 'backend', 'dist'), { recursive: true, force: true });
-
-  // Sinkronkan database master ke resources distribusi & AppData
-  const srcDb = path.join(rootDir, 'backend', 'detektif_data.db');
-  if (fs.existsSync(srcDb)) {
-    fs.copyFileSync(srcDb, path.join(distWinRes, 'backend', 'detektif_data.db'));
-    const appData = process.env.APPDATA;
-    if (appData) {
-      const appDataDb = path.join(appData, 'detektif-data-relasi-fungsi', 'detektif_data.db');
-      if (fs.existsSync(path.dirname(appDataDb))) {
-        fs.copyFileSync(srcDb, appDataDb);
-        console.log('📦 Syncing detektif_data.db into AppData Roaming...');
-      }
-    }
-  }
-
-  try {
-    execSync('node scripts/patch_exe_icon.cjs', { cwd: rootDir, stdio: 'inherit' });
-  } catch (e) {
-    console.warn('Exe icon patch notice:', e.message);
-  }
-}
-
-// 2. Pack asar directly into distWinRes
+// 1. Pack fresh app.asar first
 console.log('📦 Packing fresh app.asar...');
 const tempAsarDir = path.join(rootDir, 'scratch', 'temp_asar');
 if (fs.existsSync(tempAsarDir)) fs.rmSync(tempAsarDir, { recursive: true, force: true });
@@ -54,25 +28,98 @@ if (fs.existsSync(path.join(rootDir, 'electron', 'loading.html'))) {
 }
 fs.copyFileSync(path.join(rootDir, 'package.json'), path.join(tempAsarDir, 'package.json'));
 
-if (fs.existsSync(distWinRes)) {
-  const distAsarPath = path.join(distWinRes, 'app.asar');
-  execSync(`npx @electron/asar pack "${tempAsarDir}" "${distAsarPath}"`, { stdio: 'inherit' });
-}
-
+const tempAsarOutput = path.join(rootDir, 'scratch', 'app.asar');
+execSync(`npx @electron/asar pack "${tempAsarDir}" "${tempAsarOutput}"`, { stdio: 'inherit' });
 fs.rmSync(tempAsarDir, { recursive: true, force: true });
 
-console.log('🎉 SUCCESS: Distribution folder is 100% updated with all latest features & fixes!');
+// 2. Sync to all Electron targets
+electronTargets.forEach(targetFolder => {
+  const targetRes = path.join(targetFolder, 'resources');
+  if (fs.existsSync(targetRes)) {
+    console.log(`📦 Syncing Electron distribution: ${path.relative(rootDir, targetFolder) || targetFolder}...`);
 
-// 3. Update distribution Windows ZIP directly
-const distZip = path.join(baseDist, 'Detektif_Data_Windows_Electron.zip');
-try {
-  console.log('📦 Updating Windows Electron ZIP in distribution folder...');
-  if (fs.existsSync(distZip)) {
-    fs.unlinkSync(distZip);
+    // Sync frontend dist
+    const distAssets = path.join(targetRes, 'frontend', 'dist', 'assets');
+    if (fs.existsSync(distAssets)) fs.rmSync(distAssets, { recursive: true, force: true });
+    fs.cpSync(srcDist, path.join(targetRes, 'frontend', 'dist'), { recursive: true, force: true });
+
+    // Sync backend dist
+    fs.cpSync(srcBackendDist, path.join(targetRes, 'backend', 'dist'), { recursive: true, force: true });
+
+    // Sync master database
+    if (fs.existsSync(srcDb)) {
+      fs.copyFileSync(srcDb, path.join(targetRes, 'backend', 'detektif_data.db'));
+    }
+
+    // Sync app.asar
+    if (fs.existsSync(tempAsarOutput)) {
+      fs.copyFileSync(tempAsarOutput, path.join(targetRes, 'app.asar'));
+    }
   }
-  execSync(`tar.exe -a -c -f "${distZip}" -C "${path.join(baseDist, '1_WINDOWS_ELECTRON')}" Detektif_Data_Windows_Game`, { stdio: 'inherit' });
-  const sizeMb = (fs.statSync(distZip).size / (1024 * 1024)).toFixed(1);
-  console.log(`🎁 Updated: ${distZip} (${sizeMb} MB)`);
+});
+
+// Clean temp asar
+if (fs.existsSync(tempAsarOutput)) fs.unlinkSync(tempAsarOutput);
+
+// 3. Sync database to AppData Roaming
+const appData = process.env.APPDATA;
+if (appData && fs.existsSync(srcDb)) {
+  const appDataDb = path.join(appData, 'detektif-data-relasi-fungsi', 'detektif_data.db');
+  if (fs.existsSync(path.dirname(appDataDb))) {
+    fs.copyFileSync(srcDb, appDataDb);
+    console.log('📦 Syncing detektif_data.db into AppData Roaming...');
+  }
+}
+
+// 4. Patch executable icons for all targets
+try {
+  execSync('node scripts/patch_exe_icon.cjs', { cwd: rootDir, stdio: 'inherit' });
+} catch (e) {
+  console.warn('Exe icon patch notice:', e.message);
+}
+
+// 5. Sync to WebView2 game_data if present
+const webview2GameData = path.join(baseDist, 'Detektif data (Windows WebView2 Version)', 'game_data');
+if (fs.existsSync(webview2GameData)) {
+  console.log('📦 Syncing frontend dist into Detektif data (Windows WebView2 Version)...');
+  fs.cpSync(srcDist, webview2GameData, { recursive: true, force: true });
+}
+
+// 6. Sync to Web Version if present
+const webVersionFolder = path.join(baseDist, 'Detektif data (Web Version)');
+if (fs.existsSync(webVersionFolder)) {
+  console.log('📦 Syncing frontend dist into Detektif data (Web Version)...');
+  fs.cpSync(srcDist, webVersionFolder, { recursive: true, force: true });
+}
+
+// 7. Update distribution Windows ZIP directly
+const distWinFolder = electronTargets[0];
+const targetWinZip = path.join(baseDist, 'Detektif data (Windows Version).zip');
+const winSourceParent = path.dirname(distWinFolder);
+try {
+  console.log('📦 Updating Windows ZIP in distribution folder...');
+  if (fs.existsSync(targetWinZip)) {
+    fs.unlinkSync(targetWinZip);
+  }
+  execSync(`tar.exe -a -c -f "${targetWinZip}" -C "${winSourceParent}" Detektif_Data_Windows_Game`, { stdio: 'inherit' });
+  const sizeMb = (fs.statSync(targetWinZip).size / (1024 * 1024)).toFixed(1);
+  console.log(`🎁 Updated: ${targetWinZip} (${sizeMb} MB)`);
 } catch (e) {
   console.warn('Dist ZIP copy notice:', e.message);
 }
+
+// 8. Update Web Version ZIP if present
+const targetWebZip = path.join(baseDist, 'Detektif data (Web Version).zip');
+if (fs.existsSync(webVersionFolder)) {
+  try {
+    console.log('📦 Updating Web ZIP in distribution folder...');
+    if (fs.existsSync(targetWebZip)) fs.unlinkSync(targetWebZip);
+    execSync(`tar.exe -a -c -f "${targetWebZip}" -C "${baseDist}" "Detektif data (Web Version)"`, { stdio: 'inherit' });
+    const sizeMb = (fs.statSync(targetWebZip).size / (1024 * 1024)).toFixed(1);
+    console.log(`🎁 Updated: ${targetWebZip} (${sizeMb} MB)`);
+  } catch (e) {
+    console.warn('Web ZIP copy notice:', e.message);
+  }
+}
+
+console.log('🎉 SUCCESS: All Electron and distribution folders are 100% updated with all latest features & fixes!');

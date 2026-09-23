@@ -74,14 +74,12 @@ function DetektifRelo({
   const [isInstructorHovered, setIsInstructorHovered] = useState(false);
   const [isInstructorFlying, setIsInstructorFlying] = useState(false);
   const [instructorWingPose, setInstructorWingPose] = useState('idle');
-  const [instructorClickCount, setInstructorClickCount] = useState(0);
   const [instructorFlightMessage, setInstructorFlightMessage] = useState('');
 
   const mascotRef = useRef(null);
   const holdTimerRef = useRef(null);
   const hopTimerRef = useRef(null);
   const instructorHoldTimerRef = useRef(null);
-  const instructorClickResetTimerRef = useRef(null);
   const instructorPressStartTimeRef = useRef(0);
   const instructorHoldTriggeredRef = useRef(false);
   const prevHoverRef = useRef(isHovered);
@@ -104,7 +102,6 @@ function DetektifRelo({
       if (hopTimerRef.current) clearTimeout(hopTimerRef.current);
       if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
       if (instructorHoldTimerRef.current) clearTimeout(instructorHoldTimerRef.current);
-      if (instructorClickResetTimerRef.current) clearTimeout(instructorClickResetTimerRef.current);
     };
   }, []);
 
@@ -213,7 +210,6 @@ function DetektifRelo({
       instructorHoldTimerRef.current = setTimeout(() => {
         instructorHoldTriggeredRef.current = true;
         instructorHoldTimerRef.current = null;
-        setInstructorClickCount(0);
         triggerInstructorFlight();
       }, 3000);
     }
@@ -240,55 +236,8 @@ function DetektifRelo({
       return;
     }
 
-    // Snowy & Ryu jump playfully and speak when clicked!
-    if (activeCharacter !== 'relo') {
-      triggerHop();
-      if (canSpeak && !audioSpeaking) {
-        try {
-          const scene = activeCharacter === 'snowy' ? '4' : '5';
-          const res = reloVoiceService.playScene(scene, false, true);
-          if (res?.text && typeof onInstructorFlight === 'function') {
-            onInstructorFlight(res.text);
-          }
-        } catch {}
-      }
-      return;
-    }
-
-    // Relo: check 5x rapid clicks for launch, otherwise hop and speak!
-    if (instructorClickResetTimerRef.current) {
-      clearTimeout(instructorClickResetTimerRef.current);
-    }
-
-    const nextCount = instructorClickCount + 1;
-    if (nextCount >= 5) {
-      setInstructorClickCount(0);
-      triggerInstructorFlight();
-    } else {
-      setInstructorClickCount(nextCount);
-      // Playful 1s hop with wing flapping
-      triggerHop();
-
-      // Speak a friendly line when tapped (ONLY if canSpeak is enabled)!
-      if (canSpeak && !audioSpeaking) {
-        try {
-          // If in stage/chapter context: ONLY play chapter/stage guidance, NEVER 1A/1B welcome greeting!
-          // If in lobby/menu context: ONLY play friendly lobby greeting (1B)
-          const isLobby = !isStageContext && islandType !== 'chapter';
-          const pool = isLobby ? ['1B'] : ['2A', '3A'];
-          const randomScene = pool[Math.floor(Math.random() * pool.length)];
-          const res = reloVoiceService.playScene(randomScene, false, true);
-          if (res?.text && typeof onInstructorFlight === 'function') {
-            onInstructorFlight(res.text);
-          }
-        } catch {}
-      }
-
-      // Reset click count back to 0 after 2.5s of inactivity
-      instructorClickResetTimerRef.current = setTimeout(() => {
-        setInstructorClickCount(0);
-      }, 2500);
-    }
+    // Playful hop animation when clicked - NO SPEECH / VOICE
+    triggerHop();
   };
 
   const entranceClasses = [
@@ -336,7 +285,7 @@ function DetektifRelo({
     xxxl: 'w-56 h-56 sm:w-72 sm:h-72',
     xxxxl: 'w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] md:w-[420px] md:h-[420px]',
     instructor: 'w-[clamp(190px,22cqw,290px)] h-[clamp(160px,18cqw,240px)] max-h-[38cqh] object-contain',
-    instructorDock: 'w-[clamp(85px,10cqw,135px)] h-[clamp(72px,8.5cqw,115px)] max-h-[24cqh] object-contain',
+    instructorDock: 'w-[clamp(85px,min(11vw,18vh),135px)] h-[clamp(72px,min(9vw,15vh),115px)] object-contain',
     modeBox: 'w-[clamp(120px,14cqw,195px)] h-[clamp(120px,14cqw,195px)] object-contain'
   };
 
@@ -349,7 +298,7 @@ function DetektifRelo({
     xxxl: 'w-56 h-56 sm:w-72 sm:h-72',
     xxxxl: 'w-[240px] h-[240px] sm:w-[300px] sm:h-[300px] md:w-[360px] md:h-[360px]',
     instructor: 'w-[clamp(180px,20cqw,270px)] h-[clamp(190px,21cqw,290px)] max-h-[40cqh] object-contain',
-    instructorDock: 'w-[clamp(80px,9.5cqw,125px)] h-[clamp(98px,11.5cqw,150px)] max-h-[26cqh] object-contain',
+    instructorDock: 'w-[clamp(80px,min(10vw,17vh),125px)] h-[clamp(85px,min(11vw,18vh),135px)] object-contain',
     stageConclusion: 'w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48',
     modeBox: 'w-[clamp(115px,13.5cqw,185px)] h-[clamp(115px,13.5cqw,185px)] object-contain'
   };
@@ -561,7 +510,7 @@ function DetektifRelo({
       title={
         isInstructor 
           ? (activeCharacter === 'relo' 
-              ? "Instruktur Relo (Tahan 3 detik atau klik 5x untuk meluncur!)" 
+              ? "Instruktur Relo (Tahan 3 detik untuk meluncur!)" 
               : (activeCharacter === 'snowy' ? "Instruktur Snowy" : "Instruktur Ryu"))
           : (!islandType && activeCharacter === 'relo' ? "Klik untuk melompat! Tahan 3 detik untuk meluncur ke atas!" : undefined)
       }
@@ -598,7 +547,8 @@ function DetektifRelo({
           {/* HIGH-RESOLUTION MASCOT PNG FRAME WITH EXACT BODY SHAPE GLOW EFFECT */}
           <img
             src={currentFrame}
-            alt={activeCharacter === 'snowy' ? "Snowy" : (activeCharacter === 'ryu' ? "Ryu" : (isInstructor ? "Instruktur Relo" : "Detektif Relo"))}
+            alt=""
+            aria-hidden="true"
             className={`w-full h-full object-contain pointer-events-none ${
               isInstructor 
                 ? (activeCharacter === 'snowy'
@@ -631,7 +581,7 @@ function DetektifRelo({
               }`}
               title={
                 activeCharacter === 'relo' 
-                  ? "Instruktur Relo (Klik untuk melompat! Tahan 3 detik atau klik 5x untuk meluncur!)" 
+                  ? "Instruktur Relo (Klik untuk melompat! Tahan 3 detik untuk meluncur!)" 
                   : (activeCharacter === 'snowy' ? "Instruktur Snowy (Klik untuk melompat!)" : "Instruktur Ryu (Klik untuk melompat!)")
               }
             />

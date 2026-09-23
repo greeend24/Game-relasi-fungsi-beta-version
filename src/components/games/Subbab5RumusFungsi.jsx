@@ -8,7 +8,7 @@ import { Binary, KeyRound, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
-  const stageConfig = SUBBABS_DATA[5].stages[stageNum - 1];
+  const stageConfig = SUBBABS_DATA[3]?.stages?.[stageNum - 1] || SUBBABS_DATA[3]?.stages?.[0];
 
   const [selectedFormula, setSelectedFormula] = useState('');
   const [calculatedAns, setCalculatedAns] = useState('');
@@ -52,7 +52,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
       setErrorDetails({
         title: 'NILAI HITUNGAN BELUM VALID',
         reasons: ['Harap masukkan angka hasil perhitungan f(x) pada kolom jawaban!'],
-        hint: stageConfig.conceptDef || 'Konsep: Substitusikan angka x ke dalam posisi x pada rumus yang dipilih.'
+        hint: stageConfig.conceptDef || 'Konsep: Masukkan (ganti) angka x ke dalam posisi x pada rumus yang dipilih.'
       });
       audioEngine.playError();
       return;
@@ -123,7 +123,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
           emotion={stageCleared ? 'happy' : (errorDetails ? 'error' : 'idle')}
           title={errorDetails ? "PETUNJUK DETEKTIF RELO" : "DETEKTIF RELO"}
           icon="🕵️‍♂️"
-          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || `Substitusikan nilai x = ${stageConfig.xVal} ke dalam rumus fungsi f(x) = ax + b.`) : (stageCleared ? 'Luar biasa! Pemecahan rumus fungsi dan hasil substitusimu akurat! 🎉' : ''))}
+          message={errorDetails ? errorDetails.hint : (isHintVisible ? (stageConfig.conceptDef || `Masukkan nilai x = ${stageConfig.xVal} ke dalam rumus fungsi f(x) = ax + b.`) : (stageCleared ? 'Luar biasa! Pemecahan rumus fungsi dan hasil perhitunganmu akurat! 🎉' : ''))}
         />
 
         <PBLSyntaxPanel
@@ -142,7 +142,7 @@ export default function Subbab5RumusFungsi({ stageNum, onStageComplete, onBackTo
               <div className="relative z-10 flex flex-col justify-end">
                 <div className="flex items-center space-x-2 text-[#78350F] font-black text-base sm:text-lg lg:text-[20px]">
                   <Binary className="w-5 h-5 text-[#D97706] flex-shrink-0" />
-                  <span>MEMECAHKAN KODE FUNGSI TERSANGKA: NOTASI & SUBSTITUSI</span>
+                  <span>MEMECAHKAN KODE FUNGSI TERSANGKA: RUMUS & NILAI FUNGSI</span>
                 </div>
                 <p className="text-base sm:text-lg lg:text-[20px] text-[#2D241E] font-bold leading-snug">
                   {stageConfig?.story || ''}

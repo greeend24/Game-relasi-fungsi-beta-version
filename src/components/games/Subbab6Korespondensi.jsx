@@ -9,7 +9,7 @@ import { ArrowRightLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBackToStages, onNextStage, onOpenSubbabInfo }) {
-  const stageConfig = SUBBABS_DATA[6].stages[stageNum - 1];
+  const stageConfig = SUBBABS_DATA[5]?.stages?.[stageNum - 1] || SUBBABS_DATA[5]?.stages?.[0];
 
   const [selectedIdxA, setSelectedIdxA] = useState(null);
   const [userConnections, setUserConnections] = useState([]);
@@ -113,7 +113,7 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
         onBackToStages={onBackToStages}
         onShowHint={() => setIsHintVisible(!isHintVisible)}
         onOpenSubbabInfo={onOpenSubbabInfo}
-        hintText={stageConfig.conceptDef || "Syarat korespondensi satu-satu: n(A) = n(B). Setiap elemen A harus dipasangkan ke tepat satu elemen B yang berbeda."}
+        hintText={stageConfig.conceptDef || "Syarat korespondensi satu-satu: n(A) = n(B). Setiap anggota A harus dipasangkan ke tepat satu anggota B yang berbeda."}
         isHintVisible={isHintVisible}
         stageCleared={stageCleared}
         scoreEarned={scoreEarned}
@@ -125,7 +125,7 @@ export default function Subbab6Korespondensi({ stageNum, onStageComplete, onBack
           setStageCleared(false);
           setErrorDetails(null);
         }}
-        explanationText="Korespondensi Satu-Satu terjadi jika n(A) = n(B) dan setiap elemen A memiliki tepat satu pasangan unik di B tanpa ada yang tersisa."
+        explanationText="Korespondensi Satu-Satu terjadi jika n(A) = n(B) dan setiap anggota A memiliki tepat satu pasangan unik di B tanpa ada yang tersisa."
       />
 
       {/* GAMEPLAY LAYOUT: LEFT MASCOT DOCK & RIGHT WORKSPACE */}

@@ -16,6 +16,10 @@ const ChapterLearning = lazy(() => import('./components/ChapterLearning'));
 const EndlessMode = lazy(() => import('./components/games/EndlessMode'));
 const QuestModeExam = lazy(() => import('./components/games/QuestModeExam'));
 const ChapterExercise = lazy(() => import('./components/games/ChapterExercise'));
+const Game1KantinBuAni = lazy(() => import('./components/games/Game1KantinBuAni'));
+const Game2TabelRelasi = lazy(() => import('./components/games/Game2TabelRelasi'));
+const Game3PasanganBerurutan = lazy(() => import('./components/games/Game3PasanganBerurutan'));
+const Game4DiagramKartesius = lazy(() => import('./components/games/Game3DiagramKartesius'));
 const LeaderboardModal = lazy(() => import('./components/LeaderboardModal'));
 const BadgesModal = lazy(() => import('./components/BadgesModal'));
 const RankModal = lazy(() => import('./components/RankModal'));
@@ -29,11 +33,6 @@ import StrikeWarningModal from './components/StrikeWarningModal';
 import { CHAPTERS_DATA } from './data/chapterLearningData';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import RotatePhoneOverlay from './components/RotatePhoneOverlay';
-
-// Active gameplay modes that require tab-switch anti-cheat monitoring
-// Main menu, stage select, quest select, settings, profile, and modals are completely exempt from lockout
-const ACTIVE_GAMEPLAY_MODES = ['LEARNING', 'ENDLESS', 'QUEST_EXAM'];
-const GRACE_PERIOD_MS = 1500; // 1.5 seconds grace period tolerance for accidental blur / OS notifications
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +56,6 @@ export default function App() {
   const [lockoutState, setLockoutState] = useState(() => securityLockoutService.checkStatus());
   const [warningStrikes, setWarningStrikes] = useState(0);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
-  const violationTimerRef = useRef(null);
 
   // Subscribe to Security Lockout Service
   useEffect(() => {
@@ -79,49 +77,26 @@ export default function App() {
     };
   }, [viewState]);
 
-  // Check if current user is admin / whitelisted from strike warnings
-  const isUserAdminExempt = (user) => {
-    if (!user) return false;
-    if (user.isAdmin) return true;
-    const u = (user.username || user.name || user.fullname || '').toLowerCase().trim();
-    return u === 'fikran02' || u === 'fikran' || u === 'admin';
-  };
-
-  // Automatically clear any legacy strikes / lockout if logged in as admin
+  // Anti-Cheat / Tab-Switch Monitoring with Strikes & Lockout
   useEffect(() => {
-    if (isUserAdminExempt(currentUser)) {
+    // Admin is completely exempt from tab-switch penalties; only regular students are monitored
+    if (currentUser && securityLockoutService.isAdmin(currentUser)) {
       securityLockoutService.clearLockout();
-      setLockoutState({ isLocked: false, remainingSeconds: 0, strikes: 0, justLocked: false });
-      setWarningStrikes(0);
       setIsWarningOpen(false);
-    }
-  }, [currentUser]);
-
-  // Monitor Tab Switch (visibilitychange) and Window Blur with 1.5s Grace Period
-  // Strictly active ONLY during active exam / gameplay modes: LEARNING, ENDLESS, QUEST_EXAM
-  // Main Menu, Stage Selector, Quest Selector, Settings, Badges, and Profile are completely exempt!
-  useEffect(() => {
-    // Clear any existing timer when switching views or unmounting
-    if (violationTimerRef.current) {
-      clearTimeout(violationTimerRef.current);
-      violationTimerRef.current = null;
+      return;
     }
 
-    // Only monitor when user is logged in, not loading, and in an ACTIVE gameplay mode
+    // Only monitor when user is logged in, not loading, and not on AUTH screen
     if (!currentUser || isLoading || viewState === 'AUTH') return;
-    if (!ACTIVE_GAMEPLAY_MODES.includes(viewState)) return;
 
-    // Whitelist admin account fikran02 so they never get strike warnings or lockouts
-    if (isUserAdminExempt(currentUser)) return;
-
-    const cancelGraceTimer = () => {
-      if (violationTimerRef.current) {
-        clearTimeout(violationTimerRef.current);
-        violationTimerRef.current = null;
-      }
-    };
+    let tabLeftTime = null;
 
     const triggerViolation = () => {
+      if (securityLockoutService.isAdmin(currentUser)) return;
+
+      const current = securityLockoutService.checkStatus(currentUser);
+      if (current.isLocked) return;
+
       const result = securityLockoutService.recordViolation(currentUser);
       if (result.justLocked) {
         setLockoutState(result);
@@ -134,52 +109,37 @@ export default function App() {
       }
     };
 
-    const handlePotentialViolation = (e) => {
-      // Prioritize document.hidden:
-      // If the user actually leaves or minimizes the tab/app, document.hidden is immediately true.
-      // If window.blur fired without document.hidden, it is usually an OS notification, system dialog, or flyout.
-      // We start a 1.5s grace period timer, and verify document.hidden upon expiry to prevent false positives.
+    const handleVisibilityChange = () => {
       if (document.hidden) {
-        if (!violationTimerRef.current) {
-          violationTimerRef.current = setTimeout(() => {
-            // Check again after 1.5s grace period: only penalize if still hidden
-            if (document.hidden) {
-              triggerViolation();
-            }
-            violationTimerRef.current = null;
-          }, GRACE_PERIOD_MS);
-        }
-      } else if (e && e.type === 'blur') {
-        // Window blur occurred while document is not hidden (e.g. OS notification, system popup).
-        // Start 1.5s grace period. If within/after 1.5s document actually became hidden, record violation.
-        // If document is STILL NOT hidden after 1.5s (meaning it was just an OS notification), do not penalize!
-        if (!violationTimerRef.current) {
-          violationTimerRef.current = setTimeout(() => {
-            if (document.hidden) {
-              triggerViolation();
-            }
-            violationTimerRef.current = null;
-          }, GRACE_PERIOD_MS);
+        // Tab became hidden (user switched tab, minimized browser, or opened another app)
+        tabLeftTime = Date.now();
+      } else {
+        // Tab became visible again (user returned)
+        if (tabLeftTime) {
+          const elapsed = Date.now() - tabLeftTime;
+          tabLeftTime = null;
+          // If away for more than 350ms, record strike violation!
+          if (elapsed >= 350) {
+            triggerViolation();
+          }
         }
       }
     };
 
-    const handleVisibilityChange = (e) => {
-      if (document.hidden) {
-        handlePotentialViolation(e);
-      } else {
-        // User returned to game tab within grace period -> cancel timer, no strike!
-        cancelGraceTimer();
+    const handleBlur = () => {
+      if (!tabLeftTime) {
+        tabLeftTime = Date.now();
       }
     };
 
     const handleFocus = () => {
-      // Window regained focus -> cancel timer immediately, no strike!
-      cancelGraceTimer();
-    };
-
-    const handleBlur = (e) => {
-      handlePotentialViolation(e);
+      if (tabLeftTime) {
+        const elapsed = Date.now() - tabLeftTime;
+        tabLeftTime = null;
+        if (elapsed >= 700) {
+          triggerViolation();
+        }
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -187,7 +147,7 @@ export default function App() {
     window.addEventListener('focus', handleFocus);
 
     return () => {
-      cancelGraceTimer();
+      tabLeftTime = null;
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('focus', handleFocus);
@@ -312,18 +272,44 @@ export default function App() {
 
   const [gameScale, setGameScale] = useState(() => {
     if (typeof window !== 'undefined') {
-      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
       return Math.min(vw / BASE_STAGE_WIDTH, vh / BASE_STAGE_HEIGHT);
     }
     return 1;
   });
 
   useEffect(() => {
+    let lastStableHeight = typeof window !== 'undefined' ? window.innerHeight : 720;
+    let lastStableWidth = typeof window !== 'undefined' ? window.innerWidth : 1280;
+
     const updateGameScale = () => {
       if (typeof window === 'undefined') return;
-      const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      // Cek apakah ada elemen input/textarea/editable yang sedang aktif/fokus (keyboard HP terbuka)
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (
+        activeEl.tagName === 'INPUT' || 
+        activeEl.tagName === 'TEXTAREA' || 
+        activeEl.isContentEditable
+      );
+
+      // Jika keyboard HP sedang aktif, JANGAN mengecilkan skala game (biarkan keyboard menimpa/overlay)
+      if (isInputFocused) {
+        return;
+      }
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Deteksi jika hanya tinggi vertikal yang anjlok drastis (>25%) sementara lebar tetap (gejala khas keyboard HP muncul)
+      if (vh < lastStableHeight * 0.75 && Math.abs(vw - lastStableWidth) < 20) {
+        return;
+      }
+
+      lastStableHeight = vh;
+      lastStableWidth = vw;
+
       const scale = Math.min(vw / BASE_STAGE_WIDTH, vh / BASE_STAGE_HEIGHT);
       setGameScale(scale);
       document.documentElement.style.setProperty('--game-scale', String(scale));
@@ -331,17 +317,20 @@ export default function App() {
 
     updateGameScale();
     window.addEventListener('resize', updateGameScale);
-    window.addEventListener('orientationchange', updateGameScale);
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updateGameScale);
-    }
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateGameScale, 200);
+    });
+
+    // Ketika user selesai mengetik (keyboard HP tertutup), pulihkan skala optimal
+    const handleFocusOut = () => {
+      setTimeout(updateGameScale, 250);
+    };
+    window.addEventListener('focusout', handleFocusOut);
 
     return () => {
       window.removeEventListener('resize', updateGameScale);
       window.removeEventListener('orientationchange', updateGameScale);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', updateGameScale);
-      }
+      window.removeEventListener('focusout', handleFocusOut);
     };
   }, []);
 
@@ -435,7 +424,7 @@ export default function App() {
 
     const existingCh = baseUser.progress?.[chapterKey] || {};
     const prevSegs = existingCh.completedSegments || 0;
-    const newSegs = Math.max(prevSegs, segmentNum);
+    const newSegs = Math.min(totalSegs, Math.max(prevSegs, segmentNum));
 
     const updatedStars = { ...(existingCh.stars || {}) };
     for (let s = 1; s <= newSegs; s++) {
@@ -462,18 +451,8 @@ export default function App() {
       }
     };
 
-    // If chapter completed, unlock next chapter
-    if (isChComplete && chapterId < Object.keys(CHAPTERS_DATA).length) {
-      const nextKey = `chapter${chapterId + 1}`;
-      updatedProgress[nextKey] = {
-        ...(baseUser.progress?.[nextKey] || { completedSegments: 0 }),
-        unlocked: true,
-      };
-      updatedProgress[`subbab${chapterId + 1}`] = {
-        ...(baseUser.progress?.[`subbab${chapterId + 1}`] || {}),
-        unlocked: true,
-      };
-    }
+    // CATATAN: Chapter berikutnya HANYA dibuka setelah latihan tuntas minimal 85%
+    // (Bukan saat sekadar menyelesaikan materi)
 
     const currentTotalScore = Number(baseUser.totalScore) || 0;
     const scoreToAdd = segmentNum > prevSegs ? scoreEarned : 0;
@@ -637,8 +616,12 @@ export default function App() {
             {viewState === 'QUEST_SELECT' && (
               <QuestModeSelector
                 userProgress={currentUser?.progress}
-                currentUser={currentUser}
-                onBackToMenu={() => setViewState('MAIN_MENU')}
+                currentUser={storageService.getCurrentUser() || currentUser}
+                onBackToMenu={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('MAIN_MENU');
+                }}
                 onStartQuestSubbab={(subId) => {
                   setQuestSubbabId(subId);
                   setViewState('QUEST_EXAM');
@@ -649,8 +632,12 @@ export default function App() {
             {viewState === 'QUEST_EXAM' && (
               <QuestModeExam
                 subbabId={questSubbabId}
-                currentUser={currentUser}
-                onBackToQuestSelect={() => setViewState('QUEST_SELECT')}
+                currentUser={storageService.getCurrentUser() || currentUser}
+                onBackToQuestSelect={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('QUEST_SELECT');
+                }}
               />
             )}
 
@@ -663,13 +650,22 @@ export default function App() {
                 onBackToMenu={() => setViewState('MAIN_MENU')}
                 onChapterComplete={handleChapterComplete}
                 onSegmentComplete={handleSegmentComplete}
+                onStartExercise={(chId) => {
+                  const targetChapter = chId || currentSubbabId;
+                  setSelectedExerciseChapterId(targetChapter);
+                  setViewState('CHAPTER_EXERCISE');
+                }}
               />
             )}
 
             {viewState === 'ENDLESS' && (
               <EndlessMode
-                onBackToMenu={() => setViewState('MAIN_MENU')}
-                currentUser={currentUser}
+                onBackToMenu={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('MAIN_MENU');
+                }}
+                currentUser={storageService.getCurrentUser() || currentUser}
                 onUpdateUser={(usr) => setCurrentUser(usr)}
               />
             )}
@@ -683,7 +679,67 @@ export default function App() {
                   if (updatedUser) setCurrentUser(updatedUser);
                   setViewState('STAGE_SELECT');
                 }}
-                onCompleteExercise={(chId) => {
+                onCompleteExercise={(chId, score, isPassed) => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                }}
+              />
+            )}
+
+            {viewState === 'GAME_1_PANAH' && (
+              <Game1KantinBuAni
+                onBack={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('STAGE_SELECT');
+                }}
+                onComplete={(score) => {
+                  storageService.updateExerciseProgress(1, score || 100);
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                }}
+              />
+            )}
+
+            {viewState === 'GAME_2_TABEL' && (
+              <Game2TabelRelasi
+                onBack={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('STAGE_SELECT');
+                }}
+                onComplete={(score) => {
+                  storageService.updateExerciseProgress(1, score || 100);
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                }}
+              />
+            )}
+
+            {viewState === 'GAME_3_HPB' && (
+              <Game3PasanganBerurutan
+                onBack={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('STAGE_SELECT');
+                }}
+                onComplete={(score) => {
+                  storageService.updateExerciseProgress(1, score || 100);
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                }}
+              />
+            )}
+
+            {viewState === 'GAME_4_KARTESIUS' && (
+              <Game4DiagramKartesius
+                onBack={() => {
+                  const updatedUser = storageService.getCurrentUser();
+                  if (updatedUser) setCurrentUser(updatedUser);
+                  setViewState('STAGE_SELECT');
+                }}
+                onComplete={(score) => {
+                  storageService.updateExerciseProgress(1, score || 100);
                   const updatedUser = storageService.getCurrentUser();
                   if (updatedUser) setCurrentUser(updatedUser);
                 }}
@@ -743,25 +799,23 @@ export default function App() {
       />
 
       {/* 5-Minute Anti-Cheat Cooldown Lockout Modal */}
-      {!isUserAdminExempt(currentUser) && (
-        <SecurityLockoutModal
-          isLocked={lockoutState.isLocked}
-          remainingSeconds={lockoutState.remainingSeconds}
-          onUnlocked={() => {
-            setLockoutState({ isLocked: false, remainingSeconds: 0, strikes: 0 });
-            setIsWarningOpen(false);
-          }}
-        />
-      )}
+      <SecurityLockoutModal
+        isLocked={lockoutState.isLocked && !securityLockoutService.isAdmin(currentUser)}
+        remainingSeconds={lockoutState.remainingSeconds}
+        currentUser={currentUser}
+        onUnlocked={() => {
+          securityLockoutService.clearLockout();
+          setLockoutState({ isLocked: false, remainingSeconds: 0, strikes: 0 });
+          setIsWarningOpen(false);
+        }}
+      />
 
       {/* Strike 1 & 2 Warning Modal */}
-      {!isUserAdminExempt(currentUser) && (
-        <StrikeWarningModal
-          isOpen={isWarningOpen && !lockoutState.isLocked}
-          strikes={warningStrikes}
-          onClose={() => setIsWarningOpen(false)}
-        />
-      )}
+      <StrikeWarningModal
+        isOpen={isWarningOpen && !lockoutState.isLocked && !securityLockoutService.isAdmin(currentUser)}
+        strikes={warningStrikes}
+        onClose={() => setIsWarningOpen(false)}
+      />
 
       {/* Global Corner Version Badge (v1.0.0) */}
       {['AUTH', 'MAIN_MENU', 'STAGE_SELECT', 'QUEST_SELECT'].includes(viewState) && (

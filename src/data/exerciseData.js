@@ -3,11 +3,11 @@
  * Total: 150 Primary Questions + 150 Remedial Variants
  */
 
-import { EXERCISE_CHAPTER_1 } from './exercises/exerciseChapter1';
-import { EXERCISE_CHAPTER_2 } from './exercises/exerciseChapter2';
-import { EXERCISE_CHAPTER_3 } from './exercises/exerciseChapter3';
-import { EXERCISE_CHAPTER_4 } from './exercises/exerciseChapter4';
-import { EXERCISE_CHAPTER_5 } from './exercises/exerciseChapter5';
+import { EXERCISE_CHAPTER_1 } from './exercises/exerciseChapter1.js';
+import { EXERCISE_CHAPTER_2 } from './exercises/exerciseChapter2.js';
+import { EXERCISE_CHAPTER_3 } from './exercises/exerciseChapter3.js';
+import { EXERCISE_CHAPTER_4 } from './exercises/exerciseChapter4.js';
+import { EXERCISE_CHAPTER_5 } from './exercises/exerciseChapter5.js';
 
 export const CHAPTER_EXERCISES = {
   1: {
@@ -31,13 +31,13 @@ export const CHAPTER_EXERCISES = {
   4: {
     id: 4,
     title: "Latihan 4: Grafik Fungsi Linear",
-    subtitle: "30 Soal Titik Potong, Gradien & Garis Cartesius",
+    subtitle: "30 Soal Titik Potong, Gradien & Garis Kartesius",
     questions: EXERCISE_CHAPTER_4
   },
   5: {
     id: 5,
     title: "Latihan 5: Korespondensi Satu-Satu",
-    subtitle: "30 Soal Pemetaan Bijektif & Faktorial n!",
+    subtitle: "30 Soal Korespondensi Satu-Satu & Faktorial n!",
     questions: EXERCISE_CHAPTER_5
   }
 };

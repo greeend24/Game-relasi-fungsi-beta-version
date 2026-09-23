@@ -17,6 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set("trust proxy", 1);
 const isElectronProduction = !!process.env.ELECTRON_USER_DATA && process.env.NODE_ENV === "production";
 
 // ─────────────────────────────────────────────
@@ -29,12 +30,19 @@ app.use(
       // Allow requests with no origin (like mobile apps, curl, Capacitor, or Electron)
       if (!origin) return callback(null, true);
 
-      // Whitelist legitimate local, app, and deployment origins
+      // Whitelist legitimate local, app, LAN, and deployment origins
       const isAllowed =
         origin.includes("localhost") ||
         origin.includes("127.0.0.1") ||
         origin.startsWith("app://") ||
         origin.startsWith("capacitor://") ||
+        origin.includes("192.168.") ||
+        origin.includes("10.") ||
+        origin.includes("172.") ||
+        origin.includes("trycloudflare.com") ||
+        origin.includes("onrender.com") ||
+        origin.includes("vercel.app") ||
+        origin.includes("netlify.app") ||
         origin.includes("ngrok-free.dev") ||
         origin.includes("ngrok.app") ||
         origin.includes("ngrok.io") ||
@@ -54,6 +62,29 @@ app.use(
 );
 
 app.use(express.json());
+
+// Ensure cookie attributes match connection protocol (prevent browser rejection of Secure cookies over plain HTTP)
+app.use((req, res, next) => {
+  const isHttps = req.secure || req.headers["x-forwarded-proto"] === "https";
+  if (!isHttps) {
+    const originalSetHeader = res.setHeader.bind(res);
+    res.setHeader = function (name: string, value: any) {
+      if (typeof name === "string" && name.toLowerCase() === "set-cookie") {
+        if (Array.isArray(value)) {
+          value = value.map((c) =>
+            typeof c === "string"
+              ? c.replace(/;\s*Secure/gi, "").replace(/;\s*SameSite=None/gi, "; SameSite=Lax")
+              : c
+          );
+        } else if (typeof value === "string") {
+          value = value.replace(/;\s*Secure/gi, "").replace(/;\s*SameSite=None/gi, "; SameSite=Lax");
+        }
+      }
+      return originalSetHeader(name, value);
+    };
+  }
+  next();
+});
 
 // ─────────────────────────────────────────────
 // API Routes
@@ -169,6 +200,7 @@ if (cachedFrontendPath && fs.existsSync(path.join(cachedFrontendPath, "index.htm
 const candidateDistPaths = [
   process.env.ELECTRON_RESOURCES_PATH ? path.join(process.env.ELECTRON_RESOURCES_PATH, "frontend", "dist") : null,
   process.env.ELECTRON_RESOURCES_PATH ? path.join(process.env.ELECTRON_RESOURCES_PATH, "dist") : null,
+  path.join(process.cwd(), "dist"),
   path.join(__dirname, "..", "..", "dist"),
   path.join(__dirname, "..", "..", "frontend", "dist"),
 ].filter(Boolean) as string[];

@@ -209,7 +209,7 @@ export default function StageHeader({
                       />
                     ))}
                   </div>
-                  <span className="text-[#D97706] font-black text-xl sm:text-2xl">+{scoreEarned} PTS</span>
+                  <span className="text-[#D97706] font-black text-xl sm:text-2xl">+{scoreEarned} Poin</span>
                 </div>
 
                 {/* Next Stage & Back Action Buttons */}

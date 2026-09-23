@@ -21,6 +21,7 @@ export default function InstructorMascotGuide({
   icon = null,
   canSpeak = true,
   onFlight = null,
+  onMascotClick = null,
   layout = 'floating', // 'floating' (selectors/menus) or 'dock' (split column in-game)
   size = null,
   className = '',
@@ -84,7 +85,7 @@ export default function InstructorMascotGuide({
         {/* 1. COMIC SPEECH BUBBLE (TOP/MIDDLE OF LEFT COLUMN, RIGHT ABOVE HEAD) */}
         <div className="flex-1 min-h-0 flex flex-col justify-end pb-1.5 sm:pb-2">
           {Boolean(activeText) && !isDismissed && (
-            <div className="relative p-2 sm:p-2.5 rounded-xl glass-bubble border border-white/80 shadow-[0_8px_24px_rgba(0,0,0,0.14)] text-[#2D241E] font-hand animate-fade-in flex flex-col max-h-full">
+            <div className="relative p-2 sm:p-2.5 rounded-xl glass-bubble border border-white/80 shadow-[0_8px_24px_rgba(0,0,0,0.14)] text-[#2D241E] font-hand animate-fade-in flex flex-col max-h-full overflow-hidden">
               {/* Header Label + Close Button */}
               <div className="flex items-center justify-between text-[10px] sm:text-xs font-black text-[#9A3412] uppercase tracking-wider mb-1 border-b border-amber-300/40 pb-0.5 flex-shrink-0">
                 <span className="flex items-center space-x-1">
@@ -101,8 +102,8 @@ export default function InstructorMascotGuide({
                 </button>
               </div>
 
-              {/* Speech Text Content */}
-              <div className="overflow-y-auto min-h-0 pr-0.5 drag-scroller">
+              {/* Speech Text Content (No cut-off, no scrollbar) */}
+              <div className="overflow-y-auto no-scrollbar min-h-0 pr-0.5 max-h-24 sm:max-h-28">
                 <p className="text-xs sm:text-[13px] font-bold leading-snug text-[#2D241E]">
                   {activeText}
                 </p>
@@ -125,10 +126,15 @@ export default function InstructorMascotGuide({
         {/* 2. STANDING MASCOT (BOTTOM OF LEFT COLUMN) - 50% compact dock height */}
         <div 
           onClick={() => {
-            if (canSpeak) setIsDismissed(prev => !prev);
+            if (typeof onMascotClick === 'function') {
+              onMascotClick();
+              setIsDismissed(false);
+            } else {
+              setIsDismissed(prev => !prev);
+            }
           }}
-          className={`relative flex justify-center items-end flex-shrink-0 pointer-events-auto overflow-visible pb-1 ${canSpeak ? 'cursor-pointer' : ''}`} 
-          title={canSpeak ? "Klik maskot untuk petunjuk atau suara!" : undefined}
+          className="relative flex justify-center items-end flex-shrink-0 pointer-events-auto overflow-visible pb-1 cursor-pointer" 
+          title="Klik maskot untuk mendengar suara / melihat petunjuk"
         >
           <DetektifRelo
             character={character}
@@ -151,7 +157,7 @@ export default function InstructorMascotGuide({
   return (
     <div className={`absolute bottom-0 left-0 sm:left-2 z-[60] flex items-end select-none pointer-events-none max-w-full ${className}`}>
       {/* 1. FRONT STANDING MASCOT - Grounded at bottom-left floor without clipping feet */}
-      <div className={`relative pointer-events-auto flex-shrink-0 flex items-end z-10 ${canSpeak ? 'cursor-pointer' : ''}`} title={canSpeak ? "Klik maskot untuk mendengar suara!" : undefined}>
+      <div className="relative pointer-events-auto flex-shrink-0 flex items-end z-10">
         <DetektifRelo
           character={character}
           pose={pose}
@@ -197,8 +203,8 @@ export default function InstructorMascotGuide({
               </button>
             </div>
 
-            {/* Speech Text Content */}
-            <p className="text-xs sm:text-sm md:text-base font-bold leading-relaxed text-[#2D241E] max-h-32 sm:max-h-36 overflow-y-auto pr-1 drag-scroller">
+            {/* Speech Text Content (No cut-off, no scrollbar) */}
+            <p className="text-xs sm:text-sm md:text-base font-bold leading-relaxed text-[#2D241E] max-h-32 sm:max-h-36 overflow-y-auto no-scrollbar pr-1">
               {activeText}
             </p>
           </div>

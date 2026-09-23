@@ -2,6 +2,7 @@
 // Handles all game API calls: progress, leaderboard, cheat, multi-device sync
 
 export const CUSTOM_SERVER_URL_KEY = 'detektif_custom_server_url';
+export const DEFAULT_LOCAL_URL = 'http://127.0.0.1:3001';
 export const DEFAULT_NGROK_URL = 'https://scooter-thickness-stony.ngrok-free.dev';
 
 export function resolveApiBase() {
@@ -10,36 +11,50 @@ export function resolveApiBase() {
     try {
       const customUrl = localStorage.getItem(CUSTOM_SERVER_URL_KEY);
       if (customUrl && customUrl.trim()) {
-        return customUrl.trim().replace(/\/+$/, '');
-      }
-      // Zero-config: Read from server_url.txt passed by Electron
-      if (window.electronAPI?.preconfiguredServerUrl) {
-        return window.electronAPI.preconfiguredServerUrl.trim().replace(/\/+$/, '');
+        const clean = customUrl.trim().replace(/\/+$/, '');
+        if (clean.startsWith('http://') || clean.startsWith('https://')) {
+          return clean;
+        }
+        return `http://${clean}`;
       }
     } catch {}
   }
 
-  // 2. Explicit environment variable if provided
+  // 2. Zero-config: Read from server_url.txt passed by Electron preload
+  if (typeof window !== 'undefined' && window.electronAPI?.preconfiguredServerUrl) {
+    const pre = window.electronAPI.preconfiguredServerUrl.trim().replace(/\/+$/, '');
+    if (pre && pre.length > 0) {
+      if (pre.startsWith('http://') || pre.startsWith('https://')) {
+        return pre;
+      }
+      return `http://${pre}`;
+    }
+  }
+
+  // 3. Web browser access (Remote Cloudflare tunnel, Ngrok, LAN IP, or Web domain)
+  // When accessed via browser, frontend & backend are served from the same origin!
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    const { origin, hostname, port } = window.location;
+    const isViteDev = (hostname === 'localhost' || hostname === '127.0.0.1') && port && port !== '3001';
+
+    // If running in browser on a real remote URL, LAN IP, Cloudflare tunnel, or Ngrok:
+    if (!origin.startsWith('file:') && !origin.startsWith('app:') && !isViteDev) {
+      return origin.replace(/\/+$/, '');
+    }
+
+    // In local Vite dev server (e.g. port 5173 / 3000), connect to backend port 3001:
+    if (isViteDev) {
+      return `http://${hostname}:3001`;
+    }
+  }
+
+  // 4. Explicit environment variable if provided
   if (import.meta.env?.VITE_API_URL) {
     return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
   }
 
-  // 3. Web browser running on a remote domain (bukan localhost / 127.0.0.1 / file)
-  if (typeof window !== 'undefined' && window.location && window.location.origin) {
-    const origin = window.location.origin;
-    if (
-      !origin.startsWith('file:') &&
-      !origin.startsWith('app:') &&
-      !origin.includes('localhost') &&
-      !origin.includes('127.0.0.1')
-    ) {
-      return origin.replace(/\/+$/, '');
-    }
-  }
-
-  // 4. Default untuk aplikasi desktop Electron, dev lokal, maupun mobile:
-  // Selalu terhubung ke Server Online Ngrok resmi!
-  return DEFAULT_NGROK_URL;
+  // 5. Default fallback untuk Electron offline:
+  return DEFAULT_LOCAL_URL;
 }
 
 export function getApiBase() {
@@ -72,9 +87,15 @@ export async function testServerConnection(targetUrl) {
   try {
     const base = targetUrl ? targetUrl.trim().replace(/\/+$/, '') : resolveApiBase();
     const cleanBase = (!base.startsWith('http://') && !base.startsWith('https://')) ? `http://${base}` : base;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4500);
+
     const res = await fetch(`${cleanBase}/api/health`, {
+      signal: controller.signal,
       headers: { 'ngrok-skip-browser-warning': 'true' },
     });
+    clearTimeout(timeoutId);
+
     if (res.ok) {
       const data = await res.json().catch(() => ({}));
       if (data && data.status === 'ok') {
@@ -95,8 +116,11 @@ async function apiFetch(path, options = {}) {
   try {
     const currentBase = resolveApiBase();
     const controller = new AbortController();
-    const timeoutMs = options.timeoutMs || 3500;
+    const timeoutMs = options.timeoutMs || 8000;
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('detektif_auth_token') : null;
+    const authHeaders = token ? { 'Authorization': `Bearer ${token}`, 'x-session-token': token } : {};
 
     const res = await fetch(`${currentBase}${path}`, {
       credentials: 'include',
@@ -104,6 +128,7 @@ async function apiFetch(path, options = {}) {
       headers: {
         'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'true',
+        ...authHeaders,
         ...options.headers,
       },
       ...options,
@@ -284,10 +309,14 @@ export async function syncOfflineData(payload) {
 
 export async function checkHealth() {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     const res = await fetch(`${resolveApiBase()}/api/health`, {
+      signal: controller.signal,
       credentials: 'include',
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
+    clearTimeout(timeoutId);
     if (!res.ok) return false;
     const data = await res.json().catch(() => null);
     return Boolean(data && data.status === 'ok');

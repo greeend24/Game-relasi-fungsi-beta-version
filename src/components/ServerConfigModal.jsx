@@ -7,8 +7,7 @@ import {
   getCustomServerUrl, 
   setCustomServerUrl, 
   testServerConnection, 
-  resolveApiBase,
-  DEFAULT_NGROK_URL 
+  resolveApiBase 
 } from '../services/apiService';
 import { networkStatusService } from '../services/networkStatusService';
 import { storageService } from '../services/storageService';
@@ -146,7 +145,7 @@ export default function ServerConfigModal({ isOpen, onClose }) {
       
       {/* WOODEN BOARD CONTAINER */}
       <div 
-        className="relative w-full max-w-lg max-h-[92dvh] p-4 sm:p-6 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-3 sm:space-y-4 overflow-y-auto"
+        className="relative w-full max-w-lg max-h-[92dvh] p-4 sm:p-5 rounded-3xl bg-cover bg-center border-4 border-[#2D241E] shadow-[8px_10px_0px_#2D241E] text-[#2D241E] flex flex-col items-center space-y-2.5 sm:space-y-3 overflow-y-auto no-scrollbar"
         style={{ backgroundImage: `url('/assets/tampilan di setting/Asset/board_of_settings@4x.png')` }}
       >
         
@@ -194,7 +193,7 @@ export default function ServerConfigModal({ isOpen, onClose }) {
             </span>
             <div>
               <div className="text-xs sm:text-sm font-black text-[#2D241E]">
-                {isOnline ? '🟢 TERHUBUNG KE SERVER NGROK' : '🔴 MODE OFFLINE LOKAL'}
+                {isOnline ? '🟢 TERHUBUNG KE SERVER ONLINE' : '🔴 MODE OFFLINE LOKAL'}
               </div>
               <div className="text-[10px] sm:text-xs text-[#4B5563] font-bold truncate max-w-[240px] sm:max-w-[320px]">
                 {currentResolved || 'Belum diatur'}

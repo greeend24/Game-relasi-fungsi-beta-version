@@ -57,7 +57,18 @@ class NetworkStatusService {
   async checkHealth(force = false) {
     if (this.isChecking && !force) return;
 
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    const currentBase = resolveApiBase();
+    const isLocalBase = 
+      currentBase.includes('localhost') || 
+      currentBase.includes('127.0.0.1') || 
+      currentBase.includes('192.168.') || 
+      currentBase.includes('10.') || 
+      currentBase.includes('172.') ||
+      currentBase.startsWith('file:') ||
+      currentBase.startsWith('app:');
+
+    // Only abort if definitely an external remote URL and navigator explicitly says offline
+    if (!isLocalBase && typeof navigator !== 'undefined' && navigator.onLine === false) {
       this.isChecking = false;
       this.setOnline(false);
       return;
@@ -76,7 +87,7 @@ class NetworkStatusService {
         const cachedUserStr = localStorage.getItem('detektif_current_user');
         if (cachedUserStr) {
           const u = JSON.parse(cachedUserStr);
-          if (u && u.username && !u._isGuest && u.username !== 'detektif_tamu') {
+          if (u && u.username && !u._isGuest) {
             healthUrl += `?u=${encodeURIComponent(u.username)}`;
           }
         }

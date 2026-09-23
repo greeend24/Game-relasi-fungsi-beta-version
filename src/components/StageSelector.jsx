@@ -5,13 +5,13 @@ import InstructorMascotGuide from './InstructorMascotGuide';
 import NetworkStatusBadge from './NetworkStatusBadge';
 import { audioEngine } from '../services/audioEngine';
 import { reloVoiceService } from '../services/reloVoiceService';
-
+// StageSelector: Chapter Selection & Direct Exercise Access (No Standalone Sub-Representation Buttons)
 const CHAPTER_WORLD_NAMES = {
   1: '🪢 Markas Relasi (Relation Base)',
   2: '🎯 Gerbang Fungsi (Function Gate)',
   3: '📐 Benteng Rumus (Formula Fortress)',
   4: '📊 Puncak Grafik (Graph Summit)',
-  5: '🔗 Jembatan Bijektif (Bijection Bridge)'
+  5: '🔗 Jembatan Korespondensi (One-to-One Bridge)'
 };
 
 const CHAPTER_ICONS = {
@@ -92,7 +92,7 @@ export default function StageSelector({
         </button>
 
         <h2 className="text-base sm:text-xl lg:text-2xl font-black font-pencil text-[#2D241E] tracking-wide">
-          📖 Pilih Chapter Pembelajaran
+          📖 Video Pembelajaran & Latihan Chapter (1–5)
         </h2>
 
         <div className="flex items-center">
@@ -108,29 +108,33 @@ export default function StageSelector({
         emotion="idle"
         title="PETUNJUK DETEKTIF RELO"
         icon="🕵️‍♂️"
-        message={reloText || 'Pilih Chapter untuk mulai belajar Relasi & Fungsi! 📖🔍🦉'}
+        message={reloText || 'Tonton Video Materi Chapter lalu uji kemampuanmu di Latihan Soal! 🎬✏️🦉'}
       />
 
-      {/* CHAPTER SELECTION CARDS (5 CHAPTERS, FIXED, NO SCROLL) */}
-      <div className="flex-1 min-h-0 flex flex-col justify-start items-center pt-2 sm:pt-4 md:pt-6 pb-2 relative z-10 overflow-hidden">
-        <div className="flex items-center justify-between text-xs sm:text-sm font-bold text-[#78350F] max-w-6xl mx-auto w-full px-2 sm:px-4 mb-2.5 sm:mb-3.5">
+      {/* CHAPTER & LATIHAN SELECTION CARDS (NO SCROLL) */}
+      <div className="flex-1 min-h-0 flex flex-col justify-start items-center pt-2 sm:pt-3 md:pt-4 pb-2 relative z-10 overflow-hidden">
+        <div className="flex items-center justify-between text-xs sm:text-sm font-bold text-[#78350F] max-w-6xl mx-auto w-full px-2 sm:px-4 mb-2 sm:mb-2.5">
           <span className="text-xs sm:text-sm md:text-base font-black uppercase text-[#9A3412] tracking-wider drop-shadow-sm flex items-center gap-2">
-            <span>🔍</span>
-            <span>PILIH CHAPTER UNTUK MULAI BELAJAR:</span>
+            <span>🎬</span>
+            <span>KLIK KARTU UNTUK NONTON VIDEO MATERI, ATAU PILIH LATIHAN SOAL:</span>
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 font-pencil w-full max-w-6xl mx-auto px-2 sm:px-4">
+        <div className="grid grid-cols-5 gap-3.5 font-pencil w-full max-w-6xl mx-auto px-2 sm:px-4">
           {Object.values(CHAPTERS_DATA).map((ch) => {
-            const chProgress = userProgress?.[ch.key] || userProgress?.[`subbab${ch.id}`];
-            const completedSegments = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
-            const isCompleted = Boolean(chProgress?.completed || completedSegments >= ch.totalSegments);
+            const chProgress = userProgress?.[`chapter${ch.id}`] || userProgress?.[`subbab${ch.id}`];
+            const rawCompleted = chProgress?.completedSegments || (chProgress?.stars ? Object.keys(chProgress.stars).length : 0);
+            const isCompleted = Boolean(chProgress?.completed || rawCompleted >= ch.totalSegments);
+            const completedSegments = isCompleted ? ch.totalSegments : Math.min(rawCompleted, ch.totalSegments);
 
-            const prevCh = CHAPTERS_DATA[ch.id - 1];
-            const prevProgress = userProgress?.[`chapter${ch.id - 1}`] || userProgress?.[`subbab${ch.id - 1}`];
-            const prevCompleted = Boolean(
-              prevProgress?.completed ||
-              (prevProgress?.completedSegments >= (prevCh?.totalSegments || 10))
+            const exData = userProgress?.exercises?.[`latihan${ch.id}`];
+            const isExerciseCompleted = Boolean(exData?.completed);
+            const exScore = exData?.score || 0;
+
+            const prevChapterCompleted = Boolean(
+              userProgress?.[`chapter${ch.id - 1}`]?.completed ||
+              userProgress?.[`subbab${ch.id - 1}`]?.completed ||
+              userProgress?.exercises?.[`latihan${ch.id - 1}`]?.completed
             );
 
             const isUserAdmin = Boolean(
@@ -142,34 +146,34 @@ export default function StageSelector({
             const isUnlocked = Boolean(
               isUserAdmin ||
               ch.id === 1 ||
-              chProgress?.unlocked ||
-              (ch.id > 1 && prevCompleted)
+              prevChapterCompleted ||
+              userProgress?.[`chapter${ch.id}`]?.unlocked ||
+              userProgress?.[`subbab${ch.id}`]?.unlocked
             );
-            const IconComp = CHAPTER_ICONS[ch.id] || BookOpen;
 
-            const isExerciseUnlocked = Boolean(isUserAdmin || isCompleted);
-            const isExerciseCompleted = Boolean(userProgress?.exercises?.[`latihan${ch.id}`]?.completed);
+            const isExerciseUnlocked = Boolean(isUserAdmin || isUnlocked);
+            const IconComp = CHAPTER_ICONS[ch.id] || BookOpen;
 
             return (
               <div key={ch.id} className="flex flex-col gap-2 w-full min-w-0">
-                {/* Chapter Card */}
+                {/* ─── KARTU UTAMA: NONTON VIDEO PEMBELAJARAN & MATERI ─── */}
                 <button
                   disabled={!isUnlocked}
                   onClick={() => isUnlocked && handleChapterClick(ch.id)}
-                  onMouseEnter={() => audioEngine.playHover()}
-                  className={`pencil-btn p-3 sm:p-3.5 rounded-2xl border shadow-[0_6px_16px_rgba(0,0,0,0.08)] flex flex-col justify-between h-[175px] sm:h-[185px] md:h-[195px] min-h-[170px] transition-all text-left group relative overflow-hidden cursor-pointer w-full ${
+                  onMouseEnter={() => isUnlocked && audioEngine.playHover()}
+                  className={`pencil-btn p-3 rounded-2xl border shadow-[0_6px_16px_rgba(0,0,0,0.08)] flex flex-col justify-between h-[235px] min-h-[235px] transition-all text-left group relative overflow-hidden cursor-pointer w-full ${
                     isCompleted
-                      ? 'glass-card border-emerald-400/70 text-[#2D241E] ring-2 ring-[#22C55E]/60 shadow-[0_6px_20px_rgba(34,197,94,0.15)]'
+                      ? 'glass-card border-emerald-400/80 text-[#2D241E] ring-2 ring-[#22C55E]/60 shadow-[0_6px_20px_rgba(34,197,94,0.18)]'
                       : isUnlocked
-                      ? 'glass-card border-white/80 text-[#2D241E] hover:scale-[1.02]'
-                      : 'glass-panel-subtle border-white/40 text-[#78716C] cursor-not-allowed opacity-75'
+                      ? 'glass-card border-amber-300/80 text-[#2D241E] hover:scale-[1.02] hover:border-[#D97706] shadow-[0_6px_20px_rgba(217,119,6,0.15)]'
+                      : 'glass-panel-subtle border-stone-300/50 text-[#78716C] cursor-not-allowed opacity-75 grayscale contrast-95'
                   }`}
                 >
-                  {/* Header with Darumadrop One for Chapter Badge */}
-                  <div className="relative z-10 flex items-center justify-between w-full">
-                    <div className="flex items-center space-x-2">
+                  {/* Header with Chapter Badge */}
+                  <div className="relative z-10 flex items-center justify-between w-full flex-shrink-0">
+                    <div className="flex items-center space-x-1.5">
                       <div className={`p-1.5 rounded-xl text-white border border-[#2D241E] shadow-[1px_1px_0px_#2D241E] ${
-                        isCompleted ? 'bg-[#22C55E]' : 'bg-[#D97706]'
+                        isCompleted ? 'bg-[#22C55E]' : isUnlocked ? 'bg-[#D97706]' : 'bg-stone-400'
                       }`}>
                         <IconComp className="w-3.5 h-3.5" />
                       </div>
@@ -189,23 +193,30 @@ export default function StageSelector({
                     )}
                   </div>
 
-                  {/* Title & subtitle */}
-                  <div className="relative z-10 flex-1 flex flex-col justify-center my-1 min-h-0">
+                  {/* Title & Subtitle */}
+                  <div className="relative z-10 flex-1 flex flex-col justify-start my-1 min-h-0">
                     <div className="text-xl mb-0.5">{ch.icon}</div>
-                    <h3 className="text-xs sm:text-sm md:text-base font-black font-pencil text-[#2D241E] leading-tight break-words group-hover:text-[#D97706] transition-colors line-clamp-2">
+                    <h3 className="text-xs sm:text-[13px] font-black font-pencil text-[#2D241E] leading-snug break-words group-hover:text-[#D97706] transition-colors">
                       {ch.title}
                     </h3>
-                    <p className="text-[10px] sm:text-[11px] text-[#78350F] mt-0.5 font-pencil font-medium leading-snug break-words line-clamp-2">
+                    <p className="text-[10px] sm:text-[11px] text-[#78350F] mt-0.5 font-pencil font-medium leading-snug break-words">
                       {ch.subtitle}
                     </p>
                   </div>
 
-                  {/* Progress bar */}
+                  {/* Video & Progress Bar Status */}
                   {isUnlocked && (
                     <div className="relative z-10 w-full font-pencil mt-1 flex-shrink-0">
                       <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-[#78350F] mb-0.5">
-                        <span>{completedSegments}/{ch.totalSegments}</span>
-                        {isCompleted && <span className="text-[#22C55E]">✅ Selesai</span>}
+                        <span className="flex items-center gap-1">
+                          <span>🎬</span>
+                          <span>{completedSegments}/{ch.totalSegments} Video</span>
+                        </span>
+                        {isCompleted ? (
+                          <span className="text-[#22C55E] font-black">✅ Selesai</span>
+                        ) : (
+                          <span className="text-[#D97706] font-bold group-hover:underline">Putar Video →</span>
+                        )}
                       </div>
                       <div className="w-full h-1.5 sm:h-2 bg-white/60 rounded-full border border-[#2D241E] overflow-hidden">
                         <div
@@ -217,50 +228,67 @@ export default function StageSelector({
                   )}
                 </button>
 
-                {/* Box Latihan 1-5 di Bawah Chapter (Sesuai Kotak Merah Pengguna) */}
+                {/* ─── KOTAK BAWAH: TOMBOL LATIHAN CHAPTER (EFEK IDENTIK CHAPTER MODE) ─── */}
                 <button
                   disabled={!isExerciseUnlocked}
                   onClick={() => {
                     if (isExerciseUnlocked && onSelectExercise) {
                       audioEngine.playClick();
                       clearIdleTimers();
+                      reloVoiceService.stopVoice();
                       onSelectExercise(ch.id);
+                    } else if (!isExerciseUnlocked) {
+                      audioEngine.playError();
+                      const res = reloVoiceService.playScene('2_locked');
+                      if (res?.text) setReloText(res.text);
                     }
                   }}
-                  onMouseEnter={() => isExerciseUnlocked && audioEngine.playHover()}
-                  className={`pencil-btn px-2.5 py-2 sm:py-2.5 rounded-xl border flex items-center justify-between transition-all text-left w-full cursor-pointer group shadow-sm ${
+                  onMouseEnter={() => {
+                    if (isExerciseUnlocked) audioEngine.playHover();
+                  }}
+                  className={`pencil-btn px-3 py-2 rounded-2xl border shadow-[0_4px_14px_rgba(0,0,0,0.06)] flex items-center justify-between transition-all w-full group relative overflow-hidden cursor-pointer h-[46px] min-h-[46px] flex-shrink-0 ${
                     isExerciseCompleted
-                      ? 'bg-gradient-to-r from-emerald-100 to-green-100 border-emerald-400 text-emerald-950 ring-2 ring-emerald-500/40 shadow-[0_3px_10px_rgba(16,185,129,0.2)]'
+                      ? 'glass-card border-emerald-400/80 text-[#2D241E] ring-2 ring-[#22C55E]/60 shadow-[0_6px_20px_rgba(34,197,94,0.18)] hover:scale-[1.02] hover:border-emerald-500 active:scale-95'
                       : isExerciseUnlocked
-                      ? 'bg-gradient-to-r from-amber-100 via-amber-50 to-yellow-100 border-[#D97706]/70 text-[#78350F] hover:scale-[1.02] shadow-[0_3px_10px_rgba(217,119,6,0.18)] hover:border-[#D97706]'
-                      : 'glass-panel-subtle border-white/40 text-stone-400 cursor-not-allowed opacity-60'
+                      ? 'glass-card border-amber-300/80 text-[#2D241E] hover:scale-[1.02] hover:border-[#D97706] shadow-[0_6px_20px_rgba(217,119,6,0.15)] active:scale-95'
+                      : 'glass-panel-subtle border-stone-300/50 text-[#78716C] cursor-not-allowed opacity-75 grayscale contrast-95'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-base sm:text-lg flex-shrink-0">
-                      {isExerciseCompleted ? '⭐' : isExerciseUnlocked ? '✏️' : '🔒'}
-                    </span>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs sm:text-sm font-black font-pencil tracking-wide leading-tight truncate">
+                  {/* Left: Icon Badge & Title */}
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <div className={`p-1.5 rounded-xl text-white border border-[#2D241E] shadow-[1px_1px_0px_#2D241E] flex-shrink-0 ${
+                      isExerciseCompleted ? 'bg-[#22C55E]' : isExerciseUnlocked ? 'bg-[#D97706]' : 'bg-stone-400'
+                    }`}>
+                      {isExerciseCompleted ? (
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      ) : isExerciseUnlocked ? (
+                        <IconComp className="w-3.5 h-3.5" />
+                      ) : (
+                        <Lock className="w-3.5 h-3.5" />
+                      )}
+                    </div>
+                    <div className="flex flex-col text-left min-w-0">
+                      <span className="text-xs sm:text-sm font-black font-pencil tracking-wide leading-tight group-hover:text-[#D97706] transition-colors truncate">
                         Latihan {ch.id}
                       </span>
-                      <span className="text-[9.5px] sm:text-[10px] font-bold opacity-80 leading-none truncate">
-                        {isExerciseCompleted ? '30 Soal Tuntas' : isExerciseUnlocked ? '30 Soal + Remedial' : 'Selesaikan Materi'}
-                      </span>
+                      {isExerciseCompleted && exScore ? (
+                        <span className="text-[10px] text-[#22C55E] font-black leading-none mt-0.5">
+                          {exScore} Poin
+                        </span>
+                      ) : null}
                     </div>
                   </div>
 
+                  {/* Right: Chevron or Status Badge */}
                   <div className="flex-shrink-0 ml-1">
-                    {isExerciseCompleted ? (
-                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-emerald-200 text-emerald-800">
-                        Selesai
-                      </span>
-                    ) : isExerciseUnlocked ? (
-                      <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 group-hover:bg-amber-300 transition">
-                        Mulai →
-                      </span>
+                    {!isExerciseUnlocked ? (
+                      <Lock className="w-3.5 h-3.5 text-[#A8A29E]" />
+                    ) : isExerciseCompleted ? (
+                      <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
                     ) : (
-                      <Lock className="w-3.5 h-3.5 text-stone-400" />
+                      <div className="p-1 rounded-full glass-panel-subtle border border-[#2D241E] group-hover:translate-x-1 transition-transform">
+                        <ChevronRight className="w-3.5 h-3.5 text-[#2563EB]" />
+                      </div>
                     )}
                   </div>
                 </button>

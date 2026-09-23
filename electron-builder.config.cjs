@@ -53,6 +53,16 @@ const config = {
       from: 'dist',
       to: 'frontend/dist',
     },
+    // Seed database SQLite
+    {
+      from: 'backend/detektif_data.db',
+      to: 'backend/detektif_data.db',
+    },
+    // Konfigurasi server lab sekolah
+    {
+      from: 'server_url.txt',
+      to: 'server_url.txt',
+    },
   ],
 
   // Windows build target: generates both win-unpacked directory and nsis installer

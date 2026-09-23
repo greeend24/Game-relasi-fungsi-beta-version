@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StageHeader from './StageHeader';
 import InstructorMascotGuide from './InstructorMascotGuide';
 import { SUBBABS_DATA } from '../data/casesData';
 import { audioEngine } from '../services/audioEngine';
 import { Award, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { shuffleArray } from '../utils/shuffle.js';
 
 export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToStages, onNextSubbab }) {
   const subbabData = SUBBABS_DATA[subbabId];
@@ -15,6 +16,16 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
   const [isHintVisible, setIsHintVisible] = useState(false);
   const [stageCleared, setStageCleared] = useState(false);
   const [scoreEarned, setScoreEarned] = useState(0);
+
+  const [shuffledOptions, setShuffledOptions] = useState(() => {
+    return stageConfig?.options ? shuffleArray(stageConfig.options) : [];
+  });
+
+  useEffect(() => {
+    if (stageConfig?.options) {
+      setShuffledOptions(shuffleArray(stageConfig.options));
+    }
+  }, [subbabId, stageConfig?.question]);
 
   if (!stageConfig || !stageConfig.isConclusionStage) return null;
 
@@ -74,6 +85,9 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
           setSelectedOption('');
           setStageCleared(false);
           setErrorDetails(null);
+          if (stageConfig?.options) {
+            setShuffledOptions(shuffleArray(stageConfig.options));
+          }
         }}
       />
 
@@ -112,7 +126,7 @@ export default function Stage21Conclusion({ subbabId, onStageComplete, onBackToS
           {/* Multiple Choice Conclusion Options (FIXED ZERO SCROLL) */}
           <form onSubmit={handleSubmitConclusion} className="flex-1 min-h-0 flex flex-col justify-between space-y-2.5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 overflow-hidden min-h-0 py-1">
-              {stageConfig.options.map((opt, idx) => {
+              {((shuffledOptions && shuffledOptions.length > 0) ? shuffledOptions : (stageConfig.options || [])).map((opt, idx) => {
                 const isSelected = selectedOption === opt;
                 return (
                   <button

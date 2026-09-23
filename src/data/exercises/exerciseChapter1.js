@@ -1,7 +1,8 @@
 /**
  * LATIHAN CHAPTER 1: PENGERTIAN & CARA MENYATAKAN RELASI
- * 30 Soal Interaktif + Variasi Remedial Angka Berbeda
- * Format: MCQ, TRUE_FALSE, MCQ_COMPLEX, MATCHING, ARROWS, CARTESIAN
+ * 10 Soal Interaktif Taktil + 10 Remedial Variant (100% Interaktif)
+ * Menggunakan konteks kehidupan sehari-hari (bervariasi: literasi, cita-cita, transportasi, teknologi, piket, lab IPA, geografi)
+ * Tanpa rumus / fungsi aljabar matematika yang belum dipelajari siswa.
  */
 
 export const EXERCISE_CHAPTER_1 = [
@@ -10,937 +11,406 @@ export const EXERCISE_CHAPTER_1 = [
     chapterId: 1,
     type: "MCQ",
     title: "🔍 Definisi Relasi",
-    question: "Dalam matematika, apa yang dimaksud dengan relasi antara himpunan A dan himpunan B?",
+    question: "Dalam kehidupan sehari-hari di sekolah, hubungan seperti 'Ali meminjam Buku Ensiklopedia di perpustakaan' dan 'Siti bertugas piket hari Senin' merupakan contoh relasi. Dalam matematika, apa yang dimaksud dengan relasi antara himpunan A dan himpunan B?",
     options: [
-      "Aturan yang memasangkan anggota himpunan A dengan anggota himpunan B",
       "Operasi penjumlahan seluruh anggota himpunan A dan B",
+      "Aturan yang memasangkan anggota himpunan A dengan anggota himpunan B",
       "Himpunan yang anggotanya harus selalu berjumlah sama",
       "Aturan yang mengharuskan semua anggota B memiliki pasangan"
     ],
     correct: "Aturan yang memasangkan anggota himpunan A dengan anggota himpunan B",
-    correctReason: "Tepat sekali! Relasi adalah aturan yang mengaitkan atau memasangkan anggota suatu himpunan (daerah asal) dengan anggota himpunan lainnya.",
-    wrongExplanation: "Relasi tidak mengharuskan operasi hitung tambah, dan tidak mengharuskan jumlah anggota sama. Relasi hanyalah aturan keterkaitan/pemasangan antar dua himpunan.",
-    clue: "Ingat analogi 'benang merah': relasi adalah hubungan atau aturan yang menghubungkan dua pihak.",
+    correctReason: "Tepat sekali! Relasi adalah aturan atau hubungan yang mengaitkan anggota himpunan pertama (daerah asal) dengan anggota himpunan kedua (daerah kawan). Hubungan relasi bersifat fleksibel.",
+    wrongExplanation: "Relasi adalah aturan pemasangan antar anggota dua himpunan (seperti hubungan peminjaman buku perpustakaan atau jadwal piket), bukan operasi hitung matematika.",
+    explanation: "Tepat sekali! Relasi adalah aturan yang mengaitkan atau memasangkan anggota suatu himpunan (daerah asal) dengan anggota himpunan lainnya.",
+    clue: "Ingat kata kunci: relasi adalah aturan yang memasangkan anggota himpunan A ke himpunan B.",
+    distractorAnalysis: {
+      "Operasi penjumlahan seluruh anggota himpunan A dan B": "Penjumlahan adalah operasi aritmatika, bukan aturan pemasangan antar dua himpunan.",
+      "Himpunan yang anggotanya harus selalu berjumlah sama": "Relasi tidak mengharuskan jumlah anggota kedua himpunan sama.",
+      "Aturan yang mengharuskan semua anggota B memiliki pasangan": "Dalam relasi, anggota tidak harus semua berpasangan (bersifat fleksibel)."
+    },
     remedialVariant: {
-      question: "Manakah pernyataan yang paling tepat mengenai pengertian relasi?",
+      type: "MCQ",
+      title: "🔍 Remedial: Definisi Relasi",
+      question: "Ibu guru mencatat data kegiatan siswa di sekolah, seperti 'Rian bertugas piket hari Senin'. Hubungan tersebut merupakan relasi. Manakah pernyataan yang paling tepat mengenai pengertian relasi?",
       options: [
-        "Hubungan atau aturan yang menghubungkan anggota himpunan pertama ke himpunan kedua",
         "Penggabungan dua himpunan menjadi satu himpunan baru",
         "Pengurangan jumlah anggota himpunan asal dengan anggota himpunan kawan",
+        "Hubungan atau aturan yang menghubungkan anggota himpunan pertama ke himpunan kedua",
         "Himpunan pasangan yang anggotanya tidak boleh berpasangan"
       ],
       correct: "Hubungan atau aturan yang menghubungkan anggota himpunan pertama ke himpunan kedua",
       correctReason: "Benar! Relasi merupakan aturan atau hubungan yang mengaitkan anggota himpunan pertama ke himpunan kedua.",
-      wrongExplanation: "Relasi bukan penggabungan atau pengurangan elemen, melainkan hubungan/pemasangan antar elemen."
+      wrongExplanation: "Relasi adalah aturan yang mengaitkan atau memasangkan anggota himpunan asal ke himpunan kawan.",
+      explanation: "Benar! Relasi merupakan aturan atau hubungan yang mengaitkan anggota himpunan pertama ke himpunan kedua.",
+      clue: "Pikirkan kata kunci relasi: aturan yang memasangkan atau menghubungkan anggota himpunan pertama ke himpunan kedua."
     }
   },
   {
     id: 2,
     chapterId: 1,
-    type: "TRUE_FALSE",
-    title: "📜 Cara Menyatakan Relasi",
-    question: "Pernyataan: Relasi dapat dinyatakan dengan 3 cara utama, yaitu diagram panah, diagram Cartesius, dan himpunan pasangan berurutan.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Benar! Tiga cara standar paling umum untuk merepresentasikan relasi adalah diagram panah, himpunan pasangan berurutan, dan diagram Cartesius (serta rumus/kalimat).",
-    wrongExplanation: "Pernyataan ini bernilai benar. Ketiga bentuk representasi visual dan aljabar ini adalah materi pokok cara menyatakan relasi.",
-    clue: "Periksa kembali rangkuman materi Chapter 1 mengenai diagram panah, Cartesius, dan pasangan berurutan.",
+    type: "HPB_BUILDER",
+    title: "🧩 Susun Pasangan Berurutan: 'Cita-Cita Masa Depan'",
+    question: "Tiga siswa merencanakan cita-cita masa depan mereka: Andi ingin menjadi Dokter, Budi ingin menjadi Arsitek, dan Citra ingin menjadi Programmer. Susunlah himpunan pasangan berurutan untuk relasi 'cita-cita masa depan' tersebut!",
+    subInstruction: "Pindahkan nama siswa atau profesi ke dalam kurung pasangan berurutan!",
+    setName: "R",
+    pairs: [
+      { idX: "p1_x", idY: "p1_y", ansX: "Andi", ansY: "Dokter", fixedX: "Andi", fixedY: null },
+      { idX: "p2_x", idY: "p2_y", ansX: "Budi", ansY: "Arsitek", fixedX: null, fixedY: "Arsitek" },
+      { idX: "p3_x", idY: "p3_y", ansX: "Citra", ansY: "Programmer", fixedX: null, fixedY: null }
+    ],
+    tokens: ["Programmer", "Dokter", "Doni", "Citra", "Budi", "Pilot"],
+    correctReason: "Luar biasa tepat! Himpunan pasangan berurutan yang terbentuk adalah R = {(Andi, Dokter), (Budi, Arsitek), (Citra, Programmer)}. Setiap nama siswa dipasangkan secara tepat dengan profesi cita-citanya.",
+    wrongExplanation: "Pasangan berurutan ditulis dalam bentuk (Nama Siswa, Cita-Cita):\n• Andi pasangannya Dokter ➔ (Andi, Dokter)\n• Budi pasangannya Arsitek ➔ (Budi, Arsitek)\n• Citra pasangannya Programmer ➔ (Citra, Programmer)",
+    clue: "Andi ingin jadi Dokter, Budi ingin jadi Arsitek, dan Citra ingin jadi Programmer.",
     remedialVariant: {
-      question: "Pernyataan: Diagram Cartesius BUKAN salah satu cara untuk menyatakan relasi.",
-      options: ["Benar", "Salah"],
-      correct: "Salah",
-      correctReason: "Tepat! Pernyataan tersebut salah, karena Diagram Cartesius justru merupakan salah satu cara resmi untuk menyatakan relasi (menggunakan titik koordinat x dan y).",
-      wrongExplanation: "Diagram Cartesius adalah salah satu cara resmi menyatakan relasi, jadi pernyataan 'BUKAN cara menyatakan relasi' bernilai Salah."
+      type: "HPB_BUILDER",
+      title: "🧩 Remedial: Pasangan Berurutan 'Peralatan Praktikum'",
+      question: "Dua siswa membawa perlengkapan praktikum: Dedi membawa Mikroskop dan Erna membawa Tabung Reaksi. Lengkapi pasangan berurutan berikut!",
+      subInstruction: "Pindahkan kartu ke dalam kurung pasangan berurutan!",
+      setName: "R",
+      pairs: [
+        { idX: "rp1_x", idY: "rp1_y", ansX: "Dedi", ansY: "Mikroskop", fixedX: "Dedi", fixedY: null },
+        { idX: "rp2_x", idY: "rp2_y", ansX: "Erna", ansY: "Tabung Reaksi", fixedX: null, fixedY: "Tabung Reaksi" }
+      ],
+      tokens: ["Mikroskop", "Erna", "Termometer", "Fajar"],
+      correctReason: "Tepat sekali! R = {(Dedi, Mikroskop), (Erna, Tabung Reaksi)}. Pasangan berurutan tersusun sempurna!",
+      wrongExplanation: "Dedi membawa Mikroskop ➔ (Dedi, Mikroskop); Erna membawa Tabung Reaksi ➔ (Erna, Tabung Reaksi).",
+      clue: "Pasangkan Dedi dengan Mikroskop dan Erna dengan Tabung Reaksi."
     }
   },
   {
     id: 3,
     chapterId: 1,
-    type: "MCQ",
-    title: "🔗 Membaca Relasi Pasangan",
-    question: "Perhatikan himpunan pasangan berurutan R berikut. Aturan relasi yang tepat dari himpunan pertama ke kedua adalah...",
-    visual: {
-      type: "ordered_pairs",
-      title: "Himpunan Pasangan Berurutan R",
-      setName: "R",
-      pairs: [[2, 4], [3, 6], [4, 8]],
-      rule: "?"
-    },
-    options: ["Setengah dari", "Dua kali dari", "Kuadrat dari", "Dua lebihnya dari"],
-    correct: "Setengah dari",
-    correctReason: "Hebat! 2 adalah setengah dari 4, 3 adalah setengah dari 6, dan 4 adalah setengah dari 8. Pola relasinya tepat: 'setengah dari'.",
-    wrongExplanation: "Perhatikan arahnya: 2 ke 4 berarti 2 = 1/2 × 4 (bukan 2 kali dari 4). Jika 'dua kali dari', pasangannya terbalik seperti (4, 2).",
-    clue: "Bandingkan angka depan terhadap angka belakang: 2 dibanding 4, 3 dibanding 6. Angka depan bernilai separuh dari angka belakang.",
+    type: "ARROW_BUILDER_2STEP",
+    title: "🏹 Diagram Panah 2-Langkah: 'Moda Transportasi ke Sekolah'",
+    question: "Langkah 1: Taruh nama siswa ke Himpunan A dan moda transportasi ke Himpunan B. Langkah 2: Sambungkan panah relasi sesuai data: Ali naik Sepeda, Budi naik Bus Sekolah & Ojek Online, Cici naik Ojek Online!",
+    subInstruction: "Tempatkan nama anggota terlebih dahulu, kemudian sambungkan tali panahnya!",
+    labelA: "Himpunan A",
+    labelB: "Himpunan B",
+    expectedSetA: ["Ali", "Budi", "Cici"],
+    expectedSetB: ["Sepeda", "Bus Sekolah", "Ojek Online"],
+    availableTokens: ["Ali", "Budi", "Cici", "Sepeda", "Bus Sekolah", "Ojek Online"],
+    correctPairs: [
+      "Ali->Sepeda",
+      "Budi->Bus Sekolah",
+      "Budi->Ojek Online",
+      "Cici->Ojek Online"
+    ],
+    rule: "Ali naik Sepeda, Budi naik Bus Sekolah & Ojek Online, Cici naik Ojek Online",
+    correctReason: "Sempurna! Kamu telah menamai diagram himpunan dan menghubungkan tali panah relasi transportasi dengan tepat!",
+    wrongExplanation: "Pastikan nama di Himpunan A: Ali, Budi, Cici; Himpunan B: Sepeda, Bus Sekolah, Ojek Online. Sambungkan: Ali->Sepeda, Budi->Bus Sekolah, Budi->Ojek Online, Cici->Ojek Online.",
+    clue: "Budi menggunakan 2 moda transportasi (Bus Sekolah dan Ojek Online).",
     remedialVariant: {
-      question: "Perhatikan himpunan pasangan berurutan R berikut. Aturan relasi yang tepat dari himpunan pertama ke kedua adalah...",
-      visual: {
-        type: "ordered_pairs",
-        title: "Himpunan Pasangan Berurutan R",
-        setName: "R",
-        pairs: [[1, 3], [2, 6], [3, 9]],
-        rule: "?"
-      },
-      options: ["Sepertiga dari", "Tiga kali dari", "Tiga lebihnya dari", "Kurang dari 2"],
-      correct: "Sepertiga dari",
-      correctReason: "Tepat sekali! 1 adalah sepertiga dari 3, 2 adalah sepertiga dari 6, dan 3 adalah sepertiga dari 9.",
-      wrongExplanation: "Arah relasi dari depan ke belakang: angka depan adalah 1/3 dari angka belakang, jadi relasinya 'sepertiga dari'."
+      type: "ARROW_BUILDER_2STEP",
+      title: "🏹 Remedial: Diagram Panah 'Peralatan Menggambar'",
+      question: "Tempatkan nama siswa di A dan peralatan di B, lalu sambungkan panah: Dito membawa Penggaris & Jangka, Eka membawa Jangka!",
+      labelA: "Himpunan A",
+      labelB: "Himpunan B",
+      expectedSetA: ["Dito", "Eka"],
+      expectedSetB: ["Penggaris", "Jangka"],
+      availableTokens: ["Dito", "Eka", "Penggaris", "Jangka"],
+      correctPairs: [
+        "Dito->Penggaris",
+        "Dito->Jangka",
+        "Eka->Jangka"
+      ],
+      rule: "Dito membawa Penggaris & Jangka, Eka membawa Jangka",
+      correctReason: "Bagus sekali! Diagram panah relasi peralatan menggambar tersusun dengan rapi dan akurat.",
+      wrongExplanation: "Pastikan nama di Himpunan A: Dito, Eka; Himpunan B: Penggaris, Jangka. Sambungkan panah: Dito->Penggaris, Dito->Jangka, dan Eka->Jangka.",
+      clue: "Dito membawa 2 alat (Penggaris dan Jangka)."
     }
   },
   {
     id: 4,
     chapterId: 1,
-    type: "MCQ",
-    title: "🔢 Relasi 'Faktor Dari'",
-    question: "Perhatikan diagram panah relasi 'faktor dari' dari himpunan A ke B berikut. Manakah himpunan pasangan berurutan yang benar?",
-    visual: {
-      type: "arrow_diagram",
-      labelA: "Himpunan A",
-      labelB: "Himpunan B",
-      setA: [2, 3],
-      setB: [4, 6],
-      pairs: [[2, 4], [2, 6], [3, 6]],
-      statusBadge: "Faktor Dari"
-    },
-    options: [
-      "{(2, 4), (2, 6), (3, 6)}",
-      "{(2, 4), (3, 4)}",
-      "{(2, 6), (3, 4)}",
-      "{(2, 4), (3, 6)}"
+    type: "TABLE_BUILDER",
+    title: "📊 Lengkapi Tabel Relasi: 'Aplikasi Belajar Digital'",
+    question: "Dalam pembelajaran berbasis teknologi, 4 siswa menggunakan aplikasi digital: Rian menggunakan Canva, Siti menggunakan Scratch, Doni menggunakan Duolingo, dan Putri menggunakan Notion. Lengkapi sel-sel tabel relasi berikut!",
+    subInstruction: "Pindahkan kartu nama siswa atau aplikasi ke sel bertanda [ ? ]!",
+    tableTitle: "Tabel Relasi: 'Aplikasi Belajar Siswa'",
+    headers: ["Nama Siswa", "Aplikasi Belajar"],
+    rows: [
+      { idX: "r1_x", isSlotX: false, valX: "Rian", idY: "r1_y", isSlotY: true, valY: "Canva" },
+      { idX: "r2_x", isSlotX: true, valX: "Siti", idY: "r2_y", isSlotY: false, valY: "Scratch" },
+      { idX: "r3_x", isSlotX: false, valX: "Doni", idY: "r3_y", isSlotY: true, valY: "Duolingo" },
+      { idX: "r4_x", isSlotX: true, valX: "Putri", idY: "r4_y", isSlotY: true, valY: "Notion" }
     ],
-    correct: "{(2, 4), (2, 6), (3, 6)}",
-    correctReason: "Luar biasa! 2 adalah faktor dari 4 dan 6 (karena habis membagi 4 dan 6). 3 adalah faktor dari 6 (tetapi bukan faktor dari 4). Jadi pasangannya {(2, 4), (2, 6), (3, 6)}.",
-    wrongExplanation: "Ingat bahwa 2 habis membagi 4 dan 6, sehingga 2 harus berpasangan dengan 4 dan juga 6. Jangan lewatkan pasangan (2, 6)!",
-    clue: "Cek angka yang habis dibagi: 4 habis dibagi 2; 6 habis dibagi 2 dan 3.",
+    tokens: ["Canva", "Siti", "Duolingo", "Putri", "Notion", "CapCut", "Quizizz"],
+    correctReason: "Luar biasa! Seluruh baris tabel relasi aplikasi belajar terisi dengan tepat: Rian ➔ Canva, Siti ➔ Scratch, Doni ➔ Duolingo, dan Putri ➔ Notion.",
+    wrongExplanation: "Cocokkan data aplikasi tiap siswa:\n• Rian ➔ Canva\n• Siti ➔ Scratch\n• Doni ➔ Duolingo\n• Putri ➔ Notion",
+    clue: "Rian menggunakan Canva, pasangannya Scratch adalah Siti, Doni menggunakan Duolingo, dan Putri menggunakan Notion.",
     remedialVariant: {
-      question: "Perhatikan diagram panah relasi 'faktor dari' dari A ke B berikut. Pasangan berurutannya adalah...",
-      visual: {
-        type: "arrow_diagram",
-        labelA: "Himpunan A",
-        labelB: "Himpunan B",
-        setA: [3, 5],
-        setB: [6, 10, 15],
-        pairs: [[3, 6], [3, 15], [5, 10], [5, 15]],
-        statusBadge: "Faktor Dari"
-      },
-      options: [
-        "{(3, 6), (3, 15), (5, 10), (5, 15)}",
-        "{(3, 6), (5, 10)}",
-        "{(3, 10), (5, 6)}",
-        "{(3, 6), (3, 10), (5, 15)}"
+      type: "TABLE_BUILDER",
+      title: "📊 Remedial: Tabel Relasi 'Tugas Proyek Kelas'",
+      question: "Tiga peserta proyek memilih format tugas: Eko membuat Poster, Fani membuat Video, dan Gita membuat Maket. Lengkapi tabel relasi berikut!",
+      subInstruction: "Pindahkan kartu ke sel bertanda [ ? ]!",
+      tableTitle: "Tabel Relasi: 'Format Proyek'",
+      headers: ["Nama Peserta", "Format Tugas"],
+      rows: [
+        { idX: "r1_x", isSlotX: false, valX: "Eko", idY: "r1_y", isSlotY: true, valY: "Poster" },
+        { idX: "r2_x", isSlotX: true, valX: "Fani", idY: "r2_y", isSlotY: false, valY: "Video" },
+        { idX: "r3_x", isSlotX: false, valX: "Gita", idY: "r3_y", isSlotY: true, valY: "Maket" }
       ],
-      correct: "{(3, 6), (3, 15), (5, 10), (5, 15)}",
-      correctReason: "Tepat! 3 habis membagi 6 dan 15; 5 habis membagi 10 dan 15.",
-      wrongExplanation: "Periksa kelipatan: 15 habis dibagi oleh 3 maupun 5, sehingga (3, 15) dan (5, 15) wajib masuk."
+      tokens: ["Poster", "Fani", "Maket", "Podcast"],
+      correctReason: "Tepat sekali! Eko ➔ Poster, Fani ➔ Video, dan Gita ➔ Maket. Tabel relasi selesai!",
+      wrongExplanation: "Pasangkan: Eko dengan Poster, Fani dengan Video, dan Gita dengan Maket.",
+      clue: "Eko membuat Poster, Fani membuat Video, dan Gita membuat Maket."
     }
   },
   {
     id: 5,
     chapterId: 1,
-    type: "TRUE_FALSE",
-    title: "🎯 Relasi Kosong / Bebas",
-    question: "Pernyataan: Pada sebuah relasi biasa, ada anggota himpunan asal yang boleh tidak mempunyai pasangan sama sekali.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Tepat! Dalam relasi umum, aturan pemasangan sangat bebas. Anggota daerah asal boleh tidak punya pasangan, boleh punya 1 pasangan, atau boleh punya banyak pasangan.",
-    wrongExplanation: "Hanya pada 'fungsi' semua anggota asal wajib berpasangan tepat satu. Pada 'relasi umum', anggota boleh saja tidak memiliki kawan/pasangan.",
-    clue: "Beda relasi dan fungsi: relasi adalah aturan umum yang fleksibel tanpa syarat ketat seperti fungsi.",
+    type: "CARTESIAN",
+    title: "📍 Diagram Kartesius: Relasi 'Jadwal Hari Piket Kelas'",
+    question: "Tiga siswa terjadwal piket kebersihan kelas: Andi bertugas hari Senin dan Rabu, Budi bertugas hari Selasa, serta Citra bertugas hari Senin dan Selasa. Tandai seluruh pasangan titik jadwal piket mereka pada diagram Kartesius berikut!",
+    labelX: "Nama Siswa",
+    labelY: "Hari Piket",
+    xLabels: { 1: "Andi", 2: "Budi", 3: "Citra" },
+    yLabels: { 1: "Senin", 2: "Selasa", 3: "Rabu" },
+    minX: 0,
+    maxX: 3,
+    minY: 0,
+    maxY: 3,
+    targetPoints: [
+      [1, 1],
+      [1, 3],
+      [2, 2],
+      [3, 1],
+      [3, 2]
+    ],
+    correctReason: "Hebat sekali! Pasangan titik jadwal piket berhasil kamu tandai dengan tepat pada diagram Kartesius. Dalam relasi, satu anggota asal boleh memiliki lebih dari satu kawan pasangan (bercabang)!",
+    wrongExplanation: "Periksa kembali jadwal tiap siswa:\n• Andi: Senin dan Rabu (tandai persilangan kolom Andi dengan baris Senin dan Rabu)\n• Budi: Selasa (tandai persilangan kolom Budi dengan baris Selasa)\n• Citra: Senin dan Selasa (tandai persilangan kolom Citra dengan baris Senin dan Selasa)",
+    clue: "Andi bertugas 2 hari (Senin & Rabu), Budi bertugas 1 hari (Selasa), dan Citra bertugas 2 hari (Senin & Selasa).",
     remedialVariant: {
-      question: "Pernyataan: Dalam relasi, satu anggota himpunan asal boleh memiliki lebih dari satu kawan di himpunan tujuan.",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Benar sekali! Relasi bersifat fleksibel, satu anggota asal boleh bercabang ke beberapa anggota tujuan.",
-      wrongExplanation: "Relasi tidak membatasi jumlah pasangan; cabang diperbolehkan dalam relasi biasa."
+      question: "Dua siswa membawa perlengkapan seni rupa: Dedi membawa Krayon dan Cat Air, serta Erna membawa Cat Air dan Kuas. Tandai seluruh pasangan titik perlengkapan seni mereka pada diagram Kartesius berikut!",
+      labelX: "Nama Siswa",
+      labelY: "Alat Seni Rupa",
+      xLabels: { 1: "Dedi", 2: "Erna" },
+      yLabels: { 1: "Krayon", 2: "Cat Air", 3: "Kuas" },
+      minX: 0,
+      maxX: 2,
+      minY: 0,
+      maxY: 3,
+      targetPoints: [
+        [1, 1],
+        [1, 2],
+        [2, 2],
+        [2, 3]
+      ],
+      correctReason: "Bagus sekali! Dedi membawa 2 alat dan Erna membawa 2 alat. Seluruh titik relasi terpasang tepat pada diagram Kartesius.",
+      wrongExplanation: "Tandai titik temu nama siswa di sumbu mendatar dengan peralatannya di sumbu tegak:\n• Dedi: Krayon dan Cat Air\n• Erna: Cat Air dan Kuas",
+      clue: "Dedi membawa 2 alat (Krayon dan Cat Air), Erna membawa 2 alat (Cat Air dan Kuas)."
     }
   },
   {
     id: 6,
     chapterId: 1,
-    type: "MATCHING",
-    title: "🧩 Menjodohkan Cara Menyatakan Relasi",
-    question: "Jodohkan istilah representasi relasi di kiri dengan deskripsinya yang tepat di kanan!",
-    pairs: [
-      { left: "Diagram Panah", right: "Kurva tertutup dengan anak panah penghubung" },
-      { left: "Himpunan Pasangan Berurutan", right: "Kumpulan titik (x, y) dalam tanda kurung kurawal" },
-      { left: "Diagram Cartesius", right: "Titik noktah pada bidang sumbu X dan Y" }
+    type: "DRAG_DROP",
+    title: "🎯 Pindahkan Kartu: Analisis Aturan Relasi Pasangan Berurutan",
+    question: "Diberikan empat pasangan berurutan (x, y). Analisislah aturan hubungan dari elemen pertama (x) ke elemen kedua (y), lalu kelompokkan ke kotak aturan relasi yang tepat!",
+    subInstruction: "Pindahkan setiap kartu pasangan ke kotak 'Relasi \"Setengah Dari\"' atau 'Relasi \"Dua Kali Dari\"'!",
+    categories: [
+      'Relasi "Setengah Dari"',
+      'Relasi "Dua Kali Dari"'
     ],
-    rightOptions: [
-      "Kurva tertutup dengan anak panah penghubung",
-      "Kumpulan titik (x, y) dalam tanda kurung kurawal",
-      "Titik noktah pada bidang sumbu X dan Y"
+    items: [
+      "(2, 4)",
+      "(3, 6)",
+      "(4, 2)",
+      "(6, 3)"
     ],
-    correctReason: "Sempurna! Kamu memahami ketiga ciri visual cara menyatakan relasi dengan sangat baik.",
-    wrongExplanation: "Diagram panah memakai anak panah, pasangan berurutan memakai format kurawal {(x, y)}, dan Cartesius memakai bidang koordinat sumbu tegak-mendatar.",
-    clue: "Perhatikan kata kunci: 'anak panah', 'tanda kurung (x, y)', dan 'sumbu X-Y'.",
+    correctMapping: {
+      "(2, 4)": 'Relasi "Setengah Dari"',
+      "(3, 6)": 'Relasi "Setengah Dari"',
+      "(4, 2)": 'Relasi "Dua Kali Dari"',
+      "(6, 3)": 'Relasi "Dua Kali Dari"'
+    },
+    itemExplanations: {
+      "(2, 4)": "Pada pasangan (2, 4), elemen pertama 2 bernilai setengah dari 4 (2 = ½ × 4).",
+      "(3, 6)": "Pada pasangan (3, 6), elemen pertama 3 bernilai setengah dari 6 (3 = ½ × 6).",
+      "(4, 2)": "Pada pasangan (4, 2), elemen pertama 4 bernilai dua kali dari 2 (4 = 2 × 2).",
+      "(6, 3)": "Pada pasangan (6, 3), elemen pertama 6 bernilai dua kali dari 3 (6 = 2 × 3)."
+    },
+    correctReason: "Luar biasa! Kamu memahami bahwa urutan pasangan (x, y) sangat penting dalam relasi: (2, 4) adalah relasi 'setengah dari', sedangkan (4, 2) adalah relasi 'dua kali dari'.",
+    wrongExplanation: "Periksa aturan hubungan dari elemen x ke elemen y:\n• Relasi 'Setengah Dari' (x = ½y): (2, 4) dan (3, 6)\n• Relasi 'Dua Kali Dari' (x = 2y): (4, 2) dan (6, 3)",
+    clue: "Perhatikan urutannya: apakah x bernilai setengah dari y, ataukah x bernilai dua kali lipat dari y?",
     remedialVariant: {
-      question: "Jodohkan bentuk penyajian relasi dengan simbol utamanya!",
-      pairs: [
-        { left: "Pasangan Berurutan", right: "{(a, b)}" },
-        { left: "Diagram Panah", right: "Anak Panah (➔)" },
-        { left: "Diagram Cartesius", right: "Koordinat Sumbu (X, Y)" }
+      question: "Kelompokkan pasangan berurutan (x, y) berikut ke dalam kotak aturan relasi 'Setengah Dari' atau 'Dua Kali Dari' yang tepat!",
+      categories: [
+        'Relasi "Setengah Dari"',
+        'Relasi "Dua Kali Dari"'
       ],
-      rightOptions: ["{(a, b)}", "Anak Panah (➔)", "Koordinat Sumbu (X, Y)"],
-      correctReason: "Tepat! Pasangan berurutan disimbolkan kurung kurawal, diagram panah dengan panah, dan Cartesius dengan sumbu koordinat.",
-      wrongExplanation: "Perhatikan simbol identik masing-masing: kurung {(...)}, panah, dan bidang koordinat."
+      items: [
+        "(1, 2)",
+        "(5, 10)",
+        "(2, 1)",
+        "(10, 5)"
+      ],
+      correctMapping: {
+        "(1, 2)": 'Relasi "Setengah Dari"',
+        "(5, 10)": 'Relasi "Setengah Dari"',
+        "(2, 1)": 'Relasi "Dua Kali Dari"',
+        "(10, 5)": 'Relasi "Dua Kali Dari"'
+      },
+      correctReason: "Tepat sekali! (1, 2) dan (5, 10) menyatakan 'setengah dari', sedangkan (2, 1) dan (10, 5) menyatakan 'dua kali dari'.",
+      wrongExplanation: "• Relasi 'Setengah Dari' (x = ½y): (1, 2) dan (5, 10)\n• Relasi 'Dua Kali Dari' (x = 2y): (2, 1) dan (10, 5)",
+      clue: "1 adalah setengah dari 2, sedangkan 2 adalah dua kali dari 1."
     }
   },
   {
     id: 7,
     chapterId: 1,
-    type: "MCQ",
-    title: "📐 Relasi 'Kuadrat Dari'",
-    question: "Perhatikan diagram panah relasi dari A ke B berikut dengan aturan 'kuadrat dari'. Himpunan pasangan berurutannya adalah...",
-    visual: {
-      type: "arrow_diagram",
-      labelA: "Himpunan A",
-      labelB: "Himpunan B",
-      setA: [1, 4, 9],
-      setB: [1, 2, 3],
-      pairs: [[1, 1], [4, 2], [9, 3]],
-      statusBadge: "Kuadrat Dari"
-    },
-    options: [
-      "{(1, 1), (4, 2), (9, 3)}",
-      "{(1, 1), (2, 4), (3, 9)}",
-      "{(1, 2), (4, 3), (9, 1)}",
-      "{(4, 2), (9, 3)}"
+    type: "HPB_BUILDER",
+    title: "🧩 Susun Pasangan Berurutan: 'Kota Kelahiran'",
+    question: "Data kota kelahiran tiga anak: Fajar lahir di Bandung, Gita lahir di Surabaya, dan Hadi lahir di Jakarta. Susunlah himpunan pasangan berurutan untuk relasi 'kota kelahiran' tersebut!",
+    subInstruction: "Pindahkan kartu nama atau kota ke dalam kurung pasangan berurutan!",
+    setName: "R",
+    pairs: [
+      { idX: "p1_x", idY: "p1_y", ansX: "Fajar", ansY: "Bandung", fixedX: "Fajar", fixedY: null },
+      { idX: "p2_x", idY: "p2_y", ansX: "Gita", ansY: "Surabaya", fixedX: null, fixedY: "Surabaya" },
+      { idX: "p3_x", idY: "p3_y", ansX: "Hadi", ansY: "Jakarta", fixedX: null, fixedY: null }
     ],
-    correct: "{(1, 1), (4, 2), (9, 3)}",
-    correctReason: "Benar! 1 = 1², 4 = 2², dan 9 = 3². Jadi 1 adalah kuadrat dari 1, 4 kuadrat dari 2, dan 9 kuadrat dari 3.",
-    wrongExplanation: "Urutan pasangan adalah (A, B). Karena 4 adalah kuadrat dari 2, maka pasangan yang benar adalah (4, 2), bukan (2, 4).",
-    clue: "A adalah kuadrat dari B artinya elemen A = (elemen B)².",
+    tokens: ["Gita", "Semarang", "Bandung", "Hadi", "Ilham", "Jakarta"],
+    correctReason: "Sempurna! Pasangan berurutan kota kelahiran tersusun tepat: R = {(Fajar, Bandung), (Gita, Surabaya), (Hadi, Jakarta)}.",
+    wrongExplanation: "Pasangkan nama anak dengan kota kelahirannya:\n• Fajar lahir di Bandung ➔ (Fajar, Bandung)\n• Gita lahir di Surabaya ➔ (Gita, Surabaya)\n• Hadi lahir di Jakarta ➔ (Hadi, Jakarta)",
+    clue: "Fajar di Bandung, pasangannya Surabaya adalah Gita, dan Hadi di Jakarta.",
     remedialVariant: {
-      question: "Perhatikan diagram panah relasi 'kuadrat dari' berikut. Himpunan pasangannya adalah...",
-      visual: {
-        type: "arrow_diagram",
-        labelA: "Himpunan A",
-        labelB: "Himpunan B",
-        setA: [16, 25],
-        setB: [4, 5],
-        pairs: [[16, 4], [25, 5]],
-        statusBadge: "Kuadrat Dari"
-      },
-      options: [
-        "{(16, 4), (25, 5)}",
-        "{(4, 16), (5, 25)}",
-        "{(16, 5), (25, 4)}",
-        "{(16, 16), (25, 25)}"
+      type: "HPB_BUILDER",
+      title: "🧩 Remedial: Pasangan Berurutan 'Kota Kelahiran'",
+      question: "Lengkapi pasangan berurutan data kelahiran: Indah lahir di Yogyakarta dan Joko lahir di Medan!",
+      subInstruction: "Pindahkan kartu ke dalam kotak kurung pasangan berurutan!",
+      setName: "R",
+      pairs: [
+        { idX: "rp1_x", idY: "rp1_y", ansX: "Indah", ansY: "Yogyakarta", fixedX: "Indah", fixedY: null },
+        { idX: "rp2_x", idY: "rp2_y", ansX: "Joko", ansY: "Medan", fixedX: null, fixedY: "Medan" }
       ],
-      correct: "{(16, 4), (25, 5)}",
-      correctReason: "Bagus sekali! 16 adalah kuadrat dari 4 (4² = 16) dan 25 kuadrat dari 5 (5² = 25).",
-      wrongExplanation: "Ingat arah (A, B): angka asal A di depan (16), angka kawan B di belakang (4)."
+      tokens: ["Yogyakarta", "Joko", "Padang"],
+      correctReason: "Bagus sekali! R = {(Indah, Yogyakarta), (Joko, Medan)}. Selesai dengan benar!",
+      wrongExplanation: "Indah di Yogyakarta ➔ (Indah, Yogyakarta); Joko di Medan ➔ (Joko, Medan).",
+      clue: "Pasangkan Indah dengan Yogyakarta dan Joko dengan Medan."
     }
   },
   {
     id: 8,
     chapterId: 1,
-    type: "MCQ_COMPLEX",
-    title: "☑️ Ciri Relasi yang Sah",
-    question: "Perhatikan tabel relasi fleksibel berikut. Manakah pernyataan yang BENAR mengenai aturan relasi dari himpunan A ke B? (Pilih semua yang benar)",
-    visual: {
-      type: "relation_table",
-      title: "Tabel Relasi Bukti",
-      rule: "Pemasangan Fleksibel",
-      headers: ["Himpunan A", "Himpunan B"],
-      pairs: [["Ali", "Merah"], ["Ali", "Biru"], ["Budi", "Hijau"]],
-      showOrderedPair: true
-    },
-    options: [
-      "Anggota himpunan A boleh memiliki lebih dari satu pasangan di B",
-      "Anggota himpunan A boleh tidak memiliki pasangan sama sekali di B",
-      "Setiap anggota himpunan B harus selalu berpasangan dengan A",
-      "Relasi dapat disajikan dalam bentuk diagram Cartesius"
+    type: "ARROW_BUILDER_2STEP",
+    title: "🏹 Diagram Panah 2-Langkah: 'Peminjaman Bahan Bacaan di Perpustakaan'",
+    question: "Langkah 1: Tempatkan nama siswa {Rani, Tono} di Himpunan A dan jenis bacaan {Ensiklopedia, Majalah Sains} di Himpunan B. Langkah 2: Sambungkan panah relasi sesuai data: Rani meminjam Ensiklopedia dan Majalah Sains, sedangkan Tono meminjam Ensiklopedia!",
+    subInstruction: "Lengkapi nama anggota di lingkaran himpunan, lalu sambungkan panah relasinya!",
+    labelA: "Himpunan A",
+    labelB: "Himpunan B",
+    expectedSetA: ["Rani", "Tono"],
+    expectedSetB: ["Ensiklopedia", "Majalah Sains"],
+    availableTokens: ["Rani", "Tono", "Ensiklopedia", "Majalah Sains"],
+    correctPairs: [
+      "Rani->Ensiklopedia",
+      "Rani->Majalah Sains",
+      "Tono->Ensiklopedia"
     ],
-    correctMultiple: [
-      "Anggota himpunan A boleh memiliki lebih dari satu pasangan di B",
-      "Anggota himpunan A boleh tidak memiliki pasangan sama sekali di B",
-      "Relasi dapat disajikan dalam bentuk diagram Cartesius"
-    ],
-    correctReason: "Hebat! Kamu berhasil mengidentifikasi ketiga sifat relasi umum dengan tepat. Pada relasi, keanggotaan dan pemasangan sangat fleksibel.",
-    wrongExplanation: "Pilihan 'Setiap anggota himpunan B harus selalu berpasangan' salah, karena dalam relasi anggota kodomain B boleh saja tidak terpilih/tidak berpasangan.",
-    clue: "Relasi itu bebas: boleh bercabang, boleh jomblo, dan bisa digambar di Cartesius.",
+    rule: "Rani meminjam Ensiklopedia & Majalah Sains, Tono meminjam Ensiklopedia",
+    correctReason: "Luar biasa! Rani meminjam dua bahan bacaan (Ensiklopedia dan Majalah Sains), sedangkan Tono meminjam Ensiklopedia. Diagram panah 2-langkah tuntas!",
+    wrongExplanation: "Sambungkan: Rani ke Ensiklopedia, Rani ke Majalah Sains, dan Tono ke Ensiklopedia.",
+    clue: "Rani memiliki 2 cabang panah (ke Ensiklopedia dan Majalah Sains). Tono hanya 1 panah ke Ensiklopedia.",
     remedialVariant: {
-      question: "Manakah pernyataan yang BENAR tentang cara menyajikan relasi? (Pilih semua yang benar)",
-      options: [
-        "Dapat disajikan dengan diagram panah",
-        "Dapat disajikan dengan himpunan pasangan berurutan",
-        "Hanya boleh dinyatakan dengan rumus aljabar",
-        "Dapat disajikan dengan tabel atau diagram Cartesius"
+      type: "ARROW_BUILDER_2STEP",
+      title: "🏹 Remedial: Diagram Panah 'Divisi Panitia Pentas Seni'",
+      question: "Tempatkan nama di A dan divisi di B, lalu sambungkan panah: Diva bertugas di Acara dan Dokumentasi, sedangkan Evan bertugas di Acara!",
+      labelA: "Himpunan A",
+      labelB: "Himpunan B",
+      expectedSetA: ["Diva", "Evan"],
+      expectedSetB: ["Acara", "Dokumentasi"],
+      availableTokens: ["Diva", "Evan", "Acara", "Dokumentasi"],
+      correctPairs: [
+        "Diva->Acara",
+        "Diva->Dokumentasi",
+        "Evan->Acara"
       ],
-      correctMultiple: [
-        "Dapat disajikan dengan diagram panah",
-        "Dapat disajikan dengan himpunan pasangan berurutan",
-        "Dapat disajikan dengan tabel atau diagram Cartesius"
-      ],
-      correctReason: "Tepat! Relasi memiliki banyak cara penyajian (panah, koordinat, tabel, pasangan berurutan), tidak hanya rumus.",
-      wrongExplanation: "Relasi tidak terbatas hanya rumus aljabar saja, diagram panah dan Cartesius juga sangat umum."
+      rule: "Diva bertugas di Acara & Dokumentasi, Evan bertugas di Acara",
+      correctReason: "Bagus! Diva bercabang ke Acara dan Dokumentasi, Evan ke Acara.",
+      wrongExplanation: "Pastikan nama di Himpunan A: Diva, Evan; Himpunan B: Acara, Dokumentasi. Sambungkan panah: Diva->Acara, Diva->Dokumentasi, dan Evan->Acara.",
+      clue: "Diva memiliki 2 panah (Acara dan Dokumentasi)."
     }
   },
   {
     id: 9,
     chapterId: 1,
-    type: "ARROWS",
-    title: "🏹 Hubungkan Relasi 'Satu Kurangnya Dari'",
-    question: "Hubungkan setiap elemen pada himpunan A ke bayangannya pada himpunan B dengan aturan 'satu kurangnya dari'!",
-    setA: [2, 3, 4],
-    setB: [3, 4, 5],
-    correctPairs: ["2->3", "3->4", "4->5"],
-    correctReason: "Luar biasa! 2 adalah 1 kurangnya dari 3, 3 adalah 1 kurangnya dari 4, dan 4 adalah 1 kurangnya dari 5 (a = b − 1).",
-    wrongExplanation: "2 adalah satu kurangnya dari 3 (karena 3 − 1 = 2). Hubungkan 2 ke 3, 3 ke 4, dan 4 ke 5.",
-    clue: "Angka di himpunan B adalah angka di himpunan A ditambah 1.",
+    type: "TABLE_BUILDER",
+    title: "📊 Lengkapi Tabel: 'Jabatan Pengurus Kelas'",
+    question: "SMP Nusantara mengumumkan susunan pengurus kelas: Bayu menjabat Ketua Kelas, Laras menjabat Sekretaris, Dimas menjabat Bendahara, dan Siska menjabat Seksi IT. Lengkapi sel-sel tabel relasi berikut!",
+    subInstruction: "Pindahkan kartu nama siswa atau jabatan ke sel tabel!",
+    tableTitle: "Tabel Relasi: 'Pengurus Kelas Siswa'",
+    headers: ["Nama Siswa", "Jabatan Kelas"],
+    rows: [
+      { idX: "r1_x", isSlotX: false, valX: "Bayu", idY: "r1_y", isSlotY: true, valY: "Ketua Kelas" },
+      { idX: "r2_x", isSlotX: true, valX: "Laras", idY: "r2_y", isSlotY: false, valY: "Sekretaris" },
+      { idX: "r3_x", isSlotX: false, valX: "Dimas", idY: "r3_y", isSlotY: true, valY: "Bendahara" },
+      { idX: "r4_x", isSlotX: true, valX: "Siska", idY: "r4_y", isSlotY: true, valY: "Seksi IT" }
+    ],
+    tokens: ["Ketua Kelas", "Laras", "Bendahara", "Siska", "Seksi IT", "Seksi Mading", "Seksi Kebersihan"],
+    correctReason: "Hebat sekali! Bayu ➔ Ketua Kelas, Laras ➔ Sekretaris, Dimas ➔ Bendahara, dan Siska ➔ Seksi IT. Tabel relasi pengurus kelas selesai dengan sempurna!",
+    wrongExplanation: "Cocokkan nama siswa dengan jabatannya:\n• Bayu ➔ Ketua Kelas\n• Laras ➔ Sekretaris\n• Dimas ➔ Bendahara\n• Siska ➔ Seksi IT",
+    clue: "Bayu menjabat Ketua Kelas, pasangannya Sekretaris adalah Laras, Dimas menjabat Bendahara, dan Siska menjabat Seksi IT.",
     remedialVariant: {
-      question: "Hubungkan panah dengan aturan relasi 'dua kurangnya dari'!",
-      setA: [1, 2, 3],
-      setB: [3, 4, 5],
-      correctPairs: ["1->3", "2->4", "3->5"],
-      correctReason: "Benar! 1 = 3 − 2, 2 = 4 − 2, 3 = 5 − 2. Semua panah terpasang akurat!",
-      wrongExplanation: "Aturan dua kurangnya dari berarti elemen B bernilai elemen A + 2 (1➔3, 2➔4, 3➔5)."
+      type: "TABLE_BUILDER",
+      title: "📊 Remedial: Tabel 'Bahasa Asing yang Dipelajari'",
+      question: "Tiga siswa mengambil kelas bahasa: Aldo belajar Bahasa Jepang, Bella belajar Bahasa Inggris, dan Citra belajar Bahasa Mandarin. Lengkapi tabel berikut!",
+      subInstruction: "Pindahkan kartu ke sel tabel yang kosong!",
+      tableTitle: "Tabel Relasi: 'Bahasa Asing'",
+      headers: ["Nama Siswa", "Bahasa Asing"],
+      rows: [
+        { idX: "r1_x", isSlotX: false, valX: "Aldo", idY: "r1_y", isSlotY: true, valY: "Jepang" },
+        { idX: "r2_x", isSlotX: true, valX: "Bella", idY: "r2_y", isSlotY: false, valY: "Inggris" },
+        { idX: "r3_x", isSlotX: false, valX: "Citra", idY: "r3_y", isSlotY: true, valY: "Mandarin" }
+      ],
+      tokens: ["Jepang", "Bella", "Mandarin", "Korea"],
+      correctReason: "Tepat! Aldo ➔ Jepang, Bella ➔ Inggris, Citra ➔ Mandarin.",
+      wrongExplanation: "Pasangkan nama siswa dengan bahasa asing yang dipelajari.",
+      clue: "Aldo belajar Jepang, Bella belajar Inggris, dan Citra belajar Mandarin."
     }
   },
   {
     id: 10,
     chapterId: 1,
-    type: "MCQ",
-    title: "📍 Membaca Relasi dari Koordinat",
-    question: "Perhatikan titik-titik pada diagram Cartesius berikut. Aturan relasi yang menghubungkan angka depan (x) ke angka belakang (y) adalah...",
-    visual: {
-      type: "cartesian_graph",
-      title: "Titik Relasi Cartesius",
-      minX: 0,
-      maxX: 4,
-      minY: 0,
-      maxY: 5,
-      testPoints: [[1, 2], [2, 3], [3, 4]],
-      pointsOnly: true
-    },
-    options: ["Satu kurangnya dari", "Satu lebihnya dari", "Dua kali dari", "Setengah dari"],
-    correct: "Satu kurangnya dari",
-    correctReason: "Bagus! Nilai x selalu 1 lebih kecil daripada y (1 adalah 1 kurangnya dari 2, 2 adalah 1 kurangnya dari 3).",
-    wrongExplanation: "Perhatikan arah dari x ke y: x = y − 1. Berarti x adalah 'satu kurangnya dari' y. Jika dibalik, y adalah 'satu lebihnya dari' x.",
-    clue: "x = 1, y = 2 ➔ 1 adalah satu lebih kecil daripada 2.",
-    remedialVariant: {
-      question: "Perhatikan titik-titik koordinat pada diagram Cartesius berikut. Aturan relasi dari x ke y adalah...",
-      visual: {
-        type: "cartesian_graph",
-        title: "Titik Relasi Cartesius",
-        minX: 0,
-        maxX: 5,
-        minY: 0,
-        maxY: 4,
-        testPoints: [[2, 1], [3, 2], [4, 3]],
-        pointsOnly: true
-      },
-      options: ["Satu lebihnya dari", "Satu kurangnya dari", "Dua kali dari", "Kebalikan dari"],
-      correct: "Satu lebihnya dari",
-      correctReason: "Tepat sekali! 2 adalah 1 lebihnya dari 1, 3 adalah 1 lebihnya dari 2.",
-      wrongExplanation: "Di sini x lebih besar 1 dibanding y (2 dibanding 1), sehingga relasinya 'satu lebihnya dari'."
-    }
-  },
-  {
-    id: 11,
-    chapterId: 1,
     type: "CARTESIAN",
-    title: "📍 Plot Relasi 'Kelipatan Dari'",
-    question: "Plot titik-titik relasi 'kelipatan dari' untuk pasangan x ∈ {4, 6} ke y ∈ {2, 3} pada bidang Cartesius! (4 kelipatan 2; 6 kelipatan 2 dan 3)",
+    title: "📍 Diagram Kartesius: Relasi 'Alat Praktikum Laboratorium IPA'",
+    question: "Tiga siswa mencatat alat praktikum laboratorium IPA yang mereka gunakan: Fajar menggunakan Mikroskop dan Tabung Reaksi, Gita menggunakan Gelas Ukur, serta Hadi menggunakan Mikroskop dan Gelas Ukur. Tandai seluruh pasangan titik alat praktikum yang mereka gunakan pada diagram Kartesius berikut!",
+    labelX: "Nama Siswa",
+    labelY: "Alat Praktikum IPA",
+    xLabels: { 1: "Fajar", 2: "Gita", 3: "Hadi" },
+    yLabels: { 1: "Mikroskop", 2: "Tabung Reaksi", 3: "Gelas Ukur" },
     minX: 0,
-    maxX: 7,
+    maxX: 3,
     minY: 0,
-    maxY: 4,
-    targetPoints: [[4, 2], [6, 2], [6, 3]],
-    correctReason: "Hebat! Titik (4, 2), (6, 2), dan (6, 3) telah diplot dengan sempurna pada bidang Cartesius.",
-    wrongExplanation: "4 adalah kelipatan 2 ➔ (4, 2). 6 adalah kelipatan 2 dan 3 ➔ (6, 2) dan (6, 3). Cek kembali koordinat titikmu.",
-    clue: "Tandai 3 titik: (4, 2), (6, 2), dan (6, 3).",
+    maxY: 3,
+    targetPoints: [
+      [1, 1],
+      [1, 2],
+      [2, 3],
+      [3, 1],
+      [3, 3]
+    ],
+    correctReason: "Luar biasa! Fajar (Mikroskop & Tabung Reaksi), Gita (Gelas Ukur), dan Hadi (Mikroskop & Gelas Ukur) telah terpasang dengan tepat pada diagram Kartesius. Karakteristik utama relasi adalah anggota asal boleh memiliki banyak pasangan!",
+    wrongExplanation: "Tandai persilangan nama siswa (sumbu mendatar) dan alat praktikum yang digunakan (sumbu tegak):\n• Fajar: Mikroskop dan Tabung Reaksi\n• Gita: Gelas Ukur\n• Hadi: Mikroskop dan Gelas Ukur",
+    clue: "Fajar menggunakan 2 alat (Mikroskop & Tabung Reaksi), Gita menggunakan Gelas Ukur, dan Hadi menggunakan 2 alat (Mikroskop & Gelas Ukur).",
     remedialVariant: {
-      question: "Plot titik-titik relasi 'faktor dari' dari x ∈ {2, 3} ke y = 6 pada bidang Cartesius!",
+      question: "Dua siswa menyiapkan perlengkapan praktikum biologi: Rian membawa Lup dan Pinset, serta Tiara membawa Pinset dan Cawan Petri. Tandai seluruh pasangan titik perlengkapan praktikum mereka pada diagram Kartesius berikut!",
+      labelX: "Nama Siswa",
+      labelY: "Alat Praktikum",
+      xLabels: { 1: "Rian", 2: "Tiara" },
+      yLabels: { 1: "Lup", 2: "Pinset", 3: "Cawan Petri" },
       minX: 0,
-      maxX: 5,
+      maxX: 2,
       minY: 0,
-      maxY: 7,
-      targetPoints: [[2, 6], [3, 6]],
-      correctReason: "Bagus! 2 dan 3 adalah faktor dari 6, titik (2, 6) dan (3, 6) terplot tepat.",
-      wrongExplanation: "Tandai koordinat x = 2, y = 6 dan x = 3, y = 6."
-    }
-  },
-  {
-    id: 12,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🔢 Relasi 'Kurang Dari'",
-    question: "Diketahui A = {1, 2} dan B = {2, 3}. Relasi dari A ke B adalah 'kurang dari'. Banyaknya pasangan berurutan yang terbentuk adalah...",
-    options: ["3 pasangan", "2 pasangan", "4 pasangan", "1 pasangan"],
-    correct: "3 pasangan",
-    correctReason: "Tepat! Pasangan yang memenuhi x < y adalah: (1, 2), (1, 3), dan (2, 3). Total ada 3 pasangan.",
-    wrongExplanation: "(1 < 2), (1 < 3), dan (2 < 3) semuanya benar. Sedangkan (2, 2) tidak memenuhi karena 2 tidak kurang dari 2.",
-    clue: "Cek satu per satu: apakah 1 < 2? Ya. Apakah 1 < 3? Ya. Apakah 2 < 2? Tidak. Apakah 2 < 3? Ya.",
-    remedialVariant: {
-      question: "Diketahui A = {2, 3} dan B = {3, 4}. Relasi 'kurang dari' dari A ke B menghasilkan berapa pasangan?",
-      options: ["3 pasangan", "4 pasangan", "2 pasangan", "1 pasangan"],
-      correct: "3 pasangan",
-      correctReason: "Benar! Pasangannya adalah (2, 3), (2, 4), dan (3, 4) ➔ total 3 pasangan.",
-      wrongExplanation: "Pasangan yang memenuhi nilai x < y adalah (2, 3), (2, 4), dan (3, 4)."
-    }
-  },
-  {
-    id: 13,
-    chapterId: 1,
-    type: "TRUE_FALSE",
-    title: "🔄 Membalik Relasi",
-    question: "Pernyataan: Jika relasi dari A ke B adalah 'kuadrat dari', maka relasi kebalikannya dari B ke A adalah 'akar pangkat dua dari'.",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Sangat benar! Contoh: 9 adalah kuadrat dari 3 (9 = 3²). Sebaliknya, 3 adalah akar kuadrat dari 9 (√9 = 3).",
-    wrongExplanation: "Operasi kebalikan dari kuadrat (pangkat dua) adalah penarikan akar kuadrat.",
-    clue: "Jika 4 kuadrat dari 2, maka 2 apanya dari 4? Akar dari 4.",
-    remedialVariant: {
-      question: "Pernyataan: Jika relasi dari A ke B adalah 'dua kali dari', maka relasi dari B ke A adalah 'setengah dari'.",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Tepat! Kebalikan dari perkalian dua (dua kali dari) adalah pembagian dua (setengah dari).",
-      wrongExplanation: "Jika a = 2b, maka b = (1/2)a."
-    }
-  },
-  {
-    id: 14,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🎯 Anggota Himpunan Asal",
-    question: "Perhatikan himpunan pasangan berurutan R berikut. Himpunan daerah asal (domain) yang terlibat dalam pasangan tersebut adalah...",
-    visual: {
-      type: "ordered_pairs",
-      title: "Himpunan Pasangan Berurutan R",
-      setName: "R",
-      pairs: [["a", "1"], ["b", "2"], ["c", "2"]]
-    },
-    options: ["{a, b, c}", "{1, 2}", "{a, 1}", "{b, c, 2}"],
-    correct: "{a, b, c}",
-    correctReason: "Bagus! Elemen pertama pada setiap pasangan berurutan (koordinat x) merupakan anggota daerah asal: {a, b, c}.",
-    wrongExplanation: "Elemen pertama adalah daerah asal (a, b, c), sedangkan elemen kedua adalah daerah hasil (1, 2).",
-    clue: "Ambil semua huruf/angka di posisi depan tanda koma dalam setiap kurung.",
-    remedialVariant: {
-      question: "Perhatikan pasangan berurutan R berikut. Elemen himpunan pertama (daerah asal) adalah...",
-      visual: {
-        type: "ordered_pairs",
-        title: "Himpunan Pasangan Berurutan R",
-        setName: "R",
-        pairs: [["p", "4"], ["q", "5"], ["r", "6"]]
-      },
-      options: ["{p, q, r}", "{4, 5, 6}", "{p, 4}", "{q, r}"],
-      correct: "{p, q, r}",
-      correctReason: "Tepat! Elemen depan dari pasangan adalah p, q, dan r.",
-      wrongExplanation: "Daerah asal dibentuk oleh komponen pertama setiap pasangan berurutan."
-    }
-  },
-  {
-    id: 15,
-    chapterId: 1,
-    type: "MATCHING",
-    title: "🔗 Menjodohkan Nilai Relasi",
-    question: "Relasi dari A = {2, 3, 4} ke B = {4, 9, 16} adalah 'akar dari'. Jodohkan setiap elemen A dengan pasangannya di B!",
-    pairs: [
-      { left: "2", right: "4" },
-      { left: "3", right: "9" },
-      { left: "4", right: "16" }
-    ],
-    rightOptions: ["4", "9", "16", "25"],
-    correctReason: "Mantap! 2 adalah akar dari 4, 3 adalah akar dari 9, dan 4 adalah akar dari 16 (karena 2²=4, 3²=9, 4²=16).",
-    wrongExplanation: "√4 = 2, √9 = 3, √16 = 4. Jadi 2 dipasangkan ke 4, 3 ke 9, dan 4 ke 16.",
-    clue: "Kuadratkan angka di sebelah kiri untuk menemukan pasangannya di sebelah kanan.",
-    remedialVariant: {
-      question: "Jodohkan angka sebelah kiri dengan kuadratnya di sebelah kanan (relasi 'akar dari')!",
-      pairs: [
-        { left: "5", right: "25" },
-        { left: "6", right: "36" },
-        { left: "7", right: "49" }
+      maxY: 3,
+      targetPoints: [
+        [1, 1],
+        [1, 2],
+        [2, 2],
+        [2, 3]
       ],
-      rightOptions: ["25", "36", "49", "64"],
-      correctReason: "Tepat! 5 akar dari 25, 6 akar dari 36, dan 7 akar dari 49.",
-      wrongExplanation: "5² = 25, 6² = 36, 7² = 49."
-    }
-  },
-  {
-    id: 16,
-    chapterId: 1,
-    type: "MCQ_COMPLEX",
-    title: "☑️ Relasi Kehidupan Sehari-hari",
-    question: "Manakah contoh di bawah ini yang merupakan bentuk relasi antara dua kelompok dalam kehidupan sehari-hari? (Pilih semua yang benar)",
-    options: [
-      "Relasi antara siswa dengan mata pelajaran yang disukainya",
-      "Relasi antara negara dengan bahasa resminya",
-      "Relasi antara nomor sepatu dengan merk mobil",
-      "Relasi antara pasien dengan dokter yang menanganinya"
-    ],
-    correctMultiple: [
-      "Relasi antara siswa dengan mata pelajaran yang disukainya",
-      "Relasi antara negara dengan bahasa resminya",
-      "Relasi antara pasien dengan dokter yang menanganinya"
-    ],
-    correctReason: "Hebat! Semua contoh tersebut memiliki aturan keterkaitan logis antara dua himpunan (orang & hobi/bahasa/dokter).",
-    wrongExplanation: "Nomor sepatu dan merk mobil tidak memiliki aturan keterkaitan logis dalam konteks umum.",
-    clue: "Pilihlah hubungan yang memiliki aturan pemasangan yang bermakna dan jelas.",
-    remedialVariant: {
-      question: "Manakah contoh hubungan antar dua himpunan yang logis? (Pilih semua yang benar)",
-      options: [
-        "Siswa dengan hobi olahraganya",
-        "Kota dengan provinsi tempatnya berada",
-        "Warna baju dengan nomor rekening bank acak",
-        "Buku dengan nama penulisnya"
-      ],
-      correctMultiple: [
-        "Siswa dengan hobi olahraganya",
-        "Kota dengan provinsi tempatnya berada",
-        "Buku dengan nama penulisnya"
-      ],
-      correctReason: "Benar! Ketiganya merupakan relasi nyata yang terdefinisi dengan baik.",
-      wrongExplanation: "Warna baju dan nomor rekening bank tidak memiliki kaitan aturan yang terdefinisi."
-    }
-  },
-  {
-    id: 17,
-    chapterId: 1,
-    type: "TRUE_FALSE",
-    title: "📌 Relasi Identitas",
-    question: "Pernyataan: Relasi 'sama dengan' pada himpunan A = {1, 2, 3} ke dirinya sendiri menghasilkan himpunan pasangan {(1, 1), (2, 2), (3, 3)}.",
-    visual: {
-      type: "ordered_pairs",
-      title: "Relasi Sama Dengan",
-      setName: "R",
-      pairs: [[1, 1], [2, 2], [3, 3]],
-      rule: "Sama Dengan"
-    },
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Tepat! Karena setiap bilangan hanya sama dengan dirinya sendiri: 1 = 1, 2 = 2, 3 = 3.",
-    wrongExplanation: "Aturan 'sama dengan' mengharuskan elemen depan dan belakang identik, sehingga menghasilkan (1, 1), (2, 2), dan (3, 3).",
-    clue: "x sama dengan y berarti x = y.",
-    remedialVariant: {
-      question: "Pernyataan: Relasi 'sama dengan' pada himpunan A = {4, 5} menghasilkan pasangan {(4, 5), (5, 4)}.",
-      visual: {
-        type: "ordered_pairs",
-        title: "Relasi Sama Dengan",
-        setName: "R",
-        pairs: [[4, 4], [5, 5]],
-        rule: "Sama Dengan"
-      },
-      options: ["Benar", "Salah"],
-      correct: "Salah",
-      correctReason: "Benar! Pernyataan tersebut salah karena 4 tidak sama dengan 5. Pasangan yang benar adalah {(4, 4), (5, 5)}.",
-      wrongExplanation: "Relasi sama dengan menghasilkan elemen yang bernilai persis sama: 4 dengan 4, bukan 4 dengan 5."
-    }
-  },
-  {
-    id: 18,
-    chapterId: 1,
-    type: "MCQ",
-    title: "📐 Relasi Kelipatan",
-    question: "Perhatikan diagram panah relasi 'faktor dari' dari A ke B berikut. Manakah anggota A yang berpasangan dengan 10?",
-    visual: {
-      type: "arrow_diagram",
-      labelA: "Himpunan A",
-      labelB: "Himpunan B",
-      setA: [2, 3, 5],
-      setB: [10],
-      pairs: [[2, 10], [5, 10]],
-      statusBadge: "Faktor Dari 10"
-    },
-    options: ["2 dan 5 saja", "2, 3, dan 5", "5 saja", "3 saja"],
-    correct: "2 dan 5 saja",
-    correctReason: "Sangat tepat! 10 habis dibagi 2 dan 5. Sedangkan 10 tidak habis dibagi 3 (10 ÷ 3 = 3 sisa 1).",
-    wrongExplanation: "3 bukan faktor dari 10 karena 10 tidak habis dibagi 3. Angka yang habis membagi 10 dari himpunan A hanyalah 2 dan 5.",
-    clue: "Faktor dari 10 adalah bilangan yang habis membagi 10 tanpa sisa.",
-    remedialVariant: {
-      question: "Perhatikan diagram panah relasi 'faktor dari' berikut. Anggota A yang berpasangan dengan 14 adalah...",
-      visual: {
-        type: "arrow_diagram",
-        labelA: "Himpunan A",
-        labelB: "Himpunan B",
-        setA: [2, 3, 7],
-        setB: [14],
-        pairs: [[2, 14], [7, 14]],
-        statusBadge: "Faktor Dari 14"
-      },
-      options: ["2 dan 7 saja", "2, 3, dan 7", "7 saja", "3 saja"],
-      correct: "2 dan 7 saja",
-      correctReason: "Benar! 14 habis dibagi 2 dan 7, tetapi tidak habis dibagi 3.",
-      wrongExplanation: "14 bukan kelipatan 3, jadi 3 tidak berpasangan dengan 14."
-    }
-  },
-  {
-    id: 19,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🏹 Diagram Panah Bercabang",
-    question: "Perhatikan diagram panah relasi berikut yang memiliki cabang 3. Pernyataan yang BENAR mengenai diagram tersebut adalah...",
-    visual: {
-      type: "arrow_diagram",
-      labelA: "Daerah Asal",
-      labelB: "Daerah Kawan",
-      setA: ["Titik 1", "Titik 2"],
-      setB: ["Target A", "Target B", "Target C"],
-      pairs: [["Titik 1", "Target A"], ["Titik 1", "Target B"], ["Titik 1", "Target C"], ["Titik 2", "Target B"]],
-      statusBadge: "Relasi Bercabang"
-    },
-    options: [
-      "Diagram tersebut tetap merupakan relasi yang sah",
-      "Diagram tersebut bukan merupakan relasi",
-      "Diagram tersebut salah gambar",
-      "Diagram tersebut pasti fungsi"
-    ],
-    correct: "Diagram tersebut tetap merupakan relasi yang sah",
-    correctReason: "Tepat sekali! Dalam relasi, suatu anggota asal sah-sah saja memiliki 3 pasangan (bercabang 3).",
-    wrongExplanation: "Relasi tidak melarang cabang. Yang melarang cabang adalah 'fungsi'. Jadi diagram ini tetap relasi yang sah.",
-    clue: "Relasi itu bebas: boleh bercabang sebanyak apa pun.",
-    remedialVariant: {
-      question: "Apakah diagram panah yang memiliki anggota asal dengan 2 panah masih tergolong relasi?",
-      options: [
-        "Ya, tetap merupakan relasi",
-        "Tidak, relasi tidak boleh bercabang",
-        "Hanya boleh jika anggotanya genap",
-        "Salah total"
-      ],
-      correct: "Ya, tetap merupakan relasi",
-      correctReason: "Benar! Relasi memperbolehkan cabang.",
-      wrongExplanation: "Aturan relasi memperbolehkan anggota asal memiliki lebih dari 1 panah."
-    }
-  },
-  {
-    id: 20,
-    chapterId: 1,
-    type: "ARROWS",
-    title: "🏹 Relasi 'Dua Lebihnya Dari'",
-    question: "Hubungkan setiap elemen himpunan A ke pasangannya di himpunan B dengan aturan 'dua lebihnya dari' (a = b + 2)!",
-    setA: [4, 5, 6],
-    setB: [2, 3, 4],
-    correctPairs: ["4->2", "5->3", "6->4"],
-    correctReason: "Luar biasa! 4 adalah 2 lebihnya dari 2, 5 adalah 2 lebihnya dari 3, dan 6 adalah 2 lebihnya dari 4.",
-    wrongExplanation: "4 = 2 + 2 ➔ 4 ke 2. 5 = 3 + 2 ➔ 5 ke 3. 6 = 4 + 2 ➔ 6 ke 4.",
-    clue: "Kurangkan angka di himpunan A dengan 2 untuk mendapatkan pasangannya di himpunan B.",
-    remedialVariant: {
-      question: "Hubungkan relasi 'tiga lebihnya dari' dari A ke B!",
-      setA: [5, 6, 7],
-      setB: [2, 3, 4],
-      correctPairs: ["5->2", "6->3", "7->4"],
-      correctReason: "Tepat! 5 = 2 + 3, 6 = 3 + 3, 7 = 4 + 3. Hubungan panah benar!",
-      wrongExplanation: "Kurangkan angka himpunan A dengan 3 untuk menemukan elemen di B."
-    }
-  },
-  {
-    id: 21,
-    chapterId: 1,
-    type: "MCQ",
-    title: "📊 Posisi Koordinat Cartesius",
-    question: "Dalam diagram Cartesius untuk relasi dari himpunan A ke himpunan B, anggota himpunan A selalu diletakkan pada...",
-    visual: {
-      type: "cartesian_graph",
-      title: "Diagram Cartesius Sumbu X & Y",
-      minX: 0,
-      maxX: 5,
-      minY: 0,
-      maxY: 5,
-      testPoints: [[1, 2], [2, 4], [3, 1]],
-      pointsOnly: true
-    },
-    options: [
-      "Sumbu mendatar (sumbu X)",
-      "Sumbu tegak (sumbu Y)",
-      "Titik pusat koordinat (0, 0)",
-      "Boleh diletakkan di mana saja tanpa aturan"
-    ],
-    correct: "Sumbu mendatar (sumbu X)",
-    correctReason: "Benar! Himpunan asal (A) selalu diwakili oleh sumbu horizontal/mendatar (sumbu X), sedangkan himpunan kawan (B) diwakili sumbu vertikal/tegak (sumbu Y).",
-    wrongExplanation: "Secara standar kesepakatan matematika, domain diletakkan pada sumbu mendatar (X) dan kodomain pada sumbu tegak (Y).",
-    clue: "Ingat urutan pasangan (x, y): x adalah sumbu mendatar (asal), y adalah sumbu tegak (tujuan).",
-    remedialVariant: {
-      question: "Pada diagram Cartesius relasi dari himpunan P ke Q, anggota himpunan Q diletakkan pada...",
-      options: [
-        "Sumbu tegak (sumbu Y)",
-        "Sumbu mendatar (sumbu X)",
-        "Garis diagonal",
-        "Di luar bidang koordinat"
-      ],
-      correct: "Sumbu tegak (sumbu Y)",
-      correctReason: "Tepat! Himpunan tujuan (Q) ditempatkan pada sumbu tegak (sumbu Y).",
-      wrongExplanation: "Himpunan tujuan diletakkan pada sumbu tegak (sumbu Y)."
-    }
-  },
-  {
-    id: 22,
-    chapterId: 1,
-    type: "TRUE_FALSE",
-    title: "📐 Relasi 'Lebih Dari'",
-    question: "Pernyataan: Pada diagram panah relasi 'lebih dari' dari A = {3} ke B = {1, 2, 4}, pasangan yang terbentuk adalah {(3, 1), (3, 2)}.",
-    visual: {
-      type: "arrow_diagram",
-      labelA: "Himpunan A",
-      labelB: "Himpunan B",
-      setA: [3],
-      setB: [1, 2, 4],
-      pairs: [[3, 1], [3, 2]],
-      statusBadge: "Lebih Dari"
-    },
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Tepat! 3 > 1 dan 3 > 2 (benar). Sedangkan 3 tidak lebih dari 4 (3 < 4), jadi (3, 4) tidak termasuk.",
-    wrongExplanation: "Karena 3 lebih besar dari 1 dan 2, pasangannya adalah (3, 1) dan (3, 2). 4 tidak ikut karena 3 tidak lebih besar dari 4.",
-    clue: "Cek tanda perbandingan: 3 > 1? Ya. 3 > 2? Ya. 3 > 4? Tidak.",
-    remedialVariant: {
-      question: "Pernyataan: Pada relasi 'lebih dari' dari A = {5} ke B = {2, 6}, pasangan yang terbentuk adalah {(5, 2), (5, 6)}.",
-      visual: {
-        type: "arrow_diagram",
-        labelA: "Himpunan A",
-        labelB: "Himpunan B",
-        setA: [5],
-        setB: [2, 6],
-        pairs: [[5, 2]],
-        statusBadge: "Lebih Dari"
-      },
-      options: ["Benar", "Salah"],
-      correct: "Salah",
-      correctReason: "Benar! Pernyataan tersebut salah karena 5 tidak lebih besar dari 6. Pasangan yang benar hanyalah {(5, 2)}.",
-      wrongExplanation: "5 > 2 benar, tetapi 5 > 6 salah! Jadi (5, 6) tidak boleh masuk."
-    }
-  },
-  {
-    id: 23,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🔍 Mengidentifikasi Aturan Relasi",
-    question: "Perhatikan himpunan pasangan berurutan berikut. Aturan relasi yang paling tepat dari bilangan pertama ke kedua adalah...",
-    visual: {
-      type: "ordered_pairs",
-      title: "Himpunan Pasangan Berurutan R",
-      setName: "R",
-      pairs: [[2, 1], [4, 2], [6, 3], [8, 4]],
-      rule: "?"
-    },
-    options: ["Dua kali dari", "Setengah dari", "Dua kurangnya dari", "Kuadrat dari"],
-    correct: "Dua kali dari",
-    correctReason: "Luar biasa! 2 = 2 × 1, 4 = 2 × 2, 6 = 2 × 3, dan 8 = 2 × 4. Bilangan depan bernilai dua kali lipat bilangan belakang.",
-    wrongExplanation: "2 adalah 'dua kali dari' 1. Jika 'setengah dari', angkanya terbalik seperti (1, 2) atau (2, 4).",
-    clue: "Bandingkan 4 ke 2: 4 adalah 2 dikali 2.",
-    remedialVariant: {
-      question: "Perhatikan himpunan pasangan berikut. Aturan relasi dari bilangan pertama ke kedua adalah...",
-      visual: {
-        type: "ordered_pairs",
-        title: "Himpunan Pasangan Berurutan R",
-        setName: "R",
-        pairs: [[3, 1], [6, 2], [9, 3]],
-        rule: "?"
-      },
-      options: ["Tiga kali dari", "Sepertiga dari", "Tiga lebihnya dari", "Kuadrat dari"],
-      correct: "Tiga kali dari",
-      correctReason: "Tepat! 3 = 3 × 1, 6 = 3 × 2, 9 = 3 × 3.",
-      wrongExplanation: "Angka depan bernilai 3 kali lipat angka belakang, jadi relasinya 'tiga kali dari'."
-    }
-  },
-  {
-    id: 24,
-    chapterId: 1,
-    type: "MCQ_COMPLEX",
-    title: "☑️ Relasi yang Menghasilkan Pasangan Terbanyak",
-    question: "Diketahui A = {2, 4} dan B = {2, 4}. Manakah relasi dari A ke B yang menghasilkan TEPAT 2 pasangan berurutan? (Pilih semua yang benar)",
-    options: [
-      "Relasi 'sama dengan'",
-      "Relasi 'kelipatan dari'",
-      "Relasi 'kurang dari'",
-      "Relasi 'faktor dari'"
-    ],
-    correctMultiple: [
-      "Relasi 'sama dengan'"
-    ],
-    correctReason: "Tepat! Relasi 'sama dengan' menghasilkan {(2, 2), (4, 4)} yang berjumlah tepat 2 pasangan.",
-    wrongExplanation: "Relasi 'faktor dari' menghasilkan {(2, 2), (2, 4), (4, 4)} (3 pasangan). Relasi 'kelipatan dari' juga menghasilkan 3 pasangan. Relasi 'kurang dari' hanya menghasilkan {(2, 4)} (1 pasangan).",
-    clue: "Cek pasangan dari relasi 'sama dengan': 2=2 dan 4=4 (ada 2 pasangan).",
-    remedialVariant: {
-      question: "Diketahui A = {3, 5} dan B = {3, 5}. Manakah relasi yang menghasilkan TEPAT 1 pasangan berurutan? (Pilih yang benar)",
-      options: [
-        "Relasi 'kurang dari'",
-        "Relasi 'sama dengan'",
-        "Relasi 'faktor dari'",
-        "Relasi 'lebih dari'"
-      ],
-      correctMultiple: [
-        "Relasi 'kurang dari'",
-        "Relasi 'lebih dari'"
-      ],
-      correctReason: "Tepat! 'Kurang dari' hanya menghasilkan {(3, 5)} (1 pasangan). 'Lebih dari' hanya menghasilkan {(5, 3)} (1 pasangan).",
-      wrongExplanation: "'Sama dengan' menghasilkan 2 pasangan {(3, 3), (5, 5)}."
-    }
-  },
-  {
-    id: 25,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🔡 Himpunan Hasil (Range Relasi)",
-    question: "Perhatikan himpunan pasangan berurutan R berikut. Elemen himpunan kedua yang terpilih (range) adalah...",
-    visual: {
-      type: "ordered_pairs",
-      title: "Himpunan Pasangan Berurutan R",
-      setName: "R",
-      pairs: [[1, 3], [2, 5], [3, 3], [4, 5]]
-    },
-    options: ["{3, 5}", "{1, 2, 3, 4}", "{1, 3, 5}", "{3, 3, 5, 5}"],
-    correct: "{3, 5}",
-    correctReason: "Bagus sekali! Elemen kedua yang muncul adalah 3 dan 5. Dalam notasi himpunan, elemen berulang cukup ditulis sekali: {3, 5}.",
-    wrongExplanation: "Elemen kedua adalah 3 dan 5. Penulisan himpunan tidak mengulang angka yang sama.",
-    clue: "Kumpulkan semua angka di posisi belakang kurung: ada angka 3 dan angka 5.",
-    remedialVariant: {
-      question: "Perhatikan himpunan pasangan berurutan R berikut. Elemen yang terpilih sebagai hasil (elemen kedua) adalah...",
-      visual: {
-        type: "ordered_pairs",
-        title: "Himpunan Pasangan Berurutan R",
-        setName: "R",
-        pairs: [["a", "7"], ["b", "8"], ["c", "7"]]
-      },
-      options: ["{7, 8}", "{a, b, c}", "{7, 7, 8}", "{8}"],
-      correct: "{7, 8}",
-      correctReason: "Tepat! Elemen belakang yang unik adalah {7, 8}.",
-      wrongExplanation: "Daerah hasil terdiri dari elemen unik posisi kedua: {7, 8}."
-    }
-  },
-  {
-    id: 26,
-    chapterId: 1,
-    type: "TRUE_FALSE",
-    title: "🎯 Relasi Tanpa Pasangan",
-    question: "Pernyataan: Relasi 'faktor dari' dari A = {7} ke B = {2, 4, 6} tidak memiliki pasangan sama sekali (relasi kosong).",
-    options: ["Benar", "Salah"],
-    correct: "Benar",
-    correctReason: "Tepat! 7 tidak habis membagi 2, tidak habis membagi 4, dan tidak habis membagi 6. Tidak ada satu pun pasangan yang memenuhi.",
-    wrongExplanation: "Karena tidak ada bilangan di B yang habis dibagi 7, himpunan pasangan berurutannya kosong { }.",
-    clue: "Apakah 2, 4, atau 6 ada yang merupakan kelipatan dari 7? Tidak ada.",
-    remedialVariant: {
-      question: "Pernyataan: Relasi 'faktor dari' dari A = {5} ke B = {3, 7, 9} merupakan relasi kosong.",
-      options: ["Benar", "Salah"],
-      correct: "Benar",
-      correctReason: "Tepat! Tidak ada angka di B yang habis dibagi 5, sehingga pasangannya kosong.",
-      wrongExplanation: "5 bukan faktor dari 3, 7, maupun 9."
-    }
-  },
-  {
-    id: 27,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🔢 Banyak Pasangan Maksimal",
-    question: "Jika himpunan A memiliki 3 anggota dan himpunan B memiliki 4 anggota, banyak pasangan maksimal yang mungkin dibentuk dalam suatu relasi dari A ke B adalah...",
-    options: ["12 pasangan", "7 pasangan", "64 pasangan", "81 pasangan"],
-    correct: "12 pasangan",
-    correctReason: "Benar! Banyak pasangan maksimal adalah hasil kali jumlah anggota kedua himpunan: n(A) × n(B) = 3 × 4 = 12 pasangan.",
-    wrongExplanation: "Setiap anggota A bisa dipasangkan ke seluruh anggota B. Jadi 3 × 4 = 12 pasangan maksimal.",
-    clue: "Rumus perkalian Cartesius: n(A × B) = n(A) × n(B).",
-    remedialVariant: {
-      question: "Jika n(A) = 2 dan n(B) = 5, berapa jumlah pasangan maksimal yang mungkin terbentuk?",
-      options: ["10 pasangan", "7 pasangan", "25 pasangan", "32 pasangan"],
-      correct: "10 pasangan",
-      correctReason: "Tepat! 2 × 5 = 10 pasangan maksimal.",
-      wrongExplanation: "n(A) × n(B) = 2 × 5 = 10."
-    }
-  },
-  {
-    id: 28,
-    chapterId: 1,
-    type: "MATCHING",
-    title: "🔗 Menjodohkan Relasi 'Setengah Dari'",
-    question: "Perhatikan tabel relasi berikut. Jodohkan elemen himpunan asal di sebelah kiri dengan pasangannya di sebelah kanan dengan aturan 'setengah dari'!",
-    visual: {
-      type: "relation_table",
-      title: "Tabel Relasi: Setengah Dari",
-      rule: "Setengah Dari",
-      headers: ["Nilai x", "Nilai y"],
-      pairs: [["3", "6"], ["5", "10"], ["7", "14"]],
-      showOrderedPair: true
-    },
-    pairs: [
-      { left: "3", right: "6" },
-      { left: "5", right: "10" },
-      { left: "7", right: "14" }
-    ],
-    rightOptions: ["6", "10", "14", "16"],
-    correctReason: "Hebat! 3 = 1/2 × 6, 5 = 1/2 × 10, dan 7 = 1/2 × 14. Pasangan terjodohkan dengan tepat.",
-    wrongExplanation: "Aturan setengah dari berarti angka kanan adalah 2 kali lipat angka kiri (3 ke 6, 5 ke 10, 7 ke 14).",
-    clue: "Kalikan angka kiri dengan 2 untuk mendapatkan pasangannya di kanan.",
-    remedialVariant: {
-      question: "Perhatikan tabel relasi berikut. Jodohkan angka kiri dengan pasangannya pada relasi 'sepertiga dari'!",
-      visual: {
-        type: "relation_table",
-        title: "Tabel Relasi: Sepertiga Dari",
-        rule: "Sepertiga Dari",
-        headers: ["Nilai x", "Nilai y"],
-        pairs: [["2", "6"], ["4", "12"], ["5", "15"]],
-        showOrderedPair: true
-      },
-      pairs: [
-        { left: "2", right: "6" },
-        { left: "4", right: "12" },
-        { left: "5", right: "15" }
-      ],
-      rightOptions: ["6", "12", "15", "18"],
-      correctReason: "Bagus! 2 = 1/3 × 6, 4 = 1/3 × 12, dan 5 = 1/3 × 15.",
-      wrongExplanation: "Kalikan angka kiri dengan 3 untuk mendapatkan angka di kanan."
-    }
-  },
-  {
-    id: 29,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🔍 Relasi 'Kelipatan Dari'",
-    question: "Perhatikan diagram panah relasi 'kelipatan dari' dari P ke Q berikut. Pasangan yang BUKAN anggota relasi tersebut adalah...",
-    visual: {
-      type: "arrow_diagram",
-      labelA: "Himpunan P",
-      labelB: "Himpunan Q",
-      setA: [6, 8],
-      setB: [2, 3, 4],
-      pairs: [[6, 2], [6, 3], [8, 2], [8, 4]],
-      statusBadge: "Kelipatan Dari"
-    },
-    options: ["(8, 3)", "(6, 2)", "(6, 3)", "(8, 4)"],
-    correct: "(8, 3)",
-    correctReason: "Sangat tepat! 8 bukan kelipatan dari 3 (8 tidak habis dibagi 3). Jadi (8, 3) bukan anggota relasi.",
-    wrongExplanation: "6 kelipatan 2 dan 3; 8 kelipatan 2 dan 4. Sedangkan 8 bukan kelipatan 3, sehingga (8, 3) tidak masuk dalam relasi.",
-    clue: "Cari pasangan yang angka depannya tidak habis dibagi oleh angka belakangnya.",
-    remedialVariant: {
-      question: "Perhatikan diagram panah relasi 'kelipatan dari' berikut. Pasangan yang BUKAN merupakan relasi 'kelipatan dari' adalah...",
-      visual: {
-        type: "arrow_diagram",
-        labelA: "Himpunan P",
-        labelB: "Himpunan Q",
-        setA: [9, 12],
-        setB: [2, 3, 5],
-        pairs: [[9, 3], [12, 2], [12, 3]],
-        statusBadge: "Kelipatan Dari"
-      },
-      options: ["(9, 2)", "(9, 3)", "(12, 2)", "(12, 3)"],
-      correct: "(9, 2)",
-      correctReason: "Tepat! 9 tidak habis dibagi 2, jadi 9 bukan kelipatan 2.",
-      wrongExplanation: "9 adalah kelipatan 3, 12 kelipatan 2 dan 3. Tetapi 9 bukan kelipatan 2."
-    }
-  },
-  {
-    id: 30,
-    chapterId: 1,
-    type: "MCQ",
-    title: "🏆 Rangkuman Konsep Relasi",
-    question: "Manakah kesimpulan yang paling tepat mengenai konsep relasi matematika?",
-    options: [
-      "Relasi adalah aturan pemasangan antar himpunan yang tidak memiliki batasan ketat mengenai jumlah cabang maupun ketiadaan pasangan",
-      "Relasi wajib memasangkan semua anggota tanpa terkecuali tepat satu kali",
-      "Relasi hanya bisa digambar dengan diagram panah saja",
-      "Relasi adalah operasi hitung aljabar untuk mencari nilai x dan y"
-    ],
-    correct: "Relasi adalah aturan pemasangan antar himpunan yang tidak memiliki batasan ketat mengenai jumlah cabang maupun ketiadaan pasangan",
-    correctReason: "Luar biasa, sempurna! Kamu telah menuntaskan seluruh materi konsep Relasi pada Chapter 1 dengan pemahaman yang sangat mendalam!",
-    wrongExplanation: "Relasi adalah aturan umum yang fleksibel (boleh bercabang dan boleh tidak punya pasangan), berbeda dengan fungsi yang memiliki aturan ketat.",
-    clue: "Relasi bersifat bebas dan fleksibel.",
-    remedialVariant: {
-      question: "Pernyataan mana yang paling benar tentang kebebasan relasi dibanding fungsi?",
-      options: [
-        "Relasi boleh memiliki cabang dan anggota tanpa pasangan, sedangkan fungsi tidak boleh",
-        "Relasi tidak boleh bercabang sama sekali",
-        "Fungsi lebih bebas aturannya dibanding relasi",
-        "Relasi dan fungsi persis sama tanpa perbedaan"
-      ],
-      correct: "Relasi boleh memiliki cabang dan anggota tanpa pasangan, sedangkan fungsi tidak boleh",
-      correctReason: "Hebat! Kamu telah memahami perbedaan mendasar relasi dan fungsi secara utuh!",
-      wrongExplanation: "Relasi adalah himpunan aturan umum yang lebih fleksibel, sedangkan fungsi adalah relasi khusus yang bersyarat ketat."
+      correctReason: "Tepat sekali! Rian (Lup & Pinset) dan Tiara (Pinset & Cawan Petri) terpasang sempurna pada diagram Kartesius.",
+      wrongExplanation: "Pasangkan: Rian dengan Lup dan Pinset; Tiara dengan Pinset dan Cawan Petri.",
+      clue: "Rian membawa 2 alat (Lup & Pinset), Tiara membawa 2 alat (Pinset & Cawan Petri)."
     }
   }
 ];
