@@ -1991,7 +1991,7 @@
               : `<span class="badge-quest empty" title="Belum memulai materi">0/${maxSeg} Segmen</span>`);
 
           const questBadge = ch.questScore !== null && ch.questScore !== undefined
-            ? `<span class="badge-quest scored" title="Nilai Ujian Quest: ${ch.questScore}/100 (Benar ${ch.questCorrectCount || 0}/30 soal)">🎯 ${ch.questScore}</span>`
+            ? `<span class="badge-quest scored" title="Nilai Ujian Quest: ${ch.questScore}/100 (Benar ${ch.questCorrectCount || 0}/10 soal)">🎯 ${ch.questScore}</span>`
             : '<span class="badge-quest empty" title="Belum mengerjakan Ujian Quest">No Ujian</span>';
 
           return `<div class="subbab-cell">${stageLabel}${questBadge}</div>`;
@@ -2186,7 +2186,7 @@
               ${ch?.questScore !== null && ch?.questScore !== undefined ? `
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <span class="badge-quest scored" style="font-size: 11px; font-weight: 800;">🎯 Nilai: ${ch.questScore}/100</span>
-                  <span style="font-size: 10.5px; color: #047857; font-weight: 700;">Benar ${ch.questCorrectCount || 0}/30</span>
+                  <span style="font-size: 10.5px; color: #047857; font-weight: 700;">Benar ${ch.questCorrectCount || 0}/10</span>
                 </div>
               ` : `
                 <span class="badge-quest empty" style="font-size: 10.5px;">Belum Mengerjakan Ujian</span>

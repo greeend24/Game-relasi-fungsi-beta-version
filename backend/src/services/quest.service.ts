@@ -4,8 +4,8 @@ import { eq, and } from "drizzle-orm";
 
 interface QuestExamInput {
   score: number; // 0 to 100
-  correctCount: number; // e.g. 26
-  totalQuestions?: number; // default 30
+  correctCount: number; // e.g. 10
+  totalQuestions?: number; // default 10
   pointsEarned: number; // total points earned in quest
   timeRemainingSeconds?: number;
 }
@@ -17,7 +17,7 @@ export async function recordQuestExamScore(
 ) {
   const now = new Date();
   const id = `${userId}_quest_${subbabId}`;
-  const totalQuestions = input.totalQuestions || 30;
+  const totalQuestions = input.totalQuestions || 10;
   const timeRemainingSeconds = input.timeRemainingSeconds || 0;
 
   // Check existing quest score for this subbab

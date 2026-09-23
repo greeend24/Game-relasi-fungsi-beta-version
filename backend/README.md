@@ -14,11 +14,11 @@ Server backend mandiri untuk Game Edukasi Matematika *Detektif Relo & Snowy: Pet
 Server ini bertugas untuk:
 1. **Pendaftaran & Autentikasi Siswa** (Nama Lengkap, Username, Password terenkripsi).
 2. **Pencatatan Kemajuan Belajar**:
-   - Subbab/Bab 1 sampai 7 yang dikerjakan.
-   - Stage 1 sampai 21 serta bintang perolehan.
+   - Chapter 1 sampai 5 yang dikerjakan.
+   - Segmen materi serta bintang perolehan.
 3. **Pencatatan Nilai Ujian Quest Mode**:
-   - Nilai Ujian skala 0–100 untuk Bab 1 sampai 7.
-   - Jumlah soal benar & total soal (30 soal per bab).
+   - Nilai Ujian skala 0–100 untuk Chapter 1 sampai 5.
+   - Jumlah soal benar & total soal (10 soal per chapter).
    - Waktu pengerjaan dan sisa waktu (speed bonus).
 4. **Pencatatan Skor Endless Mode & Total Skor Game**.
 5. **Panel Admin & Fitur Ekspor Excel (.CSV)** untuk rekap nilai dan analisis statistik pembelajaran (kompatibel SPSS / Excel).

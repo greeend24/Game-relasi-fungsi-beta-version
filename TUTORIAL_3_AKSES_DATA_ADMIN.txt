@@ -66,7 +66,7 @@ B. TABEL DATA RINCI SETIAP SISWA (LIVE DATA TABLE):
       - Menampilkan segmen materi yang dicapai
       - Menampilkan jumlah bintang penyelidikan yang diraih
    6. Nilai Ujian Quest Mode (Skala 0 - 100):
-      - Menampilkan skor ujian 30 soal per bab yang telah diikuti
+      - Menampilkan skor ujian 10 soal per bab yang telah diikuti
    7. Skor Tertinggi Endless Mode (Mode Bertahan Hidup)
    8. Jumlah Lencana / Badges yang Berhasil Dikoleksi (Kategori 1 s.d. 10)
    9. Status Integritas / Kejujuran:

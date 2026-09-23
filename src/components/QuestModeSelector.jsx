@@ -138,7 +138,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
         </button>
 
         <h2 className="text-base sm:text-lg lg:text-[20px] font-black font-pencil text-[#2D241E]">
-          QUEST MODE: UJIAN 30 SOAL
+          QUEST MODE: UJIAN TANTANGAN (10 SOAL)
         </h2>
 
         <div className="flex items-center">
@@ -154,7 +154,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
         emotion="idle"
         title="INSTRUKTUR SNOWY"
         icon="❄️"
-        message={reloText || "Selamat datang di Quest Mode! Kamu punya waktu 30 menit untuk menyelesaikan misi Ujian Kasus! ⏱️❄️🐻"}
+        message={reloText || "Selamat datang di Quest Mode! Kamu punya waktu 15 menit untuk menyelesaikan 10 Soal Ujian Kasus! ⏱️❄️🐻"}
       />
 
       {/* Info Card */}
@@ -164,7 +164,7 @@ export default function QuestModeSelector({ userProgress, onBackToMenu, onStartQ
           <span>KETENTUAN QUEST MODE:</span>
         </div>
         <p className="text-[11px] sm:text-xs md:text-sm text-[#4A3E3D] font-bold leading-snug">
-          • Terbuka setelah menyelesaikan semua materi Chapter • Durasi 30 Menit • 30 Soal Ujian • Skala Nilai 0-100
+          • Terbuka setelah menyelesaikan semua materi Chapter • Durasi 15 Menit • 10 Soal Ujian • Skala Nilai 0-100
         </p>
       </div>
 
